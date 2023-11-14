@@ -197,7 +197,6 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Include="LICENSE.md" />
-        <Content Include="README.md" />
         <Content Include="Thunderstore\CHANGELOG.md" />
         <Content Include="Thunderstore\icon.png" />
         <Content Include="Thunderstore\manifest.json" />

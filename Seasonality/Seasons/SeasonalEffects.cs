@@ -13,7 +13,9 @@ public static class SeasonalEffects
     public static readonly List<SeasonEffect> SeasonEffectList = new();
     private static Season currentSeason = _Season.Value;
 
-    private static int SeasonIndex = 0;
+    private static int SeasonIndex = (int)_Season.Value;
+
+    private static DateTime LastSeasonChange = DateTime.Now;
     
     [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateStatusEffects))]
     static class HudUpdateStatusEffectPatch
@@ -37,35 +39,51 @@ public static class SeasonalEffects
                     tmpText.gameObject.SetActive(false);
                     return;
                 }
-                int remainingDays = (EnvMan.instance.GetCurrentDay() % _SeasonDuration.Value) + 1;
+                int remainingDays = (EnvMan.instance.GetCurrentDay() % _SeasonDuration.Value);
                 float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1
-                float remainder = remainingDays - fraction;
+                float remainder = (remainingDays + 1) - fraction;
                 int totalMinutes = (int)(remainder * 24 * 60);
-                int day = totalMinutes / (24 * 60);
+                int day = totalMinutes / (24 * 60); // An hour in real life
                 int hour = (totalMinutes % (24 * 60)) / 60;
                 int minute = totalMinutes % 60;
-                string time = $"{day:D2}:{hour:D2}:{minute:D2}";
+                string time = $"{remainingDays:D2}:{hour:D2}:{minute:D2}";
                 tmpText.gameObject.SetActive(true);
                 tmpText.text = time;
-
-                if (remainder == 0)
+                if (remainingDays == 0 && hour == 0 && minute == 0)
                 {
-                    _Season.Value = (Season)SeasonIndex;
-                    if (SeasonIndex >= Enum.GetValues(typeof(Season)).Length)
+                    if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) continue;
+                    SeasonalityLogger.LogWarning("remainder hit zero");
+                    if (_Season.Valwwue == (Season)SeasonIndex)
                     {
-                        SeasonIndex = 0;
+                        if (SeasonIndex >= Enum.GetValues(typeof(Season)).Length - 1)
+                        {
+                            SeasonIndex = 0;
+                        }
+                        else
+                        {
+                            ++SeasonIndex;
+                        }
+                        _Season.Value = (Season)SeasonIndex;
                     }
                     else
                     {
-                        ++SeasonIndex;
+                        _Season.Value = (Season)SeasonIndex;
+                        if (SeasonIndex >= Enum.GetValues(typeof(Season)).Length)
+                        {
+                            SeasonIndex = 0;
+                        }
+                        else
+                        {
+                            ++SeasonIndex;
+                        }
                     }
+                    LastSeasonChange = DateTime.Now;
                 }
-                
-                if (_Season.Value != (Season)SeasonIndex)
+                else if (_Season.Value != (Season)SeasonIndex)
                 {
+                    // To switch it back to timer settings if configs changed
                     _Season.Value = (Season)SeasonIndex;
                 }
-                
             }
         }
     }
@@ -113,38 +131,31 @@ public static class SeasonalEffects
             case Season.Fall:
                 SeasonalEffect FallSeasonEffect = new SeasonalEffect();
                 FallSeasonEffect.effectName = "fall_season";
-                FallSeasonEffect.displayName = "Autumn";
+                FallSeasonEffect.displayName = _FallName.Value;
                 FallSeasonEffect.sprite = ValknutIcon;
                 FallSeasonEffect.startEffectNames = new[] { "fx_DvergerMage_Support_start" };
                 FallSeasonEffect.stopEffectNames = new[] { "fx_DvergerMage_Mistile_die" };
-                FallSeasonEffect.startMsg = "Fall is upon us";
-                FallSeasonEffect.effectTooltip = toggle is Toggle.On ? "The ground is wet.\nMovement speed reduced by <color=orange>10</color>%" : "The ground is wet";
-                // FallSeasonEffect.damageMod = "Fire = Resistant";
-                FallSeasonEffect.Modifier = toggle is Toggle.On ? Modifier.Speed : Modifier.None;
-                FallSeasonEffect.m_newValue = 0.9f;
-                FallSeasonEffect.duration = 0;
+                FallSeasonEffect.startMsg = _FallStartMsg.Value;
+                FallSeasonEffect.effectTooltip = _FallTooltip.Value;
+                FallSeasonEffect.damageMod = _FallResistance.Value;
+                FallSeasonEffect.Modifier = toggle is Toggle.On ? _FallModifier.Value : Modifier.None;
+                FallSeasonEffect.m_newValue = _FallValue.Value;
                 
                 StatusEffect? FallEffect = FallSeasonEffect.Init();
-                if (FallEffect)
-                {
-                    SeasonEffect = FallEffect;
-                }
+                if (FallEffect) SeasonEffect = FallEffect;
                 break;
             case Season.Spring:
                 SeasonalEffect SpringSeasonEffect = new SeasonalEffect();
                 SpringSeasonEffect.effectName = "spring_season";
-                SpringSeasonEffect.displayName = "Spring";
+                SpringSeasonEffect.displayName = _SpringName.Value;
                 SpringSeasonEffect.sprite = ValknutIcon;
                 SpringSeasonEffect.startEffectNames = new[] { "fx_DvergerMage_Support_start" };
                 SpringSeasonEffect.stopEffectNames = new[] { "fx_DvergerMage_Mistile_die" };
-                SpringSeasonEffect.startMsg = "Spring has finally arrived";
-                SpringSeasonEffect.effectTooltip = toggle is Toggle.On 
-                    ? "The land is bursting with energy.\nMovement speed increased by <color=orange>10</color>%"
-                    : "The land is bursting with energy.";
-                // SpringSeasonEffect.damageMod = "Fire = Resistant";
-                SpringSeasonEffect.Modifier = toggle is Toggle.On ? Modifier.Speed : Modifier.None;
-                SpringSeasonEffect.duration = 0;
-                SpringSeasonEffect.m_newValue = 1.1f;
+                SpringSeasonEffect.startMsg = _SpringStartMsg.Value;
+                SpringSeasonEffect.effectTooltip = _SpringTooltip.Value;
+                SpringSeasonEffect.damageMod = _SpringResistance.Value;
+                SpringSeasonEffect.Modifier = toggle is Toggle.On ? _SpringModifier.Value : Modifier.None;
+                SpringSeasonEffect.m_newValue = toggle is Toggle.On ? _SpringValue.Value : 0;
 
                 StatusEffect? SpringEffect = SpringSeasonEffect.Init();
                 if (SpringEffect) SeasonEffect = SpringEffect;
@@ -152,18 +163,15 @@ public static class SeasonalEffects
             case Season.Winter:
                 SeasonalEffect WinterSeasonEffect = new SeasonalEffect();
                 WinterSeasonEffect.effectName = "winter_season";
-                WinterSeasonEffect.displayName = "Winter";
+                WinterSeasonEffect.displayName = _WinterName.Value;
                 WinterSeasonEffect.sprite = ValknutIcon;
                 WinterSeasonEffect.startEffectNames = new[] { "fx_DvergerMage_Support_start" };
                 WinterSeasonEffect.stopEffectNames = new[] { "fx_DvergerMage_Mistile_die" };
-                WinterSeasonEffect.startMsg = "Winter is coming";
-                WinterSeasonEffect.effectTooltip = toggle is Toggle.On 
-                    ? "The air is cold.\nHealth regeneration reduced by <color=orange>10</color>%\n<color=orange>Resistant</color> VS <color=orange>Fire</color>"
-                    : "The air is cold.";
-                WinterSeasonEffect.damageMod = toggle is Toggle.On ? "Fire = Resistant" : "";
-                WinterSeasonEffect.Modifier = toggle is Toggle.On ? Modifier.HealthRegen : Modifier.None;
-                WinterSeasonEffect.duration = 0;
-                WinterSeasonEffect.m_newValue = 0.9f;
+                WinterSeasonEffect.startMsg = _WinterStartMsg.Value;
+                WinterSeasonEffect.effectTooltip = _WinterTooltip.Value;
+                WinterSeasonEffect.damageMod = toggle is Toggle.On ? _WinterResistance.Value : "";
+                WinterSeasonEffect.Modifier = toggle is Toggle.On ? _WinterModifier.Value : Modifier.None;
+                WinterSeasonEffect.m_newValue = _WinterValue.Value;
 
                 StatusEffect? WinterEffect = WinterSeasonEffect.Init();
                 if (WinterEffect) SeasonEffect = WinterEffect;
@@ -171,17 +179,15 @@ public static class SeasonalEffects
             case Season.Summer:
                 SeasonalEffect SummerSeasonEffect = new SeasonalEffect();
                 SummerSeasonEffect.effectName = "summer_season";
-                SummerSeasonEffect.displayName = "Summer";
+                SummerSeasonEffect.displayName = _SummerName.Value;
                 SummerSeasonEffect.sprite = ValknutIcon;
                 SummerSeasonEffect.startEffectNames = new[] { "fx_DvergerMage_Support_start" };
                 SummerSeasonEffect.stopEffectNames = new[] { "fx_DvergerMage_Mistile_die" };
-                SummerSeasonEffect.startMsg = "Summer has arrived";
-                SummerSeasonEffect.effectTooltip = toggle is Toggle.On 
-                    ? "The air is warm.\nIncrease carry weight by <color=orange>100</color>"
-                    : "The air is warm.";
-                SummerSeasonEffect.Modifier = toggle is Toggle.On ? Modifier.MaxCarryWeight : Modifier.None;
-                SummerSeasonEffect.duration = 0;
-                SummerSeasonEffect.m_newValue = 100f;
+                SummerSeasonEffect.startMsg = _SummerStartMsg.Value;
+                SummerSeasonEffect.effectTooltip = _SummerTooltip.Value;
+                SummerSeasonEffect.Modifier = toggle is Toggle.On ? _SummerModifier.Value : Modifier.None;
+                SummerSeasonEffect.m_newValue = _SummerValue.Value;
+                SummerSeasonEffect.damageMod = _SummerResistance.Value;
 
                 StatusEffect? SummerEffect = SummerSeasonEffect.Init();
                 if (SummerEffect) SeasonEffect = SummerEffect;

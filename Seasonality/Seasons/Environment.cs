@@ -92,22 +92,72 @@ public static class Environment
                 __instance.QueueEnvironment(environmentOverride);
                 return false;
             }
-
+            List<EnvEntry> entries = new();
             switch (_Season.Value)
             {
                 case Season.Winter:
-                    return ModifyEnvironment(__instance, sec, biome, new List<EnvEntry>()
+                    List<Environments> winterConfigs = new()
                     {
-                        new ()
-                        {
-                            m_environment = "Snow",
-                            m_weight = 1f
-                        },
-                    });
+                        _WinterWeather1.Value,
+                        _WinterWeather2.Value,
+                        _WinterWeather3.Value,
+                        _WinterWeather4.Value
+                    };
+                    if (winterConfigs.TrueForAll(x => x is Environments.None)) return true;
+                    AddToEntries(winterConfigs, entries);
+                    break;
+                case Season.Fall:
+                    List<Environments> fallConfigs = new()
+                    {
+                        _FallWeather1.Value,
+                        _FallWeather2.Value,
+                        _FallWeather3.Value,
+                        _FallWeather4.Value
+                    };
+                    if (fallConfigs.TrueForAll(x => x is Environments.None)) return true;
+                    AddToEntries(fallConfigs, entries);
+                    break;
+                case Season.Spring:
+                    List<Environments> springConfigs = new()
+                    {
+                        _SpringWeather1.Value,
+                        _SpringWeather2.Value,
+                        _SpringWeather3.Value,
+                        _SpringWeather4.Value
+                    };
+                    if (springConfigs.TrueForAll(x => x is Environments.None)) return true;
+                    AddToEntries(springConfigs, entries);
+                    break;
+                case Season.Summer:
+                    List<Environments> summerConfigs = new()
+                    {
+                        _SummerWeather1.Value,
+                        _SummerWeather2.Value,
+                        _SummerWeather3.Value,
+                        _SummerWeather4.Value
+                    };
+                    if (summerConfigs.TrueForAll(x => x is Environments.None)) return true;
+                    AddToEntries(summerConfigs, entries);
+                    break;
                 default:
                     return true;
             }
+            return ModifyEnvironment(__instance, sec, biome, entries);
 
+        }
+
+        private static void AddToEntries(List<Environments> environments, List<EnvEntry> entries)
+        {
+            foreach (Environments value in environments)
+            {
+                if (value is Environments.None) continue;
+                EnvEntry entry = new EnvEntry()
+                {
+                    m_environment = GetEnvironmentName(value),
+                    m_weight = 1f
+                };
+                entries.Add(entry);
+            }
         }
 
         private static bool ModifyEnvironment(EnvMan __instance, long sec, Heightmap.Biome biome, List<EnvEntry> environments)

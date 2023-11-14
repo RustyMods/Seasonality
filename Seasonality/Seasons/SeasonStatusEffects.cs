@@ -18,18 +18,12 @@ public enum Modifier
     Stealth,
     RunStaminaDrain,
     DamageReduction,
-    FallDamage,
-    EikthyrPower,
-    ElderPower,
-    BonemassPower,
-    ModerPower,
-    YagluthPower,
-    QueenPower,
+    FallDamage
 }
 public class SeasonalEffect
 {
     public string effectName = null!;
-    public string displayName = null!;
+    public string displayName = "";
     public int duration = 0;
     public Sprite? sprite;
     public string? spriteName;
@@ -37,9 +31,9 @@ public class SeasonalEffect
     public string[]? stopEffectNames;
     public string? startMsg = "";
     public string? stopMsg = "";
-    public string? effectTooltip;
+    public string? effectTooltip = "";
     public string? damageMod;
-    public Modifier Modifier;
+    public Modifier Modifier = Modifier.None;
     public float m_newValue = 0f;
     public string? activationAnimation = "gpower";
     public Dictionary<Modifier, float> Modifiers = new()
@@ -66,7 +60,57 @@ public class SeasonalEffect
         // Make sure new effects have unique names
         if (obd.m_StatusEffects.Find(effect => effect.name == effectName)) return null;
 
+        string appendedTooltip = effectTooltip ?? "";
+        string modName = Modifier.ToString();
+        string normalizedString = "";
+        for (int i = 0; i < modName.Length; ++i)
+        {
+            if (i == 0) normalizedString += modName[i];
+            else
+            {
+                if (char.IsUpper(modName[i]))
+                {
+                    normalizedString += " ";
+                }
+                normalizedString += modName[i];
+            }
+        }
         Modifiers[Modifier] = m_newValue;
+        switch (Modifier)
+        {
+            case Modifier.None:
+                break;
+            case Modifier.DamageReduction:
+                float reductionValue = Mathf.Clamp01(m_newValue);
+                string damageString = $"\n{modName} -<color=orange>{reductionValue * 100}</color>%";
+                appendedTooltip += damageString;
+
+                break;
+            case Modifier.MaxCarryWeight:
+                if (m_newValue > 0)
+                {
+                    string maxCarryString = $"\n{modName} +<color=orange>{m_newValue}</color>";
+                    appendedTooltip += maxCarryString;
+                }
+                if (m_newValue < 0)
+                {
+                    string maxCarryString = $"\n{modName} -<color=orange>{m_newValue.ToString().Replace("-","")}</color>";
+                    appendedTooltip += maxCarryString;
+                }
+                break;
+            default:
+                if (m_newValue > 1)
+                {
+                    string defaultString = $"\n{normalizedString} +<color=orange>{(m_newValue - 1) * 100}</color>%";
+                    appendedTooltip += defaultString;
+                }
+                if (m_newValue < 1)
+                {
+                    string defaultString = $"\n{normalizedString} -<color=orange>{(1 - m_newValue) * 100}</color>%";
+                    appendedTooltip += defaultString;
+                }
+                break;
+        }
 
         if (!string.IsNullOrWhiteSpace(damageMod))
         {
@@ -113,6 +157,8 @@ public class SeasonalEffect
                 }
 
                 this.damageMods.Add(pair);
+                string modString = $"\n<color=orange>{pair.m_modifier}</color> VS <color=orange>{pair.m_type}</color>";
+                appendedTooltip += modString;
             }
         }
 
@@ -140,7 +186,7 @@ public class SeasonalEffect
         seasonEffect.m_name = displayName;
         seasonEffect.m_cooldown = duration; // guardian power cool down
         seasonEffect.m_ttl = duration; // status effect cool down
-        seasonEffect.m_tooltip = effectTooltip;
+        seasonEffect.m_tooltip = appendedTooltip;
         seasonEffect.m_startMessageType = MessageHud.MessageType.Center;
         seasonEffect.m_stopMessageType = MessageHud.MessageType.Center;
         seasonEffect.m_startMessage = startMsg;

@@ -38,6 +38,7 @@ public static class Vegetation
                     AssignMods(prefab, modificationType.Color, type);
                     break;
                 case VegetationType.Pine or VegetationType.Fir or VegetationType.Log:
+                    // These prefabs contain a single texture
                     AssignMods(prefab, modificationType.Material, type);
                     break;
                 case VegetationType.Swamp or VegetationType.Stubbe:
@@ -46,6 +47,8 @@ public static class Vegetation
                 case VegetationType.Rock:
                     if (prefab.name.ToLower().Contains("minerock")) break;
                     if (prefab.name.ToLower().Contains("vein")) break;
+                    if (prefab.name.ToLower().Contains("frac")) break;
+                    if (prefab.name.ToLower().Contains("destruction")) break;
                     AssignMods(prefab, modificationType.Material, type);
                     break;
             }
@@ -82,7 +85,6 @@ public static class Vegetation
                             }
                             break;
                         case Season.Summer: 
-                            // foreach (Color color in SeasonColors.SummerColors) actions.Add(ApplyColor(prefab, color, type)); 
                             break;
                         case Season.Winter:
                             switch (type)
@@ -101,6 +103,7 @@ public static class Vegetation
                     Utils.ApplyRandomly(actions);
                     break;
                 case modificationType.Material:
+                    if (prefab.name.Contains("_Stub")) break;
                     ApplyMaterialToObj(prefab, type);
                     break;
             }
@@ -246,14 +249,14 @@ public static class Vegetation
                             if (normalizedName == "beech_leaf")
                             {
                                 material.SetTexture(propertyName, BeechLeaf_Spring);
-                                material.color = new Color(0.8f, 0.7f, 0.8f, 1f);
+                                material.color = new Color(1f, 1f, 1f, 0.8f);
                                 break;
                             }
 
                             if (normalizedName == "beech_leaf_small")
                             {
                                 material.SetTexture(propertyName, BeechLeaf_Small_Spring);
-                                material.color = new Color(0.8f, 0.7f, 0.8f, 1f);
+                                material.color = new Color(1f, 1f, 1f, 0.8f);
                                 break;
                             }
 
