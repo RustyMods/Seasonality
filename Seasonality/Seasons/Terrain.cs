@@ -34,6 +34,8 @@ public static class TerrainPatch
             obj.TryGetComponent(out InstanceRenderer instanceRenderer);
             if (instanceRenderer)
             {
+                // Save textures to use them later on
+                // To revert back to original textures
                 Material mat = instanceRenderer.m_material;
                 int[]? IDs = mat.GetTexturePropertyNameIDs();
                 foreach (int id in IDs)
@@ -41,7 +43,6 @@ public static class TerrainPatch
                     Texture? tex = mat.GetTexture(id);
                     if (clutterTextures.Contains(tex)) continue;
                     if (tex) clutterTextures.Add(tex);
-                    
                 }
             }
 
@@ -84,13 +85,14 @@ public static class TerrainPatch
                                 {
                                     if (prop.ToLower().Contains("terrain"))
                                     {
-                                        meadowGrass.SetTexture(prop, MeadowGrass_Spring);
+                                        Texture? originalTex = clutterTextures.Find(x => x.name == "grass_terrain_color");
+                                        meadowGrass.SetTexture(prop, originalTex );
                                     }
                                 }
                             }
                             break;
                         case GrassTypes.Shrubs:
-                            AssignColors(obj, new List<Color>(){new (0.7f, 0.3f, 0.6f, 0.8f)}, type);
+                            AssignColors(obj, new List<Color>(){new (0.7f, 0.3f, 0.5f, 1f)}, type);
                             break;
                         case GrassTypes.None:
                             break;
@@ -113,6 +115,9 @@ public static class TerrainPatch
                                     }
                                 }
                             }
+                            break;
+                        case GrassTypes.Shrubs:
+                            AssignColors(obj, new List<Color>(){new (1f, 1f, 1f, 1f)}, type);
                             break;
                         case GrassTypes.None:
                             break;

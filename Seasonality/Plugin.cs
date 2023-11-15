@@ -18,7 +18,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "0.0.2";
+        internal const string ModVersion = "0.1.0";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -42,6 +42,8 @@ namespace Seasonality
             _serverConfigLocked = config("1 - General", "Lock Configuration", Toggle.On,
                 "If on, the configuration is locked and can be changed by server admins only.");
             _ = ConfigSync.AddLockingConfigEntry(_serverConfigLocked);
+            
+            CustomTextures.ReadCustomTextures();
             
             InitConfigs();
             Assembly assembly = Assembly.GetExecutingAssembly();

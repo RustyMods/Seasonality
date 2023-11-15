@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using TMPro;
 using UnityEngine;
@@ -12,9 +13,7 @@ public static class SeasonalEffects
 {
     public static readonly List<SeasonEffect> SeasonEffectList = new();
     private static Season currentSeason = _Season.Value;
-
-    private static int SeasonIndex = (int)_Season.Value;
-
+    private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
     private static DateTime LastSeasonChange = DateTime.Now;
     
     [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateStatusEffects))]
@@ -23,67 +22,62 @@ public static class SeasonalEffects
         private static void Postfix(Hud __instance, List<StatusEffect> statusEffects)
         {
             if (!__instance) return;
-            for (int i = 0; i < statusEffects.Count; ++i)
+            StatusEffect? seasonEffect = statusEffects.Find(x => SeasonEffectList.Exists(y => y.name == x.name));
+            if (!seasonEffect) return;
+            int index = statusEffects.FindIndex(x => x.name == seasonEffect.name);
+            RectTransform? rectTransform = __instance.m_statusEffects[index];
+            if (!rectTransform) return;
+            Transform? timeText = rectTransform.Find("TimeText");
+            if (!timeText) return;
+            timeText.TryGetComponent(out TMP_Text tmpText);
+            if (!tmpText) return;
+            
+            if (_SeasonDuration.Value == 0)
             {
-                StatusEffect? statusEffect = statusEffects[i];
-                if (!statusEffect) continue;
-                if (!SeasonEffectList.Exists(x => x.name == statusEffect.name)) continue;
-                RectTransform? rectTransform = __instance.m_statusEffects[i];
-                if (!rectTransform) continue;
-                Transform? timeText = rectTransform.Find("TimeText");
-                if (!timeText) continue;
-                timeText.TryGetComponent(out TMP_Text tmpText);
-                if (!tmpText) continue;
-                if (_SeasonDuration.Value == 0)
+                tmpText.gameObject.SetActive(false);
+                return;
+            }
+            
+            int remainingDays = (EnvMan.instance.GetCurrentDay() % _SeasonDuration.Value) + 1;
+            float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1 - time of day
+            float remainder = remainingDays - fraction;
+            if (remainder < 0)
+            {
+                remainder += 1; // Adding a day if remainder is negative
+                remainingDays -= 1;
+            }
+            int totalMinutes = (int)(remainder * 24 * 60);
+
+            int hours = remainingDays - 1;
+            int minutes = (totalMinutes % (24 * 60)) / 60;
+            int seconds = totalMinutes % 60;
+
+            string time = $"{hours:D2}:{minutes:D2}:{seconds:D2}";
+
+            tmpText.gameObject.SetActive(true);
+            tmpText.text = time;
+
+            if (hours == 0 && totalMinutes < 3)
+            {
+                if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
+                if (_Season.Value == (Season)SeasonIndex)
                 {
-                    tmpText.gameObject.SetActive(false);
-                    return;
-                }
-                int remainingDays = (EnvMan.instance.GetCurrentDay() % _SeasonDuration.Value);
-                float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1
-                float remainder = (remainingDays + 1) - fraction;
-                int totalMinutes = (int)(remainder * 24 * 60);
-                int day = totalMinutes / (24 * 60); // An hour in real life
-                int hour = (totalMinutes % (24 * 60)) / 60;
-                int minute = totalMinutes % 60;
-                string time = $"{remainingDays:D2}:{hour:D2}:{minute:D2}";
-                tmpText.gameObject.SetActive(true);
-                tmpText.text = time;
-                if (remainingDays == 0 && hour == 0 && minute == 0)
-                {
-                    if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) continue;
-                    SeasonalityLogger.LogWarning("remainder hit zero");
-                    if (_Season.Valwwue == (Season)SeasonIndex)
-                    {
-                        if (SeasonIndex >= Enum.GetValues(typeof(Season)).Length - 1)
-                        {
-                            SeasonIndex = 0;
-                        }
-                        else
-                        {
-                            ++SeasonIndex;
-                        }
-                        _Season.Value = (Season)SeasonIndex;
-                    }
-                    else
-                    {
-                        _Season.Value = (Season)SeasonIndex;
-                        if (SeasonIndex >= Enum.GetValues(typeof(Season)).Length)
-                        {
-                            SeasonIndex = 0;
-                        }
-                        else
-                        {
-                            ++SeasonIndex;
-                        }
-                    }
-                    LastSeasonChange = DateTime.Now;
-                }
-                else if (_Season.Value != (Season)SeasonIndex)
-                {
-                    // To switch it back to timer settings if configs changed
+                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
                     _Season.Value = (Season)SeasonIndex;
                 }
+                else
+                {
+                    _Season.Value = (Season)SeasonIndex;
+                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+                }
+
+                LastSeasonChange = DateTime.Now;
+            }
+
+            else if (_Season.Value != (Season)SeasonIndex)
+            {
+                // To switch it back to timer settings if configs changed
+                _Season.Value = (Season)SeasonIndex;
             }
         }
     }
@@ -96,6 +90,7 @@ public static class SeasonalEffects
         {
             if (!__instance.IsPlayer() || !__instance) return;
             if (currentSeason == _Season.Value) return;
+            // If season has changed, apply new seasonal effect
             ApplySeasonalEffects(__instance);
         }
     }
@@ -113,7 +108,7 @@ public static class SeasonalEffects
 
     private static void ApplySeasonalEffects(Player __instance)
     {
-        var toggle = _SeasonalEffectsEnabled.Value;
+        Toggle toggle = _SeasonalEffectsEnabled.Value;
         SEMan? SEMan = __instance.GetSEMan();
         if (SEMan == null) return;
         // Remove all seasonal effects

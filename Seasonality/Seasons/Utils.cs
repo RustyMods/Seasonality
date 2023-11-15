@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx;
-using HarmonyLib;
-using JetBrains.Annotations;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
+using static Seasonality.Seasons.CustomTextures;
+using static Seasonality.Seasons.Vegetation;
 using Random = System.Random;
 
 namespace Seasonality.Seasons;
@@ -135,4 +134,74 @@ public static class Utils
         }
     }
 
+    public static Texture? GetCustomTexture(VegetationDirectories type, Season key)
+    {
+        return !CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map)
+            ?
+            null
+            : map.TryGetValue(key, out Texture? tex)
+                ? tex
+                : null;
+    }
+
+    private static bool CustomTextureExist(VegetationDirectories type, Season key)
+    {
+        if (!CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map)) return false;
+        return map.ContainsKey(key);
+    }
+
+    public static VegetationDirectories VegToDirectory(VegetationType type)
+    {
+        vegConversionMap.TryGetValue(type, out VegetationDirectories result);
+        return result;
+    }
+
+    private static readonly Dictionary<VegetationType, VegetationDirectories> vegConversionMap = new()
+    {
+        { VegetationType.Beech , VegetationDirectories.Beech },
+        { VegetationType.Birch , VegetationDirectories.Birch },
+        { VegetationType.Bush , VegetationDirectories.Bushes },
+        { VegetationType.Oak , VegetationDirectories.Oak },
+        { VegetationType.Pine , VegetationDirectories.Pine },
+        { VegetationType.Fir , VegetationDirectories.Fir },
+        { VegetationType.Yggashoot , VegetationDirectories.YggaShoot },
+        { VegetationType.PlainsBush , VegetationDirectories.PlainsBush },
+        { VegetationType.Shrub , VegetationDirectories.Shrub },
+        { VegetationType.Rock , VegetationDirectories.Rock }
+    };
+    public static void ApplyBasedOnAvailable(
+        Season season, 
+        GameObject prefab, 
+        VegetationType type,
+        List<Action> actions)
+    {
+        if (vegConversionMap.TryGetValue(type, out VegetationDirectories directories))
+        {
+            if (CustomTextureExist(directories, season)) ApplyMaterialToObj(prefab, type);
+            else ApplySeasonalColors(prefab, actions, type);
+        }
+        else
+        {
+            // Make sure you redefine your filters
+            ApplySeasonalColors(prefab, actions, type);
+        }
+    }
+
+    private static void ApplySeasonalColors(GameObject prefab, List<Action> actions, VegetationType type)
+    {
+        // Filter prefabs here if you want to exclude them from color tinting
+        switch (_Season.Value)
+        {
+            case Season.Spring:
+                if (prefab.name.ToLower().Contains("cloud")) break;
+                foreach (Color color in SeasonColors.FallColors) actions.Add( ApplyColor(prefab, color, type));
+                break;
+            case Season.Summer:
+                // Do not apply any color tinting for summer
+                break;
+            default:
+                foreach (Color color in SeasonColors.FallColors) actions.Add( ApplyColor(prefab, color, type));
+                break;
+        }
+    }
 }
