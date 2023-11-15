@@ -9,6 +9,7 @@ using HarmonyLib;
 using JetBrains.Annotations;
 using Seasonality.Seasons;
 using ServerSync;
+using UnityEngine;
 using static Seasonality.Seasons.Environment;
 
 
@@ -18,7 +19,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "0.1.0";
+        internal const string ModVersion = "1.0.0";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -113,21 +114,50 @@ namespace Seasonality
         public static ConfigEntry<Environments> _SummerWeather3 = null!;
         public static ConfigEntry<Environments> _SummerWeather4 = null!;
 
+        public static ConfigEntry<Color> _FallColor1 = null!;
+        public static ConfigEntry<Color> _FallColor2 = null!;
+        public static ConfigEntry<Color> _FallColor3 = null!;
+        public static ConfigEntry<Color> _FallColor4 = null!;
+        
+        public static ConfigEntry<Color> _SpringColor1 = null!;
+        public static ConfigEntry<Color> _SpringColor2 = null!;
+        public static ConfigEntry<Color> _SpringColor3 = null!;
+        public static ConfigEntry<Color> _SpringColor4 = null!;
+        
+        public static ConfigEntry<Color> _WinterColor1 = null!;
+        public static ConfigEntry<Color> _WinterColor2 = null!;
+        public static ConfigEntry<Color> _WinterColor3 = null!;
+        public static ConfigEntry<Color> _WinterColor4 = null!;
+        
+        public static ConfigEntry<Color> _SummerColor1 = null!;
+        public static ConfigEntry<Color> _SummerColor2 = null!;
+        public static ConfigEntry<Color> _SummerColor3 = null!;
+        public static ConfigEntry<Color> _SummerColor4 = null!;
+
+        public static ConfigEntry<SpecialEffects.SpecialEffect> _FallStartEffects = null!;
+        public static ConfigEntry<SpecialEffects.SpecialEffect> _FallStopEffects = null!;
+        public static ConfigEntry<SpecialEffects.SpecialEffect> _SpringStartEffects = null!;
+        public static ConfigEntry<SpecialEffects.SpecialEffect> _SpringStopEffects = null!;
+        public static ConfigEntry<SpecialEffects.SpecialEffect> _SummerStartEffects = null!;
+        public static ConfigEntry<SpecialEffects.SpecialEffect> _SummerStopEffects = null!;
+        public static ConfigEntry<SpecialEffects.SpecialEffect> _WinterStartEffects = null!;
+        public static ConfigEntry<SpecialEffects.SpecialEffect> _WinterStopEffects = null!;
+
+        public static ConfigEntry<Toggle> _SeasonLocked = null!;
+        public static ConfigEntry<Toggle> _ModEnabled = null!;
+
         private void InitConfigs()
         {
-            _SeasonDuration = config("2 - Utilities", "2 - Duration (Days)", 5, "Time in real days between season changes");
-            _Season = config("2 - Utilities", "3 - Season", Season.Fall, "Select the season");
-            _WeatherDuration = config("2 - Utilities", "4 - Weather Duration (Minutes)", 20, "Duration between weather change, if season applies weather");
-            _SeasonalEffectsEnabled = config("2 - Utilities", "1 - Effects Enabled", Toggle.On,
-                "If on, season effects are enabled");
-
-            
+            _SeasonDuration = config("2 - Utilities", "2 - Season Duration (Days)", 5, "in-game days between season changes");
+            _Season = config("2 - Utilities", "1 - Current Season", Season.Fall, "Set duration to 0 and select your season");
+            _WeatherDuration = config("2 - Utilities", "3 - Weather Duration (Seconds)", 20, "Duration between weather change, if season applies weather");
+            _SeasonalEffectsEnabled = config("2 - Utilities", "4 - Player Modifiers Enabled", Toggle.On, "If on, season effects are enabled");
+            _SeasonLocked = config("2 - Utilities", "4 - Debug Enabled", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
+            _ModEnabled = config("1 - General", "Mod Enabled", Toggle.On, "If on, mod is on");
             #region SpringConfigs
             _SpringName = config("3 - Spring", "Name", "Spring", "Display name");
-            _SpringStartMsg = config("3 - Spring", "Start Message", "Spring has finally arrived",
-                "Start of the season message");
-            _SpringTooltip = config("3 - Spring", "Tooltip", "The land is bursting with energy",
-                "Status effect tooltip");
+            _SpringStartMsg = config("3 - Spring", "Start Message", "Spring has finally arrived", "Start of the season message");
+            _SpringTooltip = config("3 - Spring", "Tooltip", "The land is bursting with energy", "Status effect tooltip");
             _SpringModifier = config("3 - Spring", "Modifier", Modifier.None, "Stats modifier");
             _SpringResistance = config("3 - Spring", "Resistance", "", "Resistance modifier");
             _SpringValue = config("3 - Spring", "Modifying value", 0.0f, "Value applied to modifier");
@@ -137,6 +167,14 @@ namespace Seasonality
             _SpringWeather3 = config("3 - Spring", "Weather 3", Environments.None, "Environments set by spring season");
             _SpringWeather4 = config("3 - Spring", "Weather 4", Environments.None, "Environments set by spring season");
 
+            _SpringColor1 = config("3 - Spring", "Color 1", SeasonColors.SpringColors[0], "Color tint applied to prefabs");
+            _SpringColor2 = config("3 - Spring", "Color 2", SeasonColors.SpringColors[1], "Color tint applied to prefabs");
+            _SpringColor3 = config("3 - Spring", "Color 3", SeasonColors.SpringColors[2], "Color tint applied to prefabs");
+            _SpringColor4 = config("3 - Spring", "Color 4", SeasonColors.SpringColors[3], "Color tint applied to prefabs");
+
+            _SpringStartEffects = config("3 - Spring", "Start Effect", SpecialEffects.SpecialEffect.None, "Visual effect applied when season starts");
+            _SpringStopEffects = config("3 - Spring", "Stop Effect", SpecialEffects.SpecialEffect.None, "Visual effect applied when season ends");
+            
             #endregion
             #region FallConfigs
             _FallName = config("4 - Fall", "Name", "Fall", "Display name");
@@ -151,6 +189,14 @@ namespace Seasonality
             _FallWeather3 = config("4 - Fall", "Weather 3", Environments.None, "Environments set by fall season");
             _FallWeather4 = config("4 - Fall", "Weather 4", Environments.None, "Environments set by fall season");
 
+            _FallColor1 = config("4 - Fall", "Color 1", SeasonColors.FallColors[0], "Color tint applied to prefabs");
+            _FallColor2 = config("4 - Fall", "Color 2", SeasonColors.FallColors[1], "Color tint applied to prefabs");
+            _FallColor3 = config("4 - Fall", "Color 3", SeasonColors.FallColors[2], "Color tint applied to prefabs");
+            _FallColor4 = config("4 - Fall", "Color 4", SeasonColors.FallColors[3], "Color tint applied to prefabs");
+
+            _FallStartEffects = config("4 - Fall", "Start Effect", SpecialEffects.SpecialEffect.None, "Visual effect applied when season starts");
+            _FallStopEffects = config("4 - Fall", "Stop Effect", SpecialEffects.SpecialEffect.None, "Visual effect applied when season ends");
+            
             #endregion
             #region WinterConfigs
             _WinterName = config("5 - Winter", "Name", "Winter", "Display name");
@@ -165,6 +211,13 @@ namespace Seasonality
             _WinterWeather3 = config("5 - Winter", "Weather 3", Environments.None, "Environment set by winter season.");
             _WinterWeather4 = config("5 - Winter", "Weather 4", Environments.None, "Environment set by winter season.");
             
+            _WinterColor1 = config("5 - Winter", "Color 1", SeasonColors.WinterColors[0], "Color tint applied to prefabs");
+            _WinterColor2 = config("5 - Winter", "Color 2", SeasonColors.WinterColors[0], "Color tint applied to prefabs");
+            _WinterColor3 = config("5 - Winter", "Color 3", SeasonColors.WinterColors[0], "Color tint applied to prefabs");
+            _WinterColor4 = config("5 - Winter", "Color 4", SeasonColors.WinterColors[0], "Color tint applied to prefabs");
+
+            _WinterStartEffects = config("5 - Winter", "Start Effect", SpecialEffects.SpecialEffect.None, "Visual effect applied when season starts");
+            _WinterStopEffects = config("5 - Winter", "Stop Effect", SpecialEffects.SpecialEffect.None, "Visual effect applied when season ends");
             #endregion
             #region SummerConfigs
             _SummerName = config("6 - Summer", "Name", "Summer", "Display name");
@@ -179,6 +232,13 @@ namespace Seasonality
             _SummerWeather3 = config("6 - Summer", "Weather 3", Environments.None, "Environment set by summer season.");
             _SummerWeather4 = config("6 - Summer", "Weather 4", Environments.None, "Environment set by summer season.");
 
+            _SummerColor1 = config("6 - Summer", "Color 1", SeasonColors.SummerColors[0], "Color tint applied to prefabs");
+            _SummerColor2 = config("6 - Summer", "Color 2", SeasonColors.SummerColors[1], "Color tint applied to prefabs");
+            _SummerColor3 = config("6 - Summer", "Color 3", SeasonColors.SummerColors[2], "Color tint applied to prefabs");
+            _SummerColor4 = config("6 - Summer", "Color 4", SeasonColors.SummerColors[3], "Color tint applied to prefabs");
+            
+            _SummerStartEffects = config("6 - Summer", "Start Effect", SpecialEffects.SpecialEffect.None, "Visual effect applied when season starts");
+            _SummerStopEffects = config("6 - Summer", "Stop Effect", SpecialEffects.SpecialEffect.None, "Visual effect applied when season ends");
             #endregion
         }
 

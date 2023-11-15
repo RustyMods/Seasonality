@@ -40,9 +40,7 @@ public static class Utils
             if (prefabName.ToLower().Contains("log")) return VegetationType.Log;
             if (prefabName == "YggdrasilRoot(Clone)") return VegetationType.Log;
             if (prefabName == "Bush02_en(Clone)") return VegetationType.PlainsBush;
-
-
-
+            
             return kvp.Value;
         }
         return VegetationType.None;
@@ -67,7 +65,8 @@ public static class Utils
             { "instanced_vass", GrassTypes.Vass },
             { "instanced_waterlilies", GrassTypes.WaterLilies },
             { "instanced_mistlands_rockplant", GrassTypes.RockPlant },
-            { "instanced_small_rock1", GrassTypes.Rocks }
+            { "instanced_small_rock1", GrassTypes.Rocks },
+            { "instanced_mistlands_grass_short", GrassTypes.GreenGrass }
         };
 
         return conversionMap.TryGetValue(clutterName, out GrassTypes result) ? result : GrassTypes.None;
@@ -80,31 +79,7 @@ public static class Utils
         int randomIndex = random.Next(methods.Count);
         methods[randomIndex]();
     }
-    
-    public static void ApplyRandomly(List<(Action, float)> weightedMethods)
-    {
-        if (weightedMethods.Count == 0) return;
 
-        // Calculate total weight
-        float totalWeight = weightedMethods.Sum(pair => pair.Item2);
-
-        // Generate a random value within the total weight range
-        float randomValue = UnityEngine.Random.Range(0f, totalWeight);
-
-        // Iterate through the weighted methods and find the one corresponding to the random value
-        float cumulativeWeight = 0f;
-        foreach (var (method, weight) in weightedMethods)
-        {
-            cumulativeWeight += weight;
-
-            if (randomValue <= cumulativeWeight)
-            {
-                method.Invoke();
-                break;
-            }
-        }
-    }
-    
     public static void SetMossTex(GameObject prefab, Texture? tex)
     {
         if (!tex) return;
@@ -134,7 +109,7 @@ public static class Utils
         }
     }
 
-    public static Texture? GetCustomTexture(VegetationDirectories type, Season key)
+    public static Texture? GetCustomTexture(VegDirectories type, Season key)
     {
         return !CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map)
             ?
@@ -144,38 +119,61 @@ public static class Utils
                 : null;
     }
 
-    private static bool CustomTextureExist(VegetationDirectories type, Season key)
+    private static bool CustomTextureExist(VegDirectories type, Season key)
     {
         if (!CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map)) return false;
         return map.ContainsKey(key);
     }
+    
 
-    public static VegetationDirectories VegToDirectory(VegetationType type)
+    public static VegDirectories VegToDirectory(VegetationType type)
     {
-        vegConversionMap.TryGetValue(type, out VegetationDirectories result);
+        vegConversionMap.TryGetValue(type, out VegDirectories result);
+        return result;
+    }
+    
+    public static VegDirectories VegToDirectory(GrassTypes type)
+    {
+        grassConversionMap.TryGetValue(type, out VegDirectories result);
         return result;
     }
 
-    private static readonly Dictionary<VegetationType, VegetationDirectories> vegConversionMap = new()
+    private static readonly Dictionary<VegetationType, VegDirectories> vegConversionMap = new()
     {
-        { VegetationType.Beech , VegetationDirectories.Beech },
-        { VegetationType.Birch , VegetationDirectories.Birch },
-        { VegetationType.Bush , VegetationDirectories.Bushes },
-        { VegetationType.Oak , VegetationDirectories.Oak },
-        { VegetationType.Pine , VegetationDirectories.Pine },
-        { VegetationType.Fir , VegetationDirectories.Fir },
-        { VegetationType.Yggashoot , VegetationDirectories.YggaShoot },
-        { VegetationType.PlainsBush , VegetationDirectories.PlainsBush },
-        { VegetationType.Shrub , VegetationDirectories.Shrub },
-        { VegetationType.Rock , VegetationDirectories.Rock }
+        { VegetationType.Beech , VegDirectories.Beech },
+        { VegetationType.Birch , VegDirectories.Birch },
+        { VegetationType.Bush , VegDirectories.Bushes },
+        { VegetationType.Oak , VegDirectories.Oak },
+        { VegetationType.Pine , VegDirectories.Pine },
+        { VegetationType.Fir , VegDirectories.Fir },
+        { VegetationType.Yggashoot , VegDirectories.YggaShoot },
+        { VegetationType.PlainsBush , VegDirectories.PlainsBush },
+        { VegetationType.Shrub , VegDirectories.Shrub },
+        { VegetationType.Rock , VegDirectories.Rock }
     };
+
+    private static readonly Dictionary<GrassTypes, VegDirectories> grassConversionMap = new()
+    {
+        { GrassTypes.GreenGrass , VegDirectories.MeadowGrass },
+        { GrassTypes.GroundCover , VegDirectories.BlackForestGrass },
+        { GrassTypes.SwampGrass , VegDirectories.SwampGrass },
+        { GrassTypes.HeathGrass , VegDirectories.PlainsGrass },
+        { GrassTypes.HeathFlowers , VegDirectories.PlainsFlowers },
+        { GrassTypes.Ormbunke , VegDirectories.Ormbunke },
+        { GrassTypes.Vass , VegDirectories.Vass },
+        { GrassTypes.WaterLilies , VegDirectories.WaterLilies },
+        { GrassTypes.RockPlant , VegDirectories.RockPlant },
+        { GrassTypes.Shrubs , VegDirectories.Clutter }
+    };
+    
+    
     public static void ApplyBasedOnAvailable(
         Season season, 
         GameObject prefab, 
         VegetationType type,
         List<Action> actions)
     {
-        if (vegConversionMap.TryGetValue(type, out VegetationDirectories directories))
+        if (vegConversionMap.TryGetValue(type, out VegDirectories directories))
         {
             if (CustomTextureExist(directories, season)) ApplyMaterialToObj(prefab, type);
             else ApplySeasonalColors(prefab, actions, type);
@@ -187,21 +185,87 @@ public static class Utils
         }
     }
 
+    public static bool ApplyBasedOnAvailable(VegDirectories directory, Season season, Material material, string prop)
+    {
+        if (CustomTextureExist(directory, season))
+        {
+            Texture? tex = GetCustomTexture(directory, season);
+            if (!tex) return false;
+            // SeasonalityLogger.LogWarning($"Applying custom texture to {material.name}");
+            material.SetTexture(prop, tex);
+            material.color = Color.white;
+            return true;
+        }
+
+        return false;
+    }
+    
     private static void ApplySeasonalColors(GameObject prefab, List<Action> actions, VegetationType type)
     {
+        List<Color> ConfigSummerColors = new()
+        {
+            _SummerColor1.Value,
+            _SummerColor2.Value,
+            _SummerColor3.Value,
+            _SummerColor4.Value
+        };
+        
+        List<Color> ConfigSpringColors = new()
+        {
+            _SpringColor1.Value,
+            _SpringColor2.Value,
+            _SpringColor3.Value,
+            _SpringColor4.Value
+        };
+        
+        List<Color> ConfigFallColors = new ()
+        {
+            _FallColor1.Value,
+            _FallColor2.Value,
+            _FallColor3.Value,
+            _FallColor4.Value
+        };
+
+        List<Color> ConfigWinterColors = new()
+        {
+            _WinterColor1.Value,
+            _WinterColor2.Value,
+            _WinterColor3.Value,
+            _WinterColor4.Value,
+
+        };
         // Filter prefabs here if you want to exclude them from color tinting
         switch (_Season.Value)
         {
             case Season.Spring:
                 if (prefab.name.ToLower().Contains("cloud")) break;
-                foreach (Color color in SeasonColors.FallColors) actions.Add( ApplyColor(prefab, color, type));
+                foreach (Color color in ConfigSpringColors) actions.Add( ApplyColor(prefab, color, type));
                 break;
             case Season.Summer:
                 // Do not apply any color tinting for summer
+                foreach (Color color in ConfigSummerColors) actions.Add( ApplyColor(prefab, color, type));
                 break;
-            default:
-                foreach (Color color in SeasonColors.FallColors) actions.Add( ApplyColor(prefab, color, type));
+            case Season.Winter:
+                foreach (Color color in ConfigWinterColors) actions.Add( ApplyColor(prefab, color, type));
                 break;
+            case Season.Fall:
+                foreach (Color color in ConfigFallColors) actions.Add( ApplyColor(prefab, color, type));
+                break;
+            
         }
+    }
+
+    public static bool FindTexturePropName(string[] props, string query, out string result)
+    {
+        result = "";
+        foreach (string prop in props)
+        {
+            if (prop.ToLower().Contains(query))
+            {
+                result = prop;
+                return true;
+            }
+        }
+        return false;
     }
 }

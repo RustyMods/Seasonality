@@ -32,7 +32,7 @@ public static class CustomTextures
 
     public static readonly Sprite? ValknutIcon = RegisterSprite("valknutIcon.png");
 
-    public static readonly Dictionary<VegetationDirectories, Dictionary<Season, Texture?>> CustomRegisteredTextures = new();
+    public static readonly Dictionary<VegDirectories, Dictionary<Season, Texture?>> CustomRegisteredTextures = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -71,13 +71,12 @@ public static class CustomTextures
         {
             return texture;
         }
-
         return null;
     }
     private static readonly string folderPath = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality";
     private static readonly string texturePath = folderPath + Path.DirectorySeparatorChar + "Textures";
 
-    public enum VegetationDirectories
+    public enum VegDirectories
     {
         Beech,
         BeechSmall,
@@ -90,7 +89,17 @@ public static class CustomTextures
         PlainsBush,
         Shrub,
         Moss,
-        Rock
+        Rock,
+        MeadowGrass,
+        PlainsGrass,
+        BlackForestGrass,
+        SwampGrass,
+        PlainsFlowers,
+        Ormbunke,
+        Vass,
+        WaterLilies,
+        RockPlant,
+        Clutter
     }
     public static void ReadCustomTextures()
     {
@@ -98,7 +107,7 @@ public static class CustomTextures
         if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
         if (!Directory.Exists(texturePath)) Directory.CreateDirectory(texturePath);
 
-        foreach (VegetationDirectories directory in Enum.GetValues(typeof(VegetationDirectories)))
+        foreach (VegDirectories directory in Enum.GetValues(typeof(VegDirectories)))
         {
             string type = directory.ToString();
             if (!Directory.Exists(texturePath + Path.DirectorySeparatorChar + type))

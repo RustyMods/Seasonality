@@ -22,6 +22,7 @@ public static class SeasonalEffects
         private static void Postfix(Hud __instance, List<StatusEffect> statusEffects)
         {
             if (!__instance) return;
+            if (_ModEnabled.Value is Toggle.Off) return;
             StatusEffect? seasonEffect = statusEffects.Find(x => SeasonEffectList.Exists(y => y.name == x.name));
             if (!seasonEffect) return;
             int index = statusEffects.FindIndex(x => x.name == seasonEffect.name);
@@ -32,7 +33,7 @@ public static class SeasonalEffects
             timeText.TryGetComponent(out TMP_Text tmpText);
             if (!tmpText) return;
             
-            if (_SeasonDuration.Value == 0)
+            if (_SeasonDuration.Value == 0 || _SeasonLocked.Value is Toggle.On)
             {
                 tmpText.gameObject.SetActive(false);
                 return;
@@ -82,13 +83,41 @@ public static class SeasonalEffects
         }
     }
 
-
+    private static Toggle lastToggled = _ModEnabled.Value;
     [HarmonyPatch(typeof(Player), nameof(Player.Update))]
     static class PlayerUpdatePatch
     {
         private static void Postfix(Player __instance)
         {
             if (!__instance.IsPlayer() || !__instance) return;
+            if (_ModEnabled.Value is Toggle.Off)
+            {
+                SEMan? SEMan = __instance.GetSEMan();
+                if (SEMan == null) return;
+                // Make sure to remove status effect when user disables mod
+                List<StatusEffect> effectsToRemove = new();
+                foreach (StatusEffect effect in SEMan.GetStatusEffects())
+                {
+                    if (!SeasonEffectList.Exists(x => x.name == effect.name)) continue;
+                    effectsToRemove.Add(effect);
+                }
+
+                foreach (StatusEffect effect in effectsToRemove)
+                {
+                    SEMan.RemoveStatusEffect(effect);
+                }
+                SeasonEffectList.Clear();
+                lastToggled = Toggle.Off;
+                return;
+            }
+
+            if (_ModEnabled.Value is Toggle.On && lastToggled is Toggle.Off)
+            {
+                // Make sure when mod is re-enabled, that the seasonal effects are re-applied
+                ApplySeasonalEffects(__instance);
+                TerrainPatch.UpdateTerrain();
+                lastToggled = Toggle.On;
+            }
             if (currentSeason == _Season.Value) return;
             // If season has changed, apply new seasonal effect
             ApplySeasonalEffects(__instance);
@@ -102,6 +131,7 @@ public static class SeasonalEffects
         {
             if (!__instance.IsPlayer() || !__instance) return;
             if (!ZNetScene.instance) return;
+            if (_ModEnabled.Value is Toggle.Off) return;
             ApplySeasonalEffects(__instance);
         }
     }
@@ -128,8 +158,8 @@ public static class SeasonalEffects
                 FallSeasonEffect.effectName = "fall_season";
                 FallSeasonEffect.displayName = _FallName.Value;
                 FallSeasonEffect.sprite = ValknutIcon;
-                FallSeasonEffect.startEffectNames = new[] { "fx_DvergerMage_Support_start" };
-                FallSeasonEffect.stopEffectNames = new[] { "fx_DvergerMage_Mistile_die" };
+                FallSeasonEffect.startEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_FallStartEffects.Value) };
+                FallSeasonEffect.stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_FallStopEffects.Value) };
                 FallSeasonEffect.startMsg = _FallStartMsg.Value;
                 FallSeasonEffect.effectTooltip = _FallTooltip.Value;
                 FallSeasonEffect.damageMod = _FallResistance.Value;
@@ -144,8 +174,8 @@ public static class SeasonalEffects
                 SpringSeasonEffect.effectName = "spring_season";
                 SpringSeasonEffect.displayName = _SpringName.Value;
                 SpringSeasonEffect.sprite = ValknutIcon;
-                SpringSeasonEffect.startEffectNames = new[] { "fx_DvergerMage_Support_start" };
-                SpringSeasonEffect.stopEffectNames = new[] { "fx_DvergerMage_Mistile_die" };
+                SpringSeasonEffect.startEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SpringStartEffects.Value) };
+                SpringSeasonEffect.stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SpringStopEffects.Value) };
                 SpringSeasonEffect.startMsg = _SpringStartMsg.Value;
                 SpringSeasonEffect.effectTooltip = _SpringTooltip.Value;
                 SpringSeasonEffect.damageMod = _SpringResistance.Value;
@@ -160,8 +190,8 @@ public static class SeasonalEffects
                 WinterSeasonEffect.effectName = "winter_season";
                 WinterSeasonEffect.displayName = _WinterName.Value;
                 WinterSeasonEffect.sprite = ValknutIcon;
-                WinterSeasonEffect.startEffectNames = new[] { "fx_DvergerMage_Support_start" };
-                WinterSeasonEffect.stopEffectNames = new[] { "fx_DvergerMage_Mistile_die" };
+                WinterSeasonEffect.startEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_WinterStartEffects.Value) };
+                WinterSeasonEffect.stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_WinterStopEffects.Value) };
                 WinterSeasonEffect.startMsg = _WinterStartMsg.Value;
                 WinterSeasonEffect.effectTooltip = _WinterTooltip.Value;
                 WinterSeasonEffect.damageMod = toggle is Toggle.On ? _WinterResistance.Value : "";
@@ -176,8 +206,8 @@ public static class SeasonalEffects
                 SummerSeasonEffect.effectName = "summer_season";
                 SummerSeasonEffect.displayName = _SummerName.Value;
                 SummerSeasonEffect.sprite = ValknutIcon;
-                SummerSeasonEffect.startEffectNames = new[] { "fx_DvergerMage_Support_start" };
-                SummerSeasonEffect.stopEffectNames = new[] { "fx_DvergerMage_Mistile_die" };
+                SummerSeasonEffect.startEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SummerStartEffects.Value) };
+                SummerSeasonEffect.stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SummerStopEffects.Value) };
                 SummerSeasonEffect.startMsg = _SummerStartMsg.Value;
                 SummerSeasonEffect.effectTooltip = _SummerTooltip.Value;
                 SummerSeasonEffect.Modifier = toggle is Toggle.On ? _SummerModifier.Value : Modifier.None;

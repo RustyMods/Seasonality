@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
 
 public static class SeasonColors
 {
+    // Default colors
     public static readonly List<Color> FallColors = new()
     {
         new Color(1f, 0.5f, 0f, 1f),
@@ -33,6 +35,7 @@ public static class SeasonColors
     {
         new Color(0.7f, 0.7f, 0.7f, 1f),
         new Color(0.5f, 0.5f, 0.5f, 1f),
-        new Color(0.5f, 0.7f, 0.7f, 1f)
+        new Color(0.5f, 0.7f, 0.7f, 1f),
+        new Color(0.5f, 0.5f, 0.7f, 1f)
     };
 }

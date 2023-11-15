@@ -127,6 +127,7 @@
         <Compile Include="Seasons\SeasonalEffects.cs" />
         <Compile Include="Seasons\SeasonColors.cs" />
         <Compile Include="Seasons\SeasonStatusEffects.cs" />
+        <Compile Include="Seasons\SpecialEffects.cs" />
         <Compile Include="Seasons\Terrain.cs" />
         <Compile Include="Seasons\Vegetation.cs" />
         <Compile Include="Seasons\VegetationType.cs" />
