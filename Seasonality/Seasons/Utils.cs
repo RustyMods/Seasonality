@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Seasons.CustomTextures;
@@ -99,24 +98,16 @@ public static class Utils
                 string[] properties = mat.GetTexturePropertyNames();
                 foreach (string prop in properties)
                 {
-                    if (prop.ToLower().Contains("moss"))
-                    {
-                        mat.SetTexture(prop, tex);
-                    }
+                    if (!prop.ToLower().Contains("moss")) continue;
+                    mat.SetTexture(prop, tex);
                 }
             }
-
         }
     }
 
     public static Texture? GetCustomTexture(VegDirectories type, Season key)
     {
-        return !CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map)
-            ?
-            null
-            : map.TryGetValue(key, out Texture? tex)
-                ? tex
-                : null;
+        return !CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
     }
 
     private static bool CustomTextureExist(VegDirectories type, Season key)
@@ -124,8 +115,6 @@ public static class Utils
         if (!CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map)) return false;
         return map.ContainsKey(key);
     }
-    
-
     public static VegDirectories VegToDirectory(VegetationType type)
     {
         vegConversionMap.TryGetValue(type, out VegDirectories result);
@@ -242,10 +231,12 @@ public static class Utils
                 foreach (Color color in ConfigSpringColors) actions.Add( ApplyColor(prefab, color, type));
                 break;
             case Season.Summer:
+                if (prefab.name.ToLower().Contains("cloud")) break;
                 // Do not apply any color tinting for summer
                 foreach (Color color in ConfigSummerColors) actions.Add( ApplyColor(prefab, color, type));
                 break;
             case Season.Winter:
+                if (prefab.name.ToLower().Contains("cloud")) break;
                 foreach (Color color in ConfigWinterColors) actions.Add( ApplyColor(prefab, color, type));
                 break;
             case Season.Fall:
@@ -260,11 +251,9 @@ public static class Utils
         result = "";
         foreach (string prop in props)
         {
-            if (prop.ToLower().Contains(query))
-            {
-                result = prop;
-                return true;
-            }
+            if (!prop.ToLower().Contains(query)) continue;
+            result = prop;
+            return true;
         }
         return false;
     }

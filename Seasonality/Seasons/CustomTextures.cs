@@ -23,11 +23,15 @@ public static class CustomTextures
     public static readonly Texture? Shrub02_Winter = RegisterTexture("shrub_2_snow.png");
 
     public static readonly Texture? BeechLeaf_Spring = RegisterTexture("beech_leaf_spring.png");
+    public static readonly Texture? BeechLeaf_Winter = RegisterTexture("beech_leaf_winter.png");
+    
     public static readonly Texture? BeechLeaf_Small_Spring = RegisterTexture("beech_leaf_small_spring.png");
+    
     public static readonly Texture? OakLeaf_Spring = RegisterTexture("oak_leaf_spring.png");
+    
     public static readonly Texture? BirchLeaf_Spring = RegisterTexture("birch_leaf_spring.png");
+    public static readonly Texture? BirchLeaf_Winter = RegisterTexture("birch_leaf_winter.png");
 
-    public static readonly Texture? MeadowGrass_Spring = RegisterTexture("grass_terrain_color_spring.png");
     public static readonly Texture? ShootLeaf_Spring = RegisterTexture("ShootLeaf_d_spring.png");
 
     public static readonly Sprite? ValknutIcon = RegisterSprite("valknutIcon.png");

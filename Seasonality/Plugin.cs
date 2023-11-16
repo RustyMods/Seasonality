@@ -44,6 +44,10 @@ namespace Seasonality
                 "If on, the configuration is locked and can be changed by server admins only.");
             _ = ConfigSync.AddLockingConfigEntry(_serverConfigLocked);
             
+            // Add logic to make sure mod only listens to a single user
+            // Then shares the seasonal changes through the configs
+            
+            
             CustomTextures.ReadCustomTextures();
             
             InitConfigs();
@@ -59,7 +63,7 @@ namespace Seasonality
             Fall = 2,
             Winter = 3
         }
-
+        #region CustomConfigs
         public static ConfigEntry<Season> _Season = null!;
         public static ConfigEntry<int> _SeasonDuration = null!;
         public static ConfigEntry<int> _WeatherDuration = null!;
@@ -145,7 +149,7 @@ namespace Seasonality
 
         public static ConfigEntry<Toggle> _SeasonLocked = null!;
         public static ConfigEntry<Toggle> _ModEnabled = null!;
-
+        #endregion
         private void InitConfigs()
         {
             _SeasonDuration = config("2 - Utilities", "2 - Season Duration (Days)", 5, "in-game days between season changes");

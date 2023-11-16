@@ -4,7 +4,6 @@ using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
-
 public enum Modifier
 {
     None,
@@ -207,7 +206,7 @@ public class SeasonalEffect
         SeasonalEffects.SeasonEffectList.Add(seasonEffect);
         return seasonEffect;
     }
-    private static EffectList CreateEffectList(ZNetScene scene, List<string> effects, string baseEffectName)
+    private static EffectList CreateEffectList(ZNetScene scene, List<string> effects, string seasonalEffectName)
     {
         EffectList list = new();
         List<GameObject> validatedPrefabs = new();
@@ -217,7 +216,7 @@ public class SeasonalEffect
             GameObject prefab = scene.GetPrefab(effect);
             if (!prefab)
             {
-                SeasonalityLogger.LogDebug( $"[{baseEffectName}]" + " : " + "Failed to find prefab: " + effect);
+                SeasonalityLogger.LogDebug( $"[{seasonalEffectName}]" + " : " + "Failed to find prefab: " + effect);
                 continue;
             }
             // 0 = Default
@@ -230,12 +229,9 @@ public class SeasonalEffect
                 case 0:
                     prefab.TryGetComponent(out TimedDestruction timedDestruction);
                     prefab.TryGetComponent(out ParticleSystem particleSystem);
-                    if (timedDestruction || particleSystem)
-                    { validatedPrefabs.Add(prefab); }
+                    if (timedDestruction || particleSystem) validatedPrefabs.Add(prefab);
                     break;
-                case 8 or 22:
-                    validatedPrefabs.Add(prefab);
-                    break;
+                case 8 or 22: validatedPrefabs.Add(prefab); break;
             }
         }
         
@@ -267,70 +263,25 @@ public class SeasonalEffect
 public class SeasonEffect : StatusEffect
     {
         public SeasonalEffect data = null!;
-
-        public override void ModifyAttack(Skills.SkillType skill, ref HitData hitData)
-        {
-            hitData.ApplyModifier(data.Modifiers[Modifier.Attack]);
-        }
-
-        public override void ModifyHealthRegen(ref float regenMultiplier)
-        {
-            regenMultiplier *= data.Modifiers[Modifier.HealthRegen];
-        }
-
-        public override void ModifyStaminaRegen(ref float staminaRegen)
-        {
-            staminaRegen *= data.Modifiers[Modifier.StaminaRegen];
-        }
-
-        public override void ModifyRaiseSkill(Skills.SkillType skill, ref float value)
-        {
-            value *= data.Modifiers[Modifier.RaiseSkills];
-        }
-
-        public override void ModifySpeed(float baseSpeed, ref float speed)
-        {
-            speed *= data.Modifiers[Modifier.Speed];
-        }
-
-        public override void ModifyNoise(float baseNoise, ref float noise)
-        {
-            noise *= data.Modifiers[Modifier.Noise];
-        }
-
-        public override void ModifyStealth(float baseStealth, ref float stealth)
-        {
-            stealth *= data.Modifiers[Modifier.Stealth];
-        }
-
-        public override void ModifyMaxCarryWeight(float baseLimit, ref float limit)
-        {
-            limit += data.Modifiers[Modifier.MaxCarryWeight];
-        }
-
-        public override void ModifyRunStaminaDrain(float baseDrain, ref float drain)
-        {
-            drain *= data.Modifiers[Modifier.RunStaminaDrain];
-        }
-
-        public override void ModifyJumpStaminaUsage(float baseStaminaUse, ref float staminaUse)
-        {
-            staminaUse *= data.Modifiers[Modifier.RunStaminaDrain];
-        }
-
+        public override void ModifyAttack(Skills.SkillType skill, ref HitData hitData) => hitData.ApplyModifier(data.Modifiers[Modifier.Attack]);
+        public override void ModifyHealthRegen(ref float regenMultiplier) => regenMultiplier *= data.Modifiers[Modifier.HealthRegen];
+        public override void ModifyStaminaRegen(ref float staminaRegen) => staminaRegen *= data.Modifiers[Modifier.StaminaRegen];
+        public override void ModifyRaiseSkill(Skills.SkillType skill, ref float value) => value *= data.Modifiers[Modifier.RaiseSkills];
+        public override void ModifySpeed(float baseSpeed, ref float speed) => speed *= data.Modifiers[Modifier.Speed];
+        public override void ModifyNoise(float baseNoise, ref float noise) => noise *= data.Modifiers[Modifier.Noise];
+        public override void ModifyStealth(float baseStealth, ref float stealth) => stealth *= data.Modifiers[Modifier.Stealth];
+        public override void ModifyMaxCarryWeight(float baseLimit, ref float limit) => limit += data.Modifiers[Modifier.MaxCarryWeight];
+        public override void ModifyRunStaminaDrain(float baseDrain, ref float drain) => drain *= data.Modifiers[Modifier.RunStaminaDrain];
+        public override void ModifyJumpStaminaUsage(float baseStaminaUse, ref float staminaUse) => staminaUse *= data.Modifiers[Modifier.RunStaminaDrain];
         public override void OnDamaged(HitData hit, Character attacker)
         {
             float mod = Mathf.Clamp01(1f - data.Modifiers[Modifier.DamageReduction]);
             hit.ApplyModifier(mod);
         }
-
-        public override void ModifyDamageMods(ref HitData.DamageModifiers modifiers)
-        {
-            modifiers.Apply(data.damageMods);
-        }
-
+        public override void ModifyDamageMods(ref HitData.DamageModifiers modifiers) => modifiers.Apply(data.damageMods);
         public override void ModifyFallDamage(float baseDamage, ref float damage)
         {
+            if (m_character.m_seman.m_statusEffects.Exists(x => x.m_name == "$se_slowfall_name")) return;
             damage = baseDamage * data.Modifiers[Modifier.FallDamage];
             if (damage >= 0.0) return;
             damage = 0.0f;

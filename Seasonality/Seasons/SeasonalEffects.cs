@@ -92,6 +92,8 @@ public static class SeasonalEffects
             if (!__instance.IsPlayer() || !__instance) return;
             if (_ModEnabled.Value is Toggle.Off)
             {
+                // Make sure this code is only called once and stops updating until mod is re-enabled
+                if (lastToggled is Toggle.Off) return;
                 SEMan? SEMan = __instance.GetSEMan();
                 if (SEMan == null) return;
                 // Make sure to remove status effect when user disables mod
@@ -107,6 +109,7 @@ public static class SeasonalEffects
                     SEMan.RemoveStatusEffect(effect);
                 }
                 SeasonEffectList.Clear();
+                TerrainPatch.UpdateTerrain();
                 lastToggled = Toggle.Off;
                 return;
             }
@@ -115,12 +118,15 @@ public static class SeasonalEffects
             {
                 // Make sure when mod is re-enabled, that the seasonal effects are re-applied
                 ApplySeasonalEffects(__instance);
+                SetSeasonalKey();
                 TerrainPatch.UpdateTerrain();
                 lastToggled = Toggle.On;
             }
             if (currentSeason == _Season.Value) return;
             // If season has changed, apply new seasonal effect
+            TerrainPatch.UpdateTerrain();
             ApplySeasonalEffects(__instance);
+            SetSeasonalKey();
         }
     }
 
@@ -133,7 +139,33 @@ public static class SeasonalEffects
             if (!ZNetScene.instance) return;
             if (_ModEnabled.Value is Toggle.Off) return;
             ApplySeasonalEffects(__instance);
+            SetSeasonalKey();
         }
+    }
+
+    private static void SetSeasonalKey()
+    {
+        if (!ZoneSystem.instance) return;
+        List<string>? currentKeys = ZoneSystem.instance.GetGlobalKeys();
+        List<string> SeasonalKeys = new() { "season_summer", "season_fall", "season_winter", "season_spring" };
+        // Remove all seasonal keys
+        foreach (string key in SeasonalKeys)
+        {
+            if (!currentKeys.Exists(x => x == key)) continue;
+            ZoneSystem.instance.RemoveGlobalKey(key);
+        }
+        // Get seasonal key
+        string? newKey = _Season.Value switch
+        {
+            Season.Winter => "season_winter",
+            Season.Fall => "season_fall",
+            Season.Summer => "season_summer",
+            Season.Spring => "season_spring",
+            _ => null,
+        };
+        // Set seasonal key
+        if (newKey != null) ZoneSystem.instance.SetGlobalKey(newKey);
+        
     }
 
     private static void ApplySeasonalEffects(Player __instance)

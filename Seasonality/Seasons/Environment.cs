@@ -7,43 +7,42 @@ namespace Seasonality.Seasons;
 
 public static class Environment
 {
-    public static string GetEnvironmentName(Environments options)
+    private static string GetEnvironmentName(Environments options)
     {
-        Dictionary<Environments, string> conversionMap = new()
+        return options switch
         {
-            { Environments.None , "" },
-            { Environments.Clear , "Clear" },
-            { Environments.Misty , "Misty" },
-            { Environments.Darklands_dark , "Darklands_dark" },
-            { Environments.HeathClear , "Heath clear" },
-            { Environments.DeepForestMist , "DeepForest Mist" },
-            { Environments.GDKing , "GDKing" },
-            { Environments.Rain, "Rain" },
-            { Environments.LightRain, "LightRain" },
-            { Environments.ThunderStorm, "ThunderStorm" },
-            { Environments.Eikthyr, "Eikthyr" },
-            { Environments.GoblinKing, "GoblinKing" },
-            { Environments.nofogts, "nofogts" },
-            { Environments.SwampRain, "SwampRain" },
-            { Environments.Bonemass, "Bonemass" },
-            { Environments.Snow, "Snow" },
-            { Environments.Twilight_Clear , "Twilight_Clear" },
-            { Environments.Twilight_Snow, "Twilight_Snow" },
-            { Environments.Twilight_SnowStorm, "Twilight_SnowStorm" },
-            { Environments.SnowStorm, "SnowStorm" },
-            { Environments.Moder, "Moder" },
-            { Environments.Ashrain, "Ashrain" },
-            { Environments.Crypt, "Crypt" },
-            { Environments.SunkenCrypt, "SunkenCrypt" },
-            { Environments.Caves, "Caves" },
-            { Environments.Mistlands_clear, "Mistlands_clear" },
-            { Environments.Mistlands_rain, "Mistlands_rain" },
-            { Environments.Mistlands_thunder, "Mistlands_thunder" },
-            { Environments.InfectedMine, "InfectedMine" },
-            { Environments.Queen, "Queen" }
+            Environments.None => "",
+            Environments.Clear => "Clear",
+            Environments.Misty => "Misty",
+            Environments.Darklands_dark => "Darklands_dark",
+            Environments.HeathClear => "Heath clear",
+            Environments.DeepForestMist => "DeepForest Mist",
+            Environments.GDKing => "GDKing",
+            Environments.Rain => "Rain",
+            Environments.LightRain => "LightRain",
+            Environments.ThunderStorm => "ThunderStorm",
+            Environments.Eikthyr => "Eikthyr",
+            Environments.GoblinKing => "GoblinKing",
+            Environments.nofogts => "nofogts",
+            Environments.SwampRain => "SwampRain",
+            Environments.Bonemass => "Bonemass",
+            Environments.Snow => "Snow",
+            Environments.Twilight_Clear => "Twilight_Clear",
+            Environments.Twilight_Snow => "Twilight_Snow",
+            Environments.Twilight_SnowStorm => "Twilight_SnowStorm",
+            Environments.SnowStorm => "SnowStorm",
+            Environments.Moder => "Moder",
+            Environments.Ashrain => "AshRain",
+            Environments.Crypt => "Crypt",
+            Environments.SunkenCrypt => "SunkenCrypt",
+            Environments.Caves => "Caves",
+            Environments.Mistlands_clear => "Mistlands_clear",
+            Environments.Mistlands_rain => "Mistlands_rain",
+            Environments.Mistlands_thunder => "Mistlands_thunder",
+            Environments.InfectedMine => "InfectedMine",
+            Environments.Queen => "Queen",
+            _ => ""
         };
-
-        return conversionMap[options];
     }
     public enum Environments
     {
@@ -140,11 +139,9 @@ public static class Environment
                     if (summerConfigs.TrueForAll(x => x is Environments.None)) return true;
                     AddToEntries(summerConfigs, entries);
                     break;
-                default:
-                    return true;
+                default: return true;
             }
             return ModifyEnvironment(__instance, sec, biome, entries);
-
         }
 
         private static void AddToEntries(List<Environments> environments, List<EnvEntry> entries)
@@ -168,12 +165,8 @@ public static class Environment
                 __instance.m_environmentPeriod = -1L;
                 __instance.m_currentBiome = biome;
                 List<Action> actions = new();
-                foreach (EnvEntry? env in environments)
-                {
-                    actions.Add(new(() => __instance.QueueEnvironment(env.m_environment)));
-                }
+                foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
                 Utils.ApplyRandomly(actions);
-            
                 return false;
             }
             else
@@ -183,12 +176,8 @@ public static class Environment
                 __instance.m_environmentPeriod = seed;
                 __instance.m_currentBiome = biome;
                 List<Action> actions = new();
-                foreach (EnvEntry? env in environments)
-                {
-                    actions.Add(new(() => __instance.QueueEnvironment(env.m_environment)));
-                }
+                foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
                 Utils.ApplyRandomly(actions);
-                
                 return false;
             }
         }

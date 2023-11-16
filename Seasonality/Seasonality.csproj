@@ -183,13 +183,15 @@
         <EmbeddedResource Include="..\..\..\Textures\ShootLeaf_d_spring.png">
           <Link>assets\ShootLeaf_d_spring.png</Link>
         </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\beech_leaf_winter.png">
+          <Link>assets\beech_leaf_winter.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\birch_leaf_winter.png">
+          <Link>assets\birch_leaf_winter.png</Link>
+        </EmbeddedResource>
         <Content Include=".gitignore" />
         <Content Include="environment.props" />
-        <Content Include="icons\FallIcon.png" />
-        <Content Include="icons\SpringIcon.png" />
-        <Content Include="icons\SummerIcon.png" />
         <EmbeddedResource Include="icons\valknutIcon.png" />
-        <Content Include="icons\WinterIcon.png" />
         <Content Include="ILRepack.targets" />
         <Content Include="Libs\PieceManager.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
