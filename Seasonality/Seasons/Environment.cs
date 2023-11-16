@@ -83,7 +83,7 @@ public static class Environment
     {
         private static bool Prefix(EnvMan __instance, long sec, Heightmap.Biome biome)
         {
-            if (_ModEnabled.Value is Toggle.Off) return true;
+            if (_ModEnabled.Value is Toggle.Off || _WeatherControl.Value is Toggle.Off) return true;
             string environmentOverride = __instance.GetEnvironmentOverride();
             if (!string.IsNullOrEmpty(environmentOverride))
             {

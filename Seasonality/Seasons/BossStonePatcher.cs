@@ -11,6 +11,7 @@ public static class BossStonePatcher
         private static void Postfix(BossStone __instance)
         {
             if (!__instance) return;
+            if (_ModEnabled.Value is Toggle.Off) return;
             switch (_Season.Value)
             {
                 case Season.Winter:

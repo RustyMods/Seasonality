@@ -134,13 +134,13 @@ public static class CustomTextures
             string filePath = texturePath + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + ".png");
             if (!File.Exists(filePath)) continue;
             
+            string key = type + "/" + season.ToString().ToLower() + ".png"; // Beech_Spring
             Texture? tex = RegisterCustomTexture(filePath);
             if (!tex)
             {
-                SeasonalityLogger.LogInfo($"Failed to register texture: {filePath}");
+                SeasonalityLogger.LogInfo($"Failed to register texture: {key}");
                 continue;
             }
-            string key = type + "_" + season; // Beech_Spring
             textureMap.Add(season, tex);
             SeasonalityLogger.LogInfo($"Registered custom texture: {key}");
         }

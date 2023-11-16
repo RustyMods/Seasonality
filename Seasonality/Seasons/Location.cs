@@ -13,9 +13,7 @@ public static class Location
         private static void Postfix(LocationProxy __instance)
         {
             if (!__instance) return;
-            
-            // Goblin king location not affected ??
-            // GDking location either
+            if (_ModEnabled.Value is Toggle.Off) return;
             
             GameObject? prefab = __instance.m_instance;
             if (!prefab) return;

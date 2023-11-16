@@ -10,6 +10,7 @@ using JetBrains.Annotations;
 using Seasonality.Seasons;
 using ServerSync;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static Seasonality.Seasons.Environment;
 
 
@@ -38,16 +39,25 @@ namespace Seasonality
             On = 1,
             Off = 0
         }
+
+        public enum WorkingAs
+        {
+            Client,
+            Server,
+            Both
+        }
+
+        public static WorkingAs workingAsType;
         public void Awake()
         {
-            _serverConfigLocked = config("1 - General", "Lock Configuration", Toggle.On,
+            _serverConfigLocked = config("1 - General", "1 - Lock Configuration", Toggle.On,
                 "If on, the configuration is locked and can be changed by server admins only.");
             _ = ConfigSync.AddLockingConfigEntry(_serverConfigLocked);
-            
-            // Add logic to make sure mod only listens to a single user
-            // Then shares the seasonal changes through the configs
-            
-            
+
+            workingAsType = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null
+                ? WorkingAs.Server
+                : WorkingAs.Client;
+
             CustomTextures.ReadCustomTextures();
             
             InitConfigs();
@@ -55,7 +65,7 @@ namespace Seasonality
             _harmony.PatchAll(assembly);
             SetupWatcher();
         }
-
+        
         public enum Season
         {
             Spring = 0,
@@ -149,15 +159,20 @@ namespace Seasonality
 
         public static ConfigEntry<Toggle> _SeasonLocked = null!;
         public static ConfigEntry<Toggle> _ModEnabled = null!;
+        public static ConfigEntry<Toggle> _CounterVisible = null!;
+        public static ConfigEntry<Toggle> _WeatherControl = null!;
         #endregion
         private void InitConfigs()
         {
-            _SeasonDuration = config("2 - Utilities", "2 - Season Duration (Days)", 5, "in-game days between season changes");
-            _Season = config("2 - Utilities", "1 - Current Season", Season.Fall, "Set duration to 0 and select your season");
-            _WeatherDuration = config("2 - Utilities", "3 - Weather Duration (Seconds)", 20, "Duration between weather change, if season applies weather");
-            _SeasonalEffectsEnabled = config("2 - Utilities", "4 - Player Modifiers Enabled", Toggle.On, "If on, season effects are enabled");
-            _SeasonLocked = config("2 - Utilities", "4 - Debug Enabled", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
-            _ModEnabled = config("1 - General", "Mod Enabled", Toggle.On, "If on, mod is on");
+            _SeasonLocked = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
+            _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
+            
+            _Season = config("2 - Utilities", "1 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
+            _SeasonDuration = config("2 - Utilities", "2 - Season Duration (Days)", 5, "In-game days between season");
+            _CounterVisible = config("2 - Utilities", "3 - Timer Visible", Toggle.On, "If on, timer under season is visible", false);
+            _WeatherDuration = config("2 - Utilities", "4 - Weather Duration (Minutes)", 20, "In-game minutes between weather change, if season applies weather");
+            _WeatherControl = config("2 - Utilities", "Weather Enabled", Toggle.On, "If on, seasons can control the weather");
+            _SeasonalEffectsEnabled = config("2 - Utilities", "5 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");
             #region SpringConfigs
             _SpringName = config("3 - Spring", "Name", "Spring", "Display name");
             _SpringStartMsg = config("3 - Spring", "Start Message", "Spring has finally arrived", "Start of the season message");

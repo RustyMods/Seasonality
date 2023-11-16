@@ -12,63 +12,103 @@ public static class Utils
 {
     public static VegetationType GetVegetationType(string prefabName)
     {
-        Dictionary<string, VegetationType> conversionMap = new()
+        string normalizedName = prefabName.Replace("(Clone)", "");
+        if (normalizedName.ToLower().Contains("runestone")) return VegetationType.Rock;
+        return normalizedName switch
         {
-            { "beech", VegetationType.Beech },
-            { "birch", VegetationType.Birch },
-            { "fir", VegetationType.Fir },
-            { "pine", VegetationType.Pine },
-            { "yggashoot", VegetationType.Yggashoot },
-            { "swamptree", VegetationType.Swamp },
-            { "oak", VegetationType.Oak },
-            { "stubbe", VegetationType.Stubbe },
-            { "bush", VegetationType.Bush },
-            { "shrub", VegetationType.Shrub },
-            { "rock", VegetationType.Rock },
-            { "statue", VegetationType.Rock },
-            { "cliff", VegetationType.Rock },
-            { "giant", VegetationType.Rock },
-            { "runestone", VegetationType.Rock }
-        };
+            "Beech" => VegetationType.Beech,
+            "Beech1" => VegetationType.Beech,
+            "Beech_small1" => VegetationType.Beech,
+            "Beech_small2" => VegetationType.Beech,
 
-        foreach (KeyValuePair<string, VegetationType> kvp in conversionMap)
-        {
+            "Birch" => VegetationType.Birch,
+            "Birch1" => VegetationType.Birch,
+            "Birch2" => VegetationType.Birch,
+            "Birch1_aut" => VegetationType.Birch,
+            "Birch2_aut" => VegetationType.Birch,
 
-            if (!prefabName.ToLower().Contains(kvp.Key) || prefabName == "GiantBloodSack(Clone)") continue;
-            if (prefabName.ToLower().Contains("bonfire")) continue;
-            if (prefabName.ToLower().Contains("log")) return VegetationType.Log;
-            if (prefabName == "YggdrasilRoot(Clone)") return VegetationType.Log;
-            if (prefabName == "Bush02_en(Clone)") return VegetationType.PlainsBush;
+            "Oak" => VegetationType.Oak,
+            "Oak1" => VegetationType.Oak,
+
+            "FirTree_small_dead" => VegetationType.Fir,
+            "FirTree" => VegetationType.Fir,
+            "FirTree_small" => VegetationType.Fir,
+
+            "Pinetree_01" => VegetationType.Pine,
+
+            "SwampTree1" => VegetationType.Swamp,
+            "SwampTree2" => VegetationType.Swamp,
+            "SwampTree2_darkland" => VegetationType.Swamp,
             
-            return kvp.Value;
-        }
-        return VegetationType.None;
+            "YggaShoot1" => VegetationType.Yggashoot,
+            "YggaShoot2" => VegetationType.Yggashoot,
+            "YggaShoot3" => VegetationType.Yggashoot,
+            "YggaShoot_small1" => VegetationType.Yggashoot,
+            "YggdrasilTree2_RtD" => VegetationType.Yggashoot,
+
+            "Bush01_heath" => VegetationType.Bush,
+            "Bush02_en" => VegetationType.PlainsBush,
+            "Bush01" => VegetationType.Bush,
+            "shrub_2" => VegetationType.Shrub,
+            "shrub_2_heath" => VegetationType.Shrub,
+
+            "stubbe" => VegetationType.Stubbe,
+            "FirTree_oldLog" => VegetationType.Log,
+            "SwampTree2_log" => VegetationType.Log,
+
+            "RockDolmen_1" => VegetationType.Rock,
+            "RockDolmen_2" => VegetationType.Rock,
+            "RockDolmen_3" => VegetationType.Rock,
+            "Rock_3" => VegetationType.Rock,
+            "Rock_4" => VegetationType.Rock,
+            "Rock_7" => VegetationType.Rock,
+            "rock4_forest" => VegetationType.Rock,
+            "rock4_copper" => VegetationType.Rock,
+            "rock4_coast" => VegetationType.Rock,
+            "StatueEvil" => VegetationType.Rock,
+            "rock1_mountain" => VegetationType.Rock,
+            "rock2_heath" => VegetationType.Rock,
+            "rock4_heath" => VegetationType.Rock,
+            "Rock_4_plains" => VegetationType.Rock,
+            "HeathRockPillar" => VegetationType.Rock,
+            "Rock_destructible" => VegetationType.Rock,
+            "Rock_3_static" => VegetationType.Rock,
+            "RockFinger" => VegetationType.Rock,
+            "RockFingerBroken" => VegetationType.Rock,
+            "rockformation1" => VegetationType.Rock,
+            "RockThumb" => VegetationType.Rock,
+            "Rocks2" => VegetationType.Rock,
+            
+            "RaspberryBush" => VegetationType.Bush,
+            "BlueberryBush" => VegetationType.Bush,
+            "CloudberryBush" => VegetationType.Bush,
+            _ => VegetationType.None,
+        };
     }
 
     public static GrassTypes GetGrassType(string clutterName)
     {
-        Dictionary<string, GrassTypes> conversionMap = new()
+        return clutterName switch
         {
-            { "instanced_meadows_grass", GrassTypes.GreenGrass },
-            { "instanced_meadows_grass_short", GrassTypes.GreenGrass },
-            { "instanced_shrub", GrassTypes.Shrubs },
-            { "clutter_shrub_large", GrassTypes.Shrubs },
-            { "instanced_forest_groundcover_brown" , GrassTypes.GroundCover },
-            { "instanced_forest_groundcover",GrassTypes.GroundCover },
-            { "instanced_swamp_grass", GrassTypes.SwampGrass },
-            { "instanced_heathgrass" , GrassTypes.HeathGrass },
-            { "grasscross_heath_green", GrassTypes.HeathGrass },
-            { "instanced_heathflowers", GrassTypes.HeathFlowers },
-            { "instanced_swamp_ormbunke" , GrassTypes.Ormbunke },
-            { "instanced_ormbunke" , GrassTypes.Ormbunke },
-            { "instanced_vass", GrassTypes.Vass },
-            { "instanced_waterlilies", GrassTypes.WaterLilies },
-            { "instanced_mistlands_rockplant", GrassTypes.RockPlant },
-            { "instanced_small_rock1", GrassTypes.Rocks },
-            { "instanced_mistlands_grass_short", GrassTypes.GreenGrass }
+            "instanced_meadows_grass" => GrassTypes.GreenGrass,
+            "instanced_meadows_grass_short" => GrassTypes.GreenGrass,
+            "instanced_shrub" => GrassTypes.Shrubs,
+            "clutter_shrub_large" => GrassTypes.Shrubs,
+            "instanced_forest_groundcover_brown" => GrassTypes.GroundCover,
+            "instanced_forest_groundcover" => GrassTypes.GroundCover,
+            "instanced_swamp_grass" => GrassTypes.SwampGrass,
+            "instanced_heathgrass" => GrassTypes.HeathGrass,
+            "grasscross_heath_green" => GrassTypes.HeathGrass,
+            "instanced_heathflowers" => GrassTypes.HeathFlowers,
+            "instanced_swamp_ormbunke" => GrassTypes.Ormbunke,
+            "instanced_ormbunke" => GrassTypes.Ormbunke,
+            "instanced_vass" => GrassTypes.Vass,
+            "instanced_waterlilies" => GrassTypes.WaterLilies,
+            "instanced_mistlands_rockplant" => GrassTypes.RockPlant,
+            "instanced_small_rock1" => GrassTypes.Rocks,
+            "instanced_mistlands_grass_short" => GrassTypes.GreenGrass,
+            _ => GrassTypes.None
         };
-
-        return conversionMap.TryGetValue(clutterName, out GrassTypes result) ? result : GrassTypes.None;
     }
     
     public static void ApplyRandomly(List<Action> methods)
@@ -109,11 +149,9 @@ public static class Utils
     {
         return !CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
     }
-
     private static bool CustomTextureExist(VegDirectories type, Season key)
     {
-        if (!CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map)) return false;
-        return map.ContainsKey(key);
+        return CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map) && map.ContainsKey(key);
     }
     public static VegDirectories VegToDirectory(VegetationType type)
     {
@@ -154,8 +192,6 @@ public static class Utils
         { GrassTypes.RockPlant , VegDirectories.RockPlant },
         { GrassTypes.Shrubs , VegDirectories.Clutter }
     };
-    
-    
     public static void ApplyBasedOnAvailable(
         Season season, 
         GameObject prefab, 

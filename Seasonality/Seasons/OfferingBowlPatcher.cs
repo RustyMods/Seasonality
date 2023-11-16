@@ -12,8 +12,11 @@ public static class OfferingBowlPatcher
         private static void Postfix(OfferingBowl __instance)
         {
             if (!__instance) return;
+            if (_ModEnabled.Value is Toggle.Off) return;
+            
             GameObject altar = __instance.gameObject;
             Transform? parent = altar.transform.parent;
+            if (!parent) return;
             switch (_Season.Value)
             {
                 case Season.Winter:

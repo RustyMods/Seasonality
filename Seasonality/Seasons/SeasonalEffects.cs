@@ -15,6 +15,47 @@ public static class SeasonalEffects
     private static Season currentSeason = _Season.Value;
     private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
     private static DateTime LastSeasonChange = DateTime.Now;
+
+    [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.Update))]
+    static class EnvManPatch
+    {
+        private static void Postfix(EnvMan __instance)
+        {
+            if (workingAsType is not WorkingAs.Server || _ModEnabled.Value is Toggle.Off) return;
+            if (_SeasonDuration.Value == 0 || _SeasonLocked.Value is Toggle.On) return;
+            
+            // Server patch to track season counter and set config file
+            int remainingDays = _SeasonDuration.Value - (__instance.GetCurrentDay() % _SeasonDuration.Value) + 1;
+            float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1 - time of day
+            float remainder = remainingDays - fraction;
+            int totalMinutes = (int)(remainder * 24 * 60);
+
+            if (remainingDays < 1 && totalMinutes < 3)
+            {
+                // Throttle the rate at which the server is allowed to change config
+                if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
+                // Since user can manipulate config value
+                // Check to see if the next season is different than the current
+                if (_Season.Value == (Season)SeasonIndex)
+                {
+                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+                    _Season.Value = (Season)SeasonIndex;
+                }
+                else
+                {
+                    _Season.Value = (Season)SeasonIndex;
+                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+                }
+
+                LastSeasonChange = DateTime.Now;
+            }
+            else if (_Season.Value != (Season)SeasonIndex)
+            {
+                // To switch it back to timer settings if configs changed
+                _Season.Value = (Season)SeasonIndex;
+            }
+        }
+    }
     
     [HarmonyPatch(typeof(Hud), nameof(Hud.UpdateStatusEffects))]
     static class HudUpdateStatusEffectPatch
@@ -32,33 +73,34 @@ public static class SeasonalEffects
             if (!timeText) return;
             timeText.TryGetComponent(out TMP_Text tmpText);
             if (!tmpText) return;
-            
             if (_SeasonDuration.Value == 0 || _SeasonLocked.Value is Toggle.On)
             {
                 tmpText.gameObject.SetActive(false);
                 return;
             }
-            
-            int remainingDays = (EnvMan.instance.GetCurrentDay() % _SeasonDuration.Value) + 1;
+            int remainingDays = _SeasonDuration.Value - (EnvMan.instance.GetCurrentDay() % _SeasonDuration.Value) + 1;
             float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1 - time of day
             float remainder = remainingDays - fraction;
-            if (remainder < 0)
-            {
-                remainder += 1; // Adding a day if remainder is negative
-                remainingDays -= 1;
-            }
+            
+            // Convert to in-game time
             int totalMinutes = (int)(remainder * 24 * 60);
-
-            int hours = remainingDays - 1;
-            int minutes = (totalMinutes % (24 * 60)) / 60;
+            int hours = remainingDays - 2;
+            int minutes = totalMinutes % (24 * 60) / 60;
             int seconds = totalMinutes % 60;
 
             string time = $"{hours:D2}:{minutes:D2}:{seconds:D2}";
 
-            tmpText.gameObject.SetActive(true);
+            tmpText.gameObject.SetActive(_CounterVisible.Value is Toggle.On);
             tmpText.text = time;
 
-            if (hours == 0 && totalMinutes < 3)
+            if (workingAsType is WorkingAs.Client)
+            {
+                // If user is a client connected to a server, then do not set seasons
+                // Wait for server to change config value
+                return;
+            }
+            // Use calculated data to set season change if counter hits less than 3
+            if (remainingDays < 1 && totalMinutes < 3)
             {
                 if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
                 if (_Season.Value == (Season)SeasonIndex)
@@ -137,6 +179,13 @@ public static class SeasonalEffects
         {
             if (!__instance.IsPlayer() || !__instance) return;
             if (!ZNetScene.instance) return;
+            if (workingAsType is WorkingAs.Client)
+            {
+                if (ZNet.instance.IsServer())
+                {
+                    workingAsType = WorkingAs.Both;
+                }
+            }
             if (_ModEnabled.Value is Toggle.Off) return;
             ApplySeasonalEffects(__instance);
             SetSeasonalKey();

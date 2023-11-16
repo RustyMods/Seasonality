@@ -6,7 +6,6 @@ public enum VegetationType
     Birch,
     Fir,
     Pine,
-    Infested,
     Swamp,
     Yggashoot,
     Oak,

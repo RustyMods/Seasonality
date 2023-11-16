@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.UI;
 using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Seasons.CustomTextures;
 
@@ -20,9 +18,10 @@ public static class Vegetation
         private static void Postfix(ZNetView __instance)
         {
             if (!__instance) return;
-            if (_ModEnabled.Value is SeasonalityPlugin.Toggle.Off)
+            if (_ModEnabled.Value is Toggle.Off)
             {
                 if (currentModEnabled == _ModEnabled.Value) return;
+                // Set terrain back to default values
                 TerrainPatch.UpdateTerrain();
                 currentModEnabled = _ModEnabled.Value;
                 return;
@@ -53,12 +52,6 @@ public static class Vegetation
                 AssignMods(prefab, modificationType.Material, type);
                 break;
             case VegetationType.Rock:
-                // Similar to above case
-                // Differentiated in order to filter certain prefabs
-                if (prefab.name.ToLower().Contains("minerock")) break;
-                if (prefab.name.ToLower().Contains("vein")) break;
-                if (prefab.name.ToLower().Contains("frac")) break;
-                if (prefab.name.ToLower().Contains("destruction")) break;
                 AssignMods(prefab, modificationType.Material, type);
                 break;
         }
@@ -66,7 +59,6 @@ public static class Vegetation
 
     private static void AssignMods(GameObject prefab, modificationType modType, VegetationType type)
     {
-        if (prefab.name.Contains("_Stub")) return;
         if (modType is modificationType.Material) { ApplyMaterialToObj(prefab, type); return; }
         
         List<Action> actions = new();
@@ -109,9 +101,7 @@ public static class Vegetation
         }
         Utils.ApplyRandomly(actions);
     }
-    
     public static Action ApplyColor(GameObject obj, Color color, VegetationType type) { return () => ApplyColorToObj(obj, color, type); }
-    
     private static void ApplyColorToObj(GameObject obj, Color color, VegetationType type)
     {
         for (int i = 0; i < obj.transform.childCount; ++i)
@@ -176,13 +166,11 @@ public static class Vegetation
             {
                 switch (type)
                 {
-                    case VegetationType.Shrub or VegetationType.Bush:
-                        mat.color = color;
-                        break;
-                    default:
+                    case VegetationType.Beech or VegetationType.Birch or VegetationType.Oak or VegetationType.Yggashoot:
                         // Set leaves to be invisible
                         mat.color = Color.clear; 
                         break;
+                    default: mat.color = color; break;
                 }
                 continue;
             }
@@ -205,7 +193,7 @@ public static class Vegetation
         {
             if (prop.ToLower().Contains("moss"))
             {
-                if (mat.name.ToLower().Contains("mistland")) return;
+                // if (mat.name.ToLower().Contains("mistland")) return;
                 ModifyMossTex(prop, mat);
             }
             if (!prop.ToLower().Contains("main") || !modifyMainTex) continue;
