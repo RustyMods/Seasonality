@@ -71,7 +71,7 @@ public static class SeasonalEffects
             if (!rectTransform) return;
             Transform? timeText = rectTransform.Find("TimeText");
             if (!timeText) return;
-            if (timeText.TryGetComponent(out TMP_Text tmpText)) return;
+            if (!timeText.TryGetComponent(out TMP_Text tmpText)) return;
             if (_SeasonDuration.Value == 0 || _SeasonLocked.Value is Toggle.On)
             {
                 tmpText.gameObject.SetActive(false);
@@ -91,7 +91,6 @@ public static class SeasonalEffects
 
             tmpText.gameObject.SetActive(_CounterVisible.Value is Toggle.On);
             tmpText.text = time;
-
             if (workingAsType is WorkingAs.Client)
             {
                 // If user is a client connected to a server, then do not set seasons

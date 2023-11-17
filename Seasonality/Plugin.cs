@@ -17,7 +17,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "1.0.2";
+        internal const string ModVersion = "1.0.3";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -165,7 +165,7 @@ namespace Seasonality
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
             
             _Season = config("2 - Utilities", "1 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
-            _SeasonDuration = config("2 - Utilities", "2 - Season Duration (Days)", 5, new ConfigDescription("In-game days between season", new AcceptableValueList<int>(0, 365)));
+            _SeasonDuration = config("2 - Utilities", "2 - Season Duration (Days)", 5, new ConfigDescription("In-game days between season", new AcceptableValueRange<int>(0, 365)));
             _CounterVisible = config("2 - Utilities", "3 - Timer Visible", Toggle.On, "If on, timer under season is visible", false);
             _WeatherDuration = config("2 - Utilities", "4 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
             _WeatherControl = config("2 - Utilities", "Weather Enabled", Toggle.On, "If on, seasons can control the weather");
@@ -175,8 +175,30 @@ namespace Seasonality
             _SpringStartMsg = config("3 - Spring", "Start Message", "Spring has finally arrived", "Start of the season message");
             _SpringTooltip = config("3 - Spring", "Tooltip", "The land is bursting with energy", "Status effect tooltip");
             _SpringModifier = config("3 - Spring", "Modifier", Modifier.None, "Stats modifier");
-            _SpringResistance = config("3 - Spring", "Resistance", "", "Resistance modifier");
-            _SpringValue = config("3 - Spring", "Modifying value", 0.0f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(0f, 100f)));
+            _SpringResistance = config("3 - Spring", "Resistance", "", new ConfigDescription("Resistance modifier", new AcceptableValueList<string>(
+                "",
+                "Fire=VeryWeak",
+                "Fire=Weak",
+                "Fire=Resistant",
+                "Fire=VeryResistant",
+                "Frost=VeryWeak",
+                "Frost=Weak",
+                "Frost=Resistant",
+                "Frost=VeryResistant",
+                "Lightning=VeryWeak",
+                "Lightning=Weak",
+                "Lightning=Resistant",
+                "Lightning=VeryResistant",
+                "Poison=VeryWeak",
+                "Poison=Weak",
+                "Poison=Resistant",
+                "Poison=VeryResistant",
+                "Spirit=VeryWeak",
+                "Spirit=Weak",
+                "Spirit=Resistant",
+                "Spirit=VeryResistant"
+            )));
+            _SpringValue = config("3 - Spring", "Modifying value", 0.0f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
             
             _SpringWeather1 = config("3 - Spring", "Weather 1", Environments.None, "Environments set by spring season");
             _SpringWeather2 = config("3 - Spring", "Weather 2", Environments.None, "Environments set by spring season");
@@ -197,8 +219,31 @@ namespace Seasonality
             _FallStartMsg = config("4 - Fall", "Start Message", "Fall is upon us", "Start of the season message");
             _FallTooltip = config("4 - Fall", "Tooltip", "The ground is wet", "Status effect tooltip");
             _FallModifier = config("4 - Fall", "Modifier", Modifier.None, "Stats modifier");
-            _FallResistance = config("4 - Fall", "Resistance", "", "Resistance modifier");
-            _FallValue = config("4 - Fall", "Modifying value", 0.0f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(0f, 100f)));
+            _FallResistance = config("4 - Fall", "Resistance", "", new ConfigDescription("Resistance modifier", new AcceptableValueList<string>(
+                "",
+                "Fire=VeryWeak",
+                "Fire=Weak",
+                "Fire=Resistant",
+                "Fire=VeryResistant",
+                "Frost=VeryWeak",
+                "Frost=Weak",
+                "Frost=Resistant",
+                "Frost=VeryResistant",
+                "Lightning=VeryWeak",
+                "Lightning=Weak",
+                "Lightning=Resistant",
+                "Lightning=VeryResistant",
+                "Poison=VeryWeak",
+                "Poison=Weak",
+                "Poison=Resistant",
+                "Poison=VeryResistant",
+                "Spirit=VeryWeak",
+                "Spirit=Weak",
+                "Spirit=Resistant",
+                "Spirit=VeryResistant"
+                ))
+            );
+            _FallValue = config("4 - Fall", "Modifying value", 0.0f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
 
             _FallWeather1 = config("4 - Fall", "Weather 1", Environments.None, "Environments set by fall season");
             _FallWeather2 = config("4 - Fall", "Weather 2", Environments.None, "Environments set by fall season");
@@ -219,8 +264,30 @@ namespace Seasonality
             _WinterStartMsg = config("5 - Winter", "Start Message", "Winter is coming!", "Start of the season message");
             _WinterTooltip = config("5 - Winter", "Tooltip", "The air is cold", "Status effect tooltip");
             _WinterModifier = config("5 - Winter", "Modifier", Modifier.StaminaRegen, "Stats modifier");
-            _WinterResistance = config("5 - Winter", "Resistance", "Fire=Resistant", "Resistance modifier");
-            _WinterValue = config("5 - Winter", "Modifying value", 0.9f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(0f, 100f)));
+            _WinterResistance = config("5 - Winter", "Resistance", "Fire=Resistant", new ConfigDescription("Resistance modifier", new AcceptableValueList<string>(
+                "",
+                "Fire=VeryWeak",
+                "Fire=Weak",
+                "Fire=Resistant",
+                "Fire=VeryResistant",
+                "Frost=VeryWeak",
+                "Frost=Weak",
+                "Frost=Resistant",
+                "Frost=VeryResistant",
+                "Lightning=VeryWeak",
+                "Lightning=Weak",
+                "Lightning=Resistant",
+                "Lightning=VeryResistant",
+                "Poison=VeryWeak",
+                "Poison=Weak",
+                "Poison=Resistant",
+                "Poison=VeryResistant",
+                "Spirit=VeryWeak",
+                "Spirit=Weak",
+                "Spirit=Resistant",
+                "Spirit=VeryResistant"
+            )));
+            _WinterValue = config("5 - Winter", "Modifying value", 0.9f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
 
             _WinterWeather1 = config("5 - Winter", "Weather 1", Environments.Snow, "Environment set by winter season.");
             _WinterWeather2 = config("5 - Winter", "Weather 2", Environments.None, "Environment set by winter season.");
@@ -240,8 +307,30 @@ namespace Seasonality
             _SummerStartMsg = config("6 - Summer", "Start Message", "Summer has landed", "Start of the season message");
             _SummerTooltip = config("6 - Summer", "Tooltip", "The air is warm", "Status effect tooltip");
             _SummerModifier = config("6 - Summer", "Modifier", Modifier.MaxCarryWeight, "Stats modifier");
-            _SummerResistance = config("6 - Summer", "Resistance", "", "Resistance modifier");
-            _SummerValue = config("6 - Summer", "Modifying value", -50f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(0f, 100f)));
+            _SummerResistance = config("6 - Summer", "Resistance", "", new ConfigDescription("Resistance modifier", new AcceptableValueList<string>(
+                "",
+                "Fire=VeryWeak",
+                "Fire=Weak",
+                "Fire=Resistant",
+                "Fire=VeryResistant",
+                "Frost=VeryWeak",
+                "Frost=Weak",
+                "Frost=Resistant",
+                "Frost=VeryResistant",
+                "Lightning=VeryWeak",
+                "Lightning=Weak",
+                "Lightning=Resistant",
+                "Lightning=VeryResistant",
+                "Poison=VeryWeak",
+                "Poison=Weak",
+                "Poison=Resistant",
+                "Poison=VeryResistant",
+                "Spirit=VeryWeak",
+                "Spirit=Weak",
+                "Spirit=Resistant",
+                "Spirit=VeryResistant"
+            )));
+            _SummerValue = config("6 - Summer", "Modifying value", -50f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
             
             _SummerWeather1 = config("6 - Summer", "Weather 1", Environments.None, "Environment set by summer season.");
             _SummerWeather2 = config("6 - Summer", "Weather 2", Environments.None, "Environment set by summer season.");

@@ -311,5 +311,24 @@ public static class TerrainPatch
             return false;
         }
     }
+
+    // [HarmonyPatch(typeof(Heightmap), nameof(Heightmap.CalcVertex))]
+    // static class CalcVertexPatch
+    // {
+    //     private static bool Prefix(Heightmap __instance, int x, int y, out Vector3 __result)
+    //     {
+    //         int num = __instance.m_width + 1;
+    //         Vector3 vector3_1 = new Vector3((float) (__instance.m_width * (double) __instance.m_scale * -0.5), 0.0f, (float) (__instance.m_width * (double) __instance.m_scale * -0.5));
+    //         float height = __instance.m_heights[y * num + x];
+    //         Vector3 vector3_2 = new Vector3(x * __instance.m_scale, height, y * __instance.m_scale);
+    //
+    //         __result = vector3_1 + vector3_2;
+    //         if (_Season.Value is Season.Winter)
+    //         {
+    //             __result = vector3_1 + vector3_2 + new Vector3(30f, 30f);
+    //         }
+    //         return false;
+    //     }
+    // }
     
 }
