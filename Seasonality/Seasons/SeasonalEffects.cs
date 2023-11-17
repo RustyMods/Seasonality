@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using TMPro;
 using UnityEngine;
@@ -26,12 +25,13 @@ public static class SeasonalEffects
             
             // Server patch to track season counter and set config file
             int remainingDays = _SeasonDuration.Value - (__instance.GetCurrentDay() % _SeasonDuration.Value) + 1;
-            float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1 - time of day
+            float fraction = __instance.GetDayFraction(); // value between 0 - 1 - time of day
             float remainder = remainingDays - fraction;
             int totalMinutes = (int)(remainder * 24 * 60);
 
-            if (remainingDays < 1 && totalMinutes < 3)
+            if (remainingDays < 1 && totalMinutes < 5)
             {
+                SeasonalityLogger.LogMessage("Season timer hit zero, sending season config to clients");
                 // Throttle the rate at which the server is allowed to change config
                 if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
                 // Since user can manipulate config value
@@ -71,8 +71,7 @@ public static class SeasonalEffects
             if (!rectTransform) return;
             Transform? timeText = rectTransform.Find("TimeText");
             if (!timeText) return;
-            timeText.TryGetComponent(out TMP_Text tmpText);
-            if (!tmpText) return;
+            if (timeText.TryGetComponent(out TMP_Text tmpText)) return;
             if (_SeasonDuration.Value == 0 || _SeasonLocked.Value is Toggle.On)
             {
                 tmpText.gameObject.SetActive(false);
@@ -187,8 +186,10 @@ public static class SeasonalEffects
                 }
             }
             if (_ModEnabled.Value is Toggle.Off) return;
+
             ApplySeasonalEffects(__instance);
             SetSeasonalKey();
+            
         }
     }
 

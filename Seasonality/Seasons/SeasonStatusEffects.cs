@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using BepInEx;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
@@ -213,6 +214,7 @@ public class SeasonalEffect
         
         foreach (string effect in effects)
         {
+            if (effect.IsNullOrWhiteSpace()) continue;
             GameObject prefab = scene.GetPrefab(effect);
             if (!prefab)
             {

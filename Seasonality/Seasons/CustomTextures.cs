@@ -36,6 +36,9 @@ public static class CustomTextures
 
     public static readonly Sprite? ValknutIcon = RegisterSprite("valknutIcon.png");
 
+    public static readonly Texture? ClutterShrub_Winter = RegisterTexture("clutter_shrub_winter.png");
+    public static readonly Texture? Ormbunke_Winter = RegisterTexture("autumn_ormbunke_green_winter.png");
+
     public static readonly Dictionary<VegDirectories, Dictionary<Season, Texture?>> CustomRegisteredTextures = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {

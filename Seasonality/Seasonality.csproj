@@ -188,6 +188,12 @@
         <EmbeddedResource Include="..\..\..\Textures\birch_leaf_winter.png">
           <Link>assets\birch_leaf_winter.png</Link>
         </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\clutter_shrub_winter.png">
+          <Link>assets\clutter_shrub_winter.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\autumn_ormbunke_green_winter.png">
+          <Link>assets\autumn_ormbunke_green_winter.png</Link>
+        </EmbeddedResource>
         <Content Include=".gitignore" />
         <Content Include="environment.props" />
         <EmbeddedResource Include="icons\valknutIcon.png" />

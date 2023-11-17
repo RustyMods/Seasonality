@@ -56,15 +56,23 @@ public static class TerrainPatch
         {
             GameObject obj = clutter.m_prefab;
             GrassTypes type = Utils.GetGrassType(obj.name);
-            obj.TryGetComponent(out InstanceRenderer instanceRenderer);
-            if (!instanceRenderer) continue;
+            if (!obj.TryGetComponent(out InstanceRenderer instanceRenderer)) continue;
 
             VegDirectories directory = Utils.VegToDirectory(type);
             Material mat = instanceRenderer.m_material;
             string[] props = mat.GetTexturePropertyNames();
-            if (!Utils.FindTexturePropName(props, "terrain", out string property)) continue;
+            if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
+            if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
             // If texture file recognized, use it and move on
-            if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, property)) continue; 
+            switch (type)
+            {
+                case GrassTypes.Shrubs or GrassTypes.Ormbunke or GrassTypes.HeathFlowers:
+                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp)) continue;
+                    break;
+                default:
+                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, terrainProp)) continue;
+                    break;
+            }
             // Else use plugin settings
             // Set texture to default value
             Texture? tex = (type) switch
@@ -92,13 +100,15 @@ public static class TerrainPatch
                             tex = clutterTextures.Find(x => x.name == "grass_heath");
                             break;
                         case GrassTypes.Shrubs:
-                            AssignColors(obj, new List<Color>(){_FallColor1.Value, _FallColor2.Value}, type);
+                            tex = ClutterShrub_Winter;
+                            AssignColors(obj, new List<Color>(){_FallColor1.Value, _FallColor2.Value, _FallColor3.Value}, type);
                             break;
                         case GrassTypes.GroundCover:
                             tex = clutterTextures.Find(x => x.name == "forest_groundcover 1"); // redish forest ground cover
                             break;
                         case GrassTypes.Ormbunke:
-                            tex = clutterTextures.Find(x => x.name == "autumn_ormbunke_swamp"); // fern looking clutter
+                            tex = Ormbunke_Winter;
+                            AssignColors(obj, new List<Color>(){_FallColor1.Value, _FallColor2.Value, _FallColor3.Value}, type);
                             break;
                         case GrassTypes.None:
                             break;
@@ -133,11 +143,28 @@ public static class TerrainPatch
                         case GrassTypes.GroundCover:
                             tex = clutterTextures.Find(x => x.name == "forest_groundcover 1");
                             break;
+                        case GrassTypes.Shrubs:
+                            tex = ClutterShrub_Winter;
+                            break;
+                        case GrassTypes.Ormbunke:
+                            tex = Ormbunke_Winter;
+                            break;
                     }   
                     break;
             }
-            
-            if (tex) mat.SetTexture(property, tex);
+
+            if (tex)
+            {
+                switch (type)
+                {
+                    case GrassTypes.Shrubs or GrassTypes.Ormbunke:
+                        mat.SetTexture(mainProp, tex);
+                        break;
+                    default:
+                        mat.SetTexture(terrainProp, tex);
+                        break;
+                }
+            }
         }
     }
     private static void AssignColors(GameObject obj, List<Color> colors, GrassTypes type)

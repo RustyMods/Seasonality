@@ -78,6 +78,8 @@ public static class Utils
             "rockformation1" => VegetationType.Rock,
             "RockThumb" => VegetationType.Rock,
             "Rocks2" => VegetationType.Rock,
+            "highstone" => VegetationType.Rock,
+            "widestone" => VegetationType.Rock,
             
             "RaspberryBush" => VegetationType.Bush,
             "BlueberryBush" => VegetationType.Bush,
@@ -212,17 +214,16 @@ public static class Utils
 
     public static bool ApplyBasedOnAvailable(VegDirectories directory, Season season, Material material, string prop)
     {
-        if (CustomTextureExist(directory, season))
-        {
-            Texture? tex = GetCustomTexture(directory, season);
-            if (!tex) return false;
-            // SeasonalityLogger.LogWarning($"Applying custom texture to {material.name}");
-            material.SetTexture(prop, tex);
-            material.color = Color.white;
-            return true;
-        }
+        if (!CustomTextureExist(directory, season)) return false;
+        
+        Texture? tex = GetCustomTexture(directory, season);
+        if (!tex) return false;
+        
+        // SeasonalityLogger.LogWarning($"Applying custom texture to {material.name}");
+        material.SetTexture(prop, tex);
+        material.color = Color.white;
+        return true;
 
-        return false;
     }
     
     private static void ApplySeasonalColors(GameObject prefab, List<Action> actions, VegetationType type)
