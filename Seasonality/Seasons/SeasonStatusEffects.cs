@@ -204,7 +204,6 @@ public class SeasonalEffect
         
         // Add base effect to ObjectDB
         obd.m_StatusEffects.Add(seasonEffect);
-        SeasonalEffects.SeasonEffectList.Add(seasonEffect);
         return seasonEffect;
     }
     private static EffectList CreateEffectList(ZNetScene scene, List<string> effects, string seasonalEffectName)

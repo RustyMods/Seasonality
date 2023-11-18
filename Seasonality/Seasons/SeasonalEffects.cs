@@ -10,7 +10,6 @@ namespace Seasonality.Seasons;
 
 public static class SeasonalEffects
 {
-    public static readonly List<SeasonEffect> SeasonEffectList = new();
     private static Season currentSeason = _Season.Value;
     private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
     private static DateTime LastSeasonChange = DateTime.Now;
@@ -28,10 +27,12 @@ public static class SeasonalEffects
             float fraction = __instance.GetDayFraction(); // value between 0 - 1 - time of day
             float remainder = remainingDays - fraction;
             int totalMinutes = (int)(remainder * 24 * 60);
-
-            if (remainingDays < 1 && totalMinutes < 5)
+            // Convert to in-game time
+            int hours = remainingDays - 2;
+            int minutes = totalMinutes % (24 * 60) / 60;
+            int seconds = totalMinutes % 60;
+            if (hours < 1 && minutes < 1 && seconds < 5)
             {
-                SeasonalityLogger.LogMessage("Season timer hit zero, sending season config to clients");
                 // Throttle the rate at which the server is allowed to change config
                 if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
                 // Since user can manipulate config value
@@ -64,9 +65,7 @@ public static class SeasonalEffects
         {
             if (!__instance) return;
             if (_ModEnabled.Value is Toggle.Off) return;
-            StatusEffect? seasonEffect = statusEffects.Find(x => SeasonEffectList.Exists(y => y.name == x.name));
-            if (!seasonEffect) return;
-            int index = statusEffects.FindIndex(x => x.name == seasonEffect.name);
+            int index = statusEffects.FindIndex(effect => effect is SeasonEffect);
             RectTransform? rectTransform = __instance.m_statusEffects[index];
             if (!rectTransform) return;
             Transform? timeText = rectTransform.Find("TimeText");
@@ -98,7 +97,7 @@ public static class SeasonalEffects
                 return;
             }
             // Use calculated data to set season change if counter hits less than 3
-            if (remainingDays < 1 && totalMinutes < 3)
+            if (hours < 1 && minutes < 1 && seconds < 5)
             {
                 if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
                 if (_Season.Value == (Season)SeasonIndex)
@@ -137,18 +136,8 @@ public static class SeasonalEffects
                 SEMan? SEMan = __instance.GetSEMan();
                 if (SEMan == null) return;
                 // Make sure to remove status effect when user disables mod
-                List<StatusEffect> effectsToRemove = new();
-                foreach (StatusEffect effect in SEMan.GetStatusEffects())
-                {
-                    if (!SeasonEffectList.Exists(x => x.name == effect.name)) continue;
-                    effectsToRemove.Add(effect);
-                }
-
-                foreach (StatusEffect effect in effectsToRemove)
-                {
-                    SEMan.RemoveStatusEffect(effect);
-                }
-                SeasonEffectList.Clear();
+                StatusEffect? currentEffect = SEMan.GetStatusEffects().Find(effect => effect is SeasonEffect);
+                if (currentEffect) SEMan.RemoveStatusEffect(currentEffect);
                 TerrainPatch.UpdateTerrain();
                 lastToggled = Toggle.Off;
                 return;
@@ -188,7 +177,6 @@ public static class SeasonalEffects
 
             ApplySeasonalEffects(__instance);
             SetSeasonalKey();
-            
         }
     }
 
@@ -223,13 +211,10 @@ public static class SeasonalEffects
         SEMan? SEMan = __instance.GetSEMan();
         if (SEMan == null) return;
         // Remove all seasonal effects
-        foreach (SeasonEffect? effect in SeasonEffectList)
-        {
-            if (!SEMan.HaveStatusEffect(effect.name)) continue;
-            SEMan.RemoveStatusEffect(effect);
-        }
+        List<StatusEffect> activeEffects = SEMan.GetStatusEffects();
+        StatusEffect? currentSeasonEffect = activeEffects.Find(effect => effect is SeasonEffect);
+        if (currentSeasonEffect) SEMan.RemoveStatusEffect(currentSeasonEffect);
         ObjectDB.instance.m_StatusEffects.RemoveAll(effect => effect is SeasonEffect);
-        SeasonEffectList.Clear();
         // Apply new seasonal effect
         StatusEffect? SeasonEffect = null!;
         switch (_Season.Value)
@@ -299,12 +284,8 @@ public static class SeasonalEffects
                 if (SummerEffect) SeasonEffect = SummerEffect;
                 break;
         }
-
-        if (SeasonEffect != null)
-        {
-            SEMan.AddStatusEffect(SeasonEffect);
-        }
-
+        if (SeasonEffect != null) SEMan.AddStatusEffect(SeasonEffect);
+        
         currentSeason = _Season.Value;
     }
 }

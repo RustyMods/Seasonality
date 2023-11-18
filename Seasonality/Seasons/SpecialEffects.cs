@@ -1,6 +1,6 @@
 ﻿namespace Seasonality.Seasons;
 
-public class SpecialEffects
+public static class SpecialEffects
 {
     public enum SpecialEffect
     {
