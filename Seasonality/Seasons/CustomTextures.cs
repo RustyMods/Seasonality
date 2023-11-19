@@ -38,7 +38,7 @@ public static class CustomTextures
 
     public static readonly Texture? ClutterShrub_Winter = RegisterTexture("clutter_shrub_winter.png");
     public static readonly Texture? Ormbunke_Winter = RegisterTexture("autumn_ormbunke_green_winter.png");
-
+    
     public static readonly Dictionary<VegDirectories, Dictionary<Season, Texture?>> CustomRegisteredTextures = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {
@@ -137,15 +137,15 @@ public static class CustomTextures
             string filePath = texturePath + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + ".png");
             if (!File.Exists(filePath)) continue;
             
-            string key = type + "/" + season.ToString().ToLower() + ".png"; // Beech_Spring
+            string message = type + "/" + season.ToString().ToLower() + ".png"; // Beech/spring.png
             Texture? tex = RegisterCustomTexture(filePath);
             if (!tex)
             {
-                SeasonalityLogger.LogInfo($"Failed to register texture: {key}");
+                SeasonalityLogger.LogDebug($"Failed to register texture: {message}");
                 continue;
             }
             textureMap.Add(season, tex);
-            SeasonalityLogger.LogInfo($"Registered custom texture: {key}");
+            SeasonalityLogger.LogDebug($"Registered custom texture: {message}");
         }
 
         return textureMap;

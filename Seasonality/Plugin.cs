@@ -1,14 +1,18 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using JetBrains.Annotations;
 using Seasonality.Seasons;
 using ServerSync;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static Seasonality.Seasons.Environment;
+using Environment = Seasonality.Seasons.Environment;
 
 
 namespace Seasonality
@@ -17,7 +21,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "1.0.4";
+        internal const string ModVersion = "1.0.5";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -70,6 +74,28 @@ namespace Seasonality
             Fall = 2,
             Winter = 3
         }
+
+        public enum Element
+        {
+            Fire,
+            Frost,
+            Lightning,
+            Poison,
+            Spirit,
+            None
+        }
+
+        public enum DamageModifier
+        {
+             Normal,
+             Resistant,
+             Weak,
+             Immune,
+             Ignore,
+             VeryResistant,
+             VeryWeak,
+             None
+        }
         #region CustomConfigs
         public static ConfigEntry<Season> _Season = null!;
         public static ConfigEntry<int> _SeasonDuration = null!;
@@ -81,28 +107,32 @@ namespace Seasonality
         public static ConfigEntry<string> _SpringStartMsg = null!;
         public static ConfigEntry<string> _SpringTooltip = null!;
         public static ConfigEntry<Modifier> _SpringModifier = null!;
-        public static ConfigEntry<string> _SpringResistance = null!;
+        public static ConfigEntry<Element> _SpringResistanceElement = null!;
+        public static ConfigEntry<DamageModifier> _SpringResistanceMod = null!;
         public static ConfigEntry<float> _SpringValue = null!;
         
         public static ConfigEntry<string> _FallName = null!;
         public static ConfigEntry<string> _FallStartMsg = null!;
         public static ConfigEntry<string> _FallTooltip = null!;
         public static ConfigEntry<Modifier> _FallModifier = null!;
-        public static ConfigEntry<string> _FallResistance = null!;
+        public static ConfigEntry<Element> _FallResistanceElement = null!;
+        public static ConfigEntry<DamageModifier> _FallResistanceMod = null!;
         public static ConfigEntry<float> _FallValue = null!;
         
         public static ConfigEntry<string> _WinterName = null!;
         public static ConfigEntry<string> _WinterStartMsg = null!;
         public static ConfigEntry<string> _WinterTooltip = null!;
         public static ConfigEntry<Modifier> _WinterModifier = null!;
-        public static ConfigEntry<string> _WinterResistance = null!;
+        public static ConfigEntry<Element> _WinterResistanceElement = null!;
+        public static ConfigEntry<DamageModifier> _WinterResistantMod = null!;
         public static ConfigEntry<float> _WinterValue = null!;
         
         public static ConfigEntry<string> _SummerName = null!;
         public static ConfigEntry<string> _SummerStartMsg = null!;
         public static ConfigEntry<string> _SummerTooltip = null!;
         public static ConfigEntry<Modifier> _SummerModifier = null!;
-        public static ConfigEntry<string> _SummerResistance = null!;
+        public static ConfigEntry<Element> _SummerResistanceElement = null!;
+        public static ConfigEntry<DamageModifier> _SummerResistanceMod = null!;
         public static ConfigEntry<float> _SummerValue = null!;
 
         public static ConfigEntry<Environments> _FallWeather1 = null!;
@@ -158,6 +188,8 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _ModEnabled = null!;
         public static ConfigEntry<Toggle> _CounterVisible = null!;
         public static ConfigEntry<Toggle> _WeatherControl = null!;
+        public static ConfigEntry<Toggle> _StatusEffectVisible = null!;
+
         #endregion
         private void InitConfigs()
         {
@@ -170,34 +202,18 @@ namespace Seasonality
             _WeatherDuration = config("2 - Utilities", "4 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
             _WeatherControl = config("2 - Utilities", "Weather Enabled", Toggle.On, "If on, seasons can control the weather");
             _SeasonalEffectsEnabled = config("2 - Utilities", "5 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");
+            _StatusEffectVisible = config("2 - Utilities", "7 - Season Icon Visible", Toggle.On, "If on, season icon is visible", false);
+            
+            #region Weather
+
+            #endregion
             #region SpringConfigs
             _SpringName = config("3 - Spring", "Name", "Spring", "Display name");
             _SpringStartMsg = config("3 - Spring", "Start Message", "Spring has finally arrived", "Start of the season message");
             _SpringTooltip = config("3 - Spring", "Tooltip", "The land is bursting with energy", "Status effect tooltip");
             _SpringModifier = config("3 - Spring", "Modifier", Modifier.None, "Stats modifier");
-            _SpringResistance = config("3 - Spring", "Resistance", "", new ConfigDescription("Resistance modifier", new AcceptableValueList<string>(
-                "",
-                "Fire=VeryWeak",
-                "Fire=Weak",
-                "Fire=Resistant",
-                "Fire=VeryResistant",
-                "Frost=VeryWeak",
-                "Frost=Weak",
-                "Frost=Resistant",
-                "Frost=VeryResistant",
-                "Lightning=VeryWeak",
-                "Lightning=Weak",
-                "Lightning=Resistant",
-                "Lightning=VeryResistant",
-                "Poison=VeryWeak",
-                "Poison=Weak",
-                "Poison=Resistant",
-                "Poison=VeryResistant",
-                "Spirit=VeryWeak",
-                "Spirit=Weak",
-                "Spirit=Resistant",
-                "Spirit=VeryResistant"
-            )));
+            _SpringResistanceElement = config("3 - Spring", "Resistance Type", Element.None, "Element");
+            _SpringResistanceMod = config("3 - Spring", "Resistance Modifier", DamageModifier.None, "Modifier");
             _SpringValue = config("3 - Spring", "Modifying value", 0.0f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
             
             _SpringWeather1 = config("3 - Spring", "Weather 1", Environments.None, "Environments set by spring season");
@@ -219,30 +235,8 @@ namespace Seasonality
             _FallStartMsg = config("4 - Fall", "Start Message", "Fall is upon us", "Start of the season message");
             _FallTooltip = config("4 - Fall", "Tooltip", "The ground is wet", "Status effect tooltip");
             _FallModifier = config("4 - Fall", "Modifier", Modifier.None, "Stats modifier");
-            _FallResistance = config("4 - Fall", "Resistance", "", new ConfigDescription("Resistance modifier", new AcceptableValueList<string>(
-                "",
-                "Fire=VeryWeak",
-                "Fire=Weak",
-                "Fire=Resistant",
-                "Fire=VeryResistant",
-                "Frost=VeryWeak",
-                "Frost=Weak",
-                "Frost=Resistant",
-                "Frost=VeryResistant",
-                "Lightning=VeryWeak",
-                "Lightning=Weak",
-                "Lightning=Resistant",
-                "Lightning=VeryResistant",
-                "Poison=VeryWeak",
-                "Poison=Weak",
-                "Poison=Resistant",
-                "Poison=VeryResistant",
-                "Spirit=VeryWeak",
-                "Spirit=Weak",
-                "Spirit=Resistant",
-                "Spirit=VeryResistant"
-                ))
-            );
+            _FallResistanceElement = config("4 - Fall", "Resistance Type", Element.None, "Element");
+            _FallResistanceMod = config("4 - Fall", "Resistance Modifier", DamageModifier.None, "Modifier");
             _FallValue = config("4 - Fall", "Modifying value", 0.0f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
 
             _FallWeather1 = config("4 - Fall", "Weather 1", Environments.None, "Environments set by fall season");
@@ -264,29 +258,8 @@ namespace Seasonality
             _WinterStartMsg = config("5 - Winter", "Start Message", "Winter is coming!", "Start of the season message");
             _WinterTooltip = config("5 - Winter", "Tooltip", "The air is cold", "Status effect tooltip");
             _WinterModifier = config("5 - Winter", "Modifier", Modifier.StaminaRegen, "Stats modifier");
-            _WinterResistance = config("5 - Winter", "Resistance", "Fire=Resistant", new ConfigDescription("Resistance modifier", new AcceptableValueList<string>(
-                "",
-                "Fire=VeryWeak",
-                "Fire=Weak",
-                "Fire=Resistant",
-                "Fire=VeryResistant",
-                "Frost=VeryWeak",
-                "Frost=Weak",
-                "Frost=Resistant",
-                "Frost=VeryResistant",
-                "Lightning=VeryWeak",
-                "Lightning=Weak",
-                "Lightning=Resistant",
-                "Lightning=VeryResistant",
-                "Poison=VeryWeak",
-                "Poison=Weak",
-                "Poison=Resistant",
-                "Poison=VeryResistant",
-                "Spirit=VeryWeak",
-                "Spirit=Weak",
-                "Spirit=Resistant",
-                "Spirit=VeryResistant"
-            )));
+            _WinterResistanceElement = config("5 - Winter", "Resistance Type", Element.Frost, "Element");
+            _WinterResistantMod = config("5 - Winter", "Resistance Modifier", DamageModifier.Resistant, "Modifier");
             _WinterValue = config("5 - Winter", "Modifying value", 0.9f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
 
             _WinterWeather1 = config("5 - Winter", "Weather 1", Environments.Snow, "Environment set by winter season.");
@@ -307,29 +280,8 @@ namespace Seasonality
             _SummerStartMsg = config("6 - Summer", "Start Message", "Summer has landed", "Start of the season message");
             _SummerTooltip = config("6 - Summer", "Tooltip", "The air is warm", "Status effect tooltip");
             _SummerModifier = config("6 - Summer", "Modifier", Modifier.MaxCarryWeight, "Stats modifier");
-            _SummerResistance = config("6 - Summer", "Resistance", "", new ConfigDescription("Resistance modifier", new AcceptableValueList<string>(
-                "",
-                "Fire=VeryWeak",
-                "Fire=Weak",
-                "Fire=Resistant",
-                "Fire=VeryResistant",
-                "Frost=VeryWeak",
-                "Frost=Weak",
-                "Frost=Resistant",
-                "Frost=VeryResistant",
-                "Lightning=VeryWeak",
-                "Lightning=Weak",
-                "Lightning=Resistant",
-                "Lightning=VeryResistant",
-                "Poison=VeryWeak",
-                "Poison=Weak",
-                "Poison=Resistant",
-                "Poison=VeryResistant",
-                "Spirit=VeryWeak",
-                "Spirit=Weak",
-                "Spirit=Resistant",
-                "Spirit=VeryResistant"
-            )));
+            _SummerResistanceElement = config("6 - Summer", "Resistance Type", Element.None, "Element");
+            _SummerResistanceMod = config("6 - Sumer", "Resistance Modifier", DamageModifier.None, "Modifier");
             _SummerValue = config("6 - Summer", "Modifying value", -50f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
             
             _SummerWeather1 = config("6 - Summer", "Weather 1", Environments.None, "Environment set by summer season.");
@@ -406,13 +358,14 @@ namespace Seasonality
             return config(group, name, value, new ConfigDescription(description), synchronizedSetting);
         }
 
-        // private class ConfigurationManagerAttributes
-        // {
-        //     [UsedImplicitly] public int? Order = null!;
-        //     [UsedImplicitly] public bool? Browsable = null!;
-        //     [UsedImplicitly] public string? Category = null!;
-        //     [UsedImplicitly] public Action<ConfigEntryBase>? CustomDrawer = null!;
-        // }
+        private class ConfigurationManagerAttributes
+        {
+            [UsedImplicitly] public int? Order = null!;
+            [UsedImplicitly] public bool? Browsable = null!;
+            [UsedImplicitly] public string? Category = null!;
+            [UsedImplicitly] public Action<ConfigEntryBase>? CustomDrawer = null!;
+        }
+        
         //
         // class AcceptableShortcuts : AcceptableValueBase
         // {

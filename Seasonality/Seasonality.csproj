@@ -176,9 +176,6 @@
         <EmbeddedResource Include="..\..\..\Textures\birch_leaf_spring.png">
           <Link>assets\birch_leaf_spring.png</Link>
         </EmbeddedResource>
-        <EmbeddedResource Include="..\..\..\Textures\grass_terrain_color_spring.png">
-          <Link>assets\grass_terrain_color_spring.png</Link>
-        </EmbeddedResource>
         <EmbeddedResource Include="..\..\..\Textures\ShootLeaf_d_spring.png">
           <Link>assets\ShootLeaf_d_spring.png</Link>
         </EmbeddedResource>

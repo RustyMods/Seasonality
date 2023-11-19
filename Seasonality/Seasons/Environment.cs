@@ -77,6 +77,12 @@ public static class Environment
         InfectedMine,
         Queen,
     }
+    [Serializable]
+    public class WeatherEntry
+    {
+        public Environments m_environment = Environments.None;
+        public float m_weight = 1f;
+    }
     
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.UpdateEnvironment))]
     static class EnvManPatch
@@ -87,6 +93,7 @@ public static class Environment
             string environmentOverride = __instance.GetEnvironmentOverride();
             if (!string.IsNullOrEmpty(environmentOverride))
             {
+                // If debug mode is active and user forces environment
                 __instance.m_environmentPeriod = -1L;
                 __instance.m_currentBiome = __instance.GetBiome();
                 __instance.QueueEnvironment(environmentOverride);
@@ -175,6 +182,16 @@ public static class Environment
                 if (__instance.m_environmentPeriod == seed) return false;
                 __instance.m_environmentPeriod = seed;
                 __instance.m_currentBiome = biome;
+
+                UnityEngine.Random.State state = UnityEngine.Random.state;
+                UnityEngine.Random.InitState((int) seed);
+                
+                __instance.QueueEnvironment(__instance.SelectWeightedEnvironment(environments));
+                UnityEngine.Random.state = state;
+
+                return false;
+                
+                
                 List<Action> actions = new();
                 foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
                 Utils.ApplyRandomly(actions);

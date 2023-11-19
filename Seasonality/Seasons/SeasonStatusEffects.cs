@@ -1,10 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
+using HarmonyLib;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
+
+static class SeasonalCompendium
+{
+    public static string customTooltip = null!;
+    [HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.AddActiveEffects))]
+    static class CompendiumAddActiveEffectsPatch
+    {
+        private static void Postfix(TextsDialog __instance)
+        {
+            if (_StatusEffectVisible.Value is Toggle.On) return;
+            __instance.m_texts.Insert(0, new TextsDialog.TextInfo(
+                Localization.instance.Localize(
+                    "$inventory_activeeffects"),
+                    customTooltip));
+        }
+    }
+}
 public enum Modifier
 {
     None,
@@ -129,6 +147,9 @@ public class SeasonalEffect
                     m_modifier = HitData.DamageModifier.Normal
                 };
 
+                if (damageType == "" || damageType == "None") continue;
+                if (damageValue == "" || damageValue == "None") continue;
+
                 switch (damageValue)
                 {
                     case "Normal": break;
@@ -173,22 +194,21 @@ public class SeasonalEffect
                     SeasonalityLogger.LogWarning($"[{effectName}] : Failed to get prefab: {spriteName}");
                     return null;
                 }
-                item.TryGetComponent(out ItemDrop itemDrop);
-                if (itemDrop) icon = itemDrop.m_itemData.GetIcon();
-            };
 
-            if (!icon) return null;
+                if (item.TryGetComponent(out ItemDrop itemDrop)) icon = itemDrop.m_itemData.GetIcon();
+                if (!icon) return null;
+            }
         }
         SeasonEffect seasonEffect = ScriptableObject.CreateInstance<SeasonEffect>();
         seasonEffect.name = effectName;
         seasonEffect.data = this;
-        seasonEffect.m_icon = icon;
+        seasonEffect.m_icon = _StatusEffectVisible.Value is Toggle.On ? icon : null;
         seasonEffect.m_name = displayName;
         seasonEffect.m_cooldown = duration; // guardian power cool down
         seasonEffect.m_ttl = duration; // status effect cool down
         seasonEffect.m_tooltip = appendedTooltip;
-        seasonEffect.m_startMessageType = MessageHud.MessageType.Center;
-        seasonEffect.m_stopMessageType = MessageHud.MessageType.Center;
+        seasonEffect.m_startMessageType = MessageHud.MessageType.TopLeft;
+        seasonEffect.m_stopMessageType = MessageHud.MessageType.TopLeft;
         seasonEffect.m_startMessage = startMsg;
         seasonEffect.m_stopMessage = stopMsg;
         seasonEffect.m_activationAnimation = activationAnimation;

@@ -34,7 +34,6 @@ public static class Vegetation
     private static void ModifyPrefab(GameObject prefab)
     {
         VegetationType type = Utils.GetVegetationType(prefab.name);
-
         if (type is VegetationType.None) return;
         switch (type)
         {
@@ -222,6 +221,8 @@ public static class Vegetation
                         tex = PineTree_Winter;
                         Texture? customPineWinter = Utils.GetCustomTexture(VegDirectories.Pine, Season.Winter);
                         if (customPineWinter) tex = customPineWinter;
+                        var shader = material.shader;
+                        
                         break;
                     case VegetationType.Fir:
                         tex = FirTree_Winter;
