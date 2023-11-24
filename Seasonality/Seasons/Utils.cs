@@ -93,22 +93,22 @@ public static class Utils
         return clutterName switch
         {
             "instanced_meadows_grass" => GrassTypes.GreenGrass,
-            "instanced_meadows_grass_short" => GrassTypes.GreenGrass,
-            "instanced_shrub" => GrassTypes.Shrubs,
-            "clutter_shrub_large" => GrassTypes.Shrubs,
-            "instanced_forest_groundcover_brown" => GrassTypes.GroundCover,
+            "instanced_meadows_grass_short" => GrassTypes.GreenGrassShort,
+            "instanced_shrub" => GrassTypes.ClutterShrubs,
+            "clutter_shrub_large" => GrassTypes.ClutterShrubs,
+            "instanced_forest_groundcover_brown" => GrassTypes.GroundCoverBrown,
             "instanced_forest_groundcover" => GrassTypes.GroundCover,
             "instanced_swamp_grass" => GrassTypes.SwampGrass,
             "instanced_heathgrass" => GrassTypes.HeathGrass,
-            "grasscross_heath_green" => GrassTypes.HeathGrass,
+            "grasscross_heath_green" => GrassTypes.GrassHeathGreen,
             "instanced_heathflowers" => GrassTypes.HeathFlowers,
-            "instanced_swamp_ormbunke" => GrassTypes.Ormbunke,
+            "instanced_swamp_ormbunke" => GrassTypes.OrmBunkeSwamp,
             "instanced_ormbunke" => GrassTypes.Ormbunke,
             "instanced_vass" => GrassTypes.Vass,
             "instanced_waterlilies" => GrassTypes.WaterLilies,
             "instanced_mistlands_rockplant" => GrassTypes.RockPlant,
             "instanced_small_rock1" => GrassTypes.Rocks,
-            "instanced_mistlands_grass_short" => GrassTypes.GreenGrass,
+            "instanced_mistlands_grass_short" => GrassTypes.MistlandGrassShort,
             _ => GrassTypes.None
         };
     }
@@ -163,8 +163,25 @@ public static class Utils
     
     public static VegDirectories VegToDirectory(GrassTypes type)
     {
-        grassConversionMap.TryGetValue(type, out VegDirectories result);
-        return result;
+        return (type) switch
+        {
+            GrassTypes.GreenGrass => VegDirectories.MeadowGrass,
+            GrassTypes.GreenGrassShort => VegDirectories.MeadowGrass,
+            GrassTypes.GroundCover => VegDirectories.BlackForestGrass,
+            GrassTypes.GroundCoverBrown => VegDirectories.BlackForestGrass,
+            GrassTypes.SwampGrass => VegDirectories.SwampGrass,
+            GrassTypes.HeathGrass => VegDirectories.PlainsGrass,
+            GrassTypes.HeathFlowers => VegDirectories.PlainsFlowers,
+            GrassTypes.Ormbunke => VegDirectories.Ormbunke,
+            GrassTypes.OrmBunkeSwamp => VegDirectories.Ormbunke,
+            GrassTypes.Vass => VegDirectories.Vass,
+            GrassTypes.WaterLilies => VegDirectories.WaterLilies,
+            GrassTypes.RockPlant => VegDirectories.RockPlant,
+            GrassTypes.ClutterShrubs => VegDirectories.Clutter,
+            GrassTypes.MistlandGrassShort => VegDirectories.MeadowGrass,
+            GrassTypes.GrassHeathGreen => VegDirectories.PlainsGrass,
+            _ => VegDirectories.None
+        };
     }
 
     private static readonly Dictionary<VegetationType, VegDirectories> vegConversionMap = new()
@@ -179,20 +196,6 @@ public static class Utils
         { VegetationType.PlainsBush , VegDirectories.PlainsBush },
         { VegetationType.Shrub , VegDirectories.Shrub },
         { VegetationType.Rock , VegDirectories.Rock }
-    };
-
-    private static readonly Dictionary<GrassTypes, VegDirectories> grassConversionMap = new()
-    {
-        { GrassTypes.GreenGrass , VegDirectories.MeadowGrass },
-        { GrassTypes.GroundCover , VegDirectories.BlackForestGrass },
-        { GrassTypes.SwampGrass , VegDirectories.SwampGrass },
-        { GrassTypes.HeathGrass , VegDirectories.PlainsGrass },
-        { GrassTypes.HeathFlowers , VegDirectories.PlainsFlowers },
-        { GrassTypes.Ormbunke , VegDirectories.Ormbunke },
-        { GrassTypes.Vass , VegDirectories.Vass },
-        { GrassTypes.WaterLilies , VegDirectories.WaterLilies },
-        { GrassTypes.RockPlant , VegDirectories.RockPlant },
-        { GrassTypes.Shrubs , VegDirectories.Clutter }
     };
     public static void ApplyBasedOnAvailable(
         Season season, 
@@ -212,14 +215,22 @@ public static class Utils
         }
     }
 
+    public static bool ApplyIfAvailable(GameObject prefab, VegetationType type)
+    {
+        if (!vegConversionMap.TryGetValue(type, out VegDirectories directories)) return false;
+        if (!CustomTextureExist(directories, _Season.Value)) return false;
+        ApplyMaterialToObj(prefab, type);
+        return true;
+    }
+
     public static bool ApplyBasedOnAvailable(VegDirectories directory, Season season, Material material, string prop)
     {
+        if (directory is VegDirectories.None) return false;
         if (!CustomTextureExist(directory, season)) return false;
         
         Texture? tex = GetCustomTexture(directory, season);
         if (!tex) return false;
         
-        // SeasonalityLogger.LogWarning($"Applying custom texture to {material.name}");
         material.SetTexture(prop, tex);
         material.color = Color.white;
         return true;

@@ -9,7 +9,7 @@ namespace Seasonality.Seasons;
 
 public static class Vegetation
 {
-    private static SeasonalityPlugin.Toggle currentModEnabled;
+    private static Toggle currentModEnabled;
     private enum modificationType { Color, Material }
     
     [HarmonyPatch(typeof(ZNetView), nameof(ZNetView.Awake))]
@@ -35,6 +35,14 @@ public static class Vegetation
     {
         VegetationType type = Utils.GetVegetationType(prefab.name);
         if (type is VegetationType.None) return;
+
+        // If custom textures, use that
+        if (Utils.ApplyIfAvailable(prefab, type)) return;
+        // Else use plugin settings
+        
+        
+        
+        
         switch (type)
         {
             case VegetationType.Beech or VegetationType.Birch or VegetationType.Oak or VegetationType.Yggashoot 
@@ -44,13 +52,7 @@ public static class Vegetation
                 // Within AssignMods method, are filters to redirect towards texture replacement
                 AssignMods(prefab, modificationType.Color, type);
                 break;
-            case VegetationType.Pine or VegetationType.Fir or VegetationType.Log
-                or VegetationType.Swamp or VegetationType.Stubbe:
-                // These prefabs contain a single texture
-                // Tinting is not recommended, so always choose texture replace
-                AssignMods(prefab, modificationType.Material, type);
-                break;
-            case VegetationType.Rock:
+            default: 
                 AssignMods(prefab, modificationType.Material, type);
                 break;
         }
@@ -131,8 +133,7 @@ public static class Vegetation
     
     private static void ModifyParticleSystem(Transform prefab, Color color)
     {
-        prefab.TryGetComponent(out ParticleSystem particleSystem);
-        if (!particleSystem) return;
+        if (!prefab.TryGetComponent(out ParticleSystem particleSystem)) return;
         ParticleSystem.MainModule main = particleSystem.main;
 
         switch (_Season.Value)
@@ -144,8 +145,7 @@ public static class Vegetation
 
     private static void ModifyMeshRenderer(Transform prefab, Color color, modificationType modType, VegetationType type)
     {
-        prefab.TryGetComponent(out MeshRenderer meshRenderer);
-        if (!meshRenderer) return;
+        if (!prefab.TryGetComponent(out MeshRenderer meshRenderer)) return;
         
         Material[]? materials = meshRenderer.materials;
         foreach (Material mat in materials)
@@ -186,7 +186,8 @@ public static class Vegetation
         // rock_mistlands (Instance): _MossTex
         // rock_mistlands (Instance): _GlossMap
         // rock_mistlands (Instance): _MetalTex
-        
+
+        string materialName = mat.name.ToLower();
         string[]? properties = mat.GetTexturePropertyNames();
         foreach (string prop in properties)
         {
@@ -197,11 +198,11 @@ public static class Vegetation
             }
             if (!prop.ToLower().Contains("main") || !modifyMainTex) continue;
             // Make sure only the leaves are affected 
-            if (mat.name.Contains("bark") 
-                || mat.name.Contains("trunk") 
-                || mat.name.Contains("log") 
-                || mat.name.Contains("wood")
-                || mat.name.Contains("stump")
+            if (materialName.Contains("bark") 
+                || materialName.Contains("trunk") 
+                || materialName.Contains("log") 
+                || materialName.Contains("wood")
+                || materialName.Contains("stump")
                 ) continue;
             ModifyMainTex(prop, mat, type);
         }
@@ -221,8 +222,6 @@ public static class Vegetation
                         tex = PineTree_Winter;
                         Texture? customPineWinter = Utils.GetCustomTexture(VegDirectories.Pine, Season.Winter);
                         if (customPineWinter) tex = customPineWinter;
-                        var shader = material.shader;
-                        
                         break;
                     case VegetationType.Fir:
                         tex = FirTree_Winter;

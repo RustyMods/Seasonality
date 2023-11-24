@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BepInEx;
 using HarmonyLib;
 using TMPro;
 using UnityEngine;
@@ -20,7 +21,7 @@ public static class SeasonalEffects
         private static void Postfix(EnvMan __instance)
         {
             if (workingAsType is not WorkingAs.Server || _ModEnabled.Value is Toggle.Off) return;
-            if (_SeasonDuration.Value == 0 || _SeasonLocked.Value is Toggle.On) return;
+            if (_SeasonDuration.Value == 0 || _SeasonControl.Value is Toggle.On) return;
             
             // Server patch to track season counter and set config file
             int remainingDays = _SeasonDuration.Value - (__instance.GetCurrentDay() % _SeasonDuration.Value) + 1;
@@ -65,78 +66,70 @@ public static class SeasonalEffects
         {
             if (!__instance) return;
             if (_ModEnabled.Value is Toggle.Off) return;
-            
-            try
+            if (Player.m_localPlayer.IsDead()) return;
+            if (AugaLoaded)
             {
-                // Compatibility with Project Auga...
-                int index = statusEffects.FindIndex(effect => effect is SeasonEffect);
-                RectTransform? rectTransform = __instance.m_statusEffects[index];
-                if (!rectTransform) return;
-                Transform? timeText = rectTransform.Find("TimeText");
-                if (!timeText) return;
-                if (!timeText.TryGetComponent(out TMP_Text tmpText)) return;
-                if (_SeasonDuration.Value == 0 || _SeasonLocked.Value is Toggle.On)
+                _SeasonControl.Value = Toggle.On;
+                _SeasonDuration.Value = 0;
+                return;
+            }
+            
+            int index = statusEffects.FindIndex(effect => effect is SeasonEffect);
+            if (index == -1) return;
+            RectTransform? rectTransform = __instance.m_statusEffects[index];
+            if (!rectTransform) return;
+            Transform? timeText = rectTransform.Find("TimeText");
+            if (!timeText) return;
+            if (!timeText.TryGetComponent(out TMP_Text tmpText)) return;
+            if (_SeasonDuration.Value == 0 || _SeasonControl.Value is Toggle.On)
+            {
+                tmpText.gameObject.SetActive(false);
+                return;
+            }
+
+            int remainingDays = _SeasonDuration.Value - (EnvMan.instance.GetCurrentDay() % _SeasonDuration.Value) + 1;
+            float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1 - time of day
+            float remainder = remainingDays - fraction;
+
+            // Convert to in-game time
+            int totalMinutes = (int)(remainder * 24 * 60);
+            int hours = remainingDays - 2;
+            int minutes = totalMinutes % (24 * 60) / 60;
+            int seconds = totalMinutes % 60;
+
+            string time = $"{hours:D2}:{minutes:D2}:{seconds:D2}";
+
+            tmpText.gameObject.SetActive(_CounterVisible.Value is Toggle.On);
+            tmpText.text = time;
+            if (workingAsType is WorkingAs.Client)
+            {
+                // If user is a client connected to a server, then do not set seasons
+                // Wait for server to change config value
+                return;
+            }
+
+            // Use calculated data to set season change if counter hits less than 3
+            if (hours < 1 && minutes < 1 && seconds < 5)
+            {
+                if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
+                if (_Season.Value == (Season)SeasonIndex)
                 {
-                    tmpText.gameObject.SetActive(false);
-                    return;
-                }
-
-                int remainingDays = _SeasonDuration.Value - (EnvMan.instance.GetCurrentDay() % _SeasonDuration.Value) +
-                                    1;
-                float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1 - time of day
-                float remainder = remainingDays - fraction;
-
-                // Convert to in-game time
-                int totalMinutes = (int)(remainder * 24 * 60);
-                int hours = remainingDays - 2;
-                int minutes = totalMinutes % (24 * 60) / 60;
-                int seconds = totalMinutes % 60;
-
-                string time = $"{hours:D2}:{minutes:D2}:{seconds:D2}";
-
-                tmpText.gameObject.SetActive(_CounterVisible.Value is Toggle.On);
-                tmpText.text = time;
-                if (workingAsType is WorkingAs.Client)
-                {
-                    // If user is a client connected to a server, then do not set seasons
-                    // Wait for server to change config value
-                    return;
-                }
-
-                // Use calculated data to set season change if counter hits less than 3
-                if (hours < 1 && minutes < 1 && seconds < 5)
-                {
-                    if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
-                    if (_Season.Value == (Season)SeasonIndex)
-                    {
-                        SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-                        _Season.Value = (Season)SeasonIndex;
-                    }
-                    else
-                    {
-                        _Season.Value = (Season)SeasonIndex;
-                        SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-                    }
-
-                    LastSeasonChange = DateTime.Now;
-                }
-
-                else if (_Season.Value != (Season)SeasonIndex)
-                {
-                    // To switch it back to timer settings if configs changed
+                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
                     _Season.Value = (Season)SeasonIndex;
                 }
+                else
+                {
+                    _Season.Value = (Season)SeasonIndex;
+                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+                }
 
+                LastSeasonChange = DateTime.Now;
             }
-            catch (Exception e)
+
+            else if (_Season.Value != (Season)SeasonIndex)
             {
-                // Compatibility with Project Auga
-                // He changes the layout of the UI so
-                // This method cannot find the location of the status effects
-                // For now, try catch the method and disable counter visibility
-                _SeasonDuration.Value = 0;
-                _SeasonLocked.Value = Toggle.On;
-                return;
+                // To switch it back to timer settings if configs changed
+                _Season.Value = (Season)SeasonIndex;
             }
         }
     }

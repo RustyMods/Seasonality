@@ -38,7 +38,17 @@ public static class CustomTextures
 
     public static readonly Texture? ClutterShrub_Winter = RegisterTexture("clutter_shrub_winter.png");
     public static readonly Texture? Ormbunke_Winter = RegisterTexture("autumn_ormbunke_green_winter.png");
-    
+
+    public static readonly Texture? GrassTerrainFall = RegisterTexture("grass_terrain_color _fall.png");
+
+    public static readonly Texture? Vass_Fall = RegisterTexture("vass_texture01_fall.png");
+    public static readonly Texture? Vass_Winter = RegisterTexture("vass_texture01_winter.png");
+
+    public static readonly Texture? WaterLilies_Fall = RegisterTexture("waterlilies_fall.png");
+    public static readonly Texture? WaterLilies_Spring = RegisterTexture("waterlilies_spring.png");
+    public static readonly Texture? WaterLilies_Winter = RegisterTexture("waterlilies_winter.png");
+
+
     public static readonly Dictionary<VegDirectories, Dictionary<Season, Texture?>> CustomRegisteredTextures = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {
@@ -106,7 +116,8 @@ public static class CustomTextures
         Vass,
         WaterLilies,
         RockPlant,
-        Clutter
+        Clutter,
+        None
     }
     public static void ReadCustomTextures()
     {
@@ -116,6 +127,7 @@ public static class CustomTextures
 
         foreach (VegDirectories directory in Enum.GetValues(typeof(VegDirectories)))
         {
+            if (directory is VegDirectories.None) continue;
             string type = directory.ToString();
             if (!Directory.Exists(texturePath + Path.DirectorySeparatorChar + type))
             {

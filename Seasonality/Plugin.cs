@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -18,10 +20,11 @@ using Environment = Seasonality.Seasons.Environment;
 namespace Seasonality
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
+    [BepInDependency("randyknapp.mods.auga",BepInDependency.DependencyFlags.SoftDependency)]
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "1.0.5";
+        internal const string ModVersion = "1.0.9";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -49,12 +52,15 @@ namespace Seasonality
         }
 
         public static WorkingAs workingAsType;
+        public static bool AugaLoaded = false;
         public void Awake()
         {
             _serverConfigLocked = config("1 - General", "1 - Lock Configuration", Toggle.On,
                 "If on, the configuration is locked and can be changed by server admins only.");
             _ = ConfigSync.AddLockingConfigEntry(_serverConfigLocked);
 
+            if (Chainloader.PluginInfos.ContainsKey("randyknapp.mods.auga")) AugaLoaded = true;
+            
             workingAsType = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null
                 ? WorkingAs.Server
                 : WorkingAs.Client;
@@ -184,7 +190,7 @@ namespace Seasonality
         public static ConfigEntry<SpecialEffects.SpecialEffect> _WinterStartEffects = null!;
         public static ConfigEntry<SpecialEffects.SpecialEffect> _WinterStopEffects = null!;
 
-        public static ConfigEntry<Toggle> _SeasonLocked = null!;
+        public static ConfigEntry<Toggle> _SeasonControl = null!;
         public static ConfigEntry<Toggle> _ModEnabled = null!;
         public static ConfigEntry<Toggle> _CounterVisible = null!;
         public static ConfigEntry<Toggle> _WeatherControl = null!;
@@ -193,7 +199,7 @@ namespace Seasonality
         #endregion
         private void InitConfigs()
         {
-            _SeasonLocked = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
+            _SeasonControl = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
             
             _Season = config("2 - Utilities", "1 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");

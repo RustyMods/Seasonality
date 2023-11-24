@@ -167,36 +167,30 @@ public static class Environment
 
         private static bool ModifyEnvironment(EnvMan __instance, long sec, Heightmap.Biome biome, List<EnvEntry> environments)
         {
-            if (_WeatherDuration.Value == 0)
-            {
-                __instance.m_environmentPeriod = -1L;
-                __instance.m_currentBiome = biome;
-                List<Action> actions = new();
-                foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
-                Utils.ApplyRandomly(actions);
-                return false;
-            }
-            else
-            {
-                long seed = sec / _WeatherDuration.Value;
-                if (__instance.m_environmentPeriod == seed) return false;
-                __instance.m_environmentPeriod = seed;
-                __instance.m_currentBiome = biome;
+            // if (_WeatherDuration.Value == 0)
+            // {
+            //     __instance.m_environmentPeriod = -1L;
+            //     __instance.m_currentBiome = biome;
+            //     List<Action> actions = new();
+            //     foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
+            //     Utils.ApplyRandomly(actions);
+            //     return false;
+            // }
+            long seed = sec / _WeatherDuration.Value;
+            if (__instance.m_environmentPeriod == seed) return false;
+            __instance.m_environmentPeriod = seed;
+            __instance.m_currentBiome = biome;
 
-                UnityEngine.Random.State state = UnityEngine.Random.state;
-                UnityEngine.Random.InitState((int) seed);
-                
-                __instance.QueueEnvironment(__instance.SelectWeightedEnvironment(environments));
-                UnityEngine.Random.state = state;
+            List<Action> actions = new();
+            foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
+            Utils.ApplyRandomly(actions);
+            // UnityEngine.Random.State state = UnityEngine.Random.state;
+            // UnityEngine.Random.InitState((int) seed);
+            //     
+            // __instance.QueueEnvironment(__instance.SelectWeightedEnvironment(environments));
+            // UnityEngine.Random.state = state;
 
-                return false;
-                
-                
-                List<Action> actions = new();
-                foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
-                Utils.ApplyRandomly(actions);
-                return false;
-            }
+            return false;
         }
     }
 }

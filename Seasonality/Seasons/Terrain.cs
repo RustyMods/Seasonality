@@ -34,15 +34,20 @@ public static class TerrainPatch
             Texture? texture = (type) switch
             {
                 GrassTypes.GreenGrass => clutterTextures.Find(x => x.name == "grass_terrain_color"),
+                GrassTypes.GreenGrassShort => clutterTextures.Find(x => x.name == "grass_terrain_color"),
+                GrassTypes.ClutterShrubs => clutterTextures.Find(x => x.name == "clutter_shrub"),
+                GrassTypes.GroundCover => clutterTextures.Find(x => x.name == "forest_groundcover"),
+                GrassTypes.GroundCoverBrown => clutterTextures.Find(x => x.name == "forest_groundcover_brown"),
+                GrassTypes.SwampGrass => clutterTextures.Find(x => x.name == "grass_toon1_yellow"),
                 GrassTypes.HeathGrass => clutterTextures.Find(x => x.name == "grass_heath"),
                 GrassTypes.HeathFlowers => clutterTextures.Find(x => x.name == "grass_heath_redflower"),
-                GrassTypes.RockPlant => clutterTextures.Find(x => x.name == "MistlandsVegetation_d"),
                 GrassTypes.Ormbunke => clutterTextures.Find(x => x.name == "autumn_ormbunke_green"),
-                GrassTypes.Shrubs => clutterTextures.Find(x => x.name == "clutter_shrub"),
-                GrassTypes.GroundCover => clutterTextures.Find(x => x.name == "forest_groundcover"),
-                GrassTypes.SwampGrass => clutterTextures.Find(x => x.name == "grass_toon1_yellow"),
+                GrassTypes.OrmBunkeSwamp => clutterTextures.Find(x => x.name == "autumn_ormbunke_swamp"),
                 GrassTypes.Vass => clutterTextures.Find(x => x.name == "vass_texture01"),
                 GrassTypes.WaterLilies => clutterTextures.Find(x => x.name == "waterlilies"),
+                GrassTypes.RockPlant => clutterTextures.Find(x => x.name == "MistlandsVegetation_d"),
+                GrassTypes.Rocks => clutterTextures.Find(x => x.name == "rock_low"),
+                GrassTypes.MistlandGrassShort => clutterTextures.Find(x => x.name == "mistlands_moss"),
                 _ => null
             };
             if (texture) mat.SetTexture(property, texture);
@@ -64,13 +69,16 @@ public static class TerrainPatch
             if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
             if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
             // If texture file recognized, use it and move on
+            
+            // Failure in getting correct textures.
+            // Black grass caused by using wrong texture
             switch (type)
             {
-                case GrassTypes.Shrubs or GrassTypes.Ormbunke or GrassTypes.HeathFlowers:
-                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp)) continue;
+                case GrassTypes.GreenGrass or GrassTypes.GreenGrassShort:
+                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, terrainProp)) continue;
                     break;
                 default:
-                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, terrainProp)) continue;
+                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp)) continue;
                     break;
             }
             // Else use plugin settings
@@ -78,15 +86,20 @@ public static class TerrainPatch
             Texture? tex = (type) switch
             {
                 GrassTypes.GreenGrass => clutterTextures.Find(x => x.name == "grass_terrain_color"),
+                GrassTypes.GreenGrassShort => clutterTextures.Find(x => x.name == "grass_terrain_color"),
+                GrassTypes.ClutterShrubs => clutterTextures.Find(x => x.name == "clutter_shrub"),
+                GrassTypes.GroundCover => clutterTextures.Find(x => x.name == "forest_groundcover"),
+                GrassTypes.GroundCoverBrown => clutterTextures.Find(x => x.name == "forest_groundcover_brown"),
+                GrassTypes.SwampGrass => clutterTextures.Find(x => x.name == "grass_toon1_yellow"),
                 GrassTypes.HeathGrass => clutterTextures.Find(x => x.name == "grass_heath"),
                 GrassTypes.HeathFlowers => clutterTextures.Find(x => x.name == "grass_heath_redflower"),
-                GrassTypes.RockPlant => clutterTextures.Find(x => x.name == "MistlandsVegetation_d"),
                 GrassTypes.Ormbunke => clutterTextures.Find(x => x.name == "autumn_ormbunke_green"),
-                GrassTypes.Shrubs => clutterTextures.Find(x => x.name == "clutter_shrub"),
-                GrassTypes.GroundCover => clutterTextures.Find(x => x.name == "forest_groundcover"),
-                GrassTypes.SwampGrass => clutterTextures.Find(x => x.name == "grass_toon1_yellow"),
+                GrassTypes.OrmBunkeSwamp => clutterTextures.Find(x => x.name == "autumn_ormbunke_swamp"),
                 GrassTypes.Vass => clutterTextures.Find(x => x.name == "vass_texture01"),
                 GrassTypes.WaterLilies => clutterTextures.Find(x => x.name == "waterlilies"),
+                GrassTypes.RockPlant => clutterTextures.Find(x => x.name == "MistlandsVegetation_d"),
+                GrassTypes.Rocks => clutterTextures.Find(x => x.name == "rock_low"),
+                GrassTypes.MistlandGrassShort => clutterTextures.Find(x => x.name == "mistlands_moss"),
                 _ => null
             };
             mat.color = Color.white;
@@ -96,21 +109,25 @@ public static class TerrainPatch
                 case Season.Fall:
                     switch (type)
                     {
-                        case GrassTypes.GreenGrass or GrassTypes.HeathGrass:
-                            tex = clutterTextures.Find(x => x.name == "grass_heath");
+                        case GrassTypes.GreenGrass or GrassTypes.GreenGrassShort:
+                            tex = GrassTerrainFall;
                             break;
-                        case GrassTypes.Shrubs:
+                        case GrassTypes.ClutterShrubs:
                             tex = ClutterShrub_Winter;
                             AssignColors(obj, new List<Color>(){_FallColor1.Value, _FallColor2.Value, _FallColor3.Value}, type);
                             break;
                         case GrassTypes.GroundCover:
-                            tex = clutterTextures.Find(x => x.name == "forest_groundcover 1"); // redish forest ground cover
+                            tex = clutterTextures.Find(x => x.name == "forest_groundcover_brown"); // redish forest ground cover
                             break;
                         case GrassTypes.Ormbunke:
                             tex = Ormbunke_Winter;
                             AssignColors(obj, new List<Color>(){_FallColor1.Value, _FallColor2.Value, _FallColor3.Value}, type);
                             break;
-                        case GrassTypes.None:
+                        case GrassTypes.Vass:
+                            tex = Vass_Fall;
+                            break;
+                        case GrassTypes.WaterLilies:
+                            tex = WaterLilies_Fall;
                             break;
                     }
                     break;
@@ -118,50 +135,56 @@ public static class TerrainPatch
                     switch (type)
                     {
                         case GrassTypes.GroundCover:
-                            tex = clutterTextures.Find(x => x.name == "forest_groundcover 1");
+                            tex = clutterTextures.Find(x => x.name == "forest_groundcover_brown");
                             mat.color = new Color(0.5f, 0.6f, 0f, 1f);
+                            break;
+                        case GrassTypes.WaterLilies:
+                            tex = WaterLilies_Spring;
                             break;
                     }
                     break;
                 case Season.Summer:
                     switch (type)
                     {
-                        case GrassTypes.HeathGrass:
-                            tex = SnowTexture;
-                            break;
                         case GrassTypes.GroundCover:
-                            tex = clutterTextures.Find(x => x.name == "forest_groundcover 1");
+                            tex = clutterTextures.Find(x => x.name == "forest_groundcover_brown");
                             break;
                     }
                     break;
                 case Season.Winter:
                     switch (type)
                     {
-                        case GrassTypes.GreenGrass or GrassTypes.HeathGrass:
+                        case GrassTypes.GreenGrass or GrassTypes.GreenGrassShort:
                             tex = SnowTexture;
                             break;
                         case GrassTypes.GroundCover:
-                            tex = clutterTextures.Find(x => x.name == "forest_groundcover 1");
+                            tex = clutterTextures.Find(x => x.name == "forest_groundcover_brown");
                             break;
-                        case GrassTypes.Shrubs:
+                        case GrassTypes.ClutterShrubs:
                             tex = ClutterShrub_Winter;
                             break;
                         case GrassTypes.Ormbunke:
                             tex = Ormbunke_Winter;
                             break;
+                        case GrassTypes.Vass:
+                            tex = Vass_Winter;
+                            break;
+                        case GrassTypes.WaterLilies:
+                            tex = WaterLilies_Winter;
+                            break;
                     }   
                     break;
             }
 
-            if (tex)
+            if (tex != null)
             {
                 switch (type)
                 {
-                    case GrassTypes.Shrubs or GrassTypes.Ormbunke:
-                        mat.SetTexture(mainProp, tex);
+                    case GrassTypes.GreenGrassShort or GrassTypes.GreenGrass:
+                        mat.SetTexture(terrainProp, tex);
                         break;
                     default:
-                        mat.SetTexture(terrainProp, tex);
+                        mat.SetTexture(mainProp, tex);
                         break;
                 }
             }
@@ -229,17 +252,16 @@ public static class TerrainPatch
                 
             __instance.m_clutter.Add(MountainGrass);
         }
+
         private static void CacheInitialData(ClutterSystem __instance)
         {
             foreach (ClutterSystem.Clutter? clutter in __instance.m_clutter)
             {
                 GameObject obj = clutter.m_prefab;
-                obj.TryGetComponent(out InstanceRenderer instanceRenderer);
-                if (!instanceRenderer) continue;
-            
+                if (!obj.TryGetComponent(out InstanceRenderer instanceRenderer)) continue;
                 // Save textures to use them later on
                 // To revert back to original textures
-                Material mat = instanceRenderer.m_material;
+                Material? mat = instanceRenderer.m_material;
                 int[]? IDs = mat.GetTexturePropertyNameIDs();
                 foreach (int id in IDs)
                 {
@@ -312,23 +334,4 @@ public static class TerrainPatch
         }
     }
 
-    // [HarmonyPatch(typeof(Heightmap), nameof(Heightmap.CalcVertex))]
-    // static class CalcVertexPatch
-    // {
-    //     private static bool Prefix(Heightmap __instance, int x, int y, out Vector3 __result)
-    //     {
-    //         int num = __instance.m_width + 1;
-    //         Vector3 vector3_1 = new Vector3((float) (__instance.m_width * (double) __instance.m_scale * -0.5), 0.0f, (float) (__instance.m_width * (double) __instance.m_scale * -0.5));
-    //         float height = __instance.m_heights[y * num + x];
-    //         Vector3 vector3_2 = new Vector3(x * __instance.m_scale, height, y * __instance.m_scale);
-    //
-    //         __result = vector3_1 + vector3_2;
-    //         if (_Season.Value is Season.Winter)
-    //         {
-    //             __result = vector3_1 + vector3_2 + new Vector3(30f, 30f);
-    //         }
-    //         return false;
-    //     }
-    // }
-    
 }

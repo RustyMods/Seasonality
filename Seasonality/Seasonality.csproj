@@ -118,6 +118,7 @@
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Seasons\BossStonePatcher.cs" />
+        <Compile Include="Seasons\Creatures.cs" />
         <Compile Include="Seasons\CustomTextures.cs" />
         <Compile Include="Seasons\Environment.cs" />
         <Compile Include="Seasons\GrassTypes.cs" />
@@ -190,6 +191,24 @@
         </EmbeddedResource>
         <EmbeddedResource Include="..\..\..\Textures\autumn_ormbunke_green_winter.png">
           <Link>assets\autumn_ormbunke_green_winter.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\grass_terrain_color _fall.png">
+          <Link>assets\grass_terrain_color _fall.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\vass_texture01_fall.png">
+          <Link>assets\vass_texture01_fall.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\vass_texture01_winter.png">
+          <Link>assets\vass_texture01_winter.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\waterlilies_fall.png">
+          <Link>assets\waterlilies_fall.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\waterlilies_spring.png">
+          <Link>assets\waterlilies_spring.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\waterlilies_winter.png">
+          <Link>assets\waterlilies_winter.png</Link>
         </EmbeddedResource>
         <Content Include=".gitignore" />
         <Content Include="environment.props" />
