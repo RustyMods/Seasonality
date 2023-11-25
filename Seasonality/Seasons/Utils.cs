@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HarmonyLib;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Seasons.CustomTextures;
@@ -197,23 +198,6 @@ public static class Utils
         { VegetationType.Shrub , VegDirectories.Shrub },
         { VegetationType.Rock , VegDirectories.Rock }
     };
-    public static void ApplyBasedOnAvailable(
-        Season season, 
-        GameObject prefab, 
-        VegetationType type,
-        List<Action> actions)
-    {
-        if (vegConversionMap.TryGetValue(type, out VegDirectories directories))
-        {
-            if (CustomTextureExist(directories, season)) ApplyMaterialToObj(prefab, type);
-            else ApplySeasonalColors(prefab, actions, type);
-        }
-        else
-        {
-            // Make sure you redefine your filters
-            ApplySeasonalColors(prefab, actions, type);
-        }
-    }
 
     public static bool ApplyIfAvailable(GameObject prefab, VegetationType type)
     {
@@ -237,7 +221,7 @@ public static class Utils
 
     }
     
-    private static void ApplySeasonalColors(GameObject prefab, List<Action> actions, VegetationType type)
+    public static void CreateColorActions(GameObject prefab, List<Action> actions, VegetationType type)
     {
         List<Color> ConfigSummerColors = new()
         {
@@ -290,7 +274,6 @@ public static class Utils
             case Season.Fall:
                 foreach (Color color in ConfigFallColors) actions.Add( ApplyColor(prefab, color, type));
                 break;
-            
         }
     }
 

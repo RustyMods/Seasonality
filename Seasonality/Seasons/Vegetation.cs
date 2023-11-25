@@ -39,36 +39,25 @@ public static class Vegetation
         // If custom textures, use that
         if (Utils.ApplyIfAvailable(prefab, type)) return;
         // Else use plugin settings
-        
-        
-        
-        
         switch (type)
         {
             case VegetationType.Beech or VegetationType.Birch or VegetationType.Oak or VegetationType.Yggashoot 
                 or VegetationType.Bush or VegetationType.PlainsBush or VegetationType.Shrub:
-                // These prefabs are well suited for color tinting
-                // Some cases where it is better to replace texture
-                // Within AssignMods method, are filters to redirect towards texture replacement
-                AssignMods(prefab, modificationType.Color, type);
+                ApplyColorTint(prefab, type);
                 break;
-            default: 
-                AssignMods(prefab, modificationType.Material, type);
+            default:
+                ApplyMaterialToObj(prefab, type);
                 break;
         }
     }
 
-    private static void AssignMods(GameObject prefab, modificationType modType, VegetationType type)
+    private static void ApplyColorTint(GameObject prefab, VegetationType type)
     {
-        if (modType is modificationType.Material) { ApplyMaterialToObj(prefab, type); return; }
-        
         List<Action> actions = new();
         switch (_Season.Value)
         {
             case Season.Fall:
-                // use this method to make sure that the texture is available
-                // and directory type matches a vegetation type
-                Utils.ApplyBasedOnAvailable(Season.Fall, prefab, type, actions);
+                Utils.CreateColorActions(prefab, actions, type);
                 break;
             case Season.Spring:
                 switch (type)
@@ -77,25 +66,29 @@ public static class Vegetation
                         or VegetationType.Birch or VegetationType.Yggashoot:
                         ApplyMaterialToObj(prefab, type);
                         break;
-                    default: Utils.ApplyBasedOnAvailable(Season.Spring, prefab, type, actions); break;
+                    default: Utils.CreateColorActions(prefab, actions, type); break;
                 }
                 break;
             case Season.Summer:
                 switch (type)
                 {
                     case VegetationType.Rock: break;
-                    default: Utils.ApplyBasedOnAvailable(Season.Summer, prefab, type, actions); break;
+                    default: Utils.CreateColorActions(prefab, actions, type); break;
                 }
                 break;
             case Season.Winter:
                 switch (type)
                 {
-                    case VegetationType.Shrub or VegetationType.PlainsBush: ApplyMaterialToObj(prefab, type); break;
+                    case VegetationType.Shrub or VegetationType.PlainsBush: 
+                        ApplyMaterialToObj(prefab, type); break;
                     case VegetationType.Beech or VegetationType.Birch:
-                        if (prefab.name.ToLower().Contains("small")) Utils.ApplyBasedOnAvailable(Season.Winter, prefab, type, actions);
+                        if (prefab.name.ToLower().Contains("small"))
+                        {
+                            Utils.CreateColorActions(prefab, actions, type);
+                        }
                         else ApplyMaterialToObj(prefab, type);
                         break;
-                    default: Utils.ApplyBasedOnAvailable(Season.Winter, prefab, type, actions); break;
+                    default: Utils.CreateColorActions(prefab, actions, type); break;
                 }
                 break;
                 
