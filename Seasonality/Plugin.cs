@@ -291,7 +291,7 @@ namespace Seasonality
             _SummerTooltip = config("6 - Summer", "Tooltip", "The air is warm", "Status effect tooltip");
             _SummerModifier = config("6 - Summer", "Modifier", Modifier.MaxCarryWeight, "Stats modifier");
             _SummerResistanceElement = config("6 - Summer", "Resistance Type", Element.None, "Element");
-            _SummerResistanceMod = config("6 - Sumer", "Resistance Modifier", DamageModifier.None, "Modifier");
+            _SummerResistanceMod = config("6 - Summer", "Resistance Modifier", DamageModifier.None, "Modifier");
             _SummerValue = config("6 - Summer", "Modifying value", -50f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
             
             _SummerWeather1 = config("6 - Summer", "Weather 1", Environments.None, "Environment set by summer season.");

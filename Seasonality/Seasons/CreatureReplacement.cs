@@ -18,7 +18,7 @@ public static class CreatureReplacement
                     switch (critterName)
                     {
                         case "Leech":
-                            if (_ReplaceLeech.Value is not Toggle.On) return true;
+                            if (_ReplaceLeech.Value is Toggle.Off) return true;
                             __instance.Spawn(CloneData(critter, "Leech_cave"), spawnPoint, eventSpawner);
                             return false;
                     }
