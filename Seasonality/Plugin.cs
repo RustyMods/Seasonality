@@ -24,7 +24,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "1.0.9";
+        internal const string ModVersion = "1.1.0";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -196,6 +196,8 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _WeatherControl = null!;
         public static ConfigEntry<Toggle> _StatusEffectVisible = null!;
 
+        public static ConfigEntry<Toggle> _ReplaceLeech = null!;
+
         #endregion
         private void InitConfigs()
         {
@@ -210,8 +212,10 @@ namespace Seasonality
             _SeasonalEffectsEnabled = config("2 - Utilities", "5 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");
             _StatusEffectVisible = config("2 - Utilities", "7 - Season Icon Visible", Toggle.On, "If on, season icon is visible", false);
             
-            #region Weather
+            #region Creatures
 
+            _ReplaceLeech = config("7 - Creature Replacement", "Leeches", Toggle.On,
+                "If on, winter replaces leeches for leech_cave (white leech)");
             #endregion
             #region SpringConfigs
             _SpringName = config("3 - Spring", "Name", "Spring", "Display name");

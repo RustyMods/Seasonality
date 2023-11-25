@@ -119,6 +119,7 @@
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Seasons\BossStonePatcher.cs" />
         <Compile Include="Seasons\ConsoleCommands.cs" />
+        <Compile Include="Seasons\CreatureReplacement.cs" />
         <Compile Include="Seasons\CustomTextures.cs" />
         <Compile Include="Seasons\Environment.cs" />
         <Compile Include="Seasons\GrassTypes.cs" />
@@ -209,6 +210,12 @@
         </EmbeddedResource>
         <EmbeddedResource Include="..\..\..\Textures\waterlilies_winter.png">
           <Link>assets\waterlilies_winter.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\beech_leaf_white.png">
+          <Link>assets\beech_leaf_white.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\clutter_shrub_spring.png">
+          <Link>assets\clutter_shrub_spring.png</Link>
         </EmbeddedResource>
         <Content Include=".gitignore" />
         <Content Include="environment.props" />

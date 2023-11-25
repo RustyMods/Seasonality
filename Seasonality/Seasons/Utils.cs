@@ -81,10 +81,13 @@ public static class Utils
             "Rocks2" => VegetationType.Rock,
             "highstone" => VegetationType.Rock,
             "widestone" => VegetationType.Rock,
+            "StatueSeed" => VegetationType.Rock,
             
             "RaspberryBush" => VegetationType.Bush,
             "BlueberryBush" => VegetationType.Bush,
             "CloudberryBush" => VegetationType.Bush,
+            
+            "vines" => VegetationType.Vines,
             _ => VegetationType.None,
         };
     }
@@ -156,12 +159,7 @@ public static class Utils
     {
         return CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map) && map.ContainsKey(key);
     }
-    public static VegDirectories VegToDirectory(VegetationType type)
-    {
-        vegConversionMap.TryGetValue(type, out VegDirectories result);
-        return result;
-    }
-    
+
     public static VegDirectories VegToDirectory(GrassTypes type)
     {
         return (type) switch
@@ -184,7 +182,28 @@ public static class Utils
             _ => VegDirectories.None
         };
     }
-
+    public static VegDirectories VegToDirectory(VegetationType type)
+    {
+        return (type) switch
+        {
+            VegetationType.Beech => VegDirectories.Beech,
+            VegetationType.BeechSmall => VegDirectories.BeechSmall,
+            VegetationType.Birch => VegDirectories.Birch,
+            VegetationType.Bush => VegDirectories.Bushes,
+            VegetationType.Oak => VegDirectories.Oak,
+            VegetationType.Pine => VegDirectories.Pine,
+            VegetationType.Fir => VegDirectories.Fir,
+            VegetationType.Yggashoot => VegDirectories.YggaShoot,
+            VegetationType.PlainsBush => VegDirectories.PlainsBush,
+            VegetationType.Shrub => VegDirectories.Shrub,
+            VegetationType.Rock => VegDirectories.Rock,
+            _ => VegDirectories.None,
+        };
+        
+        
+        vegConversionMap.TryGetValue(type, out VegDirectories result);
+        return result;
+    }
     private static readonly Dictionary<VegetationType, VegDirectories> vegConversionMap = new()
     {
         { VegetationType.Beech , VegDirectories.Beech },

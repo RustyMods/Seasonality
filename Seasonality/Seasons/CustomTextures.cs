@@ -48,7 +48,10 @@ public static class CustomTextures
     public static readonly Texture? WaterLilies_Spring = RegisterTexture("waterlilies_spring.png");
     public static readonly Texture? WaterLilies_Winter = RegisterTexture("waterlilies_winter.png");
 
+    public static readonly Texture? BeechLeaf_White = RegisterTexture("beech_leaf_white.png");
 
+    public static readonly Texture? Clutter_Shrub_Spring = RegisterTexture("clutter_shrub_spring.png");
+    
     public static readonly Dictionary<VegDirectories, Dictionary<Season, Texture?>> CustomRegisteredTextures = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {

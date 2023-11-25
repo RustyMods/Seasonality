@@ -3,6 +3,7 @@ public enum VegetationType
 {
     None,
     Beech,
+    BeechSmall,
     Birch,
     Fir,
     Pine,
@@ -14,5 +15,6 @@ public enum VegetationType
     Rock,
     Log,
     PlainsBush,
-    Shrub
+    Shrub,
+    Vines
 }

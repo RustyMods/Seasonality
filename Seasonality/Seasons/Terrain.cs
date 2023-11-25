@@ -69,9 +69,6 @@ public static class TerrainPatch
             if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
             if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
             // If texture file recognized, use it and move on
-            
-            // Failure in getting correct textures.
-            // Black grass caused by using wrong texture
             switch (type)
             {
                 case GrassTypes.GreenGrass or GrassTypes.GreenGrassShort:
@@ -140,6 +137,9 @@ public static class TerrainPatch
                             break;
                         case GrassTypes.WaterLilies:
                             tex = WaterLilies_Spring;
+                            break;
+                        case GrassTypes.ClutterShrubs:
+                            tex = Clutter_Shrub_Spring;
                             break;
                     }
                     break;
