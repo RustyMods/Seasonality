@@ -51,6 +51,9 @@ public static class CustomTextures
     public static readonly Texture? BeechLeaf_White = RegisterTexture("beech_leaf_white.png");
 
     public static readonly Texture? Clutter_Shrub_Spring = RegisterTexture("clutter_shrub_spring.png");
+
+    public static readonly Texture? Dead_Branch_Spring = RegisterTexture("deadbranch_spikey.png");
+    public static readonly Texture? Dead_Branch_Summer = RegisterTexture("deadbranch_summer.png");
     
     public static readonly Dictionary<VegDirectories, Dictionary<Season, Texture?>> CustomRegisteredTextures = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
@@ -106,6 +109,7 @@ public static class CustomTextures
         Pine,
         Fir,
         YggaShoot,
+        SwampTrees,
         PlainsBush,
         Shrub,
         Moss,

@@ -217,6 +217,12 @@
         <EmbeddedResource Include="..\..\..\Textures\clutter_shrub_spring.png">
           <Link>assets\clutter_shrub_spring.png</Link>
         </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\deadbranch_spikey.png">
+          <Link>assets\deadbranch_spikey.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\deadbranch_summer.png">
+          <Link>assets\deadbranch_summer.png</Link>
+        </EmbeddedResource>
         <Content Include=".gitignore" />
         <Content Include="environment.props" />
         <EmbeddedResource Include="icons\valknutIcon.png" />

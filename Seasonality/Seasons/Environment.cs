@@ -77,13 +77,7 @@ public static class Environment
         InfectedMine,
         Queen,
     }
-    [Serializable]
-    public class WeatherEntry
-    {
-        public Environments m_environment = Environments.None;
-        public float m_weight = 1f;
-    }
-    
+
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.UpdateEnvironment))]
     static class EnvManPatch
     {
@@ -99,55 +93,224 @@ public static class Environment
                 __instance.QueueEnvironment(environmentOverride);
                 return false;
             }
+
+            if (!Player.m_localPlayer) return true;
+            if (Player.m_localPlayer.IsDead()) return true;
+            Heightmap.Biome currentBiome = Heightmap.FindBiome(Player.m_localPlayer.transform.position);
+
             List<EnvEntry> entries = new();
-            switch (_Season.Value)
+            List<Environments> configs = new();
+            
+            switch (currentBiome)
             {
-                case Season.Winter:
-                    List<Environments> winterConfigs = new()
+                case Heightmap.Biome.Meadows:
+                    switch (_Season.Value)
                     {
-                        _WinterWeather1.Value,
-                        _WinterWeather2.Value,
-                        _WinterWeather3.Value,
-                        _WinterWeather4.Value
-                    };
-                    if (winterConfigs.TrueForAll(x => x is Environments.None)) return true;
-                    AddToEntries(winterConfigs, entries);
+                        case Season.Winter:
+                            configs.Add(_Winter_Meadows_Weather1.Value);
+                            configs.Add(_Winter_Meadows_Weather2.Value);
+                            configs.Add(_Winter_Meadows_Weather3.Value);
+                            configs.Add(_Winter_Meadows_Weather4.Value);
+                            break;
+                        case Season.Fall:
+                            configs.Add(_Fall_Meadows_Weather1.Value);
+                            configs.Add(_Fall_Meadows_Weather2.Value);
+                            configs.Add(_Fall_Meadows_Weather3.Value);
+                            configs.Add(_Fall_Meadows_Weather4.Value);
+                            break;
+                        case Season.Spring:
+                            configs.Add(_Spring_Meadows_Weather1.Value);
+                            configs.Add(_Spring_Meadows_Weather2.Value);
+                            configs.Add(_Spring_Meadows_Weather3.Value);
+                            configs.Add(_Spring_Meadows_Weather4.Value);
+                            break;
+                        case Season.Summer:
+                            configs.Add(_Summer_Meadows_Weather1.Value);
+                            configs.Add(_Summer_Meadows_Weather2.Value);
+                            configs.Add(_Summer_Meadows_Weather3.Value);
+                            configs.Add(_Summer_Meadows_Weather4.Value);
+                            break;
+                    }
                     break;
-                case Season.Fall:
-                    List<Environments> fallConfigs = new()
+                case Heightmap.Biome.BlackForest:
+                    switch (_Season.Value)
                     {
-                        _FallWeather1.Value,
-                        _FallWeather2.Value,
-                        _FallWeather3.Value,
-                        _FallWeather4.Value
-                    };
-                    if (fallConfigs.TrueForAll(x => x is Environments.None)) return true;
-                    AddToEntries(fallConfigs, entries);
+                        case Season.Winter:
+                            configs.Add(_Winter_BlackForest_Weather1.Value);
+                            configs.Add(_Winter_BlackForest_Weather2.Value);
+                            configs.Add(_Winter_BlackForest_Weather3.Value);
+                            configs.Add(_Winter_BlackForest_Weather4.Value);
+                            break;
+                        case Season.Fall:
+                            configs.Add(_Fall_BlackForest_Weather1.Value);
+                            configs.Add(_Fall_BlackForest_Weather2.Value);
+                            configs.Add(_Fall_BlackForest_Weather3.Value);
+                            configs.Add(_Fall_BlackForest_Weather4.Value);
+                            break;
+                        case Season.Spring:
+                            configs.Add(_Spring_BlackForest_Weather1.Value);
+                            configs.Add(_Spring_BlackForest_Weather2.Value);
+                            configs.Add(_Spring_BlackForest_Weather3.Value);
+                            configs.Add(_Spring_BlackForest_Weather4.Value);
+                            break;
+                        case Season.Summer:
+                            configs.Add(_Summer_BlackForest_Weather1.Value);
+                            configs.Add(_Summer_BlackForest_Weather2.Value);
+                            configs.Add(_Summer_BlackForest_Weather3.Value);
+                            configs.Add(_Summer_BlackForest_Weather4.Value);
+                            break;
+                    }
                     break;
-                case Season.Spring:
-                    List<Environments> springConfigs = new()
+                case Heightmap.Biome.Swamp:
+                    switch (_Season.Value)
                     {
-                        _SpringWeather1.Value,
-                        _SpringWeather2.Value,
-                        _SpringWeather3.Value,
-                        _SpringWeather4.Value
-                    };
-                    if (springConfigs.TrueForAll(x => x is Environments.None)) return true;
-                    AddToEntries(springConfigs, entries);
+                        case Season.Winter:
+                            configs.Add(_Winter_Swamp_Weather1.Value);
+                            configs.Add(_Winter_Swamp_Weather2.Value);
+                            configs.Add(_Winter_Swamp_Weather3.Value);
+                            configs.Add(_Winter_Swamp_Weather4.Value);
+                            break;
+                        case Season.Fall:
+                            configs.Add(_Fall_Swamp_Weather1.Value);
+                            configs.Add(_Fall_Swamp_Weather2.Value);
+                            configs.Add(_Fall_Swamp_Weather3.Value);
+                            configs.Add(_Fall_Swamp_Weather4.Value);
+                            break;
+                        case Season.Spring:
+                            configs.Add(_Spring_Swamp_Weather1.Value);
+                            configs.Add(_Spring_Swamp_Weather2.Value);
+                            configs.Add(_Spring_Swamp_Weather3.Value);
+                            configs.Add(_Spring_Swamp_Weather4.Value);
+                            break;
+                        case Season.Summer:
+                            configs.Add(_Summer_Swamp_Weather1.Value);
+                            configs.Add(_Summer_Swamp_Weather2.Value);
+                            configs.Add(_Summer_Swamp_Weather3.Value);
+                            configs.Add(_Summer_Swamp_Weather4.Value);
+                            break;
+                    }
                     break;
-                case Season.Summer:
-                    List<Environments> summerConfigs = new()
+                case Heightmap.Biome.Mountain:
+                    switch (_Season.Value)
                     {
-                        _SummerWeather1.Value,
-                        _SummerWeather2.Value,
-                        _SummerWeather3.Value,
-                        _SummerWeather4.Value
-                    };
-                    if (summerConfigs.TrueForAll(x => x is Environments.None)) return true;
-                    AddToEntries(summerConfigs, entries);
+                        case Season.Winter:
+                            configs.Add(_Winter_Mountains_Weather1.Value);
+                            configs.Add(_Winter_Mountains_Weather2.Value);
+                            configs.Add(_Winter_Mountains_Weather3.Value);
+                            configs.Add(_Winter_Mountains_Weather4.Value);
+                            break;
+                        case Season.Fall:
+                            configs.Add(_Fall_Mountains_Weather1.Value);
+                            configs.Add(_Fall_Mountains_Weather2.Value);
+                            configs.Add(_Fall_Mountains_Weather3.Value);
+                            configs.Add(_Fall_Mountains_Weather4.Value);
+                            break;
+                        case Season.Spring:
+                            configs.Add(_Spring_Mountains_Weather1.Value);
+                            configs.Add(_Spring_Mountains_Weather2.Value);
+                            configs.Add(_Spring_Mountains_Weather3.Value);
+                            configs.Add(_Spring_Mountains_Weather4.Value);
+                            break;
+                        case Season.Summer:
+                            configs.Add(_Summer_Mountains_Weather1.Value);
+                            configs.Add(_Summer_Mountains_Weather2.Value);
+                            configs.Add(_Summer_Mountains_Weather3.Value);
+                            configs.Add(_Summer_Mountains_Weather4.Value);
+                            break;
+                    }
                     break;
-                default: return true;
+                case Heightmap.Biome.Plains:
+                    switch (_Season.Value)
+                    {
+                        case Season.Winter:
+                            configs.Add(_Winter_Plains_Weather1.Value);
+                            configs.Add(_Winter_Plains_Weather2.Value);
+                            configs.Add(_Winter_Plains_Weather3.Value);
+                            configs.Add(_Winter_Plains_Weather4.Value);
+                            break;
+                        case Season.Fall:
+                            configs.Add(_Fall_Plains_Weather1.Value);
+                            configs.Add(_Fall_Plains_Weather2.Value);
+                            configs.Add(_Fall_Plains_Weather3.Value);
+                            configs.Add(_Fall_Plains_Weather4.Value);
+                            break;
+                        case Season.Spring:
+                            configs.Add(_Spring_Plains_Weather1.Value);
+                            configs.Add(_Spring_Plains_Weather2.Value);
+                            configs.Add(_Spring_Plains_Weather3.Value);
+                            configs.Add(_Spring_Plains_Weather4.Value);
+                            break;
+                        case Season.Summer:
+                            configs.Add(_Summer_Plains_Weather1.Value);
+                            configs.Add(_Summer_Plains_Weather2.Value);
+                            configs.Add(_Summer_Plains_Weather3.Value);
+                            configs.Add(_Summer_Plains_Weather4.Value);
+                            break;
+                    }
+                    break;
+                case Heightmap.Biome.Mistlands:
+                    switch (_Season.Value)
+                    {
+                        case Season.Winter:
+                            configs.Add(_Winter_MistLands_Weather1.Value);
+                            configs.Add(_Winter_MistLands_Weather2.Value);
+                            configs.Add(_Winter_MistLands_Weather3.Value);
+                            configs.Add(_Winter_MistLands_Weather4.Value);
+                            break;
+                        case Season.Fall:
+                            configs.Add(_Fall_MistLands_Weather1.Value);
+                            configs.Add(_Fall_MistLands_Weather2.Value);
+                            configs.Add(_Fall_MistLands_Weather3.Value);
+                            configs.Add(_Fall_MistLands_Weather4.Value);
+                            break;
+                        case Season.Spring:
+                            configs.Add(_Spring_MistLands_Weather1.Value);
+                            configs.Add(_Spring_MistLands_Weather2.Value);
+                            configs.Add(_Spring_MistLands_Weather3.Value);
+                            configs.Add(_Spring_MistLands_Weather4.Value);
+                            break;
+                        case Season.Summer:
+                            configs.Add(_Summer_MistLands_Weather1.Value);
+                            configs.Add(_Summer_MistLands_Weather2.Value);
+                            configs.Add(_Summer_MistLands_Weather3.Value);
+                            configs.Add(_Summer_MistLands_Weather4.Value);
+                            break;
+                    }
+                    break;
+                case Heightmap.Biome.Ocean:
+                    switch (_Season.Value)
+                    {
+                        case Season.Winter:
+                            configs.Add(_Winter_Ocean_Weather1.Value);
+                            configs.Add(_Winter_Ocean_Weather2.Value);
+                            configs.Add(_Winter_Ocean_Weather3.Value);
+                            configs.Add(_Winter_Ocean_Weather4.Value);
+                            break;
+                        case Season.Fall:
+                            configs.Add(_Fall_Ocean_Weather1.Value);
+                            configs.Add(_Fall_Ocean_Weather2.Value);
+                            configs.Add(_Fall_Ocean_Weather3.Value);
+                            configs.Add(_Fall_Ocean_Weather4.Value);
+                            break;
+                        case Season.Spring:
+                            configs.Add(_Spring_Ocean_Weather1.Value);
+                            configs.Add(_Spring_Ocean_Weather2.Value);
+                            configs.Add(_Spring_Ocean_Weather3.Value);
+                            configs.Add(_Spring_Ocean_Weather4.Value);
+                            break;
+                        case Season.Summer:
+                            configs.Add(_Summer_Ocean_Weather1.Value);
+                            configs.Add(_Summer_Ocean_Weather2.Value);
+                            configs.Add(_Summer_Ocean_Weather3.Value);
+                            configs.Add(_Summer_Ocean_Weather4.Value);
+                            break;
+                    }
+                    break;
             }
+            if (configs.TrueForAll(x => x is Environments.None)) return true;
+
+            AddToEntries(configs, entries);
+
             return ModifyEnvironment(__instance, sec, biome, entries);
         }
 
@@ -167,15 +330,7 @@ public static class Environment
 
         private static bool ModifyEnvironment(EnvMan __instance, long sec, Heightmap.Biome biome, List<EnvEntry> environments)
         {
-            // if (_WeatherDuration.Value == 0)
-            // {
-            //     __instance.m_environmentPeriod = -1L;
-            //     __instance.m_currentBiome = biome;
-            //     List<Action> actions = new();
-            //     foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
-            //     Utils.ApplyRandomly(actions);
-            //     return false;
-            // }
+
             long seed = sec / _WeatherDuration.Value;
             if (__instance.m_environmentPeriod == seed) return false;
             __instance.m_environmentPeriod = seed;
@@ -184,11 +339,6 @@ public static class Environment
             List<Action> actions = new();
             foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
             Utils.ApplyRandomly(actions);
-            // UnityEngine.Random.State state = UnityEngine.Random.state;
-            // UnityEngine.Random.InitState((int) seed);
-            //     
-            // __instance.QueueEnvironment(__instance.SelectWeightedEnvironment(environments));
-            // UnityEngine.Random.state = state;
 
             return false;
         }

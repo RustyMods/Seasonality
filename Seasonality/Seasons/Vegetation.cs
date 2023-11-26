@@ -328,6 +328,9 @@ public static class Vegetation
                             material.color = new Color(0.8f, 0.7f, 0.8f, 1f);
                         }
                         break;
+                    case VegetationType.Swamp:
+                        tex = Dead_Branch_Spring;
+                        break;
                     default:
                         tex = Utils.GetCustomTexture(directory, Season.Spring);
                         break;
@@ -353,6 +356,9 @@ public static class Vegetation
                         if (material.name.Contains("small")) { tex = Utils.GetCustomTexture(VegDirectories.BeechSmall, Season.Fall); break; }
                         tex = Utils.GetCustomTexture(VegDirectories.Beech, Season.Fall);
                         if (!tex) tex = BeechLeaf_White;
+                        break;
+                    case VegetationType.Swamp:
+                        tex = Dead_Branch_Summer;
                         break;
                     default:
                         tex = Utils.GetCustomTexture(directory, Season.Fall);

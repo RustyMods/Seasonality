@@ -24,7 +24,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "1.1.0";
+        internal const string ModVersion = "1.1.1";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -141,25 +141,146 @@ namespace Seasonality
         public static ConfigEntry<DamageModifier> _SummerResistanceMod = null!;
         public static ConfigEntry<float> _SummerValue = null!;
 
-        public static ConfigEntry<Environments> _FallWeather1 = null!;
-        public static ConfigEntry<Environments> _FallWeather2 = null!;
-        public static ConfigEntry<Environments> _FallWeather3 = null!;
-        public static ConfigEntry<Environments> _FallWeather4 = null!;
+        public static ConfigEntry<Environments> _Fall_Meadows_Weather1 = null!;
+        public static ConfigEntry<Environments> _Fall_Meadows_Weather2 = null!;
+        public static ConfigEntry<Environments> _Fall_Meadows_Weather3 = null!;
+        public static ConfigEntry<Environments> _Fall_Meadows_Weather4 = null!;
         
-        public static ConfigEntry<Environments> _WinterWeather1 = null!;
-        public static ConfigEntry<Environments> _WinterWeather2 = null!;
-        public static ConfigEntry<Environments> _WinterWeather3 = null!;
-        public static ConfigEntry<Environments> _WinterWeather4 = null!;
+        public static ConfigEntry<Environments> _Fall_BlackForest_Weather1 = null!;
+        public static ConfigEntry<Environments> _Fall_BlackForest_Weather2 = null!;
+        public static ConfigEntry<Environments> _Fall_BlackForest_Weather3 = null!;
+        public static ConfigEntry<Environments> _Fall_BlackForest_Weather4 = null!;
         
-        public static ConfigEntry<Environments> _SpringWeather1 = null!;
-        public static ConfigEntry<Environments> _SpringWeather2 = null!;
-        public static ConfigEntry<Environments> _SpringWeather3 = null!;
-        public static ConfigEntry<Environments> _SpringWeather4 = null!;
+        public static ConfigEntry<Environments> _Fall_Swamp_Weather1 = null!;
+        public static ConfigEntry<Environments> _Fall_Swamp_Weather2 = null!;
+        public static ConfigEntry<Environments> _Fall_Swamp_Weather3 = null!;
+        public static ConfigEntry<Environments> _Fall_Swamp_Weather4 = null!;
         
-        public static ConfigEntry<Environments> _SummerWeather1 = null!;
-        public static ConfigEntry<Environments> _SummerWeather2 = null!;
-        public static ConfigEntry<Environments> _SummerWeather3 = null!;
-        public static ConfigEntry<Environments> _SummerWeather4 = null!;
+        public static ConfigEntry<Environments> _Fall_Mountains_Weather1 = null!;
+        public static ConfigEntry<Environments> _Fall_Mountains_Weather2 = null!;
+        public static ConfigEntry<Environments> _Fall_Mountains_Weather3 = null!;
+        public static ConfigEntry<Environments> _Fall_Mountains_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Fall_Plains_Weather1 = null!;
+        public static ConfigEntry<Environments> _Fall_Plains_Weather2 = null!;
+        public static ConfigEntry<Environments> _Fall_Plains_Weather3 = null!;
+        public static ConfigEntry<Environments> _Fall_Plains_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Fall_MistLands_Weather1 = null!;
+        public static ConfigEntry<Environments> _Fall_MistLands_Weather2 = null!;
+        public static ConfigEntry<Environments> _Fall_MistLands_Weather3 = null!;
+        public static ConfigEntry<Environments> _Fall_MistLands_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Fall_Ocean_Weather1 = null!;
+        public static ConfigEntry<Environments> _Fall_Ocean_Weather2 = null!;
+        public static ConfigEntry<Environments> _Fall_Ocean_Weather3 = null!;
+        public static ConfigEntry<Environments> _Fall_Ocean_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Winter_Meadows_Weather1 = null!;
+        public static ConfigEntry<Environments> _Winter_Meadows_Weather2 = null!;
+        public static ConfigEntry<Environments> _Winter_Meadows_Weather3 = null!;
+        public static ConfigEntry<Environments> _Winter_Meadows_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Winter_BlackForest_Weather1 = null!;
+        public static ConfigEntry<Environments> _Winter_BlackForest_Weather2 = null!;
+        public static ConfigEntry<Environments> _Winter_BlackForest_Weather3 = null!;
+        public static ConfigEntry<Environments> _Winter_BlackForest_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Winter_Swamp_Weather1 = null!;
+        public static ConfigEntry<Environments> _Winter_Swamp_Weather2 = null!;
+        public static ConfigEntry<Environments> _Winter_Swamp_Weather3 = null!;
+        public static ConfigEntry<Environments> _Winter_Swamp_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Winter_Mountains_Weather1 = null!;
+        public static ConfigEntry<Environments> _Winter_Mountains_Weather2 = null!;
+        public static ConfigEntry<Environments> _Winter_Mountains_Weather3 = null!;
+        public static ConfigEntry<Environments> _Winter_Mountains_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Winter_Plains_Weather1 = null!;
+        public static ConfigEntry<Environments> _Winter_Plains_Weather2 = null!;
+        public static ConfigEntry<Environments> _Winter_Plains_Weather3 = null!;
+        public static ConfigEntry<Environments> _Winter_Plains_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Winter_MistLands_Weather1 = null!;
+        public static ConfigEntry<Environments> _Winter_MistLands_Weather2 = null!;
+        public static ConfigEntry<Environments> _Winter_MistLands_Weather3 = null!;
+        public static ConfigEntry<Environments> _Winter_MistLands_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Winter_Ocean_Weather1 = null!;
+        public static ConfigEntry<Environments> _Winter_Ocean_Weather2 = null!;
+        public static ConfigEntry<Environments> _Winter_Ocean_Weather3 = null!;
+        public static ConfigEntry<Environments> _Winter_Ocean_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Spring_Meadows_Weather1 = null!;
+        public static ConfigEntry<Environments> _Spring_Meadows_Weather2 = null!;
+        public static ConfigEntry<Environments> _Spring_Meadows_Weather3 = null!;
+        public static ConfigEntry<Environments> _Spring_Meadows_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Spring_BlackForest_Weather1 = null!;
+        public static ConfigEntry<Environments> _Spring_BlackForest_Weather2 = null!;
+        public static ConfigEntry<Environments> _Spring_BlackForest_Weather3 = null!;
+        public static ConfigEntry<Environments> _Spring_BlackForest_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Spring_Swamp_Weather1 = null!;
+        public static ConfigEntry<Environments> _Spring_Swamp_Weather2 = null!;
+        public static ConfigEntry<Environments> _Spring_Swamp_Weather3 = null!;
+        public static ConfigEntry<Environments> _Spring_Swamp_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Spring_Mountains_Weather1 = null!;
+        public static ConfigEntry<Environments> _Spring_Mountains_Weather2 = null!;
+        public static ConfigEntry<Environments> _Spring_Mountains_Weather3 = null!;
+        public static ConfigEntry<Environments> _Spring_Mountains_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Spring_Plains_Weather1 = null!;
+        public static ConfigEntry<Environments> _Spring_Plains_Weather2 = null!;
+        public static ConfigEntry<Environments> _Spring_Plains_Weather3 = null!;
+        public static ConfigEntry<Environments> _Spring_Plains_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Spring_MistLands_Weather1 = null!;
+        public static ConfigEntry<Environments> _Spring_MistLands_Weather2 = null!;
+        public static ConfigEntry<Environments> _Spring_MistLands_Weather3 = null!;
+        public static ConfigEntry<Environments> _Spring_MistLands_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Spring_Ocean_Weather1 = null!;
+        public static ConfigEntry<Environments> _Spring_Ocean_Weather2 = null!;
+        public static ConfigEntry<Environments> _Spring_Ocean_Weather3 = null!;
+        public static ConfigEntry<Environments> _Spring_Ocean_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Summer_Meadows_Weather1 = null!;
+        public static ConfigEntry<Environments> _Summer_Meadows_Weather2 = null!;
+        public static ConfigEntry<Environments> _Summer_Meadows_Weather3 = null!;
+        public static ConfigEntry<Environments> _Summer_Meadows_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Summer_BlackForest_Weather1 = null!;
+        public static ConfigEntry<Environments> _Summer_BlackForest_Weather2 = null!;
+        public static ConfigEntry<Environments> _Summer_BlackForest_Weather3 = null!;
+        public static ConfigEntry<Environments> _Summer_BlackForest_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Summer_Swamp_Weather1 = null!;
+        public static ConfigEntry<Environments> _Summer_Swamp_Weather2 = null!;
+        public static ConfigEntry<Environments> _Summer_Swamp_Weather3 = null!;
+        public static ConfigEntry<Environments> _Summer_Swamp_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Summer_Mountains_Weather1 = null!;
+        public static ConfigEntry<Environments> _Summer_Mountains_Weather2 = null!;
+        public static ConfigEntry<Environments> _Summer_Mountains_Weather3 = null!;
+        public static ConfigEntry<Environments> _Summer_Mountains_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Summer_Plains_Weather1 = null!;
+        public static ConfigEntry<Environments> _Summer_Plains_Weather2 = null!;
+        public static ConfigEntry<Environments> _Summer_Plains_Weather3 = null!;
+        public static ConfigEntry<Environments> _Summer_Plains_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Summer_MistLands_Weather1 = null!;
+        public static ConfigEntry<Environments> _Summer_MistLands_Weather2 = null!;
+        public static ConfigEntry<Environments> _Summer_MistLands_Weather3 = null!;
+        public static ConfigEntry<Environments> _Summer_MistLands_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Summer_Ocean_Weather1 = null!;
+        public static ConfigEntry<Environments> _Summer_Ocean_Weather2 = null!;
+        public static ConfigEntry<Environments> _Summer_Ocean_Weather3 = null!;
+        public static ConfigEntry<Environments> _Summer_Ocean_Weather4 = null!;
+        
 
         public static ConfigEntry<Color> _FallColor1 = null!;
         public static ConfigEntry<Color> _FallColor2 = null!;
@@ -226,11 +347,42 @@ namespace Seasonality
             _SpringResistanceMod = config("3 - Spring", "Resistance Modifier", DamageModifier.None, "Modifier");
             _SpringValue = config("3 - Spring", "Modifying value", 0.0f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
             
-            _SpringWeather1 = config("3 - Spring", "Weather 1", Environments.None, "Environments set by spring season");
-            _SpringWeather2 = config("3 - Spring", "Weather 2", Environments.None, "Environments set by spring season");
-            _SpringWeather3 = config("3 - Spring", "Weather 3", Environments.None, "Environments set by spring season");
-            _SpringWeather4 = config("3 - Spring", "Weather 4", Environments.None, "Environments set by spring season");
+            _Spring_Meadows_Weather1 = config("3 - Spring Weather", "1 - Meadows 1", Environments.None, "Environments set by spring season");
+            _Spring_Meadows_Weather2 = config("3 - Spring Weather", "1 - Meadows 2", Environments.None, "Environments set by spring season");
+            _Spring_Meadows_Weather3 = config("3 - Spring Weather", "1 - Meadows 3", Environments.None, "Environments set by spring season");
+            _Spring_Meadows_Weather4 = config("3 - Spring Weather", "1 - Meadows 4", Environments.None, "Environments set by spring season");
+            
+            _Spring_BlackForest_Weather1 = config("3 - Spring Weather", "2 - BlackForest 1", Environments.None, "Environments set by spring season");
+            _Spring_BlackForest_Weather2 = config("3 - Spring Weather", "2 - BlackForest 2", Environments.None, "Environments set by spring season");
+            _Spring_BlackForest_Weather3 = config("3 - Spring Weather", "2 - BlackForest 3", Environments.None, "Environments set by spring season");
+            _Spring_BlackForest_Weather4 = config("3 - Spring Weather", "2 - BlackForest 4", Environments.None, "Environments set by spring season");
 
+            _Spring_Swamp_Weather1 = config("3 - Spring Weather", "3 - Swamp 1", Environments.None, "Environments set by spring season");
+            _Spring_Swamp_Weather2 = config("3 - Spring Weather", "3 - Swamp 2", Environments.None, "Environments set by spring season");
+            _Spring_Swamp_Weather3 = config("3 - Spring Weather", "3 - Swamp 3", Environments.None, "Environments set by spring season");
+            _Spring_Swamp_Weather4 = config("3 - Spring Weather", "3 - Swamp 4", Environments.None, "Environments set by spring season");
+
+            _Spring_Mountains_Weather1 = config("3 - Spring Weather", "4 - Mountains 1", Environments.None, "Environments set by spring season");
+            _Spring_Mountains_Weather2 = config("3 - Spring Weather", "4 - Mountains 2", Environments.None, "Environments set by spring season");
+            _Spring_Mountains_Weather3 = config("3 - Spring Weather", "4 - Mountains 3", Environments.None, "Environments set by spring season");
+            _Spring_Mountains_Weather4 = config("3 - Spring Weather", "4 - Mountains 4", Environments.None, "Environments set by spring season");
+
+            _Spring_Plains_Weather1 = config("3 - Spring Weather", "5 - Plains 1", Environments.None, "Environments set by spring season");
+            _Spring_Plains_Weather2 = config("3 - Spring Weather", "5 - Plains 2", Environments.None, "Environments set by spring season");
+            _Spring_Plains_Weather3 = config("3 - Spring Weather", "5 - Plains 3", Environments.None, "Environments set by spring season");
+            _Spring_Plains_Weather4 = config("3 - Spring Weather", "5 - Plains 4", Environments.None, "Environments set by spring season");
+
+            _Spring_MistLands_Weather1 = config("3 - Spring Weather", "6 - MistLands 1", Environments.None, "Environments set by spring season");
+            _Spring_MistLands_Weather2 = config("3 - Spring Weather", "6 - MistLands 2", Environments.None, "Environments set by spring season");
+            _Spring_MistLands_Weather3 = config("3 - Spring Weather", "6 - MistLands 3", Environments.None, "Environments set by spring season");
+            _Spring_MistLands_Weather4 = config("3 - Spring Weather", "6 - MistLands 4", Environments.None, "Environments set by spring season");
+
+            _Spring_Ocean_Weather1 = config("3 - Spring Weather", "6 - Ocean 1", Environments.None, "Environments set by spring season");
+            _Spring_Ocean_Weather2 = config("3 - Spring Weather", "6 - Ocean 2", Environments.None, "Environments set by spring season");
+            _Spring_Ocean_Weather3 = config("3 - Spring Weather", "6 - Ocean 3", Environments.None, "Environments set by spring season");
+            _Spring_Ocean_Weather4 = config("3 - Spring Weather", "6 - Ocean 4", Environments.None, "Environments set by spring season");
+
+            
             _SpringColor1 = config("3 - Spring", "Color 1", SeasonColors.SpringColors[0], "Color tint applied to prefabs");
             _SpringColor2 = config("3 - Spring", "Color 2", SeasonColors.SpringColors[1], "Color tint applied to prefabs");
             _SpringColor3 = config("3 - Spring", "Color 3", SeasonColors.SpringColors[2], "Color tint applied to prefabs");
@@ -249,11 +401,42 @@ namespace Seasonality
             _FallResistanceMod = config("4 - Fall", "Resistance Modifier", DamageModifier.None, "Modifier");
             _FallValue = config("4 - Fall", "Modifying value", 0.0f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
 
-            _FallWeather1 = config("4 - Fall", "Weather 1", Environments.None, "Environments set by fall season");
-            _FallWeather2 = config("4 - Fall", "Weather 2", Environments.None, "Environments set by fall season");
-            _FallWeather3 = config("4 - Fall", "Weather 3", Environments.None, "Environments set by fall season");
-            _FallWeather4 = config("4 - Fall", "Weather 4", Environments.None, "Environments set by fall season");
+            _Fall_Meadows_Weather1 = config("4 - Fall Weather", "1 - Meadows 1", Environments.None, "Environments set by fall season");
+            _Fall_Meadows_Weather2 = config("4 - Fall Weather", "1 - Meadows 2", Environments.None, "Environments set by fall season");
+            _Fall_Meadows_Weather3 = config("4 - Fall Weather", "1 - Meadows 3", Environments.None, "Environments set by fall season");
+            _Fall_Meadows_Weather4 = config("4 - Fall Weather", "1 - Meadows 4", Environments.None, "Environments set by fall season");
 
+            _Fall_BlackForest_Weather1 = config("4 - Fall Weather", "2 - BlackForest 1", Environments.None, "Environments set by Fall season");
+            _Fall_BlackForest_Weather2 = config("4 - Fall Weather", "2 - BlackForest 2", Environments.None, "Environments set by Fall season");
+            _Fall_BlackForest_Weather3 = config("4 - Fall Weather", "2 - BlackForest 3", Environments.None, "Environments set by Fall season");
+            _Fall_BlackForest_Weather4 = config("4 - Fall Weather", "2 - BlackForest 4", Environments.None, "Environments set by Fall season");
+
+            _Fall_Swamp_Weather1 = config("4 - Fall Weather", "3 - Swamp 1", Environments.None, "Environments set by Fall season");
+            _Fall_Swamp_Weather2 = config("4 - Fall Weather", "3 - Swamp 2", Environments.None, "Environments set by Fall season");
+            _Fall_Swamp_Weather3 = config("4 - Fall Weather", "3 - Swamp 3", Environments.None, "Environments set by Fall season");
+            _Fall_Swamp_Weather4 = config("4 - Fall Weather", "3 - Swamp 4", Environments.None, "Environments set by Fall season");
+
+            _Fall_Mountains_Weather1 = config("4 - Fall Weather", "4 - Mountains 1", Environments.None, "Environments set by Fall season");
+            _Fall_Mountains_Weather2 = config("4 - Fall Weather", "4 - Mountains 2", Environments.None, "Environments set by Fall season");
+            _Fall_Mountains_Weather3 = config("4 - Fall Weather", "4 - Mountains 3", Environments.None, "Environments set by Fall season");
+            _Fall_Mountains_Weather4 = config("4 - Fall Weather", "4 - Mountains 4", Environments.None, "Environments set by Fall season");
+
+            _Fall_Plains_Weather1 = config("4 - Fall Weather", "5 - Plains 1", Environments.None, "Environments set by Fall season");
+            _Fall_Plains_Weather2 = config("4 - Fall Weather", "5 - Plains 2", Environments.None, "Environments set by Fall season");
+            _Fall_Plains_Weather3 = config("4 - Fall Weather", "5 - Plains 3", Environments.None, "Environments set by Fall season");
+            _Fall_Plains_Weather4 = config("4 - Fall Weather", "5 - Plains 4", Environments.None, "Environments set by Fall season");
+
+            _Fall_MistLands_Weather1 = config("4 - Fall Weather", "6 - MistLands 1", Environments.None, "Environments set by Fall season");
+            _Fall_MistLands_Weather2 = config("4 - Fall Weather", "6 - MistLands 2", Environments.None, "Environments set by Fall season");
+            _Fall_MistLands_Weather3 = config("4 - Fall Weather", "6 - MistLands 3", Environments.None, "Environments set by Fall season");
+            _Fall_MistLands_Weather4 = config("4 - Fall Weather", "6 - MistLands 4", Environments.None, "Environments set by Fall season");
+
+            _Fall_Ocean_Weather1 = config("4 - Fall Weather", "6 - Ocean 1", Environments.None, "Environments set by Fall season");
+            _Fall_Ocean_Weather2 = config("4 - Fall Weather", "6 - Ocean 2", Environments.None, "Environments set by Fall season");
+            _Fall_Ocean_Weather3 = config("4 - Fall Weather", "6 - Ocean 3", Environments.None, "Environments set by Fall season");
+            _Fall_Ocean_Weather4 = config("4 - Fall Weather", "6 - Ocean 4", Environments.None, "Environments set by Fall season");
+
+            
             _FallColor1 = config("4 - Fall", "Color 1", SeasonColors.FallColors[0], "Color tint applied to prefabs");
             _FallColor2 = config("4 - Fall", "Color 2", SeasonColors.FallColors[1], "Color tint applied to prefabs");
             _FallColor3 = config("4 - Fall", "Color 3", SeasonColors.FallColors[2], "Color tint applied to prefabs");
@@ -272,10 +455,41 @@ namespace Seasonality
             _WinterResistantMod = config("5 - Winter", "Resistance Modifier", DamageModifier.Resistant, "Modifier");
             _WinterValue = config("5 - Winter", "Modifying value", 0.9f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
 
-            _WinterWeather1 = config("5 - Winter", "Weather 1", Environments.Snow, "Environment set by winter season.");
-            _WinterWeather2 = config("5 - Winter", "Weather 2", Environments.None, "Environment set by winter season.");
-            _WinterWeather3 = config("5 - Winter", "Weather 3", Environments.None, "Environment set by winter season.");
-            _WinterWeather4 = config("5 - Winter", "Weather 4", Environments.None, "Environment set by winter season.");
+            _Winter_Meadows_Weather1 = config("5 - Winter Weather", "1 - Meadows 1", Environments.Snow, "Environment set by winter season.");
+            _Winter_Meadows_Weather2 = config("5 - Winter Weather", "1 - Meadows 2", Environments.None, "Environment set by winter season.");
+            _Winter_Meadows_Weather3 = config("5 - Winter Weather", "1 - Meadows 3", Environments.None, "Environment set by winter season.");
+            _Winter_Meadows_Weather4 = config("5 - Winter Weather", "1 - Meadows 4", Environments.None, "Environment set by winter season.");
+            
+            _Winter_BlackForest_Weather1 = config("5 - Winter Weather", "2 - BlackForest 1", Environments.None, "Environments set by Winter season");
+            _Winter_BlackForest_Weather2 = config("5 - Winter Weather", "2 - BlackForest 2", Environments.None, "Environments set by Winter season");
+            _Winter_BlackForest_Weather3 = config("5 - Winter Weather", "2 - BlackForest 3", Environments.None, "Environments set by Winter season");
+            _Winter_BlackForest_Weather4 = config("5 - Winter Weather", "2 - BlackForest 4", Environments.None, "Environments set by Winter season");
+
+            _Winter_Swamp_Weather1 = config("5 - Winter Weather", "3 - Swamp 1", Environments.None, "Environments set by Winter season");
+            _Winter_Swamp_Weather2 = config("5 - Winter Weather", "3 - Swamp 2", Environments.None, "Environments set by Winter season");
+            _Winter_Swamp_Weather3 = config("5 - Winter Weather", "3 - Swamp 3", Environments.None, "Environments set by Winter season");
+            _Winter_Swamp_Weather4 = config("5 - Winter Weather", "3 - Swamp 4", Environments.None, "Environments set by Winter season");
+
+            _Winter_Mountains_Weather1 = config("5 - Winter Weather", "4 - Mountains 1", Environments.None, "Environments set by Winter season");
+            _Winter_Mountains_Weather2 = config("5 - Winter Weather", "4 - Mountains 2", Environments.None, "Environments set by Winter season");
+            _Winter_Mountains_Weather3 = config("5 - Winter Weather", "4 - Mountains 3", Environments.None, "Environments set by Winter season");
+            _Winter_Mountains_Weather4 = config("5 - Winter Weather", "4 - Mountains 4", Environments.None, "Environments set by Winter season");
+
+            _Winter_Plains_Weather1 = config("5 - Winter Weather", "5 - Plains 1", Environments.None, "Environments set by Winter season");
+            _Winter_Plains_Weather2 = config("5 - Winter Weather", "5 - Plains 2", Environments.None, "Environments set by Winter season");
+            _Winter_Plains_Weather3 = config("5 - Winter Weather", "5 - Plains 3", Environments.None, "Environments set by Winter season");
+            _Winter_Plains_Weather4 = config("5 - Winter Weather", "5 - Plains 4", Environments.None, "Environments set by Winter season");
+
+            _Winter_MistLands_Weather1 = config("5 - Winter Weather", "6 - MistLands 1", Environments.None, "Environments set by Winter season");
+            _Winter_MistLands_Weather2 = config("5 - Winter Weather", "6 - MistLands 2", Environments.None, "Environments set by Winter season");
+            _Winter_MistLands_Weather3 = config("5 - Winter Weather", "6 - MistLands 3", Environments.None, "Environments set by Winter season");
+            _Winter_MistLands_Weather4 = config("5 - Winter Weather", "6 - MistLands 4", Environments.None, "Environments set by Winter season");
+
+            _Winter_Ocean_Weather1 = config("5 - Winter Weather", "6 - Ocean 1", Environments.None, "Environments set by Winter season");
+            _Winter_Ocean_Weather2 = config("5 - Winter Weather", "6 - Ocean 2", Environments.None, "Environments set by Winter season");
+            _Winter_Ocean_Weather3 = config("5 - Winter Weather", "6 - Ocean 3", Environments.None, "Environments set by Winter season");
+            _Winter_Ocean_Weather4 = config("5 - Winter Weather", "6 - Ocean 4", Environments.None, "Environments set by Winter season");
+
             
             _WinterColor1 = config("5 - Winter", "Color 1", SeasonColors.WinterColors[0], "Color tint applied to prefabs");
             _WinterColor2 = config("5 - Winter", "Color 2", SeasonColors.WinterColors[0], "Color tint applied to prefabs");
@@ -294,11 +508,42 @@ namespace Seasonality
             _SummerResistanceMod = config("6 - Summer", "Resistance Modifier", DamageModifier.None, "Modifier");
             _SummerValue = config("6 - Summer", "Modifying value", -50f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
             
-            _SummerWeather1 = config("6 - Summer", "Weather 1", Environments.None, "Environment set by summer season.");
-            _SummerWeather2 = config("6 - Summer", "Weather 2", Environments.None, "Environment set by summer season.");
-            _SummerWeather3 = config("6 - Summer", "Weather 3", Environments.None, "Environment set by summer season.");
-            _SummerWeather4 = config("6 - Summer", "Weather 4", Environments.None, "Environment set by summer season.");
+            _Summer_Meadows_Weather1 = config("4 - Summer Weather", "1 - Meadows 1", Environments.None, "Environment set by summer season.");
+            _Summer_Meadows_Weather2 = config("4 - Summer Weather", "1 - Meadows 2", Environments.None, "Environment set by summer season.");
+            _Summer_Meadows_Weather3 = config("4 - Summer Weather", "1 - Meadows 3", Environments.None, "Environment set by summer season.");
+            _Summer_Meadows_Weather4 = config("4 - Summer Weather", "1 - Meadows 4", Environments.None, "Environment set by summer season.");
 
+            _Summer_BlackForest_Weather1 = config("4 - Summer Weather", "2 - BlackForest 1", Environments.None, "Environments set by Summer season");
+            _Summer_BlackForest_Weather2 = config("4 - Summer Weather", "2 - BlackForest 2", Environments.None, "Environments set by Summer season");
+            _Summer_BlackForest_Weather3 = config("4 - Summer Weather", "2 - BlackForest 3", Environments.None, "Environments set by Summer season");
+            _Summer_BlackForest_Weather4 = config("4 - Summer Weather", "2 - BlackForest 4", Environments.None, "Environments set by Summer season");
+
+            _Summer_Swamp_Weather1 = config("4 - Summer Weather", "3 - Swamp 1", Environments.None, "Environments set by Summer season");
+            _Summer_Swamp_Weather2 = config("4 - Summer Weather", "3 - Swamp 2", Environments.None, "Environments set by Summer season");
+            _Summer_Swamp_Weather3 = config("4 - Summer Weather", "3 - Swamp 3", Environments.None, "Environments set by Summer season");
+            _Summer_Swamp_Weather4 = config("4 - Summer Weather", "3 - Swamp 4", Environments.None, "Environments set by Summer season");
+
+            _Summer_Mountains_Weather1 = config("4 - Summer Weather", "4 - Mountains 1", Environments.None, "Environments set by Summer season");
+            _Summer_Mountains_Weather2 = config("4 - Summer Weather", "4 - Mountains 2", Environments.None, "Environments set by Summer season");
+            _Summer_Mountains_Weather3 = config("4 - Summer Weather", "4 - Mountains 3", Environments.None, "Environments set by Summer season");
+            _Summer_Mountains_Weather4 = config("4 - Summer Weather", "4 - Mountains 4", Environments.None, "Environments set by Summer season");
+
+            _Summer_Plains_Weather1 = config("4 - Summer Weather", "5 - Plains 1", Environments.None, "Environments set by Summer season");
+            _Summer_Plains_Weather2 = config("4 - Summer Weather", "5 - Plains 2", Environments.None, "Environments set by Summer season");
+            _Summer_Plains_Weather3 = config("4 - Summer Weather", "5 - Plains 3", Environments.None, "Environments set by Summer season");
+            _Summer_Plains_Weather4 = config("4 - Summer Weather", "5 - Plains 4", Environments.None, "Environments set by Summer season");
+
+            _Summer_MistLands_Weather1 = config("4 - Summer Weather", "6 - MistLands 1", Environments.None, "Environments set by Summer season");
+            _Summer_MistLands_Weather2 = config("4 - Summer Weather", "6 - MistLands 2", Environments.None, "Environments set by Summer season");
+            _Summer_MistLands_Weather3 = config("4 - Summer Weather", "6 - MistLands 3", Environments.None, "Environments set by Summer season");
+            _Summer_MistLands_Weather4 = config("4 - Summer Weather", "6 - MistLands 4", Environments.None, "Environments set by Summer season");
+
+            _Summer_Ocean_Weather1 = config("4 - Summer Weather", "6 - Ocean 1", Environments.None, "Environments set by Summer season");
+            _Summer_Ocean_Weather2 = config("4 - Summer Weather", "6 - Ocean 2", Environments.None, "Environments set by Summer season");
+            _Summer_Ocean_Weather3 = config("4 - Summer Weather", "6 - Ocean 3", Environments.None, "Environments set by Summer season");
+            _Summer_Ocean_Weather4 = config("4 - Summer Weather", "6 - Ocean 4", Environments.None, "Environments set by Summer season");
+
+            
             _SummerColor1 = config("6 - Summer", "Color 1", SeasonColors.SummerColors[0], "Color tint applied to prefabs");
             _SummerColor2 = config("6 - Summer", "Color 2", SeasonColors.SummerColors[1], "Color tint applied to prefabs");
             _SummerColor3 = config("6 - Summer", "Color 3", SeasonColors.SummerColors[2], "Color tint applied to prefabs");

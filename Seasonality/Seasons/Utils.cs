@@ -197,6 +197,7 @@ public static class Utils
             VegetationType.PlainsBush => VegDirectories.PlainsBush,
             VegetationType.Shrub => VegDirectories.Shrub,
             VegetationType.Rock => VegDirectories.Rock,
+            VegetationType.Swamp => VegDirectories.SwampTrees,
             _ => VegDirectories.None,
         };
         
