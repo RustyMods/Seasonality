@@ -43,7 +43,8 @@ public static class Vegetation
         switch (type)
         {
             case VegetationType.Beech or VegetationType.BeechSmall or VegetationType.Birch or VegetationType.Oak or VegetationType.Yggashoot 
-                or VegetationType.Bush or VegetationType.PlainsBush or VegetationType.Shrub or VegetationType.Vines:
+                or VegetationType.Bush or VegetationType.PlainsBush or VegetationType.Shrub or VegetationType.Vines or VegetationType.RaspberryBush 
+                or VegetationType.BlueberryBush:
                 ApplyColorTint(prefab, type);
                 break;
             default:
@@ -201,23 +202,34 @@ public static class Vegetation
 
         string materialName = mat.name.ToLower();
         string[]? properties = mat.GetTexturePropertyNames();
-        foreach (string prop in properties)
-        {
-            if (prop.ToLower().Contains("moss"))
-            {
-                // if (mat.name.ToLower().Contains("mistland")) return;
-                ModifyMossTex(prop, mat);
-            }
-            if (!prop.ToLower().Contains("main") || !modifyMainTex) continue;
-            // Make sure only the leaves are affected 
-            if (materialName.Contains("bark") 
-                || materialName.Contains("trunk") 
-                || materialName.Contains("log") 
-                || materialName.Contains("wood")
-                || materialName.Contains("stump")
-                ) continue;
-            ModifyMainTex(prop, mat, type);
-        }
+        if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) return;
+        if (!Utils.FindTexturePropName(properties, "moss", out string mossProp)) return;
+        // foreach (string prop in properties)
+        // {
+        //     if (prop.ToLower().Contains("moss"))
+        //     {
+        //         // if (mat.name.ToLower().Contains("mistland")) return;
+        //         ModifyMossTex(prop, mat);
+        //     }
+        //     if (!prop.ToLower().Contains("main") || !modifyMainTex) continue;
+        //     // Make sure only the leaves are affected 
+        //     if (materialName.Contains("bark") 
+        //         || materialName.Contains("trunk") 
+        //         || materialName.Contains("log") 
+        //         || materialName.Contains("wood")
+        //         || materialName.Contains("stump")
+        //         ) continue;
+        //     ModifyMainTex(prop, mat, type);
+        // }
+        ModifyMossTex(mossProp, mat);
+        if (materialName.Contains("bark") 
+        || materialName.Contains("trunk") 
+        || materialName.Contains("log") 
+        || materialName.Contains("wood")
+        || materialName.Contains("stump")
+        ) return;
+        ModifyMainTex(mainProp, mat, type);
+
     }
 
     private static void ModifyMainTex(string propertyName, Material material, VegetationType type)
@@ -264,6 +276,19 @@ public static class Vegetation
                         tex = BirchLeaf_Winter;
                         Texture? customBirchLeafWinter = Utils.GetCustomTexture(VegDirectories.Birch, Season.Winter);
                         if (customBirchLeafWinter) tex = customBirchLeafWinter;
+                        break;
+                    case VegetationType.CloudberryBush:
+                        tex = CloudberryBush_Winter;
+                        Texture? customCloudberry = Utils.GetCustomTexture(VegDirectories.CloudberryBush, Season.Winter);
+                        if (customCloudberry) tex = customCloudberry;
+                        break;
+                    case VegetationType.Oak:
+                        if (normalizedName == "oak_leaf")
+                        {
+                            tex = Oak_Winter;
+                            Texture? customOak = Utils.GetCustomTexture(VegDirectories.Oak, Season.Winter);
+                            if (customOak) tex = customOak;
+                        }
                         break;
                     default:
                         tex = Utils.GetCustomTexture(directory, Season.Winter);

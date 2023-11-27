@@ -193,8 +193,8 @@
         <EmbeddedResource Include="..\..\..\Textures\autumn_ormbunke_green_winter.png">
           <Link>assets\autumn_ormbunke_green_winter.png</Link>
         </EmbeddedResource>
-        <EmbeddedResource Include="..\..\..\Textures\grass_terrain_color _fall.png">
-          <Link>assets\grass_terrain_color _fall.png</Link>
+        <EmbeddedResource Include="..\..\..\Textures\cloudberry_d_winter.png">
+          <Link>assets\cloudberry_d_winter.png</Link>
         </EmbeddedResource>
         <EmbeddedResource Include="..\..\..\Textures\vass_texture01_fall.png">
           <Link>assets\vass_texture01_fall.png</Link>
@@ -222,6 +222,48 @@
         </EmbeddedResource>
         <EmbeddedResource Include="..\..\..\Textures\deadbranch_summer.png">
           <Link>assets\deadbranch_summer.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\mistlands_moss.png">
+          <Link>assets\mistlands_moss.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\grass_meadows_fall.png">
+          <Link>assets\grass_meadows_fall.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\grass_meadows_flowers.png">
+          <Link>assets\grass_meadows_flowers.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\grass_meadows_summer.png">
+          <Link>assets\grass_meadows_summer.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\grass_meadows_winter.png">
+          <Link>assets\grass_meadows_winter.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\grass_meadows_short_fall.png">
+          <Link>assets\grass_meadows_short_fall.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\grass_meadows_short_spring.png">
+          <Link>assets\grass_meadows_short_spring.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\grass_meadows_short_summer.png">
+          <Link>assets\grass_meadows_short_summer.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\grass_meadows_short_winter.png">
+          <Link>assets\grass_meadows_short_winter.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\oak_leaf_winter.png">
+          <Link>assets\oak_leaf_winter.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\mistlands_moss_fall.png">
+          <Link>assets\mistlands_moss_fall.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\mistlands_moss_spring.png">
+          <Link>assets\mistlands_moss_spring.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\mistlands_moss_summer.png">
+          <Link>assets\mistlands_moss_summer.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\Textures\mistlands_moss_winter.png">
+          <Link>assets\mistlands_moss_winter.png</Link>
         </EmbeddedResource>
         <Content Include=".gitignore" />
         <Content Include="environment.props" />

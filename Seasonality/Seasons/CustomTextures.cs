@@ -38,9 +38,7 @@ public static class CustomTextures
 
     public static readonly Texture? ClutterShrub_Winter = RegisterTexture("clutter_shrub_winter.png");
     public static readonly Texture? Ormbunke_Winter = RegisterTexture("autumn_ormbunke_green_winter.png");
-
-    public static readonly Texture? GrassTerrainFall = RegisterTexture("grass_terrain_color _fall.png");
-
+    
     public static readonly Texture? Vass_Fall = RegisterTexture("vass_texture01_fall.png");
     public static readonly Texture? Vass_Winter = RegisterTexture("vass_texture01_winter.png");
 
@@ -54,6 +52,28 @@ public static class CustomTextures
 
     public static readonly Texture? Dead_Branch_Spring = RegisterTexture("deadbranch_spikey.png");
     public static readonly Texture? Dead_Branch_Summer = RegisterTexture("deadbranch_summer.png");
+
+    public static readonly Texture? MistLands_Moss = RegisterTexture("mistlands_moss.png");
+
+    public static readonly Texture? CloudberryBush_Winter = RegisterTexture("cloudberry_d_winter.png");
+
+    public static readonly Texture? Oak_Winter = RegisterTexture("oak_leaf_winter.png");
+
+    public static readonly Texture? GrassMeadows_Fall = RegisterTexture("grass_meadows_fall.png");
+    public static readonly Texture? GrassMeadows_Spring = RegisterTexture("grass_meadows_flowers.png");
+    public static readonly Texture? GrassMeadows_Summer = RegisterTexture("grass_meadows_summer.png");
+    public static readonly Texture? GrassMeadows_Winter = RegisterTexture("grass_meadows_winter.png");
+
+    public static readonly Texture? GrassMeadowsShort_Fall = RegisterTexture("grass_meadows_short_fall.png");
+    public static readonly Texture? GrassMeadowsShort_Spring = RegisterTexture("grass_meadows_short_spring.png");
+    public static readonly Texture? GrassMeadowsShort_Summer = RegisterTexture("grass_meadows_short_summer.png");
+    public static readonly Texture? GrassMeadowsShort_Winter = RegisterTexture("grass_meadows_short_winter.png");
+    
+    public static readonly Texture? MistLandGrass_Fall = RegisterTexture("mistlands_moss_fall.png");
+    public static readonly Texture? MistLandGrass_Spring = RegisterTexture("mistlands_moss_spring.png");
+    public static readonly Texture? MistLandGrass_Summer = RegisterTexture("mistlands_moss_summer.png");
+    public static readonly Texture? MistLandGrass_Winter = RegisterTexture("mistlands_moss_winter.png");
+
     
     public static readonly Dictionary<VegDirectories, Dictionary<Season, Texture?>> CustomRegisteredTextures = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
@@ -115,15 +135,19 @@ public static class CustomTextures
         Moss,
         Rock,
         MeadowGrass,
+        MeadowGrassShort,
         PlainsGrass,
         BlackForestGrass,
+        BlackForestGrassAlt,
         SwampGrass,
+        MistlandsGrass,
         PlainsFlowers,
         Ormbunke,
         Vass,
         WaterLilies,
         RockPlant,
         Clutter,
+        CloudberryBush,
         None
     }
     public static void ReadCustomTextures()

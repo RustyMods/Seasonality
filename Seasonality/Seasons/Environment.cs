@@ -306,6 +306,64 @@ public static class Environment
                             break;
                     }
                     break;
+                case Heightmap.Biome.AshLands:
+                    switch (_Season.Value)
+                    {
+                        case Season.Winter:
+                            configs.Add(_Winter_AshLands_Weather1.Value);
+                            configs.Add(_Winter_AshLands_Weather2.Value);
+                            configs.Add(_Winter_AshLands_Weather3.Value);
+                            configs.Add(_Winter_AshLands_Weather4.Value);
+                            break;
+                        case Season.Fall:
+                            configs.Add(_Fall_AshLands_Weather1.Value);
+                            configs.Add(_Fall_AshLands_Weather2.Value);
+                            configs.Add(_Fall_AshLands_Weather3.Value);
+                            configs.Add(_Fall_AshLands_Weather4.Value);
+                            break;
+                        case Season.Spring:
+                            configs.Add(_Spring_AshLands_Weather1.Value);
+                            configs.Add(_Spring_AshLands_Weather2.Value);
+                            configs.Add(_Spring_AshLands_Weather3.Value);
+                            configs.Add(_Spring_AshLands_Weather4.Value);
+                            break;
+                        case Season.Summer:
+                            configs.Add(_Summer_AshLands_Weather1.Value);
+                            configs.Add(_Summer_AshLands_Weather2.Value);
+                            configs.Add(_Summer_AshLands_Weather3.Value);
+                            configs.Add(_Summer_AshLands_Weather4.Value);
+                            break;
+                    }
+                    break;
+                case Heightmap.Biome.DeepNorth:
+                    switch (_Season.Value)
+                    {
+                        case Season.Winter:
+                            configs.Add(_Winter_DeepNorth_Weather1.Value);
+                            configs.Add(_Winter_DeepNorth_Weather2.Value);
+                            configs.Add(_Winter_DeepNorth_Weather3.Value);
+                            configs.Add(_Winter_DeepNorth_Weather4.Value);
+                            break;
+                        case Season.Fall:
+                            configs.Add(_Fall_DeepNorth_Weather1.Value);
+                            configs.Add(_Fall_DeepNorth_Weather2.Value);
+                            configs.Add(_Fall_DeepNorth_Weather3.Value);
+                            configs.Add(_Fall_DeepNorth_Weather4.Value);
+                            break;
+                        case Season.Spring:
+                            configs.Add(_Spring_DeepNorth_Weather1.Value);
+                            configs.Add(_Spring_DeepNorth_Weather2.Value);
+                            configs.Add(_Spring_DeepNorth_Weather3.Value);
+                            configs.Add(_Spring_DeepNorth_Weather4.Value);
+                            break;
+                        case Season.Summer:
+                            configs.Add(_Summer_DeepNorth_Weather1.Value);
+                            configs.Add(_Summer_DeepNorth_Weather2.Value);
+                            configs.Add(_Summer_DeepNorth_Weather3.Value);
+                            configs.Add(_Summer_DeepNorth_Weather4.Value);
+                            break;
+                    }
+                    break;
             }
             if (configs.TrueForAll(x => x is Environments.None)) return true;
 

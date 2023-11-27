@@ -16,5 +16,8 @@ public enum VegetationType
     Log,
     PlainsBush,
     Shrub,
-    Vines
+    Vines,
+    CloudberryBush,
+    RaspberryBush,
+    BlueberryBush
 }

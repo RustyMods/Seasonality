@@ -83,9 +83,9 @@ public static class Utils
             "widestone" => VegetationType.Rock,
             "StatueSeed" => VegetationType.Rock,
             
-            "RaspberryBush" => VegetationType.Bush,
-            "BlueberryBush" => VegetationType.Bush,
-            "CloudberryBush" => VegetationType.Bush,
+            "RaspberryBush" => VegetationType.RaspberryBush,
+            "BlueberryBush" => VegetationType.BlueberryBush,
+            "CloudberryBush" => VegetationType.CloudberryBush,
             
             "vines" => VegetationType.Vines,
             _ => VegetationType.None,
@@ -165,9 +165,9 @@ public static class Utils
         return (type) switch
         {
             GrassTypes.GreenGrass => VegDirectories.MeadowGrass,
-            GrassTypes.GreenGrassShort => VegDirectories.MeadowGrass,
+            GrassTypes.GreenGrassShort => VegDirectories.MeadowGrassShort,
             GrassTypes.GroundCover => VegDirectories.BlackForestGrass,
-            GrassTypes.GroundCoverBrown => VegDirectories.BlackForestGrass,
+            GrassTypes.GroundCoverBrown => VegDirectories.BlackForestGrassAlt,
             GrassTypes.SwampGrass => VegDirectories.SwampGrass,
             GrassTypes.HeathGrass => VegDirectories.PlainsGrass,
             GrassTypes.HeathFlowers => VegDirectories.PlainsFlowers,
@@ -177,7 +177,7 @@ public static class Utils
             GrassTypes.WaterLilies => VegDirectories.WaterLilies,
             GrassTypes.RockPlant => VegDirectories.RockPlant,
             GrassTypes.ClutterShrubs => VegDirectories.Clutter,
-            GrassTypes.MistlandGrassShort => VegDirectories.MeadowGrass,
+            GrassTypes.MistlandGrassShort => VegDirectories.MistlandsGrass,
             GrassTypes.GrassHeathGreen => VegDirectories.PlainsGrass,
             _ => VegDirectories.None
         };
@@ -198,12 +198,9 @@ public static class Utils
             VegetationType.Shrub => VegDirectories.Shrub,
             VegetationType.Rock => VegDirectories.Rock,
             VegetationType.Swamp => VegDirectories.SwampTrees,
+            VegetationType.CloudberryBush => VegDirectories.CloudberryBush,
             _ => VegDirectories.None,
         };
-        
-        
-        vegConversionMap.TryGetValue(type, out VegDirectories result);
-        return result;
     }
     private static readonly Dictionary<VegetationType, VegDirectories> vegConversionMap = new()
     {

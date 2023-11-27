@@ -176,6 +176,18 @@ namespace Seasonality
         public static ConfigEntry<Environments> _Fall_Ocean_Weather3 = null!;
         public static ConfigEntry<Environments> _Fall_Ocean_Weather4 = null!;
         
+        public static ConfigEntry<Environments> _Fall_AshLands_Weather1 = null!;
+        public static ConfigEntry<Environments> _Fall_AshLands_Weather2 = null!;
+        public static ConfigEntry<Environments> _Fall_AshLands_Weather3 = null!;
+        public static ConfigEntry<Environments> _Fall_AshLands_Weather4 = null!;
+
+        public static ConfigEntry<Environments> _Fall_DeepNorth_Weather1 = null!;
+        public static ConfigEntry<Environments> _Fall_DeepNorth_Weather2 = null!;
+        public static ConfigEntry<Environments> _Fall_DeepNorth_Weather3 = null!;
+        public static ConfigEntry<Environments> _Fall_DeepNorth_Weather4 = null!;
+
+        
+        
         public static ConfigEntry<Environments> _Winter_Meadows_Weather1 = null!;
         public static ConfigEntry<Environments> _Winter_Meadows_Weather2 = null!;
         public static ConfigEntry<Environments> _Winter_Meadows_Weather3 = null!;
@@ -210,6 +222,16 @@ namespace Seasonality
         public static ConfigEntry<Environments> _Winter_Ocean_Weather2 = null!;
         public static ConfigEntry<Environments> _Winter_Ocean_Weather3 = null!;
         public static ConfigEntry<Environments> _Winter_Ocean_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Winter_AshLands_Weather1 = null!;
+        public static ConfigEntry<Environments> _Winter_AshLands_Weather2 = null!;
+        public static ConfigEntry<Environments> _Winter_AshLands_Weather3 = null!;
+        public static ConfigEntry<Environments> _Winter_AshLands_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Winter_DeepNorth_Weather1 = null!;
+        public static ConfigEntry<Environments> _Winter_DeepNorth_Weather2 = null!;
+        public static ConfigEntry<Environments> _Winter_DeepNorth_Weather3 = null!;
+        public static ConfigEntry<Environments> _Winter_DeepNorth_Weather4 = null!;
         
         public static ConfigEntry<Environments> _Spring_Meadows_Weather1 = null!;
         public static ConfigEntry<Environments> _Spring_Meadows_Weather2 = null!;
@@ -246,6 +268,16 @@ namespace Seasonality
         public static ConfigEntry<Environments> _Spring_Ocean_Weather3 = null!;
         public static ConfigEntry<Environments> _Spring_Ocean_Weather4 = null!;
         
+        public static ConfigEntry<Environments> _Spring_AshLands_Weather1 = null!;
+        public static ConfigEntry<Environments> _Spring_AshLands_Weather2 = null!;
+        public static ConfigEntry<Environments> _Spring_AshLands_Weather3 = null!;
+        public static ConfigEntry<Environments> _Spring_AshLands_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Spring_DeepNorth_Weather1 = null!;
+        public static ConfigEntry<Environments> _Spring_DeepNorth_Weather2 = null!;
+        public static ConfigEntry<Environments> _Spring_DeepNorth_Weather3 = null!;
+        public static ConfigEntry<Environments> _Spring_DeepNorth_Weather4 = null!;
+        
         public static ConfigEntry<Environments> _Summer_Meadows_Weather1 = null!;
         public static ConfigEntry<Environments> _Summer_Meadows_Weather2 = null!;
         public static ConfigEntry<Environments> _Summer_Meadows_Weather3 = null!;
@@ -280,6 +312,16 @@ namespace Seasonality
         public static ConfigEntry<Environments> _Summer_Ocean_Weather2 = null!;
         public static ConfigEntry<Environments> _Summer_Ocean_Weather3 = null!;
         public static ConfigEntry<Environments> _Summer_Ocean_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Summer_AshLands_Weather1 = null!;
+        public static ConfigEntry<Environments> _Summer_AshLands_Weather2 = null!;
+        public static ConfigEntry<Environments> _Summer_AshLands_Weather3 = null!;
+        public static ConfigEntry<Environments> _Summer_AshLands_Weather4 = null!;
+        
+        public static ConfigEntry<Environments> _Summer_DeepNorth_Weather1 = null!;
+        public static ConfigEntry<Environments> _Summer_DeepNorth_Weather2 = null!;
+        public static ConfigEntry<Environments> _Summer_DeepNorth_Weather3 = null!;
+        public static ConfigEntry<Environments> _Summer_DeepNorth_Weather4 = null!;
         
 
         public static ConfigEntry<Color> _FallColor1 = null!;
@@ -382,6 +424,15 @@ namespace Seasonality
             _Spring_Ocean_Weather3 = config("3 - Spring Weather", "6 - Ocean 3", Environments.None, "Environments set by spring season");
             _Spring_Ocean_Weather4 = config("3 - Spring Weather", "6 - Ocean 4", Environments.None, "Environments set by spring season");
 
+            _Spring_AshLands_Weather1 = config("3 - Spring Weather", "7 - AshLands 1", Environments.None, "Environments set by spring season");
+            _Spring_AshLands_Weather2 = config("3 - Spring Weather", "7 - AshLands 2", Environments.None, "Environments set by spring season");
+            _Spring_AshLands_Weather3 = config("3 - Spring Weather", "7 - AshLands 3", Environments.None, "Environments set by spring season");
+            _Spring_AshLands_Weather4 = config("3 - Spring Weather", "7 - AshLands 4", Environments.None, "Environments set by spring season");
+
+            _Spring_DeepNorth_Weather1 = config("3 - Spring Weather", "8 - DeepNorth 1", Environments.None, "Environments set by spring season");
+            _Spring_DeepNorth_Weather2 = config("3 - Spring Weather", "8 - DeepNorth 2", Environments.None, "Environments set by spring season");
+            _Spring_DeepNorth_Weather3 = config("3 - Spring Weather", "8 - DeepNorth 3", Environments.None, "Environments set by spring season");
+            _Spring_DeepNorth_Weather4 = config("3 - Spring Weather", "8 - DeepNorth 4", Environments.None, "Environments set by spring season");
             
             _SpringColor1 = config("3 - Spring", "Color 1", SeasonColors.SpringColors[0], "Color tint applied to prefabs");
             _SpringColor2 = config("3 - Spring", "Color 2", SeasonColors.SpringColors[1], "Color tint applied to prefabs");
@@ -435,6 +486,16 @@ namespace Seasonality
             _Fall_Ocean_Weather2 = config("4 - Fall Weather", "6 - Ocean 2", Environments.None, "Environments set by Fall season");
             _Fall_Ocean_Weather3 = config("4 - Fall Weather", "6 - Ocean 3", Environments.None, "Environments set by Fall season");
             _Fall_Ocean_Weather4 = config("4 - Fall Weather", "6 - Ocean 4", Environments.None, "Environments set by Fall season");
+
+            _Fall_AshLands_Weather1 = config("4 - Fall Weather", "7 - AshLands 1", Environments.None, "Environments set by Fall season");
+            _Fall_AshLands_Weather2 = config("4 - Fall Weather", "7 - AshLands 2", Environments.None, "Environments set by Fall season");
+            _Fall_AshLands_Weather3 = config("4 - Fall Weather", "7 - AshLands 3", Environments.None, "Environments set by Fall season");
+            _Fall_AshLands_Weather4 = config("4 - Fall Weather", "7 - AshLands 4", Environments.None, "Environments set by Fall season");
+
+            _Fall_DeepNorth_Weather1 = config("4 - Fall Weather", "8 - DeepNorth 1", Environments.None, "Environments set by Fall season");
+            _Fall_DeepNorth_Weather2 = config("4 - Fall Weather", "8 - DeepNorth 2", Environments.None, "Environments set by Fall season");
+            _Fall_DeepNorth_Weather3 = config("4 - Fall Weather", "8 - DeepNorth 3", Environments.None, "Environments set by Fall season");
+            _Fall_DeepNorth_Weather4 = config("4 - Fall Weather", "8 - DeepNorth 4", Environments.None, "Environments set by Fall season");
 
             
             _FallColor1 = config("4 - Fall", "Color 1", SeasonColors.FallColors[0], "Color tint applied to prefabs");
@@ -490,6 +551,16 @@ namespace Seasonality
             _Winter_Ocean_Weather3 = config("5 - Winter Weather", "6 - Ocean 3", Environments.None, "Environments set by Winter season");
             _Winter_Ocean_Weather4 = config("5 - Winter Weather", "6 - Ocean 4", Environments.None, "Environments set by Winter season");
 
+            _Winter_AshLands_Weather1 = config("5 - Winter Weather", "7 - AshLands 1", Environments.None, "Environments set by Winter season");
+            _Winter_AshLands_Weather2 = config("5 - Winter Weather", "7 - AshLands 2", Environments.None, "Environments set by Winter season");
+            _Winter_AshLands_Weather3 = config("5 - Winter Weather", "7 - AshLands 3", Environments.None, "Environments set by Winter season");
+            _Winter_AshLands_Weather4 = config("5 - Winter Weather", "7 - AshLands 4", Environments.None, "Environments set by Winter season");
+
+            _Winter_DeepNorth_Weather1 = config("5 - Winter Weather", "8 - DeepNorth 1", Environments.None, "Environments set by Winter season");
+            _Winter_DeepNorth_Weather2 = config("5 - Winter Weather", "8 - DeepNorth 2", Environments.None, "Environments set by Winter season");
+            _Winter_DeepNorth_Weather3 = config("5 - Winter Weather", "8 - DeepNorth 3", Environments.None, "Environments set by Winter season");
+            _Winter_DeepNorth_Weather4 = config("5 - Winter Weather", "8 - DeepNorth 4", Environments.None, "Environments set by Winter season");
+
             
             _WinterColor1 = config("5 - Winter", "Color 1", SeasonColors.WinterColors[0], "Color tint applied to prefabs");
             _WinterColor2 = config("5 - Winter", "Color 2", SeasonColors.WinterColors[0], "Color tint applied to prefabs");
@@ -542,7 +613,16 @@ namespace Seasonality
             _Summer_Ocean_Weather2 = config("4 - Summer Weather", "6 - Ocean 2", Environments.None, "Environments set by Summer season");
             _Summer_Ocean_Weather3 = config("4 - Summer Weather", "6 - Ocean 3", Environments.None, "Environments set by Summer season");
             _Summer_Ocean_Weather4 = config("4 - Summer Weather", "6 - Ocean 4", Environments.None, "Environments set by Summer season");
-
+            
+            _Summer_AshLands_Weather1 = config("4 - Summer Weather", "7 - AshLands 1", Environments.None, "Environments set by Summer season");
+            _Summer_AshLands_Weather2 = config("4 - Summer Weather", "7 - AshLands 2", Environments.None, "Environments set by Summer season");
+            _Summer_AshLands_Weather3 = config("4 - Summer Weather", "7 - AshLands 3", Environments.None, "Environments set by Summer season");
+            _Summer_AshLands_Weather4 = config("4 - Summer Weather", "7 - AshLands 4", Environments.None, "Environments set by Summer season");
+            
+            _Summer_DeepNorth_Weather1 = config("4 - Summer Weather", "8 - DeepNorth 1", Environments.None, "Environments set by Summer season");
+            _Summer_DeepNorth_Weather2 = config("4 - Summer Weather", "8 - DeepNorth 2", Environments.None, "Environments set by Summer season");
+            _Summer_DeepNorth_Weather3 = config("4 - Summer Weather", "8 - DeepNorth 3", Environments.None, "Environments set by Summer season");
+            _Summer_DeepNorth_Weather4 = config("4 - Summer Weather", "8 - DeepNorth 4", Environments.None, "Environments set by Summer season");
             
             _SummerColor1 = config("6 - Summer", "Color 1", SeasonColors.SummerColors[0], "Color tint applied to prefabs");
             _SummerColor2 = config("6 - Summer", "Color 2", SeasonColors.SummerColors[1], "Color tint applied to prefabs");
