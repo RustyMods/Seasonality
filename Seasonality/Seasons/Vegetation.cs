@@ -38,17 +38,13 @@ public static class Vegetation
         if (type is VegetationType.None) return;
 
         // If custom textures, use that
-        if (Utils.ApplyIfAvailable(prefab, type)) return;
-        // Else use plugin settings
+        if (!Utils.ApplyIfAvailable(prefab, type)) ApplyMaterialToObj(prefab, type);
         switch (type)
         {
             case VegetationType.Beech or VegetationType.BeechSmall or VegetationType.Birch or VegetationType.Oak or VegetationType.Yggashoot 
                 or VegetationType.Bush or VegetationType.PlainsBush or VegetationType.Shrub or VegetationType.Vines or VegetationType.RaspberryBush 
                 or VegetationType.BlueberryBush:
                 ApplyColorTint(prefab, type);
-                break;
-            default:
-                ApplyMaterialToObj(prefab, type);
                 break;
         }
     }
@@ -66,7 +62,7 @@ public static class Vegetation
                 {
                     case VegetationType.Beech or VegetationType.BeechSmall or VegetationType.Oak 
                         or VegetationType.Birch or VegetationType.Yggashoot:
-                        ApplyMaterialToObj(prefab, type);
+                        // Do not apply colors
                         break;
                     default: Utils.CreateColorActions(prefab, actions, type); break;
                 }
@@ -74,22 +70,15 @@ public static class Vegetation
             case Season.Summer:
                 switch (type)
                 {
-                    case VegetationType.Rock: break;
+                    case VegetationType.Rock: 
+                        // Do not apply colors
+                        break;
                     default: Utils.CreateColorActions(prefab, actions, type); break;
                 }
                 break;
             case Season.Winter:
                 switch (type)
                 {
-                    case VegetationType.Shrub or VegetationType.PlainsBush: 
-                        ApplyMaterialToObj(prefab, type); break;
-                    case VegetationType.Beech or VegetationType.BeechSmall or VegetationType.Birch:
-                        if (prefab.name.ToLower().Contains("small"))
-                        {
-                            Utils.CreateColorActions(prefab, actions, type);
-                        }
-                        else ApplyMaterialToObj(prefab, type);
-                        break;
                     default: Utils.CreateColorActions(prefab, actions, type); break;
                 }
                 break;
@@ -140,13 +129,16 @@ public static class Vegetation
 
     private static void ModifyMeshRenderer(Transform prefab, Color color, modificationType modType, VegetationType type)
     {
-        if (!prefab.TryGetComponent(out MeshRenderer meshRenderer)) return;
         
+        if (!prefab.TryGetComponent(out MeshRenderer meshRenderer)) return;
         Material[]? materials = meshRenderer.materials;
         foreach (Material mat in materials)
         {
             string materialName = mat.name.ToLower();
-            
+            if (materialName.Contains("raspberry") || materialName.Contains("blueberry"))
+            {
+                if (prefab.name.ToLower().Contains("sphere")) return;
+            }
             if (modType is modificationType.Material)
             {
                 // Modify both moss and main tex
@@ -158,16 +150,6 @@ public static class Vegetation
             if (materialName.Contains("bark") || materialName.Contains("trunk") || materialName.Contains("log") || materialName.Contains("wood") || materialName.Contains("branch")) continue;
             switch (_Season.Value)
             {
-                case Season.Winter:
-                    switch (type)
-                    {
-                        case VegetationType.Beech or VegetationType.BeechSmall or VegetationType.Birch or VegetationType.Oak or VegetationType.Yggashoot:
-                            // Set leaves to be invisible
-                            mat.color = Color.clear; 
-                            break;
-                        default: mat.color = color; break;
-                    }
-                    continue;
                 case Season.Fall:
                     switch (type)
                     {
@@ -180,12 +162,10 @@ public static class Vegetation
                     switch (type)
                     {
                         case VegetationType.Vines:
-                            return;
+                            continue;
                     }
                     break;
             }
-
-
             // For everything else, modify color
             mat.color = color;
         }
@@ -202,34 +182,17 @@ public static class Vegetation
 
         string materialName = mat.name.ToLower();
         string[]? properties = mat.GetTexturePropertyNames();
-        if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) return;
-        if (!Utils.FindTexturePropName(properties, "moss", out string mossProp)) return;
-        // foreach (string prop in properties)
-        // {
-        //     if (prop.ToLower().Contains("moss"))
-        //     {
-        //         // if (mat.name.ToLower().Contains("mistland")) return;
-        //         ModifyMossTex(prop, mat);
-        //     }
-        //     if (!prop.ToLower().Contains("main") || !modifyMainTex) continue;
-        //     // Make sure only the leaves are affected 
-        //     if (materialName.Contains("bark") 
-        //         || materialName.Contains("trunk") 
-        //         || materialName.Contains("log") 
-        //         || materialName.Contains("wood")
-        //         || materialName.Contains("stump")
-        //         ) continue;
-        //     ModifyMainTex(prop, mat, type);
-        // }
-        ModifyMossTex(mossProp, mat);
-        if (materialName.Contains("bark") 
-        || materialName.Contains("trunk") 
-        || materialName.Contains("log") 
-        || materialName.Contains("wood")
-        || materialName.Contains("stump")
-        ) return;
-        ModifyMainTex(mainProp, mat, type);
-
+        if (Utils.FindTexturePropName(properties, "moss", out string mossProp)) ModifyMossTex(mossProp, mat);
+        if (Utils.FindTexturePropName(properties, "main", out string mainProp))
+        {
+            if (materialName.Contains("bark") 
+                || materialName.Contains("trunk") 
+                || materialName.Contains("log") 
+                || materialName.Contains("wood")
+                || materialName.Contains("stump")
+               ) return;
+            if (modifyMainTex) ModifyMainTex(mainProp, mat, type);
+        };
     }
 
     private static void ModifyMainTex(string propertyName, Material material, VegetationType type)
@@ -242,50 +205,9 @@ public static class Vegetation
             case Season.Winter:
                 switch (type)
                 {
-                    case VegetationType.Pine:
-                        tex = PineTree_Winter;
-                        Texture? customPineWinter = Utils.GetCustomTexture(VegDirectories.Pine, Season.Winter);
-                        if (customPineWinter) tex = customPineWinter;
-                        break;
-                    case VegetationType.Fir:
-                        tex = FirTree_Winter;
-                        Texture? customFirWinter = Utils.GetCustomTexture(VegDirectories.Fir, Season.Winter);
-                        if (customFirWinter) tex = customFirWinter;
-                        break;
-                    case VegetationType.PlainsBush:
-                        tex = PlainsBush_Winter;
-                        Texture? plainBushWinter = Utils.GetCustomTexture(VegDirectories.PlainsBush, Season.Winter);
-                        if (plainBushWinter) tex = plainBushWinter;
-                        break;
-                    case VegetationType.Shrub:
-                        tex = Shrub02_Winter;
-                        Texture? customShrubWinter = Utils.GetCustomTexture(VegDirectories.Shrub, Season.Winter);
-                        if (customShrubWinter) tex = customShrubWinter;
-                        break;
-                    case VegetationType.Beech:
-                        tex = BeechLeaf_Winter;
-                        Texture? customBeechLeafWinter = Utils.GetCustomTexture(VegDirectories.Beech, Season.Winter);
-                        if (customBeechLeafWinter) tex = customBeechLeafWinter;
-                        break;
-                    case VegetationType.BeechSmall:
-                        tex = BeechLeaf_Winter;
-                        Texture? customBeechSmallLeafWinter = Utils.GetCustomTexture(VegDirectories.BeechSmall, Season.Winter);
-                        if (customBeechSmallLeafWinter) tex = customBeechSmallLeafWinter;
-                        break;
-                    case VegetationType.Birch:
-                        tex = BirchLeaf_Winter;
-                        Texture? customBirchLeafWinter = Utils.GetCustomTexture(VegDirectories.Birch, Season.Winter);
-                        if (customBirchLeafWinter) tex = customBirchLeafWinter;
-                        break;
-                    case VegetationType.CloudberryBush:
-                        tex = CloudberryBush_Winter;
-                        Texture? customCloudberry = Utils.GetCustomTexture(VegDirectories.CloudberryBush, Season.Winter);
-                        if (customCloudberry) tex = customCloudberry;
-                        break;
                     case VegetationType.Oak:
                         if (normalizedName == "oak_leaf")
                         {
-                            tex = Oak_Winter;
                             Texture? customOak = Utils.GetCustomTexture(VegDirectories.Oak, Season.Winter);
                             if (customOak) tex = customOak;
                         }
@@ -298,20 +220,9 @@ public static class Vegetation
             case Season.Spring:
                 switch (type)
                 {
-                    case VegetationType.Pine:
-                        tex = PineTree_Spring;
-                        Texture? customPineSpring = Utils.GetCustomTexture(VegDirectories.Pine, Season.Spring);
-                        if (customPineSpring) tex = customPineSpring;
-                        break;
-                    case VegetationType.Fir:
-                        tex = FirTree_Spring;
-                        Texture? customFirSpring = Utils.GetCustomTexture(VegDirectories.Fir, Season.Spring);
-                        if (customFirSpring) tex = customFirSpring;
-                        break;
                     case VegetationType.Beech or VegetationType.BeechSmall:
                         if (normalizedName == "beech_leaf")
                         {
-                            tex = BeechLeaf_Spring;
                             Texture? customBeechSpring = Utils.GetCustomTexture(VegDirectories.Beech, Season.Spring);
                             if (customBeechSpring) tex = customBeechSpring;
                             material.color = new Color(1f, 1f, 1f, 0.8f);
@@ -320,7 +231,6 @@ public static class Vegetation
 
                         if (normalizedName == "beech_leaf_small")
                         {
-                            tex = BeechLeaf_Small_Spring;
                             Texture? customBeechSmallSpring = Utils.GetCustomTexture(VegDirectories.BeechSmall, Season.Spring);
                             if (customBeechSmallSpring) tex = customBeechSmallSpring;
                             material.color = new Color(1f, 1f, 1f, 0.8f);
@@ -329,7 +239,6 @@ public static class Vegetation
                     case VegetationType.Oak:
                         if (normalizedName == "oak_leaf")
                         {
-                            tex = OakLeaf_Spring;
                             Texture? customOakSpring = Utils.GetCustomTexture(VegDirectories.Oak, Season.Spring);
                             if (customOakSpring) tex = customOakSpring;
                             material.color = new Color(0.8f, 0.7f, 0.8f, 1f);
@@ -338,7 +247,6 @@ public static class Vegetation
                     case VegetationType.Birch:
                         if (normalizedName == "birch_leaf")
                         {
-                            tex = BirchLeaf_Spring;
                             Texture? customBirchSpring = Utils.GetCustomTexture(VegDirectories.Birch, Season.Spring);
                             if (customBirchSpring) tex = customBirchSpring;
                             material.color = new Color(0.8f, 0.7f, 0.8f, 1f);
@@ -347,14 +255,10 @@ public static class Vegetation
                     case VegetationType.Yggashoot:
                         if (normalizedName == "shoot_leaf_mat")
                         {
-                            tex = ShootLeaf_Spring;
                             Texture? customYggaSpring = Utils.GetCustomTexture(VegDirectories.YggaShoot, Season.Spring);
                             if (customYggaSpring) tex = customYggaSpring;
                             material.color = new Color(0.8f, 0.7f, 0.8f, 1f);
                         }
-                        break;
-                    case VegetationType.Swamp:
-                        tex = Dead_Branch_Spring;
                         break;
                     default:
                         tex = Utils.GetCustomTexture(directory, Season.Spring);
@@ -368,22 +272,16 @@ public static class Vegetation
                 switch (type)
                 {
                     case VegetationType.Pine:
-                        tex = PineTree_Fall;
                         Texture? customPine = Utils.GetCustomTexture(VegDirectories.Pine, Season.Fall);
                         if (customPine) tex = customPine;
                         break;
                     case VegetationType.Fir:
-                        tex = FirTree_Fall;
                         Texture? customFir = Utils.GetCustomTexture(VegDirectories.Fir, Season.Fall);
                         if (customFir) tex = customFir;
                         break;
                     case VegetationType.Beech or VegetationType.BeechSmall:
                         if (material.name.Contains("small")) { tex = Utils.GetCustomTexture(VegDirectories.BeechSmall, Season.Fall); break; }
                         tex = Utils.GetCustomTexture(VegDirectories.Beech, Season.Fall);
-                        if (!tex) tex = BeechLeaf_White;
-                        break;
-                    case VegetationType.Swamp:
-                        tex = Dead_Branch_Summer;
                         break;
                     default:
                         tex = Utils.GetCustomTexture(directory, Season.Fall);
@@ -400,7 +298,7 @@ public static class Vegetation
         {
             case Season.Winter:
                 Texture? customWinter = Utils.GetCustomTexture(VegDirectories.Moss, Season.Winter);
-                material.SetTexture(propertyName, customWinter ? customWinter : SnowTexture);
+                if (customWinter) material.SetTexture(propertyName, customWinter);
                 break;
             case Season.Fall:
                 Texture? customFall = Utils.GetCustomTexture(VegDirectories.Moss, Season.Fall);

@@ -221,6 +221,7 @@ public static class Utils
         if (!vegConversionMap.TryGetValue(type, out VegDirectories directories)) return false;
         if (!CustomTextureExist(directories, _Season.Value)) return false;
         ApplyMaterialToObj(prefab, type);
+        
         return true;
     }
 

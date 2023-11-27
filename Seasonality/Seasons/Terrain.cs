@@ -82,18 +82,7 @@ public static class TerrainPatch
 
             if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
             if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
-            // If texture file recognized, use it and move on
-            switch (type)
-            {
-                case GrassTypes.GreenGrass or GrassTypes.GreenGrassShort or GrassTypes.MistlandGrassShort:
-                    mat.SetTexture(terrainProp, null);
-                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp)) continue;
-                    break;
-                default:
-                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp)) continue;
-                    break;
-            }
-            // Else use plugin settings
+            
             // Set texture to default value
             Texture? tex = (type) switch
             {
@@ -115,115 +104,37 @@ public static class TerrainPatch
                 _ => null
             };
             mat.color = Color.white;
+            if (tex != null) mat.SetTexture(mainProp, tex);
             
-            Texture? forestGroundBrown = clutterTextures.Find(x => x.name == "forest_groundcover_brown"); // redish forest ground cover
-            // Set texture and color depending on season
-            switch (_Season.Value)
+            // If texture file recognized, use it and move on
+            switch (type)
             {
-                case Season.Fall:
-                    switch (type)
+                case GrassTypes.GreenGrass or GrassTypes.GreenGrassShort or GrassTypes.MistlandGrassShort:
+                    mat.SetTexture(terrainProp, null);
+                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp)) continue;
+                    break;
+                case GrassTypes.ClutterShrubs or GrassTypes.Ormbunke:
+                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
+                    switch (_Season.Value)
                     {
-                        case GrassTypes.GreenGrass:
-                            tex = GrassMeadows_Fall;
-                            break;
-                        case GrassTypes.GreenGrassShort:
-                            tex = GrassMeadowsShort_Fall;
-                            break;
-                        case GrassTypes.ClutterShrubs:
-                            tex = ClutterShrub_Winter;
+                        case Season.Fall:
                             AssignColors(obj, new List<Color>(){_FallColor1.Value, _FallColor2.Value, _FallColor3.Value});
-                            break;
-                        case GrassTypes.GroundCover:
-                            tex = forestGroundBrown;
-                            break;
-                        case GrassTypes.Ormbunke:
-                            tex = Ormbunke_Winter;
-                            AssignColors(obj, new List<Color>(){_FallColor1.Value, _FallColor2.Value, _FallColor3.Value});
-                            break;
-                        case GrassTypes.Vass:
-                            tex = Vass_Fall;
-                            break;
-                        case GrassTypes.WaterLilies:
-                            tex = WaterLilies_Fall;
-                            break;
-                        case GrassTypes.MistlandGrassShort:
-                            tex = MistLandGrass_Fall;
                             break;
                     }
-                    break;
-                case Season.Spring:
-                    switch (type)
+                    continue;
+                case GrassTypes.GroundCover:
+                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
+                    switch (_Season.Value)
                     {
-                        case GrassTypes.GroundCover:
-                            tex = forestGroundBrown;
+                        case Season.Spring:
                             mat.color = new Color(0.5f, 0.6f, 0f, 1f);
                             break;
-                        case GrassTypes.WaterLilies:
-                            tex = WaterLilies_Spring;
-                            break;
-                        case GrassTypes.ClutterShrubs:
-                            tex = Clutter_Shrub_Spring;
-                            break;
-                        case GrassTypes.GreenGrass:
-                            tex = GrassMeadows_Spring;
-                            break;
-                        case GrassTypes.GreenGrassShort:
-                            tex = GrassMeadowsShort_Spring;
-                            break;
-                        case GrassTypes.MistlandGrassShort:
-                            tex = MistLandGrass_Spring;
-                            break;
                     }
-                    break;
-                case Season.Summer:
-                    switch (type)
-                    {
-                        case GrassTypes.GreenGrass:
-                            tex = GrassMeadows_Summer;
-                            break;
-                        case GrassTypes.GreenGrassShort:
-                            tex = GrassMeadowsShort_Summer;
-                            break;
-                        case GrassTypes.GroundCover:
-                            tex = forestGroundBrown;
-                            break;
-                        case GrassTypes.MistlandGrassShort:
-                            tex = MistLandGrass_Summer;
-                            break;
-                    }
-                    break;
-                case Season.Winter:
-                    switch (type)
-                    {
-                        case GrassTypes.GreenGrass:
-                            tex = GrassMeadows_Winter;
-                            break;
-                        case GrassTypes.GreenGrassShort:
-                            tex = GrassMeadowsShort_Winter;
-                            break;
-                        case GrassTypes.GroundCover:
-                            tex = forestGroundBrown;
-                            break;
-                        case GrassTypes.ClutterShrubs:
-                            tex = ClutterShrub_Winter;
-                            break;
-                        case GrassTypes.Ormbunke:
-                            tex = Ormbunke_Winter;
-                            break;
-                        case GrassTypes.Vass:
-                            tex = Vass_Winter;
-                            break;
-                        case GrassTypes.WaterLilies:
-                            tex = WaterLilies_Winter;
-                            break;
-                        case GrassTypes.MistlandGrassShort:
-                            tex = MistLandGrass_Winter;
-                            break;
-                    }   
+                    continue;
+                default:
+                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp)) continue;
                     break;
             }
-
-            if (tex != null) mat.SetTexture(mainProp, tex);
         }
     }
     private static void AssignColors(GameObject obj, List<Color> colors)

@@ -26,7 +26,6 @@ public static class CreatureReplacement
             }
             return true;
         }
-
         private static SpawnSystem.SpawnData CloneData(SpawnSystem.SpawnData critter, string prefabName)
         {
             SpawnSystem.SpawnData data = new SpawnSystem.SpawnData()
@@ -67,6 +66,47 @@ public static class CreatureReplacement
             };
 
             return data;
+        }
+    }
+
+    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.Awake))]
+    static class CreatureTextureReplacement
+    {
+        private static void Postfix(Humanoid __instance)
+        {
+            if (!__instance) return;
+            GameObject prefab = __instance.gameObject;
+            string normalizedName = prefab.name.Replace("(Clone)", "").ToLower();
+            switch (_Season.Value)
+            {
+                case Season.Winter:
+                    switch (normalizedName)
+                    {
+                        case "lox":
+                            if (_ReplaceLox.Value is Toggle.On) ReplaceCreatureTexture(prefab, normalizedName);
+                            break;
+                    }
+
+                    break;
+            }
+
+        }
+        private static void ReplaceCreatureTexture(GameObject prefab, string name)
+        {
+            if (!prefab) return;
+            Transform fur = global::Utils.FindChild(prefab.transform, "Furr1");
+            if (!fur) return;
+            if (!fur.TryGetComponent(out SkinnedMeshRenderer skinnedMeshRenderer)) return;
+            Material[]? materials = skinnedMeshRenderer.materials;
+            foreach (Material mat in materials)
+            {
+                if (mat.name.ToLower().Contains(name))
+                {
+                    string[]? properties = mat.GetTexturePropertyNames();
+                    if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) continue;
+                    mat.SetTexture(mainProp, CustomTextures.Lox_Winter);
+                }
+            }
         }
     }
 }
