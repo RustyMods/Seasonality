@@ -16,6 +16,8 @@ public static class CustomTextures
     public static readonly Texture? Lox_Winter = RegisterTexture("Halstein_d_winter.png");
 
     public static readonly Dictionary<VegDirectories, Dictionary<Season, Texture?>> CustomRegisteredTextures = new();
+
+    public static readonly Dictionary<CreatureDirectories, Dictionary<Season, Texture?>> CustomRegisteredCreatureTex = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -50,14 +52,13 @@ public static class CustomTextures
 
         byte[] fileData = File.ReadAllBytes(filePath);
         Texture2D texture = new Texture2D(2, 2);
-        if (texture.LoadImage(fileData))
-        {
-            return texture;
-        }
+        if (texture.LoadImage(fileData)) return texture;
         return null;
     }
+    
     private static readonly string folderPath = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality";
     private static readonly string texturePath = folderPath + Path.DirectorySeparatorChar + "Textures";
+    private static readonly string creatureTexPath = folderPath + Path.DirectorySeparatorChar + "Creatures";
 
     public enum VegDirectories
     {
@@ -90,6 +91,12 @@ public static class CustomTextures
         CloudberryBush,
         None
     }
+
+    public enum CreatureDirectories
+    {
+        None,
+        Lox
+    }
     public static void ReadCustomTextures()
     {
         // Create directories if they are missing
@@ -108,6 +115,20 @@ public static class CustomTextures
             Dictionary<Season, Texture?> map = RegisterCustomTextures(type);
             if (map.Count == 0) continue;
             CustomRegisteredTextures.Add(directory, map);
+        }
+
+        foreach (CreatureDirectories creatureDir in Enum.GetValues(typeof(CreatureDirectories)))
+        {
+            if (creatureDir is CreatureDirectories.None) continue;
+            string type = creatureDir.ToString();
+            if (!Directory.Exists(creatureTexPath + Path.DirectorySeparatorChar + type))
+            {
+                Directory.CreateDirectory(creatureTexPath + Path.DirectorySeparatorChar + type);
+            }
+
+            Dictionary<Season, Texture?> map = RegisterCustomTextures(type);
+            if (map.Count == 0) continue;
+            CustomRegisteredCreatureTex.Add(creatureDir, map);
         }
     }
 
