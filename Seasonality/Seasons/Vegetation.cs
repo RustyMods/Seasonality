@@ -26,9 +26,7 @@ public static class Vegetation
                 currentModEnabled = _ModEnabled.Value;
                 return;
             };
-            GameObject prefab = __instance.gameObject;
-            
-            ModifyPrefab(prefab);
+            ModifyPrefab(__instance.gameObject);
         }
     }
     
@@ -137,6 +135,7 @@ public static class Vegetation
             string materialName = mat.name.ToLower();
             if (materialName.Contains("raspberry") || materialName.Contains("blueberry"))
             {
+                // Raspberry and blueberry bushes fruits are named: sphere
                 if (prefab.name.ToLower().Contains("sphere")) return;
             }
             if (modType is modificationType.Material)

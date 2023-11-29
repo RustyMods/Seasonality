@@ -108,7 +108,7 @@ public static class SeasonalEffects
                 return;
             }
 
-            // Use calculated data to set season change if counter hits less than 3
+            // Use calculated data to set season change if counter hits less than 5
             if (hours < 1 && minutes < 1 && seconds < 5)
             {
                 if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
@@ -189,6 +189,7 @@ public static class SeasonalEffects
 
             ApplySeasonalEffects(__instance);
             SetSeasonalKey();
+            TerrainPatch.UpdateTerrain();
         }
     }
 
@@ -306,5 +307,17 @@ public static class SeasonalEffects
         }
         
         currentSeason = _Season.Value;
+    }
+
+    [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.IsCold))]
+    static class EnvManColdPatch
+    {
+        private static void Postfix(ref bool __result)
+        {
+            if (_Season.Value is Season.Summer)
+            {
+                __result = _SummerNeverCold.Value is Toggle.Off; // If on, result = false
+            }
+        }
     }
 }

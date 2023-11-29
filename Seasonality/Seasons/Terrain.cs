@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
@@ -8,7 +9,8 @@ using static Seasonality.Seasons.CustomTextures;
 namespace Seasonality.Seasons;
 public static class TerrainPatch
 {
-    private static readonly List<Texture> clutterTextures = new();
+    // private static readonly List<Texture> clutterTextures = new();
+    private static readonly Dictionary<string, Texture> clutterTexMap = new();
     public static void UpdateTerrain()
     {
         if (!ClutterSystem.instance) return;
@@ -32,27 +34,9 @@ public static class TerrainPatch
             if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
             if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
 
-            Texture? texture = (type) switch
-            {
-                GrassTypes.GreenGrass => clutterTextures.Find(x => x.name == "grass_meadows"),
-                GrassTypes.GreenGrassShort => clutterTextures.Find(x => x.name == "grass_meadows_short"),
-                GrassTypes.ClutterShrubs => clutterTextures.Find(x => x.name == "clutter_shrub"),
-                GrassTypes.GroundCover => clutterTextures.Find(x => x.name == "forest_groundcover"),
-                GrassTypes.GroundCoverBrown => clutterTextures.Find(x => x.name == "forest_groundcover_brown"),
-                GrassTypes.SwampGrass => clutterTextures.Find(x => x.name == "grass_toon1_yellow"),
-                GrassTypes.HeathGrass => clutterTextures.Find(x => x.name == "grass_heath"),
-                GrassTypes.HeathFlowers => clutterTextures.Find(x => x.name == "grass_heath_redflower"),
-                GrassTypes.Ormbunke => clutterTextures.Find(x => x.name == "autumn_ormbunke_green"),
-                GrassTypes.OrmBunkeSwamp => clutterTextures.Find(x => x.name == "autumn_ormbunke_swamp"),
-                GrassTypes.Vass => clutterTextures.Find(x => x.name == "vass_texture01"),
-                GrassTypes.WaterLilies => clutterTextures.Find(x => x.name == "waterlilies"),
-                GrassTypes.RockPlant => clutterTextures.Find(x => x.name == "MistlandsVegetation_d"),
-                GrassTypes.Rocks => clutterTextures.Find(x => x.name == "rock_low"),
-                GrassTypes.MistlandGrassShort => MistLands_Moss,
-                _ => null
-            };
+            Texture? texture = GetDefaultTexture(type);
             
-            Texture? grassTerrainColor = clutterTextures.Find(x => x.name == "grass_terrain_color");
+            Texture? grassTerrainColor = clutterTexMap["grass_terrain_color"];
 
             switch (type)
             {
@@ -61,10 +45,33 @@ public static class TerrainPatch
                     if (grassTerrainColor) mat.SetTexture(terrainProp, grassTerrainColor);
                     break;
                 default:
-                    if (texture) mat.SetTexture(terrainProp, texture);
+                    if (texture) mat.SetTexture(mainProp, texture);
                     break;
             }
         }
+    }
+
+    private static Texture? GetDefaultTexture(GrassTypes type)
+    {
+        return (type) switch
+        {
+            GrassTypes.GreenGrass => clutterTexMap["grass_meadows"],
+            GrassTypes.GreenGrassShort => clutterTexMap["grass_meadows_short"],
+            GrassTypes.ClutterShrubs => clutterTexMap["clutter_shrub"],
+            GrassTypes.GroundCover => clutterTexMap["forest_groundcover"],
+            GrassTypes.GroundCoverBrown => clutterTexMap["forest_groundcover_brown"],
+            GrassTypes.SwampGrass => clutterTexMap["grass_toon1_yellow"],
+            GrassTypes.HeathGrass => clutterTexMap["grass_heath"],
+            GrassTypes.HeathFlowers => clutterTexMap["grass_heath_redflower"],
+            GrassTypes.Ormbunke => clutterTexMap["autumn_ormbunke_green"],
+            GrassTypes.OrmBunkeSwamp => clutterTexMap["autumn_ormbunke_swamp"],
+            GrassTypes.Vass => clutterTexMap["vass_texture01"],
+            GrassTypes.WaterLilies => clutterTexMap["waterlilies"],
+            GrassTypes.Rocks => clutterTexMap["rock_low"],
+            GrassTypes.RockPlant => Mistlands_Rock_Plant,
+            GrassTypes.MistlandGrassShort => MistLands_Moss,
+            _ => null
+        };
     }
     private static void SetTerrainSettings()
     {
@@ -84,25 +91,7 @@ public static class TerrainPatch
             if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
             
             // Set texture to default value
-            Texture? tex = (type) switch
-            {
-                GrassTypes.GreenGrass => clutterTextures.Find(x => x.name == "grasscross_meadows"),
-                GrassTypes.GreenGrassShort => clutterTextures.Find(x => x.name == "grass_meadows_short"),
-                GrassTypes.ClutterShrubs => clutterTextures.Find(x => x.name == "clutter_shrub"),
-                GrassTypes.GroundCover => clutterTextures.Find(x => x.name == "forest_groundcover"),
-                GrassTypes.GroundCoverBrown => clutterTextures.Find(x => x.name == "forest_groundcover_brown"),
-                GrassTypes.SwampGrass => clutterTextures.Find(x => x.name == "grass_toon1_yellow"),
-                GrassTypes.HeathGrass => clutterTextures.Find(x => x.name == "grass_heath"),
-                GrassTypes.HeathFlowers => clutterTextures.Find(x => x.name == "grass_heath_redflower"),
-                GrassTypes.Ormbunke => clutterTextures.Find(x => x.name == "autumn_ormbunke_green"),
-                GrassTypes.OrmBunkeSwamp => clutterTextures.Find(x => x.name == "autumn_ormbunke_swamp"),
-                GrassTypes.Vass => clutterTextures.Find(x => x.name == "vass_texture01"),
-                GrassTypes.WaterLilies => clutterTextures.Find(x => x.name == "waterlilies"),
-                GrassTypes.RockPlant => clutterTextures.Find(x => x.name == "MistlandsVegetation_d"),
-                GrassTypes.Rocks => clutterTextures.Find(x => x.name == "rock_low"),
-                GrassTypes.MistlandGrassShort => clutterTextures.Find(x => x.name == "mistlands_moss"),
-                _ => null
-            };
+            Texture? tex = GetDefaultTexture(type);
             mat.color = Color.white;
             if (tex != null) mat.SetTexture(mainProp, tex);
             
@@ -111,7 +100,7 @@ public static class TerrainPatch
             {
                 case GrassTypes.GreenGrass or GrassTypes.GreenGrassShort or GrassTypes.MistlandGrassShort:
                     mat.SetTexture(terrainProp, null);
-                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp)) continue;
+                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
                     break;
                 case GrassTypes.ClutterShrubs or GrassTypes.Ormbunke:
                     if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
@@ -132,7 +121,7 @@ public static class TerrainPatch
                     }
                     continue;
                 default:
-                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp)) continue;
+                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
                     break;
             }
         }
@@ -152,6 +141,7 @@ public static class TerrainPatch
     }
 
     [HarmonyPatch(typeof(ClutterSystem), nameof(ClutterSystem.Awake))]
+    [HarmonyPriority(Priority.Last)]
     static class ClutterSystemPatch
     {
         private static void Postfix(ClutterSystem __instance)
@@ -162,44 +152,6 @@ public static class TerrainPatch
             if (_ModEnabled.Value is Toggle.Off) return;
             SetTerrainSettings();
         }
-        private static void RegisterCustomClutter(ClutterSystem __instance)
-        {
-            // Get data from vanilla clutter
-            ClutterSystem.Clutter grass = __instance.m_clutter.Find(x => x.m_name.Contains("green"));
-            if (grass == null) return;
-            // Create custom clutter
-            ClutterSystem.Clutter MountainGrass = new ClutterSystem.Clutter();
-            MountainGrass.m_name = "mountain_grass";
-            MountainGrass.m_enabled = true;
-            MountainGrass.m_biome = Heightmap.Biome.Mountain;
-            MountainGrass.m_instanced = true;
-            MountainGrass.m_prefab = grass.m_prefab;
-            MountainGrass.m_amount = 80;
-            MountainGrass.m_onUncleared = grass.m_onUncleared;
-            MountainGrass.m_onCleared = grass.m_onCleared;
-            MountainGrass.m_minVegetation = grass.m_minVegetation;
-            MountainGrass.m_maxVegetation = grass.m_maxVegetation;
-            MountainGrass.m_scaleMin = 1f;
-            MountainGrass.m_scaleMax = 1f;
-            MountainGrass.m_maxTilt = grass.m_maxTilt;
-            MountainGrass.m_minTilt = grass.m_minTilt;
-            MountainGrass.m_minAlt = grass.m_minAlt;
-            MountainGrass.m_snapToWater = false;
-            MountainGrass.m_terrainTilt = true;
-            MountainGrass.m_randomOffset = grass.m_randomOffset;
-            MountainGrass.m_minOceanDepth = grass.m_minOceanDepth;
-            MountainGrass.m_maxOceanDepth = grass.m_maxOceanDepth;
-            MountainGrass.m_inForest = true;
-            MountainGrass.m_forestTresholdMin = grass.m_forestTresholdMin;
-            MountainGrass.m_forestTresholdMax = grass.m_forestTresholdMax;
-            MountainGrass.m_fractalScale = grass.m_fractalScale;
-            MountainGrass.m_fractalOffset = grass.m_fractalOffset;
-            MountainGrass.m_fractalTresholdMin = grass.m_fractalTresholdMin;
-            MountainGrass.m_fractalTresholdMax = grass.m_fractalTresholdMax;
-                
-            __instance.m_clutter.Add(MountainGrass);
-        }
-
         private static void CacheInitialData(ClutterSystem __instance)
         {
             foreach (ClutterSystem.Clutter? clutter in __instance.m_clutter)
@@ -213,8 +165,9 @@ public static class TerrainPatch
                 foreach (int id in IDs)
                 {
                     Texture? tex = mat.GetTexture(id);
-                    if (clutterTextures.Contains(tex)) continue;
-                    if (tex) clutterTextures.Add(tex);
+                    if (!tex) continue;
+                    if (clutterTexMap.ContainsKey(tex.name)) continue;
+                    clutterTexMap.Add(tex.name, tex);
                 }
             }
         }
@@ -282,3 +235,94 @@ public static class TerrainPatch
     }
 
 }
+
+
+// For some reason, texture.name comes up as an empty string sometimes. 
+// HarmonyPriority Last seemingly resolved issue
+            
+// grass_meadows: 14682
+// grass_terrain_color: 13692
+// clutter_shrub: 12738
+// clutter_shrub_n: 12480
+// forest_groundcover_brown: 14370
+// forest_groundcover 1: 14676
+// forest_groundcover: 12850
+// forest_groundcover 1: 14676
+// grass_toon1_yellow: 12378
+// grass_heath: 12502
+// grass_meadows_short: 12062
+// grass_terrain_color: 13692
+// grass_heath_redflower: 13400
+// rock_low: 14330
+// rock_normal_low: 14602
+// autumn_ormbunke_swamp: 13838
+// autumn_ormbunke_green_n: 13928
+// autumn_ormbunke_green: 12840
+// autumn_ormbunke_green_n: 13928
+// autumn_ormbunke_green: 12840
+// autumn_ormbunke_green_n: 13928
+// vass_texture01: 12696
+// waterlilies: 13890
+// waterlilies_n: 13160
+            
+// -308 
+// -354
+// clutter_shrub_n: 12480
+// forest_groundcover_brown: 14370
+// forest_groundcover 1: 14676
+// -324
+// forest_groundcover 1: 14676
+// grass_toon1_yellow: 12378
+// grass_heath: 12502
+// -316
+// grass_heath_redflower: 13400
+// rock_low: 14330
+// rock_normal_low: 14602
+// autumn_ormbunke_swamp: 13838
+// autumn_ormbunke_green_n: 13928
+// autumn_ormbunke_green: 12840
+// autumn_ormbunke_green_n: 13928
+// autumn_ormbunke_green: 12840
+// autumn_ormbunke_green_n: 13928
+// vass_texture01: 12696
+// -346
+// waterlilies_n: 13160
+
+
+// private static void RegisterCustomClutter(ClutterSystem __instance)
+// {
+//     // Get data from vanilla clutter
+//     ClutterSystem.Clutter grass = __instance.m_clutter.Find(x => x.m_name.Contains("green"));
+//     if (grass == null) return;
+//     // Create custom clutter
+//     ClutterSystem.Clutter MountainGrass = new ClutterSystem.Clutter();
+//     MountainGrass.m_name = "mountain_grass";
+//     MountainGrass.m_enabled = true;
+//     MountainGrass.m_biome = Heightmap.Biome.Mountain;
+//     MountainGrass.m_instanced = true;
+//     MountainGrass.m_prefab = grass.m_prefab;
+//     MountainGrass.m_amount = 80;
+//     MountainGrass.m_onUncleared = grass.m_onUncleared;
+//     MountainGrass.m_onCleared = grass.m_onCleared;
+//     MountainGrass.m_minVegetation = grass.m_minVegetation;
+//     MountainGrass.m_maxVegetation = grass.m_maxVegetation;
+//     MountainGrass.m_scaleMin = 1f;
+//     MountainGrass.m_scaleMax = 1f;
+//     MountainGrass.m_maxTilt = grass.m_maxTilt;
+//     MountainGrass.m_minTilt = grass.m_minTilt;
+//     MountainGrass.m_minAlt = grass.m_minAlt;
+//     MountainGrass.m_snapToWater = false;
+//     MountainGrass.m_terrainTilt = true;
+//     MountainGrass.m_randomOffset = grass.m_randomOffset;
+//     MountainGrass.m_minOceanDepth = grass.m_minOceanDepth;
+//     MountainGrass.m_maxOceanDepth = grass.m_maxOceanDepth;
+//     MountainGrass.m_inForest = true;
+//     MountainGrass.m_forestTresholdMin = grass.m_forestTresholdMin;
+//     MountainGrass.m_forestTresholdMax = grass.m_forestTresholdMax;
+//     MountainGrass.m_fractalScale = grass.m_fractalScale;
+//     MountainGrass.m_fractalOffset = grass.m_fractalOffset;
+//     MountainGrass.m_fractalTresholdMin = grass.m_fractalTresholdMin;
+//     MountainGrass.m_fractalTresholdMax = grass.m_fractalTresholdMax;
+//         
+//     __instance.m_clutter.Add(MountainGrass);
+// }

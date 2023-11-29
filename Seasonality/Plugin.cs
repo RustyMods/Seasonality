@@ -356,6 +356,8 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _WeatherControl = null!;
         public static ConfigEntry<Toggle> _StatusEffectVisible = null!;
 
+        public static ConfigEntry<Toggle> _SummerNeverCold = null!;
+
         public static ConfigEntry<Toggle> _ReplaceLeech = null!;
         public static ConfigEntry<Toggle> _ReplaceLox = null!;
 
@@ -369,10 +371,10 @@ namespace Seasonality
             _SeasonDuration = config("2 - Utilities", "2 - Season Duration (Days)", 5, new ConfigDescription("In-game days between season", new AcceptableValueRange<int>(0, 365)));
             _CounterVisible = config("2 - Utilities", "3 - Timer Visible", Toggle.On, "If on, timer under season is visible", false);
             _WeatherDuration = config("2 - Utilities", "4 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
-            _WeatherControl = config("2 - Utilities", "Weather Enabled", Toggle.On, "If on, seasons can control the weather");
             _SeasonalEffectsEnabled = config("2 - Utilities", "5 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");
-            _StatusEffectVisible = config("2 - Utilities", "7 - Season Icon Visible", Toggle.On, "If on, season icon is visible", false);
-            
+            _StatusEffectVisible = config("2 - Utilities", "6 - Season Icon Visible", Toggle.On, "If on, season icon is visible", false);
+            _WeatherControl = config("2 - Utilities", "7 - Weather Enabled", Toggle.On, "If on, seasons can control the weather");
+            _SummerNeverCold = config("2 - Utilities", "8 - Summer Never Cold", Toggle.Off, "If on, players are never cold during summer");
             #region Creatures
 
             _ReplaceLeech = config("7 - Creature Replacement", "Leeches", Toggle.On,

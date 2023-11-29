@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using HarmonyLib;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Seasons.CustomTextures;
@@ -154,6 +153,10 @@ public static class Utils
     public static Texture? GetCustomTexture(VegDirectories type, Season key)
     {
         return !CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
+    }
+    public static Texture? GetCustomTexture(CreatureDirectories type, Season key)
+    {
+        return !CustomRegisteredCreatureTex.TryGetValue(type, out Dictionary<Season, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
     }
     private static bool CustomTextureExist(VegDirectories type, Season key)
     {
