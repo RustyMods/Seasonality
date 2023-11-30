@@ -11,7 +11,6 @@ namespace Seasonality.Seasons;
 
 public static class Vegetation
 {
-    private static Toggle currentModEnabled;
     private static readonly List<GameObject> BaseVegetation = new();
     private static Texture? MossTexture;
     private static readonly Dictionary<string, Texture> VegetationTextures = new();
@@ -97,13 +96,14 @@ public static class Vegetation
             if (!BeechRenderer) return new List<Material[]>();
             VegetationType type = Utils.GetVegetationType(prefab.name);
             Material[]? materials = BeechRenderer.materials;
-            
-            Material[] newMaterials1 = new Material[materials.Length];
-            Material[] newMaterials2 = new Material[materials.Length];
-            Material[] newMaterials3 = new Material[materials.Length];
-            Material[] newMaterials4 = new Material[materials.Length];
-            
-            List<Material[]> newMaterialArray = new() { newMaterials1, newMaterials2, newMaterials3, newMaterials4 };
+            // Create List of Material Array and apply unique colors to each
+            List<Material[]> newMaterialArray = new()
+            {
+                new Material[materials.Length], 
+                new Material[materials.Length], 
+                new Material[materials.Length], 
+                new Material[materials.Length]
+            };
 
             for (int index = 0; index < newMaterialArray.Count; index++)
             {
@@ -136,39 +136,17 @@ public static class Vegetation
 
             switch (type)
                 {
-                    case VegetationType.Beech:
-                        BeechMaterials = CreateBaseMaterials(prefab, "leaf");
-                        break;
-                    case VegetationType.BeechSmall:
-                        BeechSmallMaterials = CreateBaseMaterials(prefab, "leaf");
-                        break; 
-                    case VegetationType.Birch:
-                        BirchMaterials = CreateBaseMaterials(prefab, "leaf");
-                        break; 
-                    case VegetationType.Oak:
-                        OakMaterials = CreateBaseMaterials(prefab, "leaf");
-                        break; 
-                    case VegetationType.Yggashoot:
-                        YggaMaterials = CreateBaseMaterials(prefab, "leaf");
-                        break;
-                    case VegetationType.Bush:
-                        BushMaterials = CreateBaseMaterials(prefab, "wood", false);
-                        break; 
-                    case VegetationType.PlainsBush:
-                        PlainsBushMaterials = CreateBaseMaterials(prefab, "wood", false);
-                        break; 
-                    case VegetationType.Shrub: 
-                        ShrubMaterials = CreateBaseMaterials(prefab, "shrub");
-                        break; 
-                    case VegetationType.Vines:
-                        VinesMaterials = CreateBaseMaterials(prefab, "vinesbranch", false);
-                        break; 
-                    case VegetationType.RaspberryBush:
-                        RaspberryMaterials = CreateBaseMaterials(prefab, "wood", false);
-                        break;  
-                    case VegetationType.BlueberryBush:
-                        BlueberryMaterials = CreateBaseMaterials(prefab, "wood", false);
-                        break;
+                    case VegetationType.Beech: BeechMaterials = CreateBaseMaterials(prefab, "leaf"); break;
+                    case VegetationType.BeechSmall: BeechSmallMaterials = CreateBaseMaterials(prefab, "leaf"); break; 
+                    case VegetationType.Birch: BirchMaterials = CreateBaseMaterials(prefab, "leaf"); break; 
+                    case VegetationType.Oak: OakMaterials = CreateBaseMaterials(prefab, "leaf"); break; 
+                    case VegetationType.Yggashoot: YggaMaterials = CreateBaseMaterials(prefab, "leaf"); break;
+                    case VegetationType.Bush: BushMaterials = CreateBaseMaterials(prefab, "wood", false); break; 
+                    case VegetationType.PlainsBush: PlainsBushMaterials = CreateBaseMaterials(prefab, "wood", false); break; 
+                    case VegetationType.Shrub: ShrubMaterials = CreateBaseMaterials(prefab, "shrub"); break; 
+                    case VegetationType.Vines: VinesMaterials = CreateBaseMaterials(prefab, "vinesbranch", false); break; 
+                    case VegetationType.RaspberryBush: RaspberryMaterials = CreateBaseMaterials(prefab, "wood", false); break;  
+                    case VegetationType.BlueberryBush: BlueberryMaterials = CreateBaseMaterials(prefab, "wood", false); break;
                 }
         }
     }
@@ -190,39 +168,17 @@ public static class Vegetation
         if (type is VegetationType.None) return;
         switch (type)
         {
-            case VegetationType.Beech:
-                SetMaterials(BeechMaterials, prefab);
-                break;
-            case VegetationType.BeechSmall:
-                SetMaterials(BeechSmallMaterials, prefab);
-                break; 
-            case VegetationType.Birch:
-                SetMaterials(BirchMaterials, prefab);
-                break; 
-            case VegetationType.Oak:
-                SetMaterials(OakMaterials, prefab);
-                break; 
-            case VegetationType.Yggashoot:
-                SetMaterials(YggaMaterials, prefab);
-                break;
-            case VegetationType.Bush:
-                SetMaterials(BushMaterials, prefab);
-                break; 
-            case VegetationType.PlainsBush:
-                SetMaterials(PlainsBushMaterials, prefab);
-                break; 
-            case VegetationType.Shrub: 
-                SetMaterials(ShrubMaterials, prefab);
-                break; 
-            case VegetationType.Vines:
-                SetMaterials(VinesMaterials, prefab);
-                break; 
-            case VegetationType.RaspberryBush:
-                SetMaterials(RaspberryMaterials, prefab);
-                break;  
-            case VegetationType.BlueberryBush:
-                SetMaterials(BlueberryMaterials, prefab);
-                break;
+            case VegetationType.Beech: SetMaterials(BeechMaterials, prefab); break;
+            case VegetationType.BeechSmall: SetMaterials(BeechSmallMaterials, prefab); break; 
+            case VegetationType.Birch: SetMaterials(BirchMaterials, prefab); break; 
+            case VegetationType.Oak: SetMaterials(OakMaterials, prefab); break; 
+            case VegetationType.Yggashoot: SetMaterials(YggaMaterials, prefab); break;
+            case VegetationType.Bush: SetMaterials(BushMaterials, prefab); break; 
+            case VegetationType.PlainsBush: SetMaterials(PlainsBushMaterials, prefab); break; 
+            case VegetationType.Shrub: SetMaterials(ShrubMaterials, prefab); break; 
+            case VegetationType.Vines: SetMaterials(VinesMaterials, prefab); break; 
+            case VegetationType.RaspberryBush: SetMaterials(RaspberryMaterials, prefab); break;  
+            case VegetationType.BlueberryBush: SetMaterials(BlueberryMaterials, prefab); break;
         }
     }
     private static void SetMaterials(List<Material[]> materials, GameObject prefab)
@@ -265,21 +221,6 @@ public static class Vegetation
         }
     }
     
-    [HarmonyPatch(typeof(ZNetView), nameof(ZNetView.Awake))]
-    public static class ZNetViewAwakePatch
-    {
-        private static void Postfix(ZNetView __instance)
-        {
-            if (!__instance) return;
-            if (_ModEnabled.Value is Toggle.Off)
-            {
-                if (currentModEnabled == _ModEnabled.Value) return;
-                // Set terrain back to default values
-                TerrainPatch.UpdateTerrain();
-                currentModEnabled = _ModEnabled.Value;
-            };
-        }
-    }
     private static void ApplyMaterialToObj(GameObject obj, VegetationType type)
     {
         Random random = new Random();
@@ -511,48 +452,17 @@ public static class Vegetation
         material.SetTexture(propertyName, tex);
         switch (type)
         {
-            case VegetationType.Beech:
-                SetTextureColor(BeechMaterials, propertyName, tex);
-                break;
-            case VegetationType.BeechSmall:
-                SetTextureColor(BeechSmallMaterials, propertyName, tex);
-                break; 
-            case VegetationType.Birch:
-                SetTextureColor(BirchMaterials, propertyName, tex);
-
-                break; 
-            case VegetationType.Oak:
-                SetTextureColor(OakMaterials, propertyName, tex);
-
-                break; 
-            case VegetationType.Yggashoot:
-                SetTextureColor(YggaMaterials, propertyName, tex);
-
-                break;
-            case VegetationType.Bush:
-                SetTextureColor(BushMaterials, propertyName, tex);
-
-                break; 
-            case VegetationType.PlainsBush:
-                SetTextureColor(PlainsBushMaterials, propertyName, tex);
-
-                break; 
-            case VegetationType.Shrub: 
-                SetTextureColor(ShrubMaterials, propertyName, tex);
-
-                break; 
-            case VegetationType.Vines:
-                SetTextureColor(VinesMaterials, propertyName, tex);
-
-                break; 
-            case VegetationType.RaspberryBush:
-                SetTextureColor(RaspberryMaterials, propertyName, tex);
-
-                break;  
-            case VegetationType.BlueberryBush:
-                SetTextureColor(BlueberryMaterials, propertyName, tex);
-
-                break;
+            case VegetationType.Beech: SetTextureColor(BeechMaterials, propertyName, tex); break;
+            case VegetationType.BeechSmall: SetTextureColor(BeechSmallMaterials, propertyName, tex); break; 
+            case VegetationType.Birch: SetTextureColor(BirchMaterials, propertyName, tex); break; 
+            case VegetationType.Oak: SetTextureColor(OakMaterials, propertyName, tex); break; 
+            case VegetationType.Yggashoot: SetTextureColor(YggaMaterials, propertyName, tex); break;
+            case VegetationType.Bush: SetTextureColor(BushMaterials, propertyName, tex); break; 
+            case VegetationType.PlainsBush: SetTextureColor(PlainsBushMaterials, propertyName, tex); break; 
+            case VegetationType.Shrub: SetTextureColor(ShrubMaterials, propertyName, tex); break; 
+            case VegetationType.Vines: SetTextureColor(VinesMaterials, propertyName, tex); break; 
+            case VegetationType.RaspberryBush: SetTextureColor(RaspberryMaterials, propertyName, tex); break;  
+            case VegetationType.BlueberryBush: SetTextureColor(BlueberryMaterials, propertyName, tex); break;
         }
     }
 

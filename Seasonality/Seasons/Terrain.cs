@@ -109,18 +109,12 @@ public static class TerrainPatch
                     switch (_Season.Value)
                     {
                         case Season.Fall:
-                            AssignColors(obj, new List<Color>(){_FallColor1.Value, _FallColor2.Value, _FallColor3.Value});
+                            AssignColors(obj, new List<Color>(){_FallColor1.Value, _FallColor2.Value, _FallColor3.Value, _FallColor4.Value});
                             break;
                     }
                     continue;
                 case GrassTypes.GroundCover:
                     if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
-                    switch (_Season.Value)
-                    {
-                        case Season.Spring:
-                            mat.color = new Color(0.5f, 0.6f, 0f, 1f);
-                            break;
-                    }
                     continue;
                 default:
                     if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));

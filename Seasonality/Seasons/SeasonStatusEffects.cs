@@ -36,7 +36,8 @@ public enum Modifier
     Stealth,
     RunStaminaDrain,
     DamageReduction,
-    FallDamage
+    FallDamage,
+    EitrRegen
 }
 public class SeasonalEffect
 {
@@ -66,7 +67,8 @@ public class SeasonalEffect
         { Modifier.Stealth , 1f },
         { Modifier.RunStaminaDrain , 1f },
         { Modifier.DamageReduction , 0f },
-        { Modifier.FallDamage , 1f }
+        { Modifier.FallDamage , 1f },
+        { Modifier.EitrRegen , 1f }
     };
 
     public readonly List<HitData.DamageModPair> damageMods = new();
@@ -306,5 +308,9 @@ public class SeasonEffect : StatusEffect
             damage = baseDamage * data.Modifiers[Modifier.FallDamage];
             if (damage >= 0.0) return;
             damage = 0.0f;
+        }
+        public virtual void ModifyEitrRegen(ref float eitrRegen)
+        {
+            eitrRegen *= data.Modifiers[Modifier.EitrRegen];
         }
     }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using BepInEx;
 using HarmonyLib;
+using ServerSync;
 using TMPro;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
@@ -11,9 +13,11 @@ namespace Seasonality.Seasons;
 
 public static class SeasonalEffects
 {
+    private static readonly CustomSyncedValue<string> SyncedLastSeasonChange =
+        new(SeasonalityPlugin.ConfigSync, "LastSeasonChange", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+
     private static Season currentSeason = _Season.Value;
     private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
-    private static DateTime LastSeasonChange = DateTime.Now;
 
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.Update))]
     static class EnvManPatch
@@ -21,23 +25,12 @@ public static class SeasonalEffects
         private static void Postfix(EnvMan __instance)
         {
             if (workingAsType is not WorkingAs.Server || _ModEnabled.Value is Toggle.Off) return;
-            if (_SeasonDuration.Value == 0 || _SeasonControl.Value is Toggle.On) return;
-            
-            // Server patch to track season counter and set config file
-            int remainingDays = _SeasonDuration.Value - (__instance.GetCurrentDay() % _SeasonDuration.Value) + 1;
-            float fraction = __instance.GetDayFraction(); // value between 0 - 1 - time of day
-            float remainder = remainingDays - fraction;
-            int totalMinutes = (int)(remainder * 24 * 60);
-            // Convert to in-game time
-            int hours = remainingDays - 2;
-            int minutes = totalMinutes % (24 * 60) / 60;
-            int seconds = totalMinutes % 60;
-            if (hours < 1 && minutes < 1 && seconds < 5)
+            if (_SeasonDurationDays.Value == 0 || _SeasonControl.Value is Toggle.On) return;
+
+            TimeSpan TimeDifference = DateTime.Parse(SyncedLastSeasonChange.Value) + TimeSpan.FromDays(_SeasonDurationDays.Value) + TimeSpan.FromHours(_SeasonDurationHours.Value) + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) - DateTime.Now;
+
+            if (TimeDifference < TimeSpan.Zero)
             {
-                // Throttle the rate at which the server is allowed to change config
-                if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
-                // Since user can manipulate config value
-                // Check to see if the next season is different than the current
                 if (_Season.Value == (Season)SeasonIndex)
                 {
                     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
@@ -48,8 +41,7 @@ public static class SeasonalEffects
                     _Season.Value = (Season)SeasonIndex;
                     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
                 }
-
-                LastSeasonChange = DateTime.Now;
+                SyncedLastSeasonChange.Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             }
             else if (_Season.Value != (Season)SeasonIndex)
             {
@@ -70,67 +62,70 @@ public static class SeasonalEffects
             if (AugaLoaded)
             {
                 _SeasonControl.Value = Toggle.On;
-                _SeasonDuration.Value = 0;
                 return;
             }
-            
-            int index = statusEffects.FindIndex(effect => effect is SeasonEffect);
+            // Get Status Effect UI
+            int index = statusEffects.FindIndex(effect => effect is SeasonEffect && effect.name != "AlwaysCold");
             if (index == -1) return;
             RectTransform? rectTransform = __instance.m_statusEffects[index];
             if (!rectTransform) return;
             Transform? timeText = rectTransform.Find("TimeText");
             if (!timeText) return;
             if (!timeText.TryGetComponent(out TMP_Text tmpText)) return;
-            if (_SeasonDuration.Value == 0 || _SeasonControl.Value is Toggle.On)
+            if (_SeasonControl.Value is Toggle.On)
             {
                 tmpText.gameObject.SetActive(false);
                 return;
             }
 
-            int remainingDays = _SeasonDuration.Value - (EnvMan.instance.GetCurrentDay() % _SeasonDuration.Value) + 1;
-            float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1 - time of day
-            float remainder = remainingDays - fraction;
-
-            // Convert to in-game time
-            int totalMinutes = (int)(remainder * 24 * 60);
-            int hours = remainingDays - 2;
-            int minutes = totalMinutes % (24 * 60) / 60;
-            int seconds = totalMinutes % 60;
-
-            string time = $"{hours:D2}:{minutes:D2}:{seconds:D2}";
-
-            tmpText.gameObject.SetActive(_CounterVisible.Value is Toggle.On);
-            tmpText.text = time;
-            if (workingAsType is WorkingAs.Client)
+            if (_SeasonDurationDays.Value == 0 && _SeasonDurationHours.Value == 0 && _SeasonDurationMinutes.Value == 0)
             {
-                // If user is a client connected to a server, then do not set seasons
-                // Wait for server to change config value
+                tmpText.gameObject.SetActive(false);
                 return;
             }
 
-            // Use calculated data to set season change if counter hits less than 5
-            if (hours < 1 && minutes < 1 && seconds < 5)
-            {
-                if (LastSeasonChange + TimeSpan.FromSeconds(5) > DateTime.Now) return;
-                if (_Season.Value == (Season)SeasonIndex)
-                {
-                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-                    _Season.Value = (Season)SeasonIndex;
-                }
-                else
-                {
-                    _Season.Value = (Season)SeasonIndex;
-                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-                }
+            NewTimer(tmpText);
+        }
+    }
+    private static void NewTimer(TMP_Text timer)
+    {
+        TimeSpan TimeDifference = DateTime.Parse(SyncedLastSeasonChange.Value) + TimeSpan.FromDays(_SeasonDurationDays.Value) + TimeSpan.FromHours(_SeasonDurationHours.Value) + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) - DateTime.Now;
+        int days = TimeDifference.Days;
+        int hour = TimeDifference.Hours;
+        int minutes = TimeDifference.Minutes;
+        int seconds = TimeDifference.Seconds;
+        
+        string time = $"{days:D2}:{hour:D2}:{minutes:D2}:{seconds:D2}";
+        if (days == 0) time = $"{hour:D2}:{minutes:D2}:{seconds:D2}";
+        
+        timer.gameObject.SetActive(_CounterVisible.Value is Toggle.On);
+        timer.text = time;
+        
+        if (workingAsType is WorkingAs.Client)
+        {
+            // If user is a client connected to a server, then do not set seasons
+            // Wait for server to change config value
+            return;
+        }
 
-                LastSeasonChange = DateTime.Now;
-            }
-
-            else if (_Season.Value != (Season)SeasonIndex)
+        if (TimeDifference < TimeSpan.Zero)
+        {
+            if (_Season.Value == (Season)SeasonIndex)
             {
-                // To switch it back to timer settings if configs changed
+                SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
                 _Season.Value = (Season)SeasonIndex;
             }
+            else
+            {
+                _Season.Value = (Season)SeasonIndex;
+                SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+            }
+            SyncedLastSeasonChange.Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+        }
+        else if (_Season.Value != (Season)SeasonIndex)
+        {
+            // To switch it back to timer settings if configs changed
+            _Season.Value = (Season)SeasonIndex;
         }
     }
 
@@ -152,6 +147,7 @@ public static class SeasonalEffects
                 if (currentEffect) SEMan.RemoveStatusEffect(currentEffect);
                 TerrainPatch.UpdateTerrain();
                 Vegetation.ResetBaseVegetation();
+
                 lastToggled = Toggle.Off;
                 return;
             }
@@ -229,8 +225,11 @@ public static class SeasonalEffects
         if (SEMan == null) return;
         // Remove all seasonal effects
         List<StatusEffect> activeEffects = SEMan.GetStatusEffects();
-        StatusEffect? currentSeasonEffect = activeEffects.Find(effect => effect is SeasonEffect);
-        if (currentSeasonEffect) SEMan.RemoveStatusEffect(currentSeasonEffect);
+        List<StatusEffect> statusEffects = activeEffects.FindAll(effect => effect is SeasonEffect);
+        foreach (StatusEffect effect in statusEffects)
+        {
+            SEMan.RemoveStatusEffect(effect);
+        }
         ObjectDB.instance.m_StatusEffects.RemoveAll(effect => effect is SeasonEffect);
         // Apply new seasonal effect
         StatusEffect? SeasonEffect = null!;
@@ -271,6 +270,11 @@ public static class SeasonalEffects
                 if (SpringEffect) SeasonEffect = SpringEffect;
                 break;
             case Season.Winter:
+                if (_WinterAlwaysCold.Value is Toggle.On)
+                {
+                    StatusEffect? AlwaysCold = InitWinterAlwaysColdEffect();
+                    if (AlwaysCold) SEMan.AddStatusEffect(AlwaysCold);
+                }
                 SeasonalEffect WinterSeasonEffect = new SeasonalEffect();
                 WinterSeasonEffect.effectName = "winter_season";
                 WinterSeasonEffect.displayName = _WinterName.Value;
@@ -282,7 +286,7 @@ public static class SeasonalEffects
                 WinterSeasonEffect.damageMod = toggle is Toggle.On ? $"{_WinterResistanceElement.Value}={_WinterResistantMod.Value}" : "";
                 WinterSeasonEffect.Modifier = toggle is Toggle.On ? _WinterModifier.Value : Modifier.None;
                 WinterSeasonEffect.m_newValue = _WinterValue.Value;
-
+                
                 StatusEffect? WinterEffect = WinterSeasonEffect.Init();
                 if (WinterEffect) SeasonEffect = WinterEffect;
                 break;
@@ -313,15 +317,51 @@ public static class SeasonalEffects
         currentSeason = _Season.Value;
     }
 
+    private static StatusEffect? InitWinterAlwaysColdEffect()
+    {
+        StatusEffect? coldEffect = ObjectDB.instance.GetStatusEffect("Cold".GetStableHashCode());
+        if (!coldEffect) return null;
+        SeasonEffect clonedColdEffect = ScriptableObject.CreateInstance<SeasonEffect>();
+        clonedColdEffect.name = "AlwaysCold";
+        clonedColdEffect.m_name = "Cold";
+        clonedColdEffect.m_icon = coldEffect.m_icon;
+        clonedColdEffect.data = new SeasonalEffect()
+        {
+            effectName = "AlwaysCold",
+            displayName = "Cold",
+            sprite = coldEffect.m_icon,
+            Modifiers = new Dictionary<Modifier, float>()
+            {
+                { Modifier.Attack, 1f },
+                { Modifier.HealthRegen, 0.5f },
+                { Modifier.StaminaRegen, 0.75f },
+                { Modifier.RaiseSkills, 1f },
+                { Modifier.Speed, 1f },
+                { Modifier.Noise, 1f },
+                { Modifier.MaxCarryWeight, 0f },
+                { Modifier.Stealth, 1f },
+                { Modifier.RunStaminaDrain, 1f },
+                { Modifier.DamageReduction, 0f },
+                { Modifier.FallDamage, 1f },
+                { Modifier.EitrRegen, 0.75f }
+            }
+        };
+        clonedColdEffect.m_tooltip = coldEffect.m_tooltip + "\nHeath regen: <color=orange>-50%</color>\nStamina regen: <color=orange>-25%</color>\nEitr regen: <color=orange>-25%</color>";
+        
+        ObjectDB.instance.m_StatusEffects.Add(clonedColdEffect);
+        return clonedColdEffect;
+    }
+
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.IsCold))]
     static class EnvManColdPatch
     {
-        private static void Postfix(ref bool __result)
+        private static void Postfix(EnvMan __instance, ref bool __result)
         {
-            if (_Season.Value is Season.Summer)
-            {
-                __result = _SummerNeverCold.Value is Toggle.Off; // If on, result = false
-            }
+            EnvSetup currentEnvironment = __instance.GetCurrentEnvironment();
+            bool vanillaResult = currentEnvironment != null && (currentEnvironment.m_isCold || currentEnvironment.m_isColdAtNight && !__instance.IsDay());
+            
+            if (_Season.Value is Season.Summer) __result = _SummerNeverCold.Value is Toggle.Off && vanillaResult; // If on, result = false
+            if (_Season.Value is Season.Winter) __result = _WinterAlwaysCold.Value is Toggle.Off; // If on, result = false
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "1.1.3";
+        internal const string ModVersion = "2.0.0";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -35,7 +35,7 @@ namespace Seasonality
         public static readonly ManualLogSource SeasonalityLogger =
             BepInEx.Logging.Logger.CreateLogSource(ModName);
 
-        private static readonly ConfigSync ConfigSync = new(ModGUID)
+        public static readonly ConfigSync ConfigSync = new(ModGUID)
             { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
 
         public enum Toggle
@@ -104,7 +104,11 @@ namespace Seasonality
         }
         #region CustomConfigs
         public static ConfigEntry<Season> _Season = null!;
-        public static ConfigEntry<int> _SeasonDuration = null!;
+        
+        public static ConfigEntry<int> _SeasonDurationDays = null!;
+        public static ConfigEntry<int> _SeasonDurationHours = null!;
+        public static ConfigEntry<int> _SeasonDurationMinutes = null!;
+        
         public static ConfigEntry<int> _WeatherDuration = null!;
 
         public static ConfigEntry<Toggle> _SeasonalEffectsEnabled = null!;
@@ -357,6 +361,7 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _StatusEffectVisible = null!;
 
         public static ConfigEntry<Toggle> _SummerNeverCold = null!;
+        public static ConfigEntry<Toggle> _WinterAlwaysCold = null!;
 
         public static ConfigEntry<Toggle> _ReplaceLeech = null!;
         public static ConfigEntry<Toggle> _ReplaceLox = null!;
@@ -364,23 +369,27 @@ namespace Seasonality
         #endregion
         private void InitConfigs()
         {
-            _SeasonControl = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
+            _SeasonControl = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
+            _Season = config("1 - General", "4 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
             
-            _Season = config("2 - Utilities", "1 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
-            _SeasonDuration = config("2 - Utilities", "2 - Season Duration (Days)", 5, new ConfigDescription("In-game days between season", new AcceptableValueRange<int>(0, 365)));
-            _CounterVisible = config("2 - Utilities", "3 - Timer Visible", Toggle.On, "If on, timer under season is visible", false);
-            _WeatherDuration = config("2 - Utilities", "4 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
-            _SeasonalEffectsEnabled = config("2 - Utilities", "5 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");
-            _StatusEffectVisible = config("2 - Utilities", "6 - Season Icon Visible", Toggle.On, "If on, season icon is visible", false);
-            _WeatherControl = config("2 - Utilities", "7 - Weather Enabled", Toggle.On, "If on, seasons can control the weather");
-            _SummerNeverCold = config("2 - Utilities", "8 - Summer Never Cold", Toggle.Off, "If on, players are never cold during summer");
+            _SeasonDurationDays = config("1 - Seasonal Timer", "1 - Days", 0, new ConfigDescription("Real-time days between season", new AcceptableValueRange<int>(0, 365)));
+            _SeasonDurationHours = config("1 - Seasonal Timer", "2 - Hours", 1, new ConfigDescription("Real time hours between seasons", new AcceptableValueRange<int>(0, 24)));
+            _SeasonDurationMinutes = config("1 - Seasonal Timer", "3 - Minutes", 0, new ConfigDescription("Real-time minutes between seasons", new AcceptableValueRange<int>(0, 60)));
+            
+            _CounterVisible = config("2 - Utilities", "1 - Timer Visible", Toggle.On, "If on, timer under season is visible", false);
+            _WeatherDuration = config("2 - Utilities", "2 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
+            _SeasonalEffectsEnabled = config("2 - Utilities", "3 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");
+            _StatusEffectVisible = config("2 - Utilities", "4 - Season Icon Visible", Toggle.On, "If on, season icon is visible", false);
+            _WeatherControl = config("2 - Utilities", "5 - Weather Enabled", Toggle.On, "If on, seasons can control the weather");
+            _SummerNeverCold = config("2 - Utilities", "6 - Summer Never Cold", Toggle.Off, "If on, players are never cold during summer");
+            _WinterAlwaysCold = config("2 - Utilities", "7 - Winter Always Cold", Toggle.Off, "If on, winter sets cold status effect on players regardless of environment");
+            
             #region Creatures
-
-            _ReplaceLeech = config("7 - Creature Replacement", "Leeches", Toggle.On,
-                "If on, winter replaces leeches for leech_cave (white leech)");
+            _ReplaceLeech = config("7 - Creature Replacement", "Leeches", Toggle.On, "If on, winter replaces leeches for leech_cave (white leech)");
             _ReplaceLox = config("7 - Creature Replacement", "Loxen", Toggle.On, "If on, plugin replaces lox textures");
             #endregion
+            
             #region SpringConfigs
             _SpringName = config("3 - Spring", "Name", "Spring", "Display name");
             _SpringStartMsg = config("3 - Spring", "Start Message", "Spring has finally arrived", "Start of the season message");
@@ -517,17 +526,17 @@ namespace Seasonality
             _WinterResistantMod = config("5 - Winter", "Resistance Modifier", DamageModifier.Resistant, "Modifier");
             _WinterValue = config("5 - Winter", "Modifying value", 0.9f, new ConfigDescription("Value applied to modifier", new AcceptableValueRange<float>(-100f, 100f)));
 
-            _Winter_Meadows_Weather1 = config("5 - Winter Weather", "1 - Meadows 1", Environments.Snow, "Environment set by winter season.");
+            _Winter_Meadows_Weather1 = config("5 - Winter Weather", "1 - Meadows 1", Environments.WarmSnow, "Environment set by winter season.");
             _Winter_Meadows_Weather2 = config("5 - Winter Weather", "1 - Meadows 2", Environments.None, "Environment set by winter season.");
             _Winter_Meadows_Weather3 = config("5 - Winter Weather", "1 - Meadows 3", Environments.None, "Environment set by winter season.");
             _Winter_Meadows_Weather4 = config("5 - Winter Weather", "1 - Meadows 4", Environments.None, "Environment set by winter season.");
             
-            _Winter_BlackForest_Weather1 = config("5 - Winter Weather", "2 - BlackForest 1", Environments.Snow, "Environments set by Winter season");
+            _Winter_BlackForest_Weather1 = config("5 - Winter Weather", "2 - BlackForest 1", Environments.WarmSnow, "Environments set by Winter season");
             _Winter_BlackForest_Weather2 = config("5 - Winter Weather", "2 - BlackForest 2", Environments.None, "Environments set by Winter season");
             _Winter_BlackForest_Weather3 = config("5 - Winter Weather", "2 - BlackForest 3", Environments.None, "Environments set by Winter season");
             _Winter_BlackForest_Weather4 = config("5 - Winter Weather", "2 - BlackForest 4", Environments.None, "Environments set by Winter season");
 
-            _Winter_Swamp_Weather1 = config("5 - Winter Weather", "3 - Swamp 1", Environments.Snow, "Environments set by Winter season");
+            _Winter_Swamp_Weather1 = config("5 - Winter Weather", "3 - Swamp 1", Environments.WarmSnow, "Environments set by Winter season");
             _Winter_Swamp_Weather2 = config("5 - Winter Weather", "3 - Swamp 2", Environments.None, "Environments set by Winter season");
             _Winter_Swamp_Weather3 = config("5 - Winter Weather", "3 - Swamp 3", Environments.None, "Environments set by Winter season");
             _Winter_Swamp_Weather4 = config("5 - Winter Weather", "3 - Swamp 4", Environments.None, "Environments set by Winter season");
@@ -537,17 +546,17 @@ namespace Seasonality
             _Winter_Mountains_Weather3 = config("5 - Winter Weather", "4 - Mountains 3", Environments.None, "Environments set by Winter season");
             _Winter_Mountains_Weather4 = config("5 - Winter Weather", "4 - Mountains 4", Environments.None, "Environments set by Winter season");
 
-            _Winter_Plains_Weather1 = config("5 - Winter Weather", "5 - Plains 1", Environments.Snow, "Environments set by Winter season");
+            _Winter_Plains_Weather1 = config("5 - Winter Weather", "5 - Plains 1", Environments.WarmSnow, "Environments set by Winter season");
             _Winter_Plains_Weather2 = config("5 - Winter Weather", "5 - Plains 2", Environments.None, "Environments set by Winter season");
             _Winter_Plains_Weather3 = config("5 - Winter Weather", "5 - Plains 3", Environments.None, "Environments set by Winter season");
             _Winter_Plains_Weather4 = config("5 - Winter Weather", "5 - Plains 4", Environments.None, "Environments set by Winter season");
 
-            _Winter_MistLands_Weather1 = config("5 - Winter Weather", "6 - MistLands 1", Environments.Snow, "Environments set by Winter season");
+            _Winter_MistLands_Weather1 = config("5 - Winter Weather", "6 - MistLands 1", Environments.WarmSnow, "Environments set by Winter season");
             _Winter_MistLands_Weather2 = config("5 - Winter Weather", "6 - MistLands 2", Environments.None, "Environments set by Winter season");
             _Winter_MistLands_Weather3 = config("5 - Winter Weather", "6 - MistLands 3", Environments.None, "Environments set by Winter season");
             _Winter_MistLands_Weather4 = config("5 - Winter Weather", "6 - MistLands 4", Environments.None, "Environments set by Winter season");
 
-            _Winter_Ocean_Weather1 = config("5 - Winter Weather", "6 - Ocean 1", Environments.Snow, "Environments set by Winter season");
+            _Winter_Ocean_Weather1 = config("5 - Winter Weather", "6 - Ocean 1", Environments.WarmSnow, "Environments set by Winter season");
             _Winter_Ocean_Weather2 = config("5 - Winter Weather", "6 - Ocean 2", Environments.None, "Environments set by Winter season");
             _Winter_Ocean_Weather3 = config("5 - Winter Weather", "6 - Ocean 3", Environments.None, "Environments set by Winter season");
             _Winter_Ocean_Weather4 = config("5 - Winter Weather", "6 - Ocean 4", Environments.None, "Environments set by Winter season");
