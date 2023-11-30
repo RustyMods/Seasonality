@@ -18,8 +18,8 @@ public static class Utils
         {
             "Beech" => VegetationType.Beech,
             "Beech1" => VegetationType.Beech,
-            "Beech_small1" => VegetationType.Beech,
-            "Beech_small2" => VegetationType.Beech,
+            "Beech_small1" => VegetationType.BeechSmall,
+            "Beech_small2" => VegetationType.BeechSmall,
 
             "Birch" => VegetationType.Birch,
             "Birch1" => VegetationType.Birch,

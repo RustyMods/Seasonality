@@ -17,17 +17,17 @@ public static class Vegetation
     private static readonly Dictionary<string, Texture> VegetationTextures = new();
 
 
-    private static List<Material> BeechMaterials = new();
-    private static List<Material> BeechSmallMaterials = new();
-    private static List<Material> BirchMaterials = new();
-    private static List<Material> OakMaterials = new();
-    private static List<Material> YggaMaterials = new();
-    private static List<Material> BushMaterials = new();
-    private static List<Material> PlainsBushMaterials = new();
-    private static List<Material> ShrubMaterials = new();
-    private static List<Material> VinesMaterials = new();
-    private static List<Material> RaspberryMaterials = new();
-    private static List<Material> BlueberryMaterials = new();
+    private static List<Material[]> BeechMaterials = new();
+    private static List<Material[]> BeechSmallMaterials = new();
+    private static List<Material[]> BirchMaterials = new();
+    private static List<Material[]> OakMaterials = new();
+    private static List<Material[]> YggaMaterials = new();
+    private static List<Material[]> BushMaterials = new();
+    private static List<Material[]> PlainsBushMaterials = new();
+    private static List<Material[]> ShrubMaterials = new();
+    private static List<Material[]> VinesMaterials = new();
+    private static List<Material[]> RaspberryMaterials = new();
+    private static List<Material[]> BlueberryMaterials = new();
 
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     [HarmonyPriority(Priority.Last)]
@@ -45,7 +45,7 @@ public static class Vegetation
                 if (type is VegetationType.None) continue;
                 
                 CacheVegetation(prefab);
-                CreateBaseMaterials(prefab);
+                CacheBaseMaterials(prefab);
                 
                 // Cache moss texture
                 if (foundMossTex) continue;
@@ -91,239 +91,154 @@ public static class Vegetation
             }
         }
 
-        private static List<Material> CreateBaseMaterials(Material material, VegetationType type, string prefabName)
+        private static List<Material[]> CreateBaseMaterials(GameObject prefab, string specifier, bool contains = true)
         {
-            string[] properties = material.GetTexturePropertyNames();
-            if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) return new List<Material>();
-            VegDirectories directory = Utils.VegToDirectory(type);
+            MeshRenderer? BeechRenderer = prefab.GetComponentInChildren<MeshRenderer>();
+            if (!BeechRenderer) return new List<Material[]>();
+            VegetationType type = Utils.GetVegetationType(prefab.name);
+            Material[]? materials = BeechRenderer.materials;
+            
+            Material[] newMaterials1 = new Material[materials.Length];
+            Material[] newMaterials2 = new Material[materials.Length];
+            Material[] newMaterials3 = new Material[materials.Length];
+            Material[] newMaterials4 = new Material[materials.Length];
+            
+            List<Material[]> newMaterialArray = new() { newMaterials1, newMaterials2, newMaterials3, newMaterials4 };
 
-            Material mat1 = new Material(material);
-            Material mat2 = new Material(material);
-            Material mat3 = new Material(material);
-            Material mat4 = new Material(material);
-                                
-            List<Material> newMats = new List<Material>() { mat1, mat2, mat3, mat4 };
-                                
-            for (int i = 0; i < newMats.Count; ++i)
+            for (int index = 0; index < newMaterialArray.Count; index++)
             {
-                Texture? tex = Utils.GetCustomTexture(directory, Season.Fall);
-                newMats[i].SetTexture(mainProp, tex ? tex : GetDefaultTextures(type, prefabName));
-                newMats[i].color = SeasonColors.FallColors[i];
+                for (int i = 0; i < newMaterialArray[index].Length; ++i)
+                {
+                    newMaterialArray[index][i] = new Material(materials[i]); // Give new material array same values as original
+                }
+                Material? leafMat = contains 
+                    ? newMaterialArray[index].FirstOrDefault(x => x.name.ToLower().Contains(specifier)) 
+                    : newMaterialArray[index].FirstOrDefault(x => !x.name.ToLower().Contains(specifier));
+                if (leafMat == null) continue;
+                
+                string[] properties = leafMat.GetTexturePropertyNames();
+                if (Utils.FindTexturePropName(properties, "main", out string mainProp))
+                {
+                    VegDirectories directory = Utils.VegToDirectory(type);
+
+                    Texture? tex = Utils.GetCustomTexture(directory, Season.Fall);
+                    leafMat.SetTexture(mainProp, tex ? tex : GetDefaultTextures(type, prefab.name));
+                    leafMat.color = SeasonColors.FallColors[index];
+                }
             }
 
-            return newMats;
+            return newMaterialArray;
         }
 
-        private static void CreateBaseMaterials(GameObject prefab)
+        private static void CacheBaseMaterials(GameObject prefab)
         {
             VegetationType type = Utils.GetVegetationType(prefab.name);
 
             switch (type)
                 {
                     case VegetationType.Beech:
-                        MeshRenderer? BeechRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (!BeechRenderer) break;
-                        {
-                            Material[]? materials = BeechRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => x.name.ToLower().Contains("leaf"));
-                            if (material != null)
-                            {
-                               BeechMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        BeechMaterials = CreateBaseMaterials(prefab, "leaf");
                         break;
                     case VegetationType.BeechSmall:
-                        MeshRenderer? BeechSmallRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (BeechSmallRenderer)
-                        {
-                            Material[]? materials = BeechSmallRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => x.name.ToLower().Contains("leaf"));
-                            if (material != null)
-                            {
-                                BeechSmallMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        BeechSmallMaterials = CreateBaseMaterials(prefab, "leaf");
                         break; 
                     case VegetationType.Birch:
-                        MeshRenderer? BirchRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (BirchRenderer)
-                        {
-                            Material[]? materials = BirchRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => x.name.ToLower().Contains("leaf"));
-                            if (material != null)
-                            {
-                                BirchMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        BirchMaterials = CreateBaseMaterials(prefab, "leaf");
                         break; 
                     case VegetationType.Oak:
-                        MeshRenderer? OakRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (OakRenderer)
-                        {
-                            Material[]? materials = OakRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => x.name.ToLower().Contains("leaf"));
-                            if (material != null)
-                            {
-                                OakMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        OakMaterials = CreateBaseMaterials(prefab, "leaf");
                         break; 
                     case VegetationType.Yggashoot:
-                        MeshRenderer? YggaRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (YggaRenderer)
-                        {
-                            Material[]? materials = YggaRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => x.name.ToLower().Contains("leaf"));
-                            if (material != null)
-                            {
-                                YggaMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        YggaMaterials = CreateBaseMaterials(prefab, "leaf");
                         break;
                     case VegetationType.Bush:
-                        MeshRenderer? BushRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (BushRenderer)
-                        {
-                            Material[]? materials = BushRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => !x.name.ToLower().Contains("wood"));
-                            if (material != null)
-                            {
-                                BushMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        BushMaterials = CreateBaseMaterials(prefab, "wood", false);
                         break; 
                     case VegetationType.PlainsBush:
-                        MeshRenderer? PlainsBushRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (PlainsBushRenderer)
-                        {
-                            Material[]? materials = PlainsBushRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => !x.name.ToLower().Contains("wood"));
-                            if (material != null)
-                            {
-                                PlainsBushMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        PlainsBushMaterials = CreateBaseMaterials(prefab, "wood", false);
                         break; 
                     case VegetationType.Shrub: 
-                        MeshRenderer? ShrubRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (ShrubRenderer)
-                        {
-                            Material[]? materials = ShrubRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => x.name.ToLower().Contains("shrub"));
-                            if (material != null)
-                            {
-                                ShrubMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        ShrubMaterials = CreateBaseMaterials(prefab, "shrub");
                         break; 
                     case VegetationType.Vines:
-                        MeshRenderer? VinesRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (VinesRenderer)
-                        {
-                            Material[]? materials = VinesRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => !x.name.ToLower().Contains("vinesbranch"));
-                            if (material != null)
-                            {
-                                VinesMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        VinesMaterials = CreateBaseMaterials(prefab, "vinesbranch", false);
                         break; 
                     case VegetationType.RaspberryBush:
-                        MeshRenderer? RaspberryRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (RaspberryRenderer)
-                        {
-                            Material[]? materials = RaspberryRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => !x.name.ToLower().Contains("wood"));
-                            if (material != null)
-                            {
-                                RaspberryMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        RaspberryMaterials = CreateBaseMaterials(prefab, "wood", false);
                         break;  
                     case VegetationType.BlueberryBush:
-                        MeshRenderer? BlueberryRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-                        if (BlueberryRenderer)
-                        {
-                            Material[]? materials = BlueberryRenderer.materials;
-                            Material? material = materials.FirstOrDefault(x => !x.name.ToLower().Contains("wood"));
-                            if (material != null)
-                            {
-                                BlueberryMaterials = CreateBaseMaterials(material, type, prefab.name);
-                            }
-                        }
+                        BlueberryMaterials = CreateBaseMaterials(prefab, "wood", false);
                         break;
                 }
         }
-        
     }
 
-    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.GetPrefab), typeof(int))]
-    static class ZNetSceneCreateObjectPatch
+    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.CreateObject))]
+    static class GetPrefabPatch
     {
-        private static void Postfix(ZNetScene __instance, int hash, out GameObject? __result)
+        private static void Postfix(ZNetScene __instance, ref GameObject __result)
         {
-            __result = null;
             if (!__instance) return;
-
-            if (!__instance.m_namedPrefabs.TryGetValue(hash, out GameObject prefab)) return;
-
-            VegetationType type = Utils.GetVegetationType(prefab.name);
-            if (type is VegetationType.None) return;
-            
-            if (_Season.Value is not Season.Fall) return;
-            switch (type)
-            {
-                case VegetationType.Beech:
-                    SetColors(BeechMaterials, prefab);
-                    break;
-                case VegetationType.BeechSmall:
-                    SetColors(BeechSmallMaterials, prefab);
-                    break; 
-                case VegetationType.Birch:
-                    SetColors(BirchMaterials, prefab);
-                    break; 
-                case VegetationType.Oak:
-                    SetColors(OakMaterials, prefab);
-                    break; 
-                case VegetationType.Yggashoot:
-                    SetColors(YggaMaterials, prefab);
-                    break;
-                case VegetationType.Bush:
-                    SetColors(BushMaterials, prefab);
-                    break; 
-                case VegetationType.PlainsBush:
-                    SetColors(PlainsBushMaterials, prefab);
-                    break; 
-                case VegetationType.Shrub: 
-                    SetColors(ShrubMaterials, prefab);
-                    break; 
-                case VegetationType.Vines:
-                    SetColors(VinesMaterials, prefab);
-                    break; 
-                case VegetationType.RaspberryBush:
-                    SetColors(RaspberryMaterials, prefab);
-                    break;  
-                case VegetationType.BlueberryBush:
-                    SetColors(BlueberryMaterials, prefab);
-                    break;
-            }
-
-            __result = prefab;
+            ApplyColorMaterials(__result);
         }
     }
+    private static void ApplyColorMaterials(GameObject prefab)
+    {
+        if (prefab == null) return;
 
-    private static void SetColors(List<Material> materials, GameObject prefab)
+        VegetationType type = Utils.GetVegetationType(prefab.name);
+        if (type is VegetationType.None) return;
+        switch (type)
+        {
+            case VegetationType.Beech:
+                SetMaterials(BeechMaterials, prefab);
+                break;
+            case VegetationType.BeechSmall:
+                SetMaterials(BeechSmallMaterials, prefab);
+                break; 
+            case VegetationType.Birch:
+                SetMaterials(BirchMaterials, prefab);
+                break; 
+            case VegetationType.Oak:
+                SetMaterials(OakMaterials, prefab);
+                break; 
+            case VegetationType.Yggashoot:
+                SetMaterials(YggaMaterials, prefab);
+                break;
+            case VegetationType.Bush:
+                SetMaterials(BushMaterials, prefab);
+                break; 
+            case VegetationType.PlainsBush:
+                SetMaterials(PlainsBushMaterials, prefab);
+                break; 
+            case VegetationType.Shrub: 
+                SetMaterials(ShrubMaterials, prefab);
+                break; 
+            case VegetationType.Vines:
+                SetMaterials(VinesMaterials, prefab);
+                break; 
+            case VegetationType.RaspberryBush:
+                SetMaterials(RaspberryMaterials, prefab);
+                break;  
+            case VegetationType.BlueberryBush:
+                SetMaterials(BlueberryMaterials, prefab);
+                break;
+        }
+    }
+    private static void SetMaterials(List<Material[]> materials, GameObject prefab)
     {
         if (materials.Count != 4) return;
         Random random = new Random();
-        int randomIndex = random.Next(BeechMaterials.Count);
+        int randomIndex = random.Next(materials.Count);
                     
         for (int i = 0; i < prefab.transform.childCount; ++i)
         {
             Transform? child = prefab.transform.GetChild(i);
             if (!child) continue;
             if (!child.TryGetComponent(out MeshRenderer meshRenderer)) continue;
-            meshRenderer.material = BeechMaterials[randomIndex];
+            meshRenderer.materials = materials[randomIndex];
+            
+            if (child.childCount > 0) SetMaterials(materials, child.gameObject);
         }
     }
 
@@ -362,12 +277,14 @@ public static class Vegetation
                 // Set terrain back to default values
                 TerrainPatch.UpdateTerrain();
                 currentModEnabled = _ModEnabled.Value;
-                return;
             };
         }
     }
     private static void ApplyMaterialToObj(GameObject obj, VegetationType type)
     {
+        Random random = new Random();
+        int randomIndex = random.Next(3);
+
         for (int i = 0; i < obj.transform.childCount; ++i)
         {
             Transform child = obj.transform.GetChild(i);
@@ -376,9 +293,9 @@ public static class Vegetation
             ModifyParticleSystem(obj.transform, (_Season.Value) switch
             {
                 Season.Winter => Color.white,
-                Season.Fall => SeasonColors.FallColors[0],
-                Season.Spring => SeasonColors.SpringColors[1],
-                _ => SeasonColors.SummerColors[0]
+                Season.Fall => SeasonColors.FallColors[randomIndex],
+                Season.Spring => SeasonColors.SpringColors[randomIndex],
+                _ => SeasonColors.SummerColors[randomIndex]
             });
             
             // Recursively apply changes to all children
@@ -485,10 +402,12 @@ public static class Vegetation
             VegetationType.Yggashoot => VegetationTextures["shootleaf_d"],
             VegetationType.Oak => VegetationTextures["oak_leaf"],
             VegetationType.Stubbe => VegetationTextures["stump"],
-            VegetationType.Bush => _Season.Value is Season.Fall ? VegetationTextures["bush01_heath_d"] : VegetationTextures["bush01_d"],
+            VegetationType.Bush => _Season.Value is Season.Fall ? VegetationTextures.TryGetValue("bush01_heath_d", out Texture tex) ? tex : VegetationTextures["bush01_d"] : VegetationTextures["bush01_d"],
             VegetationType.PlainsBush => VegetationTextures["bush02_en_d"],
             VegetationType.Shrub => VegetationTextures["shrub_2"],
             VegetationType.CloudberryBush => VegetationTextures["cloudberry_d"],
+            VegetationType.RaspberryBush => _Season.Value is Season.Fall ? VegetationTextures.TryGetValue("bush01_heath_d", out Texture tex) ? tex : VegetationTextures["bush01_d"] : VegetationTextures["bush01_d"],
+            VegetationType.BlueberryBush => _Season.Value is Season.Fall ? VegetationTextures.TryGetValue("bush01_heath_d", out Texture tex) ? tex : VegetationTextures["bush01_d"] : VegetationTextures["bush01_d"],
             _ => null
         };
     } 
@@ -593,82 +512,65 @@ public static class Vegetation
         switch (type)
         {
             case VegetationType.Beech:
-                for (int i = 0; i < BeechMaterials.Count; ++i)
-                {
-                    BeechMaterials[i].SetTexture(propertyName, tex);
-                    BeechMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(BeechMaterials, propertyName, tex);
                 break;
             case VegetationType.BeechSmall:
-                for (int i = 0; i < BeechSmallMaterials.Count; ++i)
-                {
-                    BeechSmallMaterials[i].SetTexture(propertyName, tex);
-                    BeechSmallMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(BeechSmallMaterials, propertyName, tex);
                 break; 
             case VegetationType.Birch:
-                for (int i = 0; i < BirchMaterials.Count; ++i)
-                {
-                    BirchMaterials[i].SetTexture(propertyName, tex);
-                    BirchMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(BirchMaterials, propertyName, tex);
+
                 break; 
             case VegetationType.Oak:
-                for (int i = 0; i < OakMaterials.Count; ++i)
-                {
-                    OakMaterials[i].SetTexture(propertyName, tex);
-                    OakMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(OakMaterials, propertyName, tex);
+
                 break; 
             case VegetationType.Yggashoot:
-                for (int i = 0; i < YggaMaterials.Count; ++i)
-                {
-                    YggaMaterials[i].SetTexture(propertyName, tex);
-                    YggaMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(YggaMaterials, propertyName, tex);
+
                 break;
             case VegetationType.Bush:
-                for (int i = 0; i < BushMaterials.Count; ++i)
-                {
-                    BushMaterials[i].SetTexture(propertyName, tex);
-                    BushMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(BushMaterials, propertyName, tex);
+
                 break; 
             case VegetationType.PlainsBush:
-                for (int i = 0; i < PlainsBushMaterials.Count; ++i)
-                {
-                    PlainsBushMaterials[i].SetTexture(propertyName, tex);
-                    PlainsBushMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(PlainsBushMaterials, propertyName, tex);
+
                 break; 
             case VegetationType.Shrub: 
-                for (int i = 0; i < ShrubMaterials.Count; ++i)
-                {
-                    ShrubMaterials[i].SetTexture(propertyName, tex);
-                    ShrubMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(ShrubMaterials, propertyName, tex);
+
                 break; 
             case VegetationType.Vines:
-                for (int i = 0; i < VinesMaterials.Count; ++i)
-                {
-                    VinesMaterials[i].SetTexture(propertyName, tex);
-                    VinesMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(VinesMaterials, propertyName, tex);
+
                 break; 
             case VegetationType.RaspberryBush:
-                for (int i = 0; i < RaspberryMaterials.Count; ++i)
-                {
-                    RaspberryMaterials[i].SetTexture(propertyName, tex);
-                    RaspberryMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(RaspberryMaterials, propertyName, tex);
+
                 break;  
             case VegetationType.BlueberryBush:
-                for (int i = 0; i < BlueberryMaterials.Count; ++i)
-                {
-                    BlueberryMaterials[i].SetTexture(propertyName, tex);
-                    BlueberryMaterials[i].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
-                }
+                SetTextureColor(BlueberryMaterials, propertyName, tex);
+
                 break;
+        }
+    }
+
+    private static void SetTextureColor(List<Material[]> materialsList, string propertyName, Texture? tex)
+    {
+        if (!tex) return;
+        for (int i = 0; i < materialsList.Count; ++i)
+        {
+            for (int j = 0; j < materialsList[i].Length; ++j)
+            {
+                var materialName = materialsList[i][j].name.ToLower();
+                if (materialName.Contains("wood") 
+                    || materialName.Contains("bark") 
+                    || materialName.Contains("vinesbranch") 
+                    || materialName.Contains("trunk")) continue;
+                materialsList[i][j].SetTexture(propertyName, tex);
+                materialsList[i][j].color = _Season.Value is Season.Fall ? SeasonColors.FallColors[i] : Color.white;
+            }
         }
     }
 
