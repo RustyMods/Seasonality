@@ -18,6 +18,8 @@ public static class TerrainPatch
         else SetTerrainSettings();
         ClutterSystem.instance.m_forceRebuild = true;
         ClutterSystem.instance.LateUpdate();
+        foreach (Heightmap? map in Heightmap.Instances) map.m_doLateUpdate = true;
+        Heightmap.ForceGenerateAll();
     }
     private static void SetDefaultTerrainSettings()
     {

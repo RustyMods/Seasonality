@@ -218,16 +218,7 @@ public static class Utils
         { VegetationType.Shrub , VegDirectories.Shrub },
         { VegetationType.Rock , VegDirectories.Rock }
     };
-
-    public static bool ApplyIfAvailable(GameObject prefab, VegetationType type)
-    {
-        if (!vegConversionMap.TryGetValue(type, out VegDirectories directories)) return false;
-        if (!CustomTextureExist(directories, _Season.Value)) return false;
-        ApplyMaterialToObj(prefab, type);
-        
-        return true;
-    }
-
+    
     public static bool ApplyBasedOnAvailable(VegDirectories directory, Season season, Material material, string prop)
     {
         if (directory is VegDirectories.None) return false;
@@ -242,61 +233,61 @@ public static class Utils
 
     }
     
-    public static void CreateColorActions(GameObject prefab, List<Action> actions, VegetationType type)
-    {
-        List<Color> ConfigSummerColors = new()
-        {
-            _SummerColor1.Value,
-            _SummerColor2.Value,
-            _SummerColor3.Value,
-            _SummerColor4.Value
-        };
-        
-        List<Color> ConfigSpringColors = new()
-        {
-            _SpringColor1.Value,
-            _SpringColor2.Value,
-            _SpringColor3.Value,
-            _SpringColor4.Value
-        };
-        
-        List<Color> ConfigFallColors = new ()
-        {
-            _FallColor1.Value,
-            _FallColor2.Value,
-            _FallColor3.Value,
-            _FallColor4.Value
-        };
-
-        List<Color> ConfigWinterColors = new()
-        {
-            _WinterColor1.Value,
-            _WinterColor2.Value,
-            _WinterColor3.Value,
-            _WinterColor4.Value,
-
-        };
-        // Filter prefabs here if you want to exclude them from color tinting
-        switch (_Season.Value)
-        {
-            case Season.Spring:
-                if (prefab.name.ToLower().Contains("cloud")) break;
-                foreach (Color color in ConfigSpringColors) actions.Add( ApplyColor(prefab, color, type));
-                break;
-            case Season.Summer:
-                if (prefab.name.ToLower().Contains("cloud")) break;
-                // Do not apply any color tinting for summer
-                foreach (Color color in ConfigSummerColors) actions.Add( ApplyColor(prefab, color, type));
-                break;
-            case Season.Winter:
-                if (prefab.name.ToLower().Contains("cloud")) break;
-                foreach (Color color in ConfigWinterColors) actions.Add( ApplyColor(prefab, color, type));
-                break;
-            case Season.Fall:
-                foreach (Color color in ConfigFallColors) actions.Add( ApplyColor(prefab, color, type));
-                break;
-        }
-    }
+    // public static void CreateColorActions(GameObject prefab, List<Action> actions, VegetationType type)
+    // {
+    //     List<Color> ConfigSummerColors = new()
+    //     {
+    //         _SummerColor1.Value,
+    //         _SummerColor2.Value,
+    //         _SummerColor3.Value,
+    //         _SummerColor4.Value
+    //     };
+    //     
+    //     List<Color> ConfigSpringColors = new()
+    //     {
+    //         _SpringColor1.Value,
+    //         _SpringColor2.Value,
+    //         _SpringColor3.Value,
+    //         _SpringColor4.Value
+    //     };
+    //     
+    //     List<Color> ConfigFallColors = new ()
+    //     {
+    //         _FallColor1.Value,
+    //         _FallColor2.Value,
+    //         _FallColor3.Value,
+    //         _FallColor4.Value
+    //     };
+    //
+    //     List<Color> ConfigWinterColors = new()
+    //     {
+    //         _WinterColor1.Value,
+    //         _WinterColor2.Value,
+    //         _WinterColor3.Value,
+    //         _WinterColor4.Value,
+    //
+    //     };
+    //     // Filter prefabs here if you want to exclude them from color tinting
+    //     switch (_Season.Value)
+    //     {
+    //         case Season.Spring:
+    //             if (prefab.name.ToLower().Contains("cloud")) break;
+    //             foreach (Color color in ConfigSpringColors) actions.Add( ApplyColor(prefab, color, type));
+    //             break;
+    //         case Season.Summer:
+    //             if (prefab.name.ToLower().Contains("cloud")) break;
+    //             // Do not apply any color tinting for summer
+    //             foreach (Color color in ConfigSummerColors) actions.Add( ApplyColor(prefab, color, type));
+    //             break;
+    //         case Season.Winter:
+    //             if (prefab.name.ToLower().Contains("cloud")) break;
+    //             foreach (Color color in ConfigWinterColors) actions.Add( ApplyColor(prefab, color, type));
+    //             break;
+    //         case Season.Fall:
+    //             foreach (Color color in ConfigFallColors) actions.Add( ApplyColor(prefab, color, type));
+    //             break;
+    //     }
+    // }
 
     public static bool FindTexturePropName(string[] props, string query, out string result)
     {

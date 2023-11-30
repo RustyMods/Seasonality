@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Seasons.CustomTextures;
@@ -27,7 +28,6 @@ public static class CreatureReplacement
                             {
                                 Texture? LoxWinterCoat = Utils.GetCustomTexture(CreatureDirectories.Lox, Season.Winter);
                                 if (LoxWinterCoat) ReplaceCreatureTexture(prefab, LoxWinterCoat);
-                                else SeasonalityLogger.LogWarning("no lox winter coat found");
                             }
                             break;
                         case "leech":

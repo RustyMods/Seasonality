@@ -151,6 +151,7 @@ public static class SeasonalEffects
                 StatusEffect? currentEffect = SEMan.GetStatusEffects().Find(effect => effect is SeasonEffect);
                 if (currentEffect) SEMan.RemoveStatusEffect(currentEffect);
                 TerrainPatch.UpdateTerrain();
+                Vegetation.ResetBaseVegetation();
                 lastToggled = Toggle.Off;
                 return;
             }
@@ -161,6 +162,7 @@ public static class SeasonalEffects
                 ApplySeasonalEffects(__instance);
                 SetSeasonalKey();
                 TerrainPatch.UpdateTerrain();
+                Vegetation.ModifyBaseVegetation();
                 lastToggled = Toggle.On;
             }
             if (currentSeason == _Season.Value) return;
@@ -168,6 +170,7 @@ public static class SeasonalEffects
             TerrainPatch.UpdateTerrain();
             ApplySeasonalEffects(__instance);
             SetSeasonalKey();
+            Vegetation.ModifyBaseVegetation();
         }
     }
 
@@ -190,6 +193,7 @@ public static class SeasonalEffects
             ApplySeasonalEffects(__instance);
             SetSeasonalKey();
             TerrainPatch.UpdateTerrain();
+            Vegetation.ModifyBaseVegetation();
         }
     }
 
