@@ -121,12 +121,12 @@ public class SeasonalEffect
             default:
                 if (m_newValue > 1)
                 {
-                    string defaultString = $"\n{normalizedString} +<color=orange>{(m_newValue - 1) * 100}</color>%";
+                    string defaultString = $"\n{normalizedString} +<color=orange>{Mathf.Round((m_newValue - 1) * 100)}</color>%";
                     appendedTooltip += defaultString;
                 }
                 if (m_newValue < 1)
                 {
-                    string defaultString = $"\n{normalizedString} -<color=orange>{(1 - m_newValue) * 100}</color>%";
+                    string defaultString = $"\n{normalizedString} -<color=orange>{Mathf.Round((1 - m_newValue) * 100)}</color>%";
                     appendedTooltip += defaultString;
                 }
                 break;

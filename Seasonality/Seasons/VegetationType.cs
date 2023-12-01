@@ -9,6 +9,7 @@ public enum VegetationType
     Pine,
     Swamp,
     Yggashoot,
+    YggashootSmall,
     Oak,
     Stubbe,
     Bush,

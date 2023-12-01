@@ -186,10 +186,16 @@ public static class Vegetation
         if (materials.Count != 4) return;
         Random random = new Random();
         int randomIndex = random.Next(materials.Count);
-                    
+
+        var type = Utils.GetVegetationType(prefab.name);
         for (int i = 0; i < prefab.transform.childCount; ++i)
         {
             Transform? child = prefab.transform.GetChild(i);
+            if (type is VegetationType.Birch or VegetationType.Yggashoot)
+            {
+                // SeasonalityLogger.LogWarning(child.name + " color tinting disabled");
+                if (child.name.ToLower() == "lod1") continue;
+            }
             if (!child) continue;
             if (!child.TryGetComponent(out MeshRenderer meshRenderer)) continue;
             meshRenderer.materials = materials[randomIndex];

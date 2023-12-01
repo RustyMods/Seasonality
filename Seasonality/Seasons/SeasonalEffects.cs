@@ -22,13 +22,13 @@ public static class SeasonalEffects
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.Update))]
     static class EnvManPatch
     {
-        private static void Postfix(EnvMan __instance)
+        private static void Postfix()
         {
             if (workingAsType is not WorkingAs.Server || _ModEnabled.Value is Toggle.Off) return;
-            if (_SeasonDurationDays.Value == 0 || _SeasonControl.Value is Toggle.On) return;
+            if (_SeasonControl.Value is Toggle.On) return;
 
-            TimeSpan TimeDifference = DateTime.Parse(SyncedLastSeasonChange.Value) + TimeSpan.FromDays(_SeasonDurationDays.Value) + TimeSpan.FromHours(_SeasonDurationHours.Value) + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) - DateTime.Now;
-
+            TimeSpan TimeDifference = DateTime.Parse(SyncedLastSeasonChange.Value, CultureInfo.InvariantCulture) + TimeSpan.FromDays(_SeasonDurationDays.Value) + TimeSpan.FromHours(_SeasonDurationHours.Value) + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) - DateTime.Now;
+            
             if (TimeDifference < TimeSpan.Zero)
             {
                 if (_Season.Value == (Season)SeasonIndex)
@@ -77,8 +77,8 @@ public static class SeasonalEffects
                 tmpText.gameObject.SetActive(false);
                 return;
             }
-            
-            tmpText.transform.localPosition = _TimerPosition.Value;
+
+            if (_TimerPositionEnabled.Value is Toggle.On) tmpText.transform.localPosition = _TimerPosition.Value;
 
             if (_SeasonDurationDays.Value == 0 && _SeasonDurationHours.Value == 0 && _SeasonDurationMinutes.Value == 0)
             {
@@ -96,6 +96,11 @@ public static class SeasonalEffects
         int hour = TimeDifference.Hours;
         int minutes = TimeDifference.Minutes;
         int seconds = TimeDifference.Seconds;
+
+        if (workingAsType is WorkingAs.Client)
+        {
+            hour += _TimerUIFix.Value;
+        }
         
         string time = $"{days:D2}:{hour:D2}:{minutes:D2}:{seconds:D2}";
         if (days == 0) time = $"{hour:D2}:{minutes:D2}:{seconds:D2}";
@@ -325,7 +330,7 @@ public static class SeasonalEffects
         if (!coldEffect) return null;
         SeasonEffect clonedColdEffect = ScriptableObject.CreateInstance<SeasonEffect>();
         clonedColdEffect.name = "AlwaysCold";
-        clonedColdEffect.m_name = "Cold";
+        clonedColdEffect.m_name = "Cold+";
         clonedColdEffect.m_icon = coldEffect.m_icon;
         clonedColdEffect.data = new SeasonalEffect()
         {
@@ -363,7 +368,9 @@ public static class SeasonalEffects
             bool vanillaResult = currentEnvironment != null && (currentEnvironment.m_isCold || currentEnvironment.m_isColdAtNight && !__instance.IsDay());
             
             if (_Season.Value is Season.Summer) __result = _SummerNeverCold.Value is Toggle.Off && vanillaResult; // If on, result = false
-            if (_Season.Value is Season.Winter) __result = _WinterAlwaysCold.Value is Toggle.Off; // If on, result = false
+            if (!Player.m_localPlayer) return;
+            List<StatusEffect>? statusEffects = Player.m_localPlayer.GetSEMan().GetStatusEffects();
+            if (statusEffects.Exists(x => x.name == "AlwaysCold")) __result = false;
         }
     }
 }

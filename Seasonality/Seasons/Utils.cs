@@ -43,7 +43,7 @@ public static class Utils
             "YggaShoot1" => VegetationType.Yggashoot,
             "YggaShoot2" => VegetationType.Yggashoot,
             "YggaShoot3" => VegetationType.Yggashoot,
-            "YggaShoot_small1" => VegetationType.Yggashoot,
+            "YggaShoot_small1" => VegetationType.YggashootSmall,
             "YggdrasilTree2_RtD" => VegetationType.Yggashoot,
 
             "Bush01_heath" => VegetationType.Bush,

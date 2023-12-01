@@ -24,7 +24,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "2.0.1";
+        internal const string ModVersion = "2.0.3";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -367,6 +367,9 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _ReplaceLox = null!;
 
         public static ConfigEntry<Vector2> _TimerPosition = null!;
+        public static ConfigEntry<Toggle> _TimerPositionEnabled = null!;
+
+        public static ConfigEntry<int> _TimerUIFix = null!;
 
         #endregion
         private void InitConfigs()
@@ -378,6 +381,8 @@ namespace Seasonality
             _SeasonDurationDays = config("1 - Seasonal Timer", "1 - Days", 0, new ConfigDescription("Real-time days between season", new AcceptableValueRange<int>(0, 365)));
             _SeasonDurationHours = config("1 - Seasonal Timer", "2 - Hours", 1, new ConfigDescription("Real time hours between seasons", new AcceptableValueRange<int>(0, 24)));
             _SeasonDurationMinutes = config("1 - Seasonal Timer", "3 - Minutes", 0, new ConfigDescription("Real-time minutes between seasons", new AcceptableValueRange<int>(0, 60)));
+            _TimerUIFix = config("1 - Seasonal Timer", "4 - Time Zone UI Hour Fix", 0,
+                "Time zone UI fix, set value to negative or positive depending on your time zone difference", false);
             
             _CounterVisible = config("2 - Utilities", "1 - Timer Visible", Toggle.On, "If on, timer under season is visible", false);
             _WeatherDuration = config("2 - Utilities", "2 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
@@ -387,7 +392,8 @@ namespace Seasonality
             _SummerNeverCold = config("2 - Utilities", "6 - Summer Never Cold", Toggle.Off, "If on, players are never cold during summer");
             _WinterAlwaysCold = config("2 - Utilities", "7 - Winter Always Cold", Toggle.Off, "If on, winter sets cold status effect on players regardless of environment");
             _TimerPosition = config("2 - Utilities", "8 - Timer Position", Vector2.zero, "To fix position of timer, if needed", false);
-            
+            _TimerPositionEnabled = config("2 - Utilities", "9 - Timer Position Enabled", Toggle.Off,
+                "If on, user can move timer text", false);
             
             #region Creatures
             _ReplaceLeech = config("7 - Creature Replacement", "Leeches", Toggle.On, "If on, winter replaces leeches for leech_cave (white leech)");

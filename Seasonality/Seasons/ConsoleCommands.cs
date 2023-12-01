@@ -78,10 +78,7 @@ public static class ConsoleCommands
                                 break;
                         }
                         return true;
-                    }), false, optionsFetcher: ((Terminal.ConsoleOptionsFetcher) (() =>
-                {
-                    return new List<string>() { "on", "off" };
-                })), onlyAdmin: true);
+                    }), false, optionsFetcher: ((Terminal.ConsoleOptionsFetcher) (() => new List<string>() { "on", "off" })), onlyAdmin: true);
             
             if (!SeasonCommands.ContainsKey("season control")) SeasonCommands.Add("season control", SeasonControl);
 
