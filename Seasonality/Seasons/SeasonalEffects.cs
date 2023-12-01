@@ -77,6 +77,8 @@ public static class SeasonalEffects
                 tmpText.gameObject.SetActive(false);
                 return;
             }
+            
+            tmpText.transform.localPosition = _TimerPosition.Value;
 
             if (_SeasonDurationDays.Value == 0 && _SeasonDurationHours.Value == 0 && _SeasonDurationMinutes.Value == 0)
             {
@@ -89,7 +91,7 @@ public static class SeasonalEffects
     }
     private static void NewTimer(TMP_Text timer)
     {
-        TimeSpan TimeDifference = DateTime.Parse(SyncedLastSeasonChange.Value) + TimeSpan.FromDays(_SeasonDurationDays.Value) + TimeSpan.FromHours(_SeasonDurationHours.Value) + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) - DateTime.Now;
+        TimeSpan TimeDifference = DateTime.Parse(SyncedLastSeasonChange.Value, CultureInfo.InvariantCulture) + TimeSpan.FromDays(_SeasonDurationDays.Value) + TimeSpan.FromHours(_SeasonDurationHours.Value) + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) - DateTime.Now;
         int days = TimeDifference.Days;
         int hour = TimeDifference.Hours;
         int minutes = TimeDifference.Minutes;

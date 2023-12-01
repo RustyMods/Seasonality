@@ -24,7 +24,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "2.0.0";
+        internal const string ModVersion = "2.0.1";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -366,6 +366,8 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _ReplaceLeech = null!;
         public static ConfigEntry<Toggle> _ReplaceLox = null!;
 
+        public static ConfigEntry<Vector2> _TimerPosition = null!;
+
         #endregion
         private void InitConfigs()
         {
@@ -384,6 +386,8 @@ namespace Seasonality
             _WeatherControl = config("2 - Utilities", "5 - Weather Enabled", Toggle.On, "If on, seasons can control the weather");
             _SummerNeverCold = config("2 - Utilities", "6 - Summer Never Cold", Toggle.Off, "If on, players are never cold during summer");
             _WinterAlwaysCold = config("2 - Utilities", "7 - Winter Always Cold", Toggle.Off, "If on, winter sets cold status effect on players regardless of environment");
+            _TimerPosition = config("2 - Utilities", "8 - Timer Position", Vector2.zero, "To fix position of timer, if needed", false);
+            
             
             #region Creatures
             _ReplaceLeech = config("7 - Creature Replacement", "Leeches", Toggle.On, "If on, winter replaces leeches for leech_cave (white leech)");
