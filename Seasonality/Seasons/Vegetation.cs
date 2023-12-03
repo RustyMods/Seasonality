@@ -14,8 +14,7 @@ public static class Vegetation
     private static readonly List<GameObject> BaseVegetation = new();
     private static Texture? MossTexture;
     private static readonly Dictionary<string, Texture> VegetationTextures = new();
-
-
+    
     private static List<Material[]> BeechMaterials = new();
     private static List<Material[]> BeechSmallMaterials = new();
     private static List<Material[]> BirchMaterials = new();
@@ -479,7 +478,7 @@ public static class Vegetation
         {
             for (int j = 0; j < materialsList[i].Length; ++j)
             {
-                var materialName = materialsList[i][j].name.ToLower();
+                string materialName = materialsList[i][j].name.ToLower();
                 if (materialName.Contains("wood") 
                     || materialName.Contains("bark") 
                     || materialName.Contains("vinesbranch") 
