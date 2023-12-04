@@ -39,7 +39,7 @@ public static class SeasonalEffects
                     _Season.Value = (Season)SeasonIndex;
                     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
                 }
-                _LastSavedSeasonChange.Value = DateTime.Now.ToString(CultureInfo.CurrentCulture);
+                _LastSavedSeasonChange.Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             }
             else if (_Season.Value != (Season)SeasonIndex)
             {
@@ -80,27 +80,154 @@ public static class SeasonalEffects
                 return;
             }
 
-            NewTimer();
+// <<<<<<< status-effect-refinements
+//             NewTimer();
+// =======
+//             if (_TimerType.Value is TimerOptions.RealTime) NewTimer(tmpText);
+//             else OldTimer(tmpText);
+            
         }
     }
 
-    private static void OldTimer()
+//     private static void AugaCompatibility(Hud __instance)
+//     {
+//         if (AugaLoaded)
+//         {
+//             // _SeasonControl.Value = SeasonalityPlugin.Toggle.On;
+//             RectTransform? root = __instance.m_statusEffectListRoot;
+//             if (!root) return;
+//             int match = 0;
+//             for (int i = 0; i < root.childCount; ++i)
+//             {
+//                 Transform child = root.GetChild(i);
+//                 Transform? Background = child.GetChild(0);
+//                 Transform? sprite = Background.GetChild(2);
+//                 if (!sprite.TryGetComponent(out Image image)) continue;
+//                 if (image.sprite.name != "valknutIcon.png") continue;
+//                 match = i;
+//                 break;
+//             }
+        
+//             if (match == 0) return;
+            
+//             Transform? seasonObj = root.GetChild(match);
+//             Transform? seasonBk = seasonObj.GetChild(0);
+//             Transform? countDown = seasonBk.GetChild(1);
+//             if (!countDown.TryGetComponent(out TMP_Text tmp_Text)) return;
+            
+//             TimeSpan TimeDifference = DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture) + TimeSpan.FromDays(_SeasonDurationDays.Value) + TimeSpan.FromHours(_SeasonDurationHours.Value) + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) - DateTime.Now;
+//             int days = TimeDifference.Days;
+//             int hour = TimeDifference.Hours;
+//             int minutes = TimeDifference.Minutes;
+//             int seconds = TimeDifference.Seconds;
+
+//             string time = $"{days:D2}:{hour:D2}:{minutes:D2}:{seconds:D2}";
+//             if (days == 0) time = $"{hour:D2}:{minutes:D2}:{seconds:D2}";
+        
+//             Transform? parent = tmp_Text.gameObject.transform.parent;
+//             parent.Find("Background/CountdownBG").gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
+//             parent.Find("Background/Countdown").gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
+//             tmp_Text.gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
+//             tmp_Text.text = time;
+        
+//             if (workingAsType is WorkingAs.Client)
+//             {
+//                 // If user is a client connected to a server, then do not set seasons
+//                 // Wait for server to change config value
+//                 return;
+//             }
+        
+//             if (TimeDifference < TimeSpan.Zero)
+//             {
+//                 if (_Season.Value == (Season)SeasonIndex)
+//                 {
+//                     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+//                     _Season.Value = (Season)SeasonIndex;
+//                 }
+//                 else
+//                 {
+//                     _Season.Value = (Season)SeasonIndex;
+//                     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+//                 }
+//                 _LastSavedSeasonChange.Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+//             }
+//             else if (_Season.Value != (Season)SeasonIndex)
+//             {
+//                 // To switch it back to timer settings if configs changed
+//                 _Season.Value = (Season)SeasonIndex;
+//             }
+//             return;
+// >>>>>>> main
+//         }
+//     }
+
+    private static void OldTimer(TMP_Text timer)
     {
-        var duration = (_SeasonDurationDays.Value * 24 * 60) + (_SeasonDurationHours.Value * 60) + (_SeasonDurationMinutes.Value);
+        // Valheim days are 30min long 
+        
+        int duration = (_SeasonDurationDays.Value * 24 * 60) + (_SeasonDurationHours.Value * 60) + (_SeasonDurationMinutes.Value);
         int remainingDays = duration - (EnvMan.instance.GetCurrentDay() % duration) + 1;
         float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1 - time of day
         float remainder = remainingDays - fraction;
 
         // Convert to in-game time
-        int totalMinutes = (int)(remainder * 24 * 60);
-        int hours = remainingDays - 2;
-        int minutes = totalMinutes % (24 * 60) / 60;
-        int seconds = totalMinutes % 60;
+        int totalSeconds = (int)(remainder * EnvMan.instance.m_dayLengthSec);
+
+        string time = $"{totalSeconds}";
         
-        string time = $"{hours:D2}:{minutes:D2}:{seconds:D2}";
+        timer.gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
+        timer.text = time;
+        
+        if (workingAsType is WorkingAs.Client)
+        {
+            // If user is a client connected to a server, then do not set seasons
+            // Wait for server to change config value
+
+            return;
+        }
+
+        if (totalSeconds < 3)
+        {
+            if (_Season.Value == (Season)SeasonIndex)
+            {
+                SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+                _Season.Value = (Season)SeasonIndex;
+            }
+            else
+            {
+                _Season.Value = (Season)SeasonIndex;
+                SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+            }
+            _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
+        }
+        else if (_Season.Value != (Season)SeasonIndex)
+        {
+            // To switch it back to timer settings if configs changed
+            _Season.Value = (Season)SeasonIndex;
+        }
     }
     private static void NewTimer()
     {
+// <<<<<<< status-effect-refinements
+// =======
+//         TimeSpan TimeDifference = DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal) 
+//                                   + TimeSpan.FromDays(_SeasonDurationDays.Value) 
+//                                   + TimeSpan.FromHours(_SeasonDurationHours.Value) 
+//                                   + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) 
+//                                   - DateTime.UtcNow;
+        
+//         int days = TimeDifference.Days;
+//         int hour = TimeDifference.Hours;
+//         int minutes = TimeDifference.Minutes;
+//         int seconds = TimeDifference.Seconds;
+
+//         string time = $"{days:D2}:{hour:D2}:{minutes:D2}:{seconds:D2}";
+//         if (days == 0) time = $"{hour:D2}:{minutes:D2}:{seconds:D2}";
+        
+//         timer.gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
+//         timer.text = time;
+        
+// >>>>>>> main
         if (workingAsType is WorkingAs.Client)
         {
             // If user is a client connected to a server, then do not set seasons
@@ -121,7 +248,7 @@ public static class SeasonalEffects
                 _Season.Value = (Season)SeasonIndex;
                 SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
             }
-            _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.CurrentCulture);
+            _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
         }
         else if (_Season.Value != (Season)SeasonIndex)
         {

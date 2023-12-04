@@ -10,6 +10,28 @@ using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
 
+// <<<<<<< status-effect-refinements
+// =======
+// static class SeasonalCompendium
+// {
+//     public static string customTooltip = null!;
+//     [HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.AddActiveEffects))]
+//     static class CompendiumAddActiveEffectsPatch
+//     {
+//         private static void Postfix(TextsDialog __instance)
+//         {
+//             if (_StatusEffectVisible.Value is Toggle.On) return;
+//             if (!Player.m_localPlayer) return;
+            
+//             string texts = __instance.m_texts[0].m_text;
+
+//             string appendedText = $"{customTooltip} \n\n" + texts;
+
+//             __instance.m_texts[0].m_text = appendedText;
+//         }
+//     }
+// }
+// >>>>>>> main
 public enum Modifier
 {
     None,

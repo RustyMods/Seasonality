@@ -13,6 +13,9 @@ public static class Vegetation
 {
     private static readonly List<GameObject> BaseVegetation = new();
     private static Texture? MossTexture;
+    private static Texture? HeathMossTexture;
+    private static Texture? SwampMossTexture;
+    
     private static readonly Dictionary<string, Texture> VegetationTextures = new();
     
     private static List<Material[]> BeechMaterials = new();
@@ -36,7 +39,10 @@ public static class Vegetation
             if (!__instance) return;
             List<GameObject>? prefabs = __instance.m_prefabs;
             
-            bool foundMossTex = false;
+            bool foundGreenMoss = false;
+            bool foundHeathMoss = false;
+            bool foundSwampMoss = false;
+            
             foreach (GameObject? prefab in prefabs)
             {
                 VegetationType type = Utils.GetVegetationType(prefab.name);
@@ -46,22 +52,61 @@ public static class Vegetation
                 CacheBaseMaterials(prefab);
                 
                 // Cache moss texture
-                if (foundMossTex) continue;
-                if (prefab.name == "Beech1")
+                if (!foundGreenMoss)
                 {
-                    MeshRenderer? renderer = prefab.GetComponentInChildren<MeshRenderer>();
-                    if (!renderer) return;
-                    Material[]? materials = renderer.materials;
-                    foreach (Material mat in materials)
+                    if (prefab.name == "Beech1")
                     {
-                        string[] properties = mat.GetTexturePropertyNames();
-                        if (!Utils.FindTexturePropName(properties, "moss", out string MossProp)) continue;
-                        Texture? MossTex = mat.GetTexture(MossProp);
-                        if (!MossTex) continue;
-                        MossTexture = MossTex;
-                        foundMossTex = true;
-                    }
+                        MeshRenderer? renderer = prefab.GetComponentInChildren<MeshRenderer>();
+                        if (!renderer) return;
+                        Material[]? materials = renderer.materials;
+                        foreach (Material mat in materials)
+                        {
+                            string[] properties = mat.GetTexturePropertyNames();
+                            if (!Utils.FindTexturePropName(properties, "moss", out string MossProp)) continue;
+                            Texture? MossTex = mat.GetTexture(MossProp);
+                            if (!MossTex) continue;
+                            MossTexture = MossTex;
+                            foundGreenMoss = true;
+                        }
+                    };
                 };
+                if (!foundHeathMoss)
+                {
+                    if (prefab.name == "rock2_heath")
+                    {
+                        MeshRenderer? renderer = prefab.GetComponentInChildren<MeshRenderer>();
+                        if (!renderer) return;
+                        Material[]? materials = renderer.materials;
+                        foreach (Material mat in materials)
+                        {
+                            string[] properties = mat.GetTexturePropertyNames();
+                            if (!Utils.FindTexturePropName(properties, "moss", out string MossProp)) continue;
+                            Texture? MossTex = mat.GetTexture(MossProp);
+                            if (!MossTex) continue;
+                            HeathMossTexture = MossTex;
+                            foundHeathMoss = true;
+                        }
+                    }
+                }
+
+                if (!foundSwampMoss)
+                {
+                    if (prefab.name == "SwampTree2")
+                    {
+                        MeshRenderer? renderer = prefab.GetComponentInChildren<MeshRenderer>();
+                        if (!renderer) return;
+                        Material[]? materials = renderer.materials;
+                        foreach (Material mat in materials)
+                        {
+                            string[] properties = mat.GetTexturePropertyNames();
+                            if (!Utils.FindTexturePropName(properties, "moss", out string MossProp)) continue;
+                            Texture? MossTex = mat.GetTexture(MossProp);
+                            if (!MossTex) continue;
+                            SwampMossTexture = MossTex;
+                            foundSwampMoss = true;
+                        }
+                    }
+                }
             }
         }
 
@@ -289,7 +334,11 @@ public static class Vegetation
 
         string materialName = mat.name.ToLower();
         string[]? properties = mat.GetTexturePropertyNames();
-        if (Utils.FindTexturePropName(properties, "moss", out string mossProp)) ModifyMossTex(mossProp, mat);
+        if (Utils.FindTexturePropName(properties, "moss", out string mossProp))
+        {
+            // SeasonalityLogger.LogWarning($"{materialName} changing moss");
+            ModifyMossTex(mossProp, mat, type);
+        }
         if (Utils.FindTexturePropName(properties, "main", out string mainProp))
         {
             if (materialName.Contains("bark") 
@@ -489,13 +538,24 @@ public static class Vegetation
         }
     }
 
-    private static void ModifyMossTex(string propertyName, Material material)
+    private static void ModifyMossTex(string propertyName, Material material, VegetationType type)
     {
+        Texture? tex = null;
+        // Get default moss texture based on type
+        switch (type)
+        {
+            
+        }
+        
         switch (_Season.Value)
         {
             case Season.Winter:
                 Texture? customWinter = Utils.GetCustomTexture(VegDirectories.Moss, Season.Winter);
-                if (customWinter) material.SetTexture(propertyName, customWinter);
+                if (customWinter)
+                {
+                    // SeasonalityLogger.LogWarning($"{material.name} changing moss to custom winter moss");
+                    tex = customWinter;
+                }
                 break;
             case Season.Fall:
                 Texture? customFall = Utils.GetCustomTexture(VegDirectories.Moss, Season.Fall);
@@ -510,5 +570,7 @@ public static class Vegetation
                 material.SetTexture(propertyName, customSummer ? customSummer : MossTexture);
                 break;
         }
+        
+        if (tex) material.SetTexture(propertyName, tex);
     }
 }
