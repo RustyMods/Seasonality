@@ -14,6 +14,7 @@ public enum VegetationType
     Stubbe,
     Bush,
     Rock,
+    RockPlains,
     Log,
     PlainsBush,
     Shrub,

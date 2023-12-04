@@ -67,19 +67,19 @@ public static class Utils
             "rock4_coast" => VegetationType.Rock,
             "StatueEvil" => VegetationType.Rock,
             "rock1_mountain" => VegetationType.Rock,
-            "rock2_heath" => VegetationType.Rock,
-            "rock4_heath" => VegetationType.Rock,
-            "Rock_4_plains" => VegetationType.Rock,
-            "HeathRockPillar" => VegetationType.Rock,
+            "rock2_heath" => VegetationType.RockPlains,
+            "rock4_heath" => VegetationType.RockPlains,
+            "Rock_4_plains" => VegetationType.RockPlains,
+            "HeathRockPillar" => VegetationType.RockPlains,
             "Rock_destructible" => VegetationType.Rock,
             "Rock_3_static" => VegetationType.Rock,
-            "RockFinger" => VegetationType.Rock,
-            "RockFingerBroken" => VegetationType.Rock,
+            "RockFinger" => VegetationType.RockPlains,
+            "RockFingerBroken" => VegetationType.RockPlains,
             "rockformation1" => VegetationType.Rock,
-            "RockThumb" => VegetationType.Rock,
+            "RockThumb" => VegetationType.RockPlains,
             "Rocks2" => VegetationType.Rock,
-            "highstone" => VegetationType.Rock,
-            "widestone" => VegetationType.Rock,
+            "highstone" => VegetationType.RockPlains,
+            "widestone" => VegetationType.RockPlains,
             "StatueSeed" => VegetationType.Rock,
             
             "RaspberryBush" => VegetationType.RaspberryBush,
@@ -226,7 +226,7 @@ public static class Utils
         
         Texture? tex = GetCustomTexture(directory, season);
         if (!tex) return false;
-        
+
         material.SetTexture(prop, tex);
         material.color = Color.white;
         return true;

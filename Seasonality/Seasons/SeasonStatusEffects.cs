@@ -14,35 +14,16 @@ static class SeasonalCompendium
     [HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.AddActiveEffects))]
     static class CompendiumAddActiveEffectsPatch
     {
-        private static bool Prefix(TextsDialog __instance)
+        private static void Postfix(TextsDialog __instance)
         {
-            if (_StatusEffectVisible.Value is Toggle.On) return true;
-            if (!Player.m_localPlayer) return false;
+            if (_StatusEffectVisible.Value is Toggle.On) return;
+            if (!Player.m_localPlayer) return;
             
-            List<StatusEffect> effects = new List<StatusEffect>();
-            Player.m_localPlayer.GetSEMan().GetHUDStatusEffects(effects);
-            StringBuilder stringBuilder = new StringBuilder(256);
-            stringBuilder.Append(customTooltip);
-            stringBuilder.Append("\n\n");
-            foreach (StatusEffect statusEffect in effects)
-            {
-                stringBuilder.Append("<color=orange>" + Localization.instance.Localize(statusEffect.m_name) + "</color>\n");
-                stringBuilder.Append(Localization.instance.Localize(statusEffect.GetTooltipString()));
-                stringBuilder.Append("\n\n");
-            }
-            StatusEffect se;
-            Player.m_localPlayer.GetGuardianPowerHUD(out se, out float _);
-            if (se)
-            {
-                stringBuilder.Append("<color=yellow>" + Localization.instance.Localize("$inventory_selectedgp") + "</color>\n");
-                stringBuilder.Append("<color=orange>" + Localization.instance.Localize(se.m_name) + "</color>\n");
-                stringBuilder.Append(Localization.instance.Localize(se.GetTooltipString()));
-            }
+            string texts = __instance.m_texts[0].m_text;
 
-            
-            __instance.m_texts.Insert(0, new TextsDialog.TextInfo(Localization.instance.Localize("$inventory_activeeffects"), stringBuilder.ToString()));
-            
-            return false;
+            string appendedText = $"{customTooltip} \n\n" + texts;
+
+            __instance.m_texts[0].m_text = appendedText;
         }
     }
 }

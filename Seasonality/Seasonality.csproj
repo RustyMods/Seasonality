@@ -145,9 +145,6 @@
         <EmbeddedResource Include="..\..\..\Textures\mistlands_moss.png">
           <Link>assets\mistlands_moss.png</Link>
         </EmbeddedResource>
-        <EmbeddedResource Include="..\..\..\Textures\Halstein_d_winter.png">
-          <Link>assets\Halstein_d_winter.png</Link>
-        </EmbeddedResource>
         <EmbeddedResource Include="..\..\..\Textures\MistlandsVegetation_d.png">
           <Link>assets\MistlandsVegetation_d.png</Link>
         </EmbeddedResource>
