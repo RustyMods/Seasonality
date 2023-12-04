@@ -23,6 +23,9 @@ public static class Location
                 case Season.Winter:
                     if (snowTex) Utils.SetMossTex(prefab, snowTex);
                     break;
+                case Season.Fall:
+                    Utils.SetMossTex(prefab, Vegetation.HeathMossTexture);
+                    break;
             }
         }
 
