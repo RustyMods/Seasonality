@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using BepInEx;
@@ -8,44 +10,6 @@ using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
 
-static class SeasonalCompendium
-{
-    public static string customTooltip = null!;
-    [HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.AddActiveEffects))]
-    static class CompendiumAddActiveEffectsPatch
-    {
-        private static bool Prefix(TextsDialog __instance)
-        {
-            if (_StatusEffectVisible.Value is Toggle.On) return true;
-            if (!Player.m_localPlayer) return false;
-            
-            List<StatusEffect> effects = new List<StatusEffect>();
-            Player.m_localPlayer.GetSEMan().GetHUDStatusEffects(effects);
-            StringBuilder stringBuilder = new StringBuilder(256);
-            stringBuilder.Append(customTooltip);
-            stringBuilder.Append("\n\n");
-            foreach (StatusEffect statusEffect in effects)
-            {
-                stringBuilder.Append("<color=orange>" + Localization.instance.Localize(statusEffect.m_name) + "</color>\n");
-                stringBuilder.Append(Localization.instance.Localize(statusEffect.GetTooltipString()));
-                stringBuilder.Append("\n\n");
-            }
-            StatusEffect se;
-            Player.m_localPlayer.GetGuardianPowerHUD(out se, out float _);
-            if (se)
-            {
-                stringBuilder.Append("<color=yellow>" + Localization.instance.Localize("$inventory_selectedgp") + "</color>\n");
-                stringBuilder.Append("<color=orange>" + Localization.instance.Localize(se.m_name) + "</color>\n");
-                stringBuilder.Append(Localization.instance.Localize(se.GetTooltipString()));
-            }
-
-            
-            __instance.m_texts.Insert(0, new TextsDialog.TextInfo(Localization.instance.Localize("$inventory_activeeffects"), stringBuilder.ToString()));
-            
-            return false;
-        }
-    }
-}
 public enum Modifier
 {
     None,
@@ -62,6 +26,7 @@ public enum Modifier
     FallDamage,
     EitrRegen
 }
+
 public class SeasonalEffect
 {
     public string effectName = null!;
@@ -95,8 +60,8 @@ public class SeasonalEffect
     };
 
     public readonly List<HitData.DamageModPair> damageMods = new();
-    
-    public StatusEffect? Init() 
+
+    public StatusEffect? Init()
     {
         ObjectDB obd = ObjectDB.instance;
 
@@ -137,7 +102,7 @@ public class SeasonalEffect
                 }
                 if (m_newValue < 0)
                 {
-                    string maxCarryString = $"\n{modName} -<color=orange>{m_newValue.ToString().Replace("-","")}</color>";
+                    string maxCarryString = $"\n{modName} -<color=orange>{m_newValue.ToString().Replace("-", "")}</color>";
                     appendedTooltip += maxCarryString;
                 }
                 break;
@@ -241,12 +206,12 @@ public class SeasonalEffect
         {
             seasonEffect.m_startEffects = CreateEffectList(ZNetScene.instance, startEffectNames.ToList(), effectName);
         }
-        
+
         if (stopEffectNames is not null)
         {
             seasonEffect.m_stopEffects = CreateEffectList(ZNetScene.instance, stopEffectNames.ToList(), effectName);
         }
-        
+
         // Add base effect to ObjectDB
         obd.m_StatusEffects.Add(seasonEffect);
         return seasonEffect;
@@ -255,14 +220,14 @@ public class SeasonalEffect
     {
         EffectList list = new();
         List<GameObject> validatedPrefabs = new();
-        
+
         foreach (string effect in effects)
         {
             if (effect.IsNullOrWhiteSpace()) continue;
             GameObject prefab = scene.GetPrefab(effect);
             if (!prefab)
             {
-                SeasonalityLogger.LogDebug( $"[{seasonalEffectName}]" + " : " + "Failed to find prefab: " + effect);
+                SeasonalityLogger.LogDebug($"[{seasonalEffectName}]" + " : " + "Failed to find prefab: " + effect);
                 continue;
             }
             // 0 = Default
@@ -280,7 +245,7 @@ public class SeasonalEffect
                 case 8 or 22: validatedPrefabs.Add(prefab); break;
             }
         }
-        
+
         EffectList.EffectData[] allEffects = new EffectList.EffectData[validatedPrefabs.Count];
 
         for (int i = 0; i < validatedPrefabs.Count; ++i)
@@ -305,35 +270,43 @@ public class SeasonalEffect
 
         return list;
     }
+
+
 }
 public class SeasonEffect : StatusEffect
+{
+    public SeasonalEffect data = null!;
+    public override void ModifyAttack(Skills.SkillType skill, ref HitData hitData) => hitData.ApplyModifier(data.Modifiers[Modifier.Attack]);
+    public override void ModifyHealthRegen(ref float regenMultiplier) => regenMultiplier *= data.Modifiers[Modifier.HealthRegen];
+    public override void ModifyStaminaRegen(ref float staminaRegen) => staminaRegen *= data.Modifiers[Modifier.StaminaRegen];
+    public override void ModifyRaiseSkill(Skills.SkillType skill, ref float value) => value *= data.Modifiers[Modifier.RaiseSkills];
+    public override void ModifySpeed(float baseSpeed, ref float speed) => speed *= data.Modifiers[Modifier.Speed];
+    public override void ModifyNoise(float baseNoise, ref float noise) => noise *= data.Modifiers[Modifier.Noise];
+    public override void ModifyStealth(float baseStealth, ref float stealth) => stealth *= data.Modifiers[Modifier.Stealth];
+    public override void ModifyMaxCarryWeight(float baseLimit, ref float limit) => limit += data.Modifiers[Modifier.MaxCarryWeight];
+    public override void ModifyRunStaminaDrain(float baseDrain, ref float drain) => drain *= data.Modifiers[Modifier.RunStaminaDrain];
+    public override void ModifyJumpStaminaUsage(float baseStaminaUse, ref float staminaUse) => staminaUse *= data.Modifiers[Modifier.RunStaminaDrain];
+    public override void OnDamaged(HitData hit, Character attacker)
     {
-        public SeasonalEffect data = null!;
-        public override void ModifyAttack(Skills.SkillType skill, ref HitData hitData) => hitData.ApplyModifier(data.Modifiers[Modifier.Attack]);
-        public override void ModifyHealthRegen(ref float regenMultiplier) => regenMultiplier *= data.Modifiers[Modifier.HealthRegen];
-        public override void ModifyStaminaRegen(ref float staminaRegen) => staminaRegen *= data.Modifiers[Modifier.StaminaRegen];
-        public override void ModifyRaiseSkill(Skills.SkillType skill, ref float value) => value *= data.Modifiers[Modifier.RaiseSkills];
-        public override void ModifySpeed(float baseSpeed, ref float speed) => speed *= data.Modifiers[Modifier.Speed];
-        public override void ModifyNoise(float baseNoise, ref float noise) => noise *= data.Modifiers[Modifier.Noise];
-        public override void ModifyStealth(float baseStealth, ref float stealth) => stealth *= data.Modifiers[Modifier.Stealth];
-        public override void ModifyMaxCarryWeight(float baseLimit, ref float limit) => limit += data.Modifiers[Modifier.MaxCarryWeight];
-        public override void ModifyRunStaminaDrain(float baseDrain, ref float drain) => drain *= data.Modifiers[Modifier.RunStaminaDrain];
-        public override void ModifyJumpStaminaUsage(float baseStaminaUse, ref float staminaUse) => staminaUse *= data.Modifiers[Modifier.RunStaminaDrain];
-        public override void OnDamaged(HitData hit, Character attacker)
-        {
-            float mod = Mathf.Clamp01(1f - data.Modifiers[Modifier.DamageReduction]);
-            hit.ApplyModifier(mod);
-        }
-        public override void ModifyDamageMods(ref HitData.DamageModifiers modifiers) => modifiers.Apply(data.damageMods);
-        public override void ModifyFallDamage(float baseDamage, ref float damage)
-        {
-            if (m_character.m_seman.m_statusEffects.Exists(x => x.m_name == "$se_slowfall_name")) return;
-            damage = baseDamage * data.Modifiers[Modifier.FallDamage];
-            if (damage >= 0.0) return;
-            damage = 0.0f;
-        }
-        public virtual void ModifyEitrRegen(ref float eitrRegen)
-        {
-            eitrRegen *= data.Modifiers[Modifier.EitrRegen];
-        }
+        float mod = Mathf.Clamp01(1f - data.Modifiers[Modifier.DamageReduction]);
+        hit.ApplyModifier(mod);
     }
+    public override void ModifyDamageMods(ref HitData.DamageModifiers modifiers) => modifiers.Apply(data.damageMods);
+    public override void ModifyFallDamage(float baseDamage, ref float damage)
+    {
+        if (m_character.m_seman.m_statusEffects.Exists(x => x.m_name == "$se_slowfall_name")) return;
+        damage = baseDamage * data.Modifiers[Modifier.FallDamage];
+        if (damage >= 0.0) return;
+        damage = 0.0f;
+    }
+    public override void ModifyEitrRegen(ref float eitrRegen)
+    {
+        eitrRegen *= data.Modifiers[Modifier.EitrRegen];
+    }
+    public override string GetIconText()
+    {
+        TimeSpan span = SeasonalEffects.GetTimeDifference();
+        return span.ToString(span.Days > 0 ? @"d\d hh\:mm\:ss" : span.Hours > 0 ? @"hh\:mm\:ss" : @"mm\:ss");
+    }
+
+}
