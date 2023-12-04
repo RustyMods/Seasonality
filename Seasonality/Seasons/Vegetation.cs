@@ -544,30 +544,80 @@ public static class Vegetation
         // Get default moss texture based on type
         switch (type)
         {
-            
+            case VegetationType.RockPlains: tex = HeathMossTexture; break;
+            case VegetationType.Swamp: tex = SwampMossTexture; break;
+            default: tex = MossTexture; break;
         }
         
         switch (_Season.Value)
         {
             case Season.Winter:
-                Texture? customWinter = Utils.GetCustomTexture(VegDirectories.Moss, Season.Winter);
-                if (customWinter)
+                switch (type)
                 {
-                    // SeasonalityLogger.LogWarning($"{material.name} changing moss to custom winter moss");
-                    tex = customWinter;
+                    case VegetationType.RockPlains:
+                        Texture? plainsWinter = Utils.GetCustomTexture(VegDirectories.PlainsMoss, Season.Winter);
+                        if (plainsWinter) tex = plainsWinter;
+                        break;
+                    case VegetationType.Swamp:
+                        Texture? swampWinter = Utils.GetCustomTexture(VegDirectories.SwampMoss, Season.Winter);
+                        if (swampWinter) tex = swampWinter;
+                        break;
+                    default:
+                        Texture? customWinter = Utils.GetCustomTexture(VegDirectories.Moss, Season.Winter);
+                        if (customWinter) tex = customWinter;
+                        break;
                 }
                 break;
             case Season.Fall:
-                Texture? customFall = Utils.GetCustomTexture(VegDirectories.Moss, Season.Fall);
-                material.SetTexture(propertyName, customFall ? customFall : MossTexture);
+                switch (type)
+                {
+                    case VegetationType.RockPlains:
+                        Texture? plainsWinter = Utils.GetCustomTexture(VegDirectories.PlainsMoss, Season.Fall);
+                        if (plainsWinter) tex = plainsWinter;
+                        break;
+                    case VegetationType.Swamp:
+                        Texture? swampWinter = Utils.GetCustomTexture(VegDirectories.SwampMoss, Season.Fall);
+                        if (swampWinter) tex = swampWinter;
+                        break;
+                    default:
+                        Texture? customWinter = Utils.GetCustomTexture(VegDirectories.Moss, Season.Fall);
+                        if (customWinter) tex = customWinter;
+                        break;
+                }
                 break;
             case Season.Spring:
-                Texture? customSpring = Utils.GetCustomTexture(VegDirectories.Moss, Season.Spring);
-                material.SetTexture(propertyName, customSpring ? customSpring : MossTexture);
+                switch (type)
+                {
+                    case VegetationType.RockPlains:
+                        Texture? plainsWinter = Utils.GetCustomTexture(VegDirectories.PlainsMoss, Season.Spring);
+                        if (plainsWinter) tex = plainsWinter;
+                        break;
+                    case VegetationType.Swamp:
+                        Texture? swampWinter = Utils.GetCustomTexture(VegDirectories.SwampMoss, Season.Spring);
+                        if (swampWinter) tex = swampWinter;
+                        break;
+                    default:
+                        Texture? customWinter = Utils.GetCustomTexture(VegDirectories.Moss, Season.Spring);
+                        if (customWinter) tex = customWinter;
+                        break;
+                }
                 break;
             case Season.Summer:
-                Texture? customSummer = Utils.GetCustomTexture(VegDirectories.Moss, Season.Summer);
-                material.SetTexture(propertyName, customSummer ? customSummer : MossTexture);
+                switch (type)
+                {
+                    case VegetationType.RockPlains:
+                        Texture? plainsWinter = Utils.GetCustomTexture(VegDirectories.PlainsMoss, Season.Spring);
+                        if (plainsWinter) tex = plainsWinter;
+                        break;
+                    case VegetationType.Swamp:
+                        Texture? swampWinter = Utils.GetCustomTexture(VegDirectories.SwampMoss, Season.Spring);
+                        if (swampWinter) tex = swampWinter;
+                        break;
+                    default:
+                        Texture? customWinter = Utils.GetCustomTexture(VegDirectories.Moss, Season.Spring);
+                        if (customWinter) tex = customWinter;
+                        break;
+                }
                 break;
         }
         

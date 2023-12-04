@@ -196,7 +196,7 @@ public static class TerrainPatch
                     switch (_Season.Value)
                     {
                         case Season.Winter: __result = conversionMap[Heightmap.Biome.Mountain]; break;
-                        case Season.Fall: __result = conversionMap[Heightmap.Biome.AshLands]; break;
+                        case Season.Fall: __result = HDPackLoaded ? conversionMap[Heightmap.Biome.BlackForest] : conversionMap[Heightmap.Biome.AshLands]; break;
                         default: __result = conversionMap[Heightmap.Biome.BlackForest]; break;
                     }
                     break;

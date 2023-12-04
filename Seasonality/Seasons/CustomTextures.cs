@@ -79,6 +79,8 @@ public static class CustomTextures
         PlainsBush,
         Shrub,
         Moss,
+        PlainsMoss,
+        SwampMoss,
         Rock,
         MeadowGrass,
         MeadowGrassShort,
@@ -102,11 +104,19 @@ public static class CustomTextures
         None,
         Lox
     }
+
+    public static bool HDPackLoaded;
     public static void ReadCustomTextures()
     {
         // Create directories if they are missing
         if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
         if (!Directory.Exists(VegTexturePath)) Directory.CreateDirectory(VegTexturePath);
+
+        if (File.Exists(folderPath + Path.DirectorySeparatorChar + "WillyBachHD.md"))
+        {
+            SeasonalityLogger.LogInfo("Willybach HD loaded");
+            HDPackLoaded = true;
+        }
 
         foreach (VegDirectories directory in Enum.GetValues(typeof(VegDirectories)))
         {
