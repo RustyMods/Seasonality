@@ -322,6 +322,9 @@ public class SeasonEffect : StatusEffect
     
     public override string GetIconText()
     {
+        if (_SeasonDurationDays.Value == 0 
+            && _SeasonDurationHours.Value == 0 
+            && _SeasonDurationMinutes.Value == 0 || _SeasonControl.Value is Toggle.On) return "";
         TimeSpan span = SeasonalEffects.GetTimeDifference();
         return span.ToString(span.Days > 0 ? @"d\d hh\:mm\:ss" : span.Hours > 0 ? @"hh\:mm\:ss" : @"mm\:ss");
     }

@@ -50,14 +50,11 @@ namespace Seasonality
         }
 
         public static WorkingAs workingAsType;
-        public static bool AugaLoaded = false;
         public void Awake()
         {
             _serverConfigLocked = config("1 - General", "1 - Lock Configuration", Toggle.On,
                 "If on, the configuration is locked and can be changed by server admins only.");
             _ = ConfigSync.AddLockingConfigEntry(_serverConfigLocked);
-
-            // if (Chainloader.PluginInfos.ContainsKey("randyknapp.mods.auga")) AugaLoaded = true;
             
             workingAsType = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null
                 ? WorkingAs.Server
@@ -103,10 +100,6 @@ namespace Seasonality
         #region CustomConfigs
         public static ConfigEntry<Season> _Season = null!;
         
-        public enum TimerOptions { RealTime, InGameTime }
-
-        public static ConfigEntry<TimerOptions> _TimerType = null!;
-
         public static ConfigEntry<int> _SeasonDurationDays = null!;
         public static ConfigEntry<int> _SeasonDurationHours = null!;
         public static ConfigEntry<int> _SeasonDurationMinutes = null!;
@@ -376,8 +369,6 @@ namespace Seasonality
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
             _SeasonControl = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
             _Season = config("1 - General", "4 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
-
-            _TimerType = config("1 - Seasonal Timer", "4 - Timer Type", TimerOptions.RealTime, "Select type of timer");
             
             _LastSavedSeasonChange = config("8 - Data", "Last Season Change DateTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture), "Do not touch, unless you want to manipulate last season change");
 

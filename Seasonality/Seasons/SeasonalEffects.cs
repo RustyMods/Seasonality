@@ -126,35 +126,6 @@ public static class SeasonalEffects
             _Season.Value = (Season)SeasonIndex;
         }
     }
-    private static void NewTimer()
-    {
-        if (workingAsType is WorkingAs.Client)
-        {
-            // If user is a client connected to a server, then do not set seasons
-            // Wait for server to change config value
-            return;
-        }
-
-        if (GetTimeDifference() < TimeSpan.Zero)
-        {
-            if (_Season.Value == (Season)SeasonIndex)
-            {
-                SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-                _Season.Value = (Season)SeasonIndex;
-            }
-            else
-            {
-                _Season.Value = (Season)SeasonIndex;
-                SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-            }
-            _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
-        }
-        else if (_Season.Value != (Season)SeasonIndex)
-        {
-            // To switch it back to timer settings if configs changed
-            _Season.Value = (Season)SeasonIndex;
-        }
-    }
 
     public static TimeSpan GetTimeDifference()
     {

@@ -161,11 +161,11 @@ public static class CustomTextures
             Texture? tex = RegisterCustomTexture(filePath, textureFormat, filterMode);
             if (!tex)
             {
-                SeasonalityLogger.LogInfo($"Failed to register texture: {message}");
+                SeasonalityLogger.LogDebug($"Failed: {message}");
                 continue;
             }
             textureMap.Add(season, tex);
-            SeasonalityLogger.LogInfo($"Registered custom texture: {message}");
+            SeasonalityLogger.LogDebug($"Registered: {message}");
         }
 
         return textureMap;
