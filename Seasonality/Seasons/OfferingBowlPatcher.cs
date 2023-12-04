@@ -17,7 +17,7 @@ public static class OfferingBowlPatcher
             GameObject altar = __instance.gameObject;
             Transform? parent = altar.transform.parent;
             if (!parent) return;
-            Texture? snowTex = Utils.GetCustomTexture(CustomTextures.VegDirectories.Moss, Season.Winter);
+            Texture? snowTex = Utils.GetCustomTexture(CustomTextures.VegDirectories.Moss, Season.Winter.ToString());
             switch (_Season.Value)
             {
                 case Season.Winter:

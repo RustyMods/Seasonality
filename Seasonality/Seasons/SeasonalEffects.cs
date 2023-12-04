@@ -13,6 +13,7 @@ public static class SeasonalEffects
 {
     private static Season currentSeason = _Season.Value;
     private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
+    private static DateTime LastSeasonChange = DateTime.Now;
 
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.Update))]
     static class EnvManPatch
@@ -22,6 +23,8 @@ public static class SeasonalEffects
             if (_ModEnabled.Value is Toggle.Off) return;
             if (_SeasonControl.Value is Toggle.On) return;
             if (_SeasonDurationDays.Value == 0 && _SeasonDurationHours.Value == 0 && _SeasonDurationMinutes.Value == 0) return;
+            // To throttle seasonal changes to a minimum of 1 minute
+            if (LastSeasonChange < DateTime.Now + TimeSpan.FromMinutes(1)) return;
             
             if (workingAsType is WorkingAs.Server)
             {
@@ -40,11 +43,13 @@ public static class SeasonalEffects
                         SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
                     }
                     _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
+                    LastSeasonChange = DateTime.Now;
                 }
                 else if (_Season.Value != (Season)SeasonIndex)
                 {
                     // To switch it back to timer settings if configs changed
                     _Season.Value = (Season)SeasonIndex;
+                    LastSeasonChange = DateTime.Now;
                 }
             }
             else
@@ -72,11 +77,13 @@ public static class SeasonalEffects
                         SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
                     }
                     _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
+                    LastSeasonChange = DateTime.Now;
                 }
                 else if (_Season.Value != (Season)SeasonIndex)
                 {
                     // To switch it back to timer settings if configs changed
                     _Season.Value = (Season)SeasonIndex;
+                    LastSeasonChange = DateTime.Now;
                 }
             }
         }

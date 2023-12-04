@@ -17,7 +17,7 @@ public static class Location
             
             GameObject? prefab = __instance.m_instance;
             if (!prefab) return;
-            Texture? snowTex = Utils.GetCustomTexture(CustomTextures.VegDirectories.Moss, Season.Winter);
+            Texture? snowTex = Utils.GetCustomTexture(CustomTextures.VegDirectories.Moss, Season.Winter.ToString());
             switch (_Season.Value)
             {
                 case Season.Winter:

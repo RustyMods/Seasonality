@@ -15,9 +15,9 @@ public static class CustomTextures
     public static readonly Texture? MistLands_Moss = RegisterTexture("mistlands_moss.png");
     public static readonly Texture? Mistlands_Rock_Plant = RegisterTexture("MistlandsVegetation_d.png");
 
-    public static readonly Dictionary<VegDirectories, Dictionary<Season, Texture?>> CustomRegisteredTextures = new();
+    public static readonly Dictionary<VegDirectories, Dictionary<string, Texture?>> CustomRegisteredTextures = new();
 
-    public static readonly Dictionary<CreatureDirectories, Dictionary<Season, Texture?>> CustomRegisteredCreatureTex = new();
+    public static readonly Dictionary<CreatureDirectories, Dictionary<string, Texture?>> CustomRegisteredCreatureTex = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -131,12 +131,12 @@ public static class CustomTextures
             switch (directory)
             {
                 case VegDirectories.MistlandsGrass or VegDirectories.PlainsGrass or VegDirectories.SwampGrass or VegDirectories.BlackForestGrass or VegDirectories.BlackForestGrassAlt:
-                    Dictionary<Season, Texture?> compressedMap = RegisterCustomTextures(type, VegTexturePath, TextureFormat.DXT1, FilterMode.Point);
+                    Dictionary<string, Texture?> compressedMap = RegisterCustomTextures(type, VegTexturePath, TextureFormat.DXT1, FilterMode.Point);
                     if (compressedMap.Count == 0) continue;
                     CustomRegisteredTextures.Add(directory, compressedMap);
                     break;
                 default:
-                    Dictionary<Season, Texture?> map = RegisterCustomTextures(type, VegTexturePath);
+                    Dictionary<string, Texture?> map = RegisterCustomTextures(type, VegTexturePath);
                     if (map.Count == 0) continue;
                     CustomRegisteredTextures.Add(directory, map);
                     break;
@@ -153,30 +153,46 @@ public static class CustomTextures
                 Directory.CreateDirectory(creatureTexPath + Path.DirectorySeparatorChar + type);
             }
 
-            Dictionary<Season, Texture?> map = RegisterCustomTextures(type, creatureTexPath);
+            Dictionary<string, Texture?> map = RegisterCustomTextures(type, creatureTexPath);
             if (map.Count == 0) continue;
             CustomRegisteredCreatureTex.Add(creatureDir, map);
         }
     }
 
-    private static Dictionary<Season, Texture?> RegisterCustomTextures(string type, string path, TextureFormat textureFormat = TextureFormat.DXT5, FilterMode filterMode = FilterMode.Trilinear)
+    private static Dictionary<string, Texture?> RegisterCustomTextures(string type, string path, TextureFormat textureFormat = TextureFormat.DXT5, FilterMode filterMode = FilterMode.Trilinear)
     {
-        Dictionary<Season, Texture?> textureMap = new();
+        Dictionary<string, Texture?> textureMap = new();
 
         foreach (Season season in Enum.GetValues(typeof(Season)))
         {
             string filePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + ".png");
-            if (!File.Exists(filePath)) continue;
-            
             string message = type + "/" + season.ToString().ToLower() + ".png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}"; // Beech/spring.png
-            Texture? tex = RegisterCustomTexture(filePath, textureFormat, filterMode);
-            if (!tex)
+            if (File.Exists(filePath))
             {
-                SeasonalityLogger.LogDebug($"Failed: {message}");
-                continue;
+                Texture? tex = RegisterCustomTexture(filePath, textureFormat, filterMode);
+                if (!tex)
+                {
+                    SeasonalityLogger.LogDebug($"Failed: {message}");
+                    continue;
+                }
+                textureMap.Add(season.ToString(), tex);
+                SeasonalityLogger.LogDebug($"Registered: {message}");
+            };
+            
+            string BarkFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_bark.png");
+            string barkMessage = type + "/" + season.ToString().ToLower() + "_bark.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+
+            if (File.Exists(BarkFilePath))
+            {
+                Texture? tex = RegisterCustomTexture(filePath, textureFormat, filterMode);
+                if (!tex)
+                {
+                    SeasonalityLogger.LogDebug($"Failed: {barkMessage}");
+                    continue;
+                }
+                textureMap.Add(season.ToString() + "_bark", tex);
+                SeasonalityLogger.LogDebug($"Registered: {barkMessage}");
             }
-            textureMap.Add(season, tex);
-            SeasonalityLogger.LogDebug($"Registered: {message}");
         }
 
         return textureMap;

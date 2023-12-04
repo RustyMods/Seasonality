@@ -150,17 +150,17 @@ public static class Utils
         }
     }
 
-    public static Texture? GetCustomTexture(VegDirectories type, Season key)
+    public static Texture? GetCustomTexture(VegDirectories type, string key)
     {
-        return !CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
+        return !CustomRegisteredTextures.TryGetValue(type, out Dictionary<string, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
     }
     public static Texture? GetCustomTexture(CreatureDirectories type, Season key)
     {
-        return !CustomRegisteredCreatureTex.TryGetValue(type, out Dictionary<Season, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
+        return !CustomRegisteredCreatureTex.TryGetValue(type, out Dictionary<string, Texture?> map) ? null : map.TryGetValue(key.ToString(), out Texture? tex) ? tex : null;
     }
-    private static bool CustomTextureExist(VegDirectories type, Season key)
+    private static bool CustomTextureExist(VegDirectories type, string key)
     {
-        return CustomRegisteredTextures.TryGetValue(type, out Dictionary<Season, Texture?> map) && map.ContainsKey(key);
+        return CustomRegisteredTextures.TryGetValue(type, out Dictionary<string, Texture?> map) && map.ContainsKey(key);
     }
 
     public static VegDirectories VegToDirectory(GrassTypes type)
@@ -202,6 +202,8 @@ public static class Utils
             VegetationType.Rock => VegDirectories.Rock,
             VegetationType.Swamp => VegDirectories.SwampTrees,
             VegetationType.CloudberryBush => VegDirectories.CloudberryBush,
+            
+            
             _ => VegDirectories.None,
         };
     }
@@ -222,9 +224,9 @@ public static class Utils
     public static bool ApplyBasedOnAvailable(VegDirectories directory, Season season, Material material, string prop)
     {
         if (directory is VegDirectories.None) return false;
-        if (!CustomTextureExist(directory, season)) return false;
+        if (!CustomTextureExist(directory, season.ToString())) return false;
         
-        Texture? tex = GetCustomTexture(directory, season);
+        Texture? tex = GetCustomTexture(directory, season.ToString());
         if (!tex) return false;
 
         material.SetTexture(prop, tex);

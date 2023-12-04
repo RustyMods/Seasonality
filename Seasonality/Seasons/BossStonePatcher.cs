@@ -13,7 +13,7 @@ public static class BossStonePatcher
         {
             if (!__instance) return;
             if (_ModEnabled.Value is Toggle.Off) return;
-            Texture? snowTex = Utils.GetCustomTexture(CustomTextures.VegDirectories.Moss, Season.Winter);
+            Texture? snowTex = Utils.GetCustomTexture(CustomTextures.VegDirectories.Moss, Season.Winter.ToString());
             switch (_Season.Value)
             {
                 case Season.Winter:
