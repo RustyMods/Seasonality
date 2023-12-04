@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
-using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -15,16 +14,11 @@ using ServerSync;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static Seasonality.Seasons.Environment;
-using Environment = Seasonality.Seasons.Environment;
 
 namespace Seasonality
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
-    // [BepInDependency("randyknapp.mods.auga",BepInDependency.DependencyFlags.SoftDependency)]
-    //[BepInIncompatibility("randyknapp.mods.auga")]
     [BepInIncompatibility("org.bepinex.plugins.valheim_plus")]
-    //[BepInIncompatibility("randyknapp.mods.minimalstatuseffects")]
-
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";

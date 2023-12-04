@@ -10,28 +10,25 @@ using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
 
-// <<<<<<< status-effect-refinements
-// =======
-// static class SeasonalCompendium
-// {
-//     public static string customTooltip = null!;
-//     [HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.AddActiveEffects))]
-//     static class CompendiumAddActiveEffectsPatch
-//     {
-//         private static void Postfix(TextsDialog __instance)
-//         {
-//             if (_StatusEffectVisible.Value is Toggle.On) return;
-//             if (!Player.m_localPlayer) return;
+static class SeasonalCompendium
+{
+    public static string customTooltip = null!;
+    [HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.AddActiveEffects))]
+    static class CompendiumAddActiveEffectsPatch
+    {
+        private static void Postfix(TextsDialog __instance)
+        {
+            if (_StatusEffectVisible.Value is Toggle.On) return;
+            if (!Player.m_localPlayer) return;
             
-//             string texts = __instance.m_texts[0].m_text;
+            string texts = __instance.m_texts[0].m_text;
 
-//             string appendedText = $"{customTooltip} \n\n" + texts;
+            string appendedText = $"{customTooltip} \n\n" + texts;
 
-//             __instance.m_texts[0].m_text = appendedText;
-//         }
-//     }
-// }
-// >>>>>>> main
+            __instance.m_texts[0].m_text = appendedText;
+        }
+    }
+}
 public enum Modifier
 {
     None,
@@ -321,10 +318,8 @@ public class SeasonEffect : StatusEffect
         if (damage >= 0.0) return;
         damage = 0.0f;
     }
-    public override void ModifyEitrRegen(ref float eitrRegen)
-    {
-        eitrRegen *= data.Modifiers[Modifier.EitrRegen];
-    }
+    public override void ModifyEitrRegen(ref float eitrRegen) => eitrRegen *= data.Modifiers[Modifier.EitrRegen];
+    
     public override string GetIconText()
     {
         TimeSpan span = SeasonalEffects.GetTimeDifference();
