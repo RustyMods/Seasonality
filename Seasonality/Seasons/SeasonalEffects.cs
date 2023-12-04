@@ -49,6 +49,7 @@ public static class SeasonalEffects
             }
             else
             {
+                if (!Player.m_localPlayer) return;
                 if (Player.m_localPlayer.IsDead()) return;
                 
                 if (workingAsType is WorkingAs.Client)
