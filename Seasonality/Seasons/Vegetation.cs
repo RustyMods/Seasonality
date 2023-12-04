@@ -231,7 +231,7 @@ public static class Vegetation
         Random random = new Random();
         int randomIndex = random.Next(materials.Count);
 
-        var type = Utils.GetVegetationType(prefab.name);
+        VegetationType type = Utils.GetVegetationType(prefab.name);
         for (int i = 0; i < prefab.transform.childCount; ++i)
         {
             Transform? child = prefab.transform.GetChild(i);
@@ -243,7 +243,7 @@ public static class Vegetation
             if (!child) continue;
             if (!child.TryGetComponent(out MeshRenderer meshRenderer)) continue;
             meshRenderer.materials = materials[randomIndex];
-            
+
             if (child.childCount > 0) SetMaterials(materials, child.gameObject);
         }
     }
@@ -308,7 +308,6 @@ public static class Vegetation
 
     private static void ModifyMeshRenderer(Transform prefab, VegetationType type)
     {
-        
         if (!prefab.TryGetComponent(out MeshRenderer meshRenderer)) return;
         Material[]? materials = meshRenderer.materials;
         foreach (Material mat in materials)
@@ -320,6 +319,36 @@ public static class Vegetation
                 if (prefab.name.ToLower().Contains("sphere")) return;
             }
             ModifyMaterialProperties(mat, type, true);
+        }
+        switch (type)
+        {
+            case VegetationType.Beech: ModifyCustomMaterials(BeechMaterials, type); break;
+            case VegetationType.BeechSmall: ModifyCustomMaterials(BeechSmallMaterials, type); break; 
+            case VegetationType.Birch: ModifyCustomMaterials(BirchMaterials, type); break; 
+            case VegetationType.Oak: ModifyCustomMaterials(OakMaterials, type); break; 
+            case VegetationType.Yggashoot: ModifyCustomMaterials(YggaMaterials, type); break;
+            case VegetationType.Bush: ModifyCustomMaterials(BushMaterials, type); break; 
+            case VegetationType.PlainsBush: ModifyCustomMaterials(PlainsBushMaterials, type); break; 
+            case VegetationType.Shrub: ModifyCustomMaterials(ShrubMaterials, type); break; 
+            case VegetationType.Vines: ModifyCustomMaterials(VinesMaterials, type); break; 
+            case VegetationType.RaspberryBush: ModifyCustomMaterials(RaspberryMaterials, type); break;  
+            case VegetationType.BlueberryBush: ModifyCustomMaterials(BlueberryMaterials, type); break;
+        }
+        
+    }
+
+    private static void ModifyCustomMaterials(List<Material[]> materialsList, VegetationType type)
+    {
+        foreach (Material[]? materials in materialsList)
+        {
+            foreach (Material? mat in materials)
+            {
+                string[] properties = mat.GetTexturePropertyNames();
+                if (Utils.FindTexturePropName(properties, "moss", out string mossProp))
+                {
+                    ModifyMossTex(mossProp, mat, type);
+                }
+            }
         }
     }
 
@@ -338,6 +367,7 @@ public static class Vegetation
         {
             // SeasonalityLogger.LogWarning($"{materialName} changing moss");
             ModifyMossTex(mossProp, mat, type);
+            
         }
         if (Utils.FindTexturePropName(properties, "main", out string mainProp))
         {

@@ -42,6 +42,7 @@ public static class Environment
             Environments.InfectedMine => "InfectedMine",
             Environments.Queen => "Queen",
             Environments.WarmSnow => "WarmSnow",
+            Environments.ClearWarmSnow => "ClearWarmSnow",
             _ => ""
         };
     }
@@ -78,6 +79,7 @@ public static class Environment
         InfectedMine,
         Queen,
         WarmSnow,
+        ClearWarmSnow,
     }
 
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.Awake))]
@@ -86,48 +88,74 @@ public static class Environment
         private static void Postfix(EnvMan __instance)
         {
             if (!__instance) return;
-            EnvSetup Snow = __instance.m_environments.Find(x => x.m_name == "Snow");
-            EnvSetup WarmSnow = new EnvSetup()
-            {
-                m_name = "WarmSnow",
-                m_default = Snow.m_default,
-                m_isWet = Snow.m_isWet,
-                m_isFreezing = false,
-                m_isFreezingAtNight = false,
-                m_isCold = true,
-                m_isColdAtNight = true,
-                m_alwaysDark = Snow.m_alwaysDark,
-                m_ambColorNight = Snow.m_ambColorNight,
-                m_ambColorDay = Snow.m_ambColorDay,
-                m_fogColorNight = Snow.m_fogColorNight,
-                m_fogColorMorning = Snow.m_fogColorMorning,
-                m_fogColorEvening = Snow.m_fogColorEvening,
-                m_fogColorSunNight = Snow.m_fogColorSunNight,
-                m_fogColorSunMorning = Snow.m_fogColorSunMorning,
-                m_fogDensityNight = Snow.m_fogDensityNight,
-                m_fogDensityMorning = Snow.m_fogDensityMorning,
-                m_fogDensityEvening = Snow.m_fogDensityEvening,
-                m_sunColorNight = Snow.m_sunColorNight,
-                m_sunColorMorning = Snow.m_fogColorSunMorning,
-                m_sunColorDay = Snow.m_sunColorDay,
-                m_sunColorEvening = Snow.m_sunColorEvening,
-                m_lightIntensityDay = Snow.m_lightIntensityDay,
-                m_sunAngle = Snow.m_sunAngle,
-                m_windMin = Snow.m_windMin,
-                m_windMax = Snow.m_windMax,
-                m_envObject = Snow.m_envObject,
-                m_psystems = Snow.m_psystems,
-                m_psystemsOutsideOnly = Snow.m_psystemsOutsideOnly,
-                m_rainCloudAlpha = Snow.m_rainCloudAlpha,
-                m_ambientLoop = Snow.m_ambientLoop,
-                m_ambientVol = Snow.m_ambientVol,
-                m_ambientList = Snow.m_ambientList,
-                m_musicMorning = Snow.m_musicMorning,
-                m_musicEvening = Snow.m_musicEvening,
-                m_musicDay = Snow.m_musicDay,
-                m_musicNight = Snow.m_musicNight
-            };
+
+            EnvSetup WarmSnow = CloneEnvSetup(__instance, "Snow", "WarmSnow");
+            WarmSnow.m_isFreezing = false;
+            WarmSnow.m_isFreezingAtNight = false;
+            WarmSnow.m_isCold = true;
+            WarmSnow.m_isColdAtNight = true;
+            WarmSnow.m_lightIntensityDay = 0.6f;
+
+            EnvSetup ClearWarmSnow = CloneEnvSetup(__instance, "Snow", "ClearWarmSnow");
+            ClearWarmSnow.m_isFreezing = false;
+            ClearWarmSnow.m_isFreezingAtNight = false;
+            ClearWarmSnow.m_isCold = true;
+            ClearWarmSnow.m_isColdAtNight = true;
+            ClearWarmSnow.m_fogDensityMorning = 0.00f;
+            ClearWarmSnow.m_fogDensityDay = 0.00f;
+            ClearWarmSnow.m_fogDensityEvening = 0.00f;
+            ClearWarmSnow.m_fogDensityNight = 0.00f;
+            ClearWarmSnow.m_lightIntensityDay = 0.6f;
+            
+            __instance.m_environments.Add(ClearWarmSnow);
             __instance.m_environments.Add(WarmSnow);
+        }
+
+        private static EnvSetup CloneEnvSetup(EnvMan __instance, string originalName, string newName)
+        {
+            EnvSetup originalSetup = __instance.m_environments.Find(x => x.m_name == originalName);
+            EnvSetup newSetup = new EnvSetup()
+            {
+                m_name = newName,
+                m_default = originalSetup.m_default, // Means enabled/disabled
+                m_isWet = originalSetup.m_isWet,
+                m_isFreezing = originalSetup.m_isFreezing,
+                m_isFreezingAtNight = originalSetup.m_isFreezingAtNight,
+                m_isCold = originalSetup.m_isCold,
+                m_isColdAtNight = originalSetup.m_isColdAtNight,
+                m_alwaysDark = originalSetup.m_alwaysDark,
+                m_ambColorNight = originalSetup.m_ambColorNight,
+                m_ambColorDay = originalSetup.m_ambColorDay,
+                m_fogColorNight = originalSetup.m_fogColorNight,
+                m_fogColorMorning = originalSetup.m_fogColorMorning,
+                m_fogColorEvening = originalSetup.m_fogColorEvening,
+                m_fogColorSunNight = originalSetup.m_fogColorSunNight,
+                m_fogColorSunMorning = originalSetup.m_fogColorSunMorning,
+                m_fogDensityNight = originalSetup.m_fogDensityNight,
+                m_fogDensityMorning = originalSetup.m_fogDensityMorning,
+                m_fogDensityEvening = originalSetup.m_fogDensityEvening,
+                m_sunColorNight = originalSetup.m_sunColorNight,
+                m_sunColorMorning = originalSetup.m_fogColorSunMorning,
+                m_sunColorDay = originalSetup.m_sunColorDay,
+                m_sunColorEvening = originalSetup.m_sunColorEvening,
+                m_lightIntensityDay = originalSetup.m_lightIntensityDay,
+                m_sunAngle = originalSetup.m_sunAngle,
+                m_windMin = originalSetup.m_windMin,
+                m_windMax = originalSetup.m_windMax,
+                m_envObject = originalSetup.m_envObject,
+                m_psystems = originalSetup.m_psystems,
+                m_psystemsOutsideOnly = originalSetup.m_psystemsOutsideOnly,
+                m_rainCloudAlpha = originalSetup.m_rainCloudAlpha,
+                m_ambientLoop = originalSetup.m_ambientLoop,
+                m_ambientVol = originalSetup.m_ambientVol,
+                m_ambientList = originalSetup.m_ambientList,
+                m_musicMorning = originalSetup.m_musicMorning,
+                m_musicEvening = originalSetup.m_musicEvening,
+                m_musicDay = originalSetup.m_musicDay,
+                m_musicNight = originalSetup.m_musicNight
+            };
+
+            return newSetup;
         }
     }
 
@@ -441,13 +469,14 @@ public static class Environment
 
         private static bool ModifyEnvironment(EnvMan __instance, long sec, Heightmap.Biome biome, List<EnvEntry> environments)
         {
-            List<Action> actions = new();
             long duration = __instance.m_environmentDuration * _WeatherDuration.Value;
+            
+            List<Action> actions = new();
             if (duration == 0)
             {
                 foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
                 Utils.ApplyRandomly(actions);
-
+                
                 return false;
             }
             long seed = sec / duration;

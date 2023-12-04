@@ -102,7 +102,8 @@ public static class CustomTextures
     public enum CreatureDirectories
     {
         None,
-        Lox
+        Lox,
+        Troll,
     }
 
     public static bool HDPackLoaded;

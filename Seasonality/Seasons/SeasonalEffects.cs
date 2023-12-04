@@ -27,7 +27,7 @@ public static class SeasonalEffects
             {
                 TimeSpan TimeDifference = GetTimeDifference(); 
             
-                if (TimeDifference < TimeSpan.Zero + TimeSpan.FromSeconds(3))
+                if (TimeDifference <= TimeSpan.Zero + TimeSpan.FromSeconds(3))
                 {
                     if (_Season.Value == (Season)SeasonIndex)
                     {
@@ -59,7 +59,7 @@ public static class SeasonalEffects
                     return;
                 }
 
-                if (GetTimeDifference() < TimeSpan.Zero)
+                if (GetTimeDifference() <= TimeSpan.Zero)
                 {
                     if (_Season.Value == (Season)SeasonIndex)
                     {

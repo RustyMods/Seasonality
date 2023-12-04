@@ -22,7 +22,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "2.0.6";
+        internal const string ModVersion = "2.0.7";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -123,7 +123,7 @@ namespace Seasonality
         public static ConfigEntry<Element> _FallResistanceElement = null!;
         public static ConfigEntry<DamageModifier> _FallResistanceMod = null!;
         public static ConfigEntry<float> _FallValue = null!;
-        
+
         public static ConfigEntry<string> _WinterName = null!;
         public static ConfigEntry<string> _WinterStartMsg = null!;
         public static ConfigEntry<string> _WinterTooltip = null!;
@@ -360,6 +360,7 @@ namespace Seasonality
 
         public static ConfigEntry<Toggle> _ReplaceLeech = null!;
         public static ConfigEntry<Toggle> _ReplaceLox = null!;
+        public static ConfigEntry<Toggle> _ReplaceTroll = null!;
 
         public static ConfigEntry<string> _LastSavedSeasonChange = null!;
 
@@ -387,6 +388,8 @@ namespace Seasonality
             #region Creatures
             _ReplaceLeech = config("7 - Creature Replacement", "Leeches", Toggle.On, "If on, winter replaces leeches for leech_cave (white leech)");
             _ReplaceLox = config("7 - Creature Replacement", "Loxen", Toggle.On, "If on, plugin replaces lox textures");
+            _ReplaceTroll = config("7 - Creature Replacement", "Trolls", Toggle.On, "If on, plugin replaces troll textures");
+            
             #endregion
             
             #region SpringConfigs

@@ -16,34 +16,44 @@ public static class CreatureReplacement
             if (!__instance) return;
             GameObject prefab = __instance.gameObject;
             if (!prefab) return;
-            
-            string normalizedName = prefab.name.Replace("(Clone)", "").ToLower();
-            switch (_Season.Value)
-            {
-                case Season.Winter:
-                    switch (normalizedName)
-                    {
-                        case "lox":
-                            if (_ReplaceLox.Value is Toggle.On)
-                            {
-                                Texture? LoxWinterCoat = Utils.GetCustomTexture(CreatureDirectories.Lox, Season.Winter);
-                                if (LoxWinterCoat) ReplaceCreatureTexture(prefab, LoxWinterCoat);
-                            }
-                            break;
-                        case "leech":
-                            if (_ReplaceLeech.Value is Toggle.On)
-                            {
-                                SkinnedMeshRenderer? leechSkin = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
-                                if (!leechSkin) return;
-                                GameObject? leech_cave = ZNetScene.instance.GetPrefab("Leech_cave");
-                                if (!leech_cave) return;
-                                SkinnedMeshRenderer? caveLeechSkin = leech_cave.GetComponentInChildren<SkinnedMeshRenderer>();
-                                if (!caveLeechSkin) return;
-                                leechSkin.material = caveLeechSkin.material;
-                            }
-                            break;
-                    }
 
+            string normalizedName = prefab.name.Replace("(Clone)", "").ToLower();
+
+            if (normalizedName == "leech")
+            {
+                if (_ReplaceLeech.Value is Toggle.On)
+                {
+                    SkinnedMeshRenderer? leechSkin = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
+                    if (!leechSkin) return;
+                    GameObject? leech_cave = ZNetScene.instance.GetPrefab("Leech_cave");
+                    if (!leech_cave) return;
+                    SkinnedMeshRenderer? caveLeechSkin = leech_cave.GetComponentInChildren<SkinnedMeshRenderer>();
+                    if (!caveLeechSkin) return;
+                    leechSkin.material = caveLeechSkin.material;
+                }
+            }
+            
+            ReplaceCreatureTextures(_Season.Value, prefab);
+        }
+
+        private static void ReplaceCreatureTextures(Season season, GameObject prefab)
+        {
+            string normalizedName = prefab.name.Replace("(Clone)", "").ToLower();
+            switch (normalizedName)
+            {
+                case "lox":
+                    if (_ReplaceLox.Value is Toggle.On)
+                    {
+                        Texture? LoxSpringCoat = Utils.GetCustomTexture(CreatureDirectories.Lox, season);
+                        if (LoxSpringCoat) ReplaceCreatureTexture(prefab, LoxSpringCoat);
+                    }
+                    break;
+                case "troll":
+                    if (_ReplaceTroll.Value is Toggle.On)
+                    {
+                        Texture? TrollSpringCoat = Utils.GetCustomTexture(CreatureDirectories.Troll, season);
+                        if (TrollSpringCoat) ReplaceCreatureTexture(prefab, TrollSpringCoat);
+                    }
                     break;
             }
         }
