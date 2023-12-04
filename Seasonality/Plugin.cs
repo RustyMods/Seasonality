@@ -17,14 +17,13 @@ using UnityEngine.Rendering;
 using static Seasonality.Seasons.Environment;
 using Environment = Seasonality.Seasons.Environment;
 
-
 namespace Seasonality
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     // [BepInDependency("randyknapp.mods.auga",BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInIncompatibility("randyknapp.mods.auga")]
+    //[BepInIncompatibility("randyknapp.mods.auga")]
     [BepInIncompatibility("org.bepinex.plugins.valheim_plus")]
-    [BepInIncompatibility("randyknapp.mods.minimalstatuseffects")]
+    //[BepInIncompatibility("randyknapp.mods.minimalstatuseffects")]
 
     public class SeasonalityPlugin : BaseUnityPlugin
     {

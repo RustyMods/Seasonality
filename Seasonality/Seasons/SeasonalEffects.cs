@@ -25,11 +25,7 @@ public static class SeasonalEffects
             if (workingAsType is not WorkingAs.Server || _ModEnabled.Value is SeasonalityPlugin.Toggle.Off) return;
             if (_SeasonControl.Value is SeasonalityPlugin.Toggle.On) return;
 
-            TimeSpan TimeDifference = DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal) 
-                                      + TimeSpan.FromDays(_SeasonDurationDays.Value) 
-                                      + TimeSpan.FromHours(_SeasonDurationHours.Value) 
-                                      + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) 
-                                      - DateTime.UtcNow;
+            TimeSpan TimeDifference = GetTimeDifference(); 
             
             if (TimeDifference < TimeSpan.Zero + TimeSpan.FromSeconds(3))
             {
@@ -84,82 +80,86 @@ public static class SeasonalEffects
                 return;
             }
 
-            if (_TimerType.Value is TimerOptions.RealTime) NewTimer(tmpText);
-            else OldTimer(tmpText);
+// <<<<<<< status-effect-refinements
+//             NewTimer();
+// =======
+//             if (_TimerType.Value is TimerOptions.RealTime) NewTimer(tmpText);
+//             else OldTimer(tmpText);
             
         }
     }
 
-    private static void AugaCompatibility(Hud __instance)
-    {
-        if (AugaLoaded)
-        {
-            // _SeasonControl.Value = SeasonalityPlugin.Toggle.On;
-            RectTransform? root = __instance.m_statusEffectListRoot;
-            if (!root) return;
-            int match = 0;
-            for (int i = 0; i < root.childCount; ++i)
-            {
-                Transform child = root.GetChild(i);
-                Transform? Background = child.GetChild(0);
-                Transform? sprite = Background.GetChild(2);
-                if (!sprite.TryGetComponent(out Image image)) continue;
-                if (image.sprite.name != "valknutIcon.png") continue;
-                match = i;
-                break;
-            }
+//     private static void AugaCompatibility(Hud __instance)
+//     {
+//         if (AugaLoaded)
+//         {
+//             // _SeasonControl.Value = SeasonalityPlugin.Toggle.On;
+//             RectTransform? root = __instance.m_statusEffectListRoot;
+//             if (!root) return;
+//             int match = 0;
+//             for (int i = 0; i < root.childCount; ++i)
+//             {
+//                 Transform child = root.GetChild(i);
+//                 Transform? Background = child.GetChild(0);
+//                 Transform? sprite = Background.GetChild(2);
+//                 if (!sprite.TryGetComponent(out Image image)) continue;
+//                 if (image.sprite.name != "valknutIcon.png") continue;
+//                 match = i;
+//                 break;
+//             }
         
-            if (match == 0) return;
+//             if (match == 0) return;
             
-            Transform? seasonObj = root.GetChild(match);
-            Transform? seasonBk = seasonObj.GetChild(0);
-            Transform? countDown = seasonBk.GetChild(1);
-            if (!countDown.TryGetComponent(out TMP_Text tmp_Text)) return;
+//             Transform? seasonObj = root.GetChild(match);
+//             Transform? seasonBk = seasonObj.GetChild(0);
+//             Transform? countDown = seasonBk.GetChild(1);
+//             if (!countDown.TryGetComponent(out TMP_Text tmp_Text)) return;
             
-            TimeSpan TimeDifference = DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture) + TimeSpan.FromDays(_SeasonDurationDays.Value) + TimeSpan.FromHours(_SeasonDurationHours.Value) + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) - DateTime.Now;
-            int days = TimeDifference.Days;
-            int hour = TimeDifference.Hours;
-            int minutes = TimeDifference.Minutes;
-            int seconds = TimeDifference.Seconds;
+//             TimeSpan TimeDifference = DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture) + TimeSpan.FromDays(_SeasonDurationDays.Value) + TimeSpan.FromHours(_SeasonDurationHours.Value) + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) - DateTime.Now;
+//             int days = TimeDifference.Days;
+//             int hour = TimeDifference.Hours;
+//             int minutes = TimeDifference.Minutes;
+//             int seconds = TimeDifference.Seconds;
 
-            string time = $"{days:D2}:{hour:D2}:{minutes:D2}:{seconds:D2}";
-            if (days == 0) time = $"{hour:D2}:{minutes:D2}:{seconds:D2}";
+//             string time = $"{days:D2}:{hour:D2}:{minutes:D2}:{seconds:D2}";
+//             if (days == 0) time = $"{hour:D2}:{minutes:D2}:{seconds:D2}";
         
-            Transform? parent = tmp_Text.gameObject.transform.parent;
-            parent.Find("Background/CountdownBG").gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
-            parent.Find("Background/Countdown").gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
-            tmp_Text.gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
-            tmp_Text.text = time;
+//             Transform? parent = tmp_Text.gameObject.transform.parent;
+//             parent.Find("Background/CountdownBG").gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
+//             parent.Find("Background/Countdown").gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
+//             tmp_Text.gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
+//             tmp_Text.text = time;
         
-            if (workingAsType is WorkingAs.Client)
-            {
-                // If user is a client connected to a server, then do not set seasons
-                // Wait for server to change config value
-                return;
-            }
+//             if (workingAsType is WorkingAs.Client)
+//             {
+//                 // If user is a client connected to a server, then do not set seasons
+//                 // Wait for server to change config value
+//                 return;
+//             }
         
-            if (TimeDifference < TimeSpan.Zero)
-            {
-                if (_Season.Value == (Season)SeasonIndex)
-                {
-                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-                    _Season.Value = (Season)SeasonIndex;
-                }
-                else
-                {
-                    _Season.Value = (Season)SeasonIndex;
-                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-                }
-                _LastSavedSeasonChange.Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
-            }
-            else if (_Season.Value != (Season)SeasonIndex)
-            {
-                // To switch it back to timer settings if configs changed
-                _Season.Value = (Season)SeasonIndex;
-            }
-            return;
-        }
-    }
+//             if (TimeDifference < TimeSpan.Zero)
+//             {
+//                 if (_Season.Value == (Season)SeasonIndex)
+//                 {
+//                     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+//                     _Season.Value = (Season)SeasonIndex;
+//                 }
+//                 else
+//                 {
+//                     _Season.Value = (Season)SeasonIndex;
+//                     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+//                 }
+//                 _LastSavedSeasonChange.Value = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+//             }
+//             else if (_Season.Value != (Season)SeasonIndex)
+//             {
+//                 // To switch it back to timer settings if configs changed
+//                 _Season.Value = (Season)SeasonIndex;
+//             }
+//             return;
+// >>>>>>> main
+//         }
+//     }
 
     private static void OldTimer(TMP_Text timer)
     {
@@ -206,25 +206,28 @@ public static class SeasonalEffects
             _Season.Value = (Season)SeasonIndex;
         }
     }
-    private static void NewTimer(TMP_Text timer)
+    private static void NewTimer()
     {
-        TimeSpan TimeDifference = DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal) 
-                                  + TimeSpan.FromDays(_SeasonDurationDays.Value) 
-                                  + TimeSpan.FromHours(_SeasonDurationHours.Value) 
-                                  + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) 
-                                  - DateTime.UtcNow;
+// <<<<<<< status-effect-refinements
+// =======
+//         TimeSpan TimeDifference = DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal) 
+//                                   + TimeSpan.FromDays(_SeasonDurationDays.Value) 
+//                                   + TimeSpan.FromHours(_SeasonDurationHours.Value) 
+//                                   + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value) 
+//                                   - DateTime.UtcNow;
         
-        int days = TimeDifference.Days;
-        int hour = TimeDifference.Hours;
-        int minutes = TimeDifference.Minutes;
-        int seconds = TimeDifference.Seconds;
+//         int days = TimeDifference.Days;
+//         int hour = TimeDifference.Hours;
+//         int minutes = TimeDifference.Minutes;
+//         int seconds = TimeDifference.Seconds;
 
-        string time = $"{days:D2}:{hour:D2}:{minutes:D2}:{seconds:D2}";
-        if (days == 0) time = $"{hour:D2}:{minutes:D2}:{seconds:D2}";
+//         string time = $"{days:D2}:{hour:D2}:{minutes:D2}:{seconds:D2}";
+//         if (days == 0) time = $"{hour:D2}:{minutes:D2}:{seconds:D2}";
         
-        timer.gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
-        timer.text = time;
+//         timer.gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
+//         timer.text = time;
         
+// >>>>>>> main
         if (workingAsType is WorkingAs.Client)
         {
             // If user is a client connected to a server, then do not set seasons
@@ -233,7 +236,7 @@ public static class SeasonalEffects
             return;
         }
 
-        if (TimeDifference < TimeSpan.Zero)
+        if (GetTimeDifference() < TimeSpan.Zero)
         {
             if (_Season.Value == (Season)SeasonIndex)
             {
@@ -252,6 +255,15 @@ public static class SeasonalEffects
             // To switch it back to timer settings if configs changed
             _Season.Value = (Season)SeasonIndex;
         }
+    }
+
+    public static TimeSpan GetTimeDifference()
+    {
+        return DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal)
+                                      + TimeSpan.FromDays(_SeasonDurationDays.Value)
+                                      + TimeSpan.FromHours(_SeasonDurationHours.Value)
+                                      + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value)
+                                      - DateTime.UtcNow;
     }
 
     private static SeasonalityPlugin.Toggle lastToggled = _ModEnabled.Value;
@@ -435,7 +447,6 @@ public static class SeasonalEffects
 
         if (SeasonEffect != null)
         {
-            SeasonalCompendium.customTooltip = $"<color=orange>{SeasonEffect.m_name}</color>\n{SeasonEffect.m_tooltip}";
             SEMan.AddStatusEffect(SeasonEffect);
         }
         
