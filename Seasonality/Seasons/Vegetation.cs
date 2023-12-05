@@ -163,7 +163,6 @@ public static class Vegetation
             if (child.childCount > 0) SetMaterials(materials, child.gameObject);
         }
     }
-
     public static void ModifyBaseVegetation()
     {
         foreach (GameObject? prefab in BaseVegetation)
@@ -174,7 +173,6 @@ public static class Vegetation
             ApplyMaterialToObj(prefab, type);
         }
     }
-
     public static void ResetBaseVegetation()
     {
         foreach (GameObject? prefab in BaseVegetation)
@@ -186,7 +184,6 @@ public static class Vegetation
             ApplyMaterialToObj(prefab, type);
         }
     }
-    
     private static void ApplyMaterialToObj(GameObject obj, VegetationType type)
     {
         Random random = new Random();
@@ -209,7 +206,6 @@ public static class Vegetation
             if (child.childCount > 0) ApplyMaterialToObj(child.gameObject, type);
         }
     }
-    
     private static void ModifyParticleSystem(Transform prefab, Color color)
     {
         if (!prefab.TryGetComponent(out ParticleSystem particleSystem)) return;
@@ -221,7 +217,6 @@ public static class Vegetation
             default: main.startColor = color; break;
         }
     }
-
     private static void ModifyMeshRenderer(Transform prefab, VegetationType type)
     {
         if (!prefab.TryGetComponent(out MeshRenderer meshRenderer)) return;
@@ -251,7 +246,6 @@ public static class Vegetation
             case VegetationType.BlueberryBush: ModifyCustomMaterials(BlueberryMaterials, type); break;
         }
     }
-
     private static void ModifyCustomMaterials(List<Material[]> materialsList, VegetationType type)
     {
         foreach (Material[]? materials in materialsList)
@@ -266,7 +260,6 @@ public static class Vegetation
             }
         }
     }
-
     private static void ModifyMaterialProperties(Material mat, VegetationType type, bool modifyMainTex = false)
     {
         // Mist land cliffs do make it here but they do not change texture
@@ -303,7 +296,6 @@ public static class Vegetation
             }
         };
     }
-
     private static Texture? GetDefaultTextures(VegetationType type, string name, bool isBark = false)
     {
         try
@@ -349,8 +341,7 @@ public static class Vegetation
             SeasonalityLogger.LogWarning("Failed to get texture for " + type);
             return null;
         }
-    } 
-
+    }
     private static void ModifyMainTex(string propertyName, Material material, VegetationType type, bool isBark = false)
     {
         string normalizedName = material.name.ToLower().Replace(" (instance)", "");
@@ -530,9 +521,31 @@ public static class Vegetation
             case VegetationType.BlueberryBush: SetTextureColor(BlueberryMaterials, propertyName, tex, isBark); break;
         }
     }
-
     private static void SetTextureColor(List<Material[]> materialsList, string propertyName, Texture? tex, bool isBark)
     {
+        // if (CachedMaterials.TryGetValue("VinesBranch_mat", out Material vineMat))
+        // {
+        //     SeasonalityLogger.LogWarning("Tweaking the shit of vines");
+        //     Color color = new Color();
+        //     switch (_Season.Value)
+        //     {
+        //         case Season.Fall:
+        //             color = _FallColor1.Value;
+        //             break;
+        //         case Season.Spring:
+        //             color = _SpringColor1.Value;
+        //             break;
+        //         case Season.Winter:
+        //             color = _WinterColor1.Value;
+        //             break;
+        //         case Season.Summer:
+        //             color = _SummerColor1.Value;
+        //             break;
+        //     }
+        //
+        //     vineMat.color = color;
+        // }
+        
         if (!tex) return;
         // List of 4
         for (int i = 0; i < materialsList.Count; ++i)
@@ -563,7 +576,6 @@ public static class Vegetation
             }
         }
     }
-
     private static void ModifyMossTex(string propertyName, Material material, VegetationType type)
     {
         Texture? tex = null;

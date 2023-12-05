@@ -33,7 +33,7 @@ namespace Seasonality
         public static readonly ManualLogSource SeasonalityLogger =
             BepInEx.Logging.Logger.CreateLogSource(ModName);
 
-        private static readonly ConfigSync ConfigSync = new(ModGUID)
+        public static readonly ConfigSync ConfigSync = new(ModGUID)
             { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
 
         public enum Toggle
@@ -105,6 +105,7 @@ namespace Seasonality
         public static ConfigEntry<int> _SeasonDurationMinutes = null!;
         
         public static ConfigEntry<int> _WeatherDuration = null!;
+        public static ConfigEntry<Toggle> _WeatherIconEnabled = null!;
 
         public static ConfigEntry<Toggle> _SeasonalEffectsEnabled = null!;
         
@@ -372,19 +373,21 @@ namespace Seasonality
             _Season = config("1 - General", "4 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
             
             _LastSavedSeasonChange = config("8 - Data", "Last Season Change DateTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture), "Do not touch, unless you want to manipulate last season change");
-
-            _SeasonDurationDays = config("1 - Seasonal Timer", "1 - Days", 0, new ConfigDescription("Real-time days between season", new AcceptableValueRange<int>(0, 365)));
-            _SeasonDurationHours = config("1 - Seasonal Timer", "2 - Hours", 1, new ConfigDescription("Real time hours between seasons", new AcceptableValueRange<int>(0, 24)));
-            _SeasonDurationMinutes = config("1 - Seasonal Timer", "3 - Minutes", 0, new ConfigDescription("Real-time minutes between seasons", new AcceptableValueRange<int>(0, 60)));
-
-            _CounterVisible = config("2 - Utilities", "1 - Timer Visible", Toggle.On, "If on, timer under season is visible", false);
-            _WeatherDuration = config("2 - Utilities", "2 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
-            _SeasonalEffectsEnabled = config("2 - Utilities", "3 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");
-            _StatusEffectVisible = config("2 - Utilities", "4 - Season Icon Visible", Toggle.On, "If on, season icon is visible", false);
-            _WeatherControl = config("2 - Utilities", "5 - Weather Enabled", Toggle.On, "If on, seasons can control the weather");
-            _SummerNeverCold = config("2 - Utilities", "6 - Summer Never Cold", Toggle.Off, "If on, players are never cold during summer");
-            _WinterAlwaysCold = config("2 - Utilities", "7 - Winter Always Cold", Toggle.Off, "If on, winter sets cold status effect on players regardless of environment");
-
+            #region Season Timer
+            _SeasonDurationDays = config("1 - Seasons", "1 - Days", 0, new ConfigDescription("Real-time days between season", new AcceptableValueRange<int>(0, 365)));
+            _SeasonDurationHours = config("1 - Seasons", "2 - Hours", 1, new ConfigDescription("Real time hours between seasons", new AcceptableValueRange<int>(0, 24)));
+            _SeasonDurationMinutes = config("1 - Seasons", "3 - Minutes", 0, new ConfigDescription("Real-time minutes between seasons", new AcceptableValueRange<int>(0, 60)));
+            _StatusEffectVisible = config("1 - Seasons", "4 - Season Icon Visible", Toggle.On, "If on, season icon is visible", false);
+            _CounterVisible = config("1 - Seasons", "5 - Timer Visible", Toggle.On, "If on, timer under season is visible", false);
+            #endregion
+            _SeasonalEffectsEnabled = config("2 - Utilities", "1 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");
+            _SummerNeverCold = config("2 - Utilities", "2 - Summer Never Cold", Toggle.Off, "If on, players are never cold during summer");
+            _WinterAlwaysCold = config("2 - Utilities", "3 - Winter Always Cold", Toggle.Off, "If on, winter sets cold status effect on players regardless of environment");
+            #region Weather Man
+            _WeatherControl = config("1 - Weather", "1 - Weather Enabled", Toggle.On, "If on, seasons can control the weather");
+            _WeatherDuration = config("1 - Weather", "2 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
+            _WeatherIconEnabled = config("1 - Weather", "3 - Icon Visible", Toggle.On, "If on, HUD displays weather information");
+            #endregion
             #region Creatures
             _ReplaceLeech = config("7 - Creature Replacement", "Leeches", Toggle.On, "If on, winter replaces leeches for leech_cave (white leech)");
             _ReplaceLox = config("7 - Creature Replacement", "Loxen", Toggle.On, "If on, plugin replaces lox textures");

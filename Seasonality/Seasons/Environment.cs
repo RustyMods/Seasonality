@@ -1,13 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using ServerSync;
 using UnityEngine;
+using YamlDotNet.Serialization;
 using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
 
 public static class Environment
 {
+    private static readonly CustomSyncedValue<string> SyncedWeatherData = new(SeasonalityPlugin.ConfigSync, "ServerWeather", "");
+
+    private static void UpdateServerWeatherMan()
+    {
+        ISerializer serializer = new SerializerBuilder().Build();
+        string data = serializer.Serialize(ServerWeatherIndexes);
+        SyncedWeatherData.Value = data;
+    }
+
+    private static int GetServerWeatherManIndex(Heightmap.Biome land)
+    {
+        if (SyncedWeatherData.Value == "") return 0;
+        
+        IDeserializer deserializer = new DeserializerBuilder().Build();
+        Dictionary<Heightmap.Biome, int> data = deserializer.Deserialize<Dictionary<Heightmap.Biome, int>>(SyncedWeatherData.Value);
+
+        return data.TryGetValue(land, out int index) ? index : 0;
+    }
     private static string GetEnvironmentName(Environments options)
     {
         return options switch
@@ -84,6 +104,9 @@ public static class Environment
         ClearWarmSnow,
         NightFrost,
     }
+    
+    private static readonly Dictionary<Heightmap.Biome, List<EnvEntry>> ServerWeatherMap = new();
+    private static readonly Dictionary<Heightmap.Biome, int> ServerWeatherIndexes = new ();
 
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.Awake))]
     static class EnvManAwakePatch
@@ -91,7 +114,7 @@ public static class Environment
         private static void Postfix(EnvMan __instance)
         {
             if (!__instance) return;
-
+            
             EnvSetup WarmSnow = CloneEnvSetup(__instance, "Snow", "WarmSnow");
             WarmSnow.m_isFreezing = false;
             WarmSnow.m_isFreezingAtNight = false;
@@ -125,7 +148,6 @@ public static class Environment
             __instance.m_environments.Add(ClearWarmSnow);
             __instance.m_environments.Add(WarmSnow);
         }
-
         private static EnvSetup CloneEnvSetup(EnvMan __instance, string originalName, string newName)
         {
             EnvSetup originalSetup = __instance.m_environments.Find(x => x.m_name == originalName);
@@ -173,13 +195,137 @@ public static class Environment
             return newSetup;
         }
     }
+    private static void AddToEntries(List<Environments> environments, List<EnvEntry> entries)
+    {
+        foreach (Environments value in environments)
+        {
+            if (value is Environments.None) continue;
+            EnvEntry entry = new EnvEntry()
+            {
+                m_environment = GetEnvironmentName(value),
+                m_weight = 1f
+            };
+            entries.Add(entry);
+        }
+    }
+    private static string GetEnvironmentTooltip(string environment)
+        {
+            return (environment) switch
+            {
+                "Clear" => "The weather is clear and peaceful",
+                "Misty" => "The gods do not engage with visionaries",
+                "Darklands_dark" => "A true warrior is never afraid of the dark",
+                "Heath clear" => "The weather is clear yet dangerous",
+                "DeepForest Mist" => "Be careful of the deep forest mist",
+                "GDKing" => "The energy of the forest swells into the sky",
+                "Rain" => "A great day to stay indoors",
+                "LightRain" => "Time to hunt the necks",
+                "ThunderStorm" => "The gods are enraged",
+                "Eikthyr" => "The might of Eikthyr thunders through the air",
+                "GoblinKing" => "The air is charged with the king's energy",
+                "nofogts" => "The rain hits different these days",
+                "SwampRain" => "There is a hint of acidity to these rain drops",
+                "Bonemass" => "The gaseous might of the swamps is palpable",
+                "Snow" => "The air is cold and frigid",
+                "Twilight_Clear" => "The calm before the storm",
+                "Twilight_Snow" => "Beautiful comes in a multitude of shapes",
+                "Twilight_SnowStorm" => "The frozen sky is cold and terrifying",
+                "SnowStorm" => "A true viking knows how to navigate through the harshest of weathers",
+                "Moder" => "Something powerful is soaring through the frigid skies",
+                "AshRain" => "Not even Hela can withstand the burning temperature",
+                "Crypt" => "Eerie times calls for tempered measures",
+                "SunkenCrypts" => "The sound of gutters radiate through the land",
+                "Caves" => "The shallow bowels of the mountains calls for you",
+                "Mistlands_clear" => "The weather clears, yet the dread increases",
+                "Mistlands_rain" => "The gods cry upon your arrival",
+                "Mistlands_thunder" => "The sky breaks open to reveal magical moments",
+                "InfectedMine" => "The time to fret was long ago",
+                "Queen" => "This is when you display your bravery",
+                "WarmSnow" => "Bright and warm, the air still showers you with snow",
+                "ClearWarmSnow" => "A moment of peaceful tranquility is all one needs",
+                "NightFrost" => "The nights are frozen with trepidation",
+                _ => ""
+            };
+        }
+    private static string GetEnvironmentDisplayName(string environment)
+    {
+        return (environment) switch
+        {
+            "Darklands_dark" => "Darklands Dark",
+            "Heath clear" => "Heath Clear",
+            "GDKing" => "Forest King",
+            "LightRain" => "Light Rain",
+            "ThunderStorm" => "Thunder Storm",
+            "GoblinKing" => "Goblin King",
+            "nofogts" => "Clear Thunder Storm",
+            "SwampRain" => "Swamp Rain",
+            "Bonemass" => "Swamp King",
+            "Twilight_Clear" => "Twilight Clear",
+            "Twilight_Snow" => "Twilight Snow",
+            "Twilight_SnowStorm" => "Twilight Snow Storm",
+            "SnowStorm" => "Snow Storm",
+            "Moder" => "Dragon Queen",
+            "AshRain" => "Ash Rain",
+            "SunkenCrypts" => "Sunken Crypt",
+            "Mistlands_clear" => "Mistland Clear",
+            "Mistlands_rain" => "Mistland Rain",
+            "Mistlands_thunder" => "Mistland Thunder",
+            "InfectedMine" => "Infected Mine",
+            "Queen" => "Seeker Queen",
+            "WarmSnow" => "Fog Snow",
+            "ClearWarmSnow" => "Clear Snow",
+            "NightFrost" => "Night Frost",
+            _ => environment
+        };
+    }
+    private static void SetWeatherMan(string env)
+    {
+        if (!Player.m_localPlayer) return;
+        
+        EnvironmentEffectData EnvData = new EnvironmentEffectData()
+        {
+            name = "WeatherMan_SE",
+            m_name = GetEnvironmentDisplayName(env),
+            m_sprite = CustomTextures.ValknutIcon,
+            m_start_msg = "The weather is changing to " + GetEnvironmentDisplayName(env),
+            m_tooltip = GetEnvironmentTooltip(env)
+        };
+        Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
+        StatusEffect WeatherEffect = EnvData.InitEnvEffect();
+        Player.m_localPlayer.GetSEMan().AddStatusEffect(WeatherEffect);
+    }
+
+    private static string currentEnv = null!;
+    private static bool WeatherTweaked;
+
+    private static int MeadowIndex;
+    private static int BlackForestIndex;
+    private static int SwampIndex;
+    private static int MountainIndex;
+    private static int PlainsIndex;
+    private static int MistLandsIndex;
+    private static int AshLandsIndex;
+    private static int DeepNorthIndex;
+    private static int OceanIndex;
 
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.UpdateEnvironment))]
     static class EnvManPatch
     {
         private static bool Prefix(EnvMan __instance, long sec, Heightmap.Biome biome)
         {
-            if (_ModEnabled.Value is Toggle.Off || _WeatherControl.Value is Toggle.Off) return true;
+            if (_ModEnabled.Value is Toggle.Off || _WeatherControl.Value is Toggle.Off)
+            {
+                if (!Player.m_localPlayer) return true;
+                Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
+                return true;
+            }
+            
+            if (workingAsType is WorkingAs.Server)
+            {
+                ServerSyncedWeatherMan(__instance);
+                return false;
+            }
+            
             string environmentOverride = __instance.GetEnvironmentOverride();
             if (!string.IsNullOrEmpty(environmentOverride))
             {
@@ -187,12 +333,17 @@ public static class Environment
                 __instance.m_environmentPeriod = -1L;
                 __instance.m_currentBiome = __instance.GetBiome();
                 __instance.QueueEnvironment(environmentOverride);
+                if (__instance.m_currentEnv.m_name == currentEnv) return false;
+                SetWeatherMan(environmentOverride);
+                currentEnv = __instance.m_currentEnv.m_name;
+                WeatherTweaked = false;
                 return false;
             }
 
             if (!Player.m_localPlayer) return true;
             if (Player.m_localPlayer.IsDead()) return true;
             Heightmap.Biome currentBiome = Heightmap.FindBiome(Player.m_localPlayer.transform.position);
+            if (currentBiome == Heightmap.Biome.None) return false;
 
             List<EnvEntry> entries = new();
             List<Environments> configs = new();
@@ -461,48 +612,389 @@ public static class Environment
                     }
                     break;
             }
-            if (configs.TrueForAll(x => x is Environments.None)) return true;
+
+            if (configs.TrueForAll(x => x is Environments.None))
+            {
+                if (__instance.m_currentEnv.m_name == currentEnv) return true;
+                SetWeatherMan(__instance.m_currentEnv.m_name);
+                currentEnv = __instance.m_currentEnv.m_name;
+                WeatherTweaked = false;
+                return true;
+            }
 
             AddToEntries(configs, entries);
+            
+            if (!ZNet.instance.IsServer())
+            {
+                // If client is connected to server, then use server index
+                long duration = _WeatherDuration.Value * 60; // Total seconds
+
+                if (duration == 0)
+                {
+                    if ((lastEnvironmentChange + 60) - EnvMan.instance.m_totalSeconds > 0) return false;
+                    ServerSyncedChangeWeather(currentBiome, __instance, entries, sec);
+                }
+                else
+                {
+                    if ((lastEnvironmentChange + _WeatherDuration.Value * 60) - EnvMan.instance.m_totalSeconds > 0) return false;
+                    ServerSyncedChangeWeather(currentBiome, __instance, entries, sec);
+                }
+                return false;
+            }
 
             return ControlledEnvironments(__instance, sec, entries);
         }
 
-        private static void AddToEntries(List<Environments> environments, List<EnvEntry> entries)
+        private static void ServerSyncedWeatherMan(EnvMan __instance)
         {
-            foreach (Environments value in environments)
+            foreach (Heightmap.Biome land in Enum.GetValues(typeof(Heightmap.Biome)))
             {
-                if (value is Environments.None) continue;
-                EnvEntry entry = new EnvEntry()
+                if (land is Heightmap.Biome.None) continue;
+                
+                List<Environments> weathers = new();
+                switch (land)
                 {
-                    m_environment = GetEnvironmentName(value),
-                    m_weight = 1f
-                };
-                entries.Add(entry);
+                    case Heightmap.Biome.Meadows:
+                        switch (_Season.Value)
+                        {
+                            case Season.Winter:
+                                weathers.Add(_Winter_Meadows_Weather1.Value);
+                                weathers.Add(_Winter_Meadows_Weather2.Value);
+                                weathers.Add(_Winter_Meadows_Weather3.Value);
+                                weathers.Add(_Winter_Meadows_Weather4.Value);
+                                break;
+                            case Season.Fall:
+                                weathers.Add(_Fall_Meadows_Weather1.Value);
+                                weathers.Add(_Fall_Meadows_Weather2.Value);
+                                weathers.Add(_Fall_Meadows_Weather3.Value);
+                                weathers.Add(_Fall_Meadows_Weather4.Value);
+                                break;
+                            case Season.Spring:
+                                weathers.Add(_Spring_Meadows_Weather1.Value);
+                                weathers.Add(_Spring_Meadows_Weather2.Value);
+                                weathers.Add(_Spring_Meadows_Weather3.Value);
+                                weathers.Add(_Spring_Meadows_Weather4.Value);
+                                break;
+                            case Season.Summer:
+                                weathers.Add(_Summer_Meadows_Weather1.Value);
+                                weathers.Add(_Summer_Meadows_Weather2.Value);
+                                weathers.Add(_Summer_Meadows_Weather3.Value);
+                                weathers.Add(_Summer_Meadows_Weather4.Value);
+                                break;
+                        }
+                        break;
+                    case Heightmap.Biome.BlackForest:
+                        switch (_Season.Value)
+                        {
+                            case Season.Winter:
+                                weathers.Add(_Winter_BlackForest_Weather1.Value);
+                                weathers.Add(_Winter_BlackForest_Weather2.Value);
+                                weathers.Add(_Winter_BlackForest_Weather3.Value);
+                                weathers.Add(_Winter_BlackForest_Weather4.Value);
+                                break;
+                            case Season.Fall:
+                                weathers.Add(_Fall_BlackForest_Weather1.Value);
+                                weathers.Add(_Fall_BlackForest_Weather2.Value);
+                                weathers.Add(_Fall_BlackForest_Weather3.Value);
+                                weathers.Add(_Fall_BlackForest_Weather4.Value);
+                                break;
+                            case Season.Spring:
+                                weathers.Add(_Spring_BlackForest_Weather1.Value);
+                                weathers.Add(_Spring_BlackForest_Weather2.Value);
+                                weathers.Add(_Spring_BlackForest_Weather3.Value);
+                                weathers.Add(_Spring_BlackForest_Weather4.Value);
+                                break;
+                            case Season.Summer:
+                                weathers.Add(_Summer_BlackForest_Weather1.Value);
+                                weathers.Add(_Summer_BlackForest_Weather2.Value);
+                                weathers.Add(_Summer_BlackForest_Weather3.Value);
+                                weathers.Add(_Summer_BlackForest_Weather4.Value);
+                                break;
+                        }
+                        break;
+                    case Heightmap.Biome.Swamp:
+                        switch (_Season.Value)
+                        {
+                            case Season.Winter:
+                                weathers.Add(_Winter_Swamp_Weather1.Value);
+                                weathers.Add(_Winter_Swamp_Weather2.Value);
+                                weathers.Add(_Winter_Swamp_Weather3.Value);
+                                weathers.Add(_Winter_Swamp_Weather4.Value);
+                                break;
+                            case Season.Fall:
+                                weathers.Add(_Fall_Swamp_Weather1.Value);
+                                weathers.Add(_Fall_Swamp_Weather2.Value);
+                                weathers.Add(_Fall_Swamp_Weather3.Value);
+                                weathers.Add(_Fall_Swamp_Weather4.Value);
+                                break;
+                            case Season.Spring:
+                                weathers.Add(_Spring_Swamp_Weather1.Value);
+                                weathers.Add(_Spring_Swamp_Weather2.Value);
+                                weathers.Add(_Spring_Swamp_Weather3.Value);
+                                weathers.Add(_Spring_Swamp_Weather4.Value);
+                                break;
+                            case Season.Summer:
+                                weathers.Add(_Summer_Swamp_Weather1.Value);
+                                weathers.Add(_Summer_Swamp_Weather2.Value);
+                                weathers.Add(_Summer_Swamp_Weather3.Value);
+                                weathers.Add(_Summer_Swamp_Weather4.Value);
+                                break;
+                        }
+                        break;
+                    case Heightmap.Biome.Mountain:
+                        switch (_Season.Value)
+                        {
+                            case Season.Winter:
+                                weathers.Add(_Winter_Mountains_Weather1.Value);
+                                weathers.Add(_Winter_Mountains_Weather2.Value);
+                                weathers.Add(_Winter_Mountains_Weather3.Value);
+                                weathers.Add(_Winter_Mountains_Weather4.Value);
+                                break;
+                            case Season.Fall:
+                                weathers.Add(_Fall_Mountains_Weather1.Value);
+                                weathers.Add(_Fall_Mountains_Weather2.Value);
+                                weathers.Add(_Fall_Mountains_Weather3.Value);
+                                weathers.Add(_Fall_Mountains_Weather4.Value);
+                                break;
+                            case Season.Spring:
+                                weathers.Add(_Spring_Mountains_Weather1.Value);
+                                weathers.Add(_Spring_Mountains_Weather2.Value);
+                                weathers.Add(_Spring_Mountains_Weather3.Value);
+                                weathers.Add(_Spring_Mountains_Weather4.Value);
+                                break;
+                            case Season.Summer:
+                                weathers.Add(_Summer_Mountains_Weather1.Value);
+                                weathers.Add(_Summer_Mountains_Weather2.Value);
+                                weathers.Add(_Summer_Mountains_Weather3.Value);
+                                weathers.Add(_Summer_Mountains_Weather4.Value);
+                                break;
+                        }
+                        break;
+                    case Heightmap.Biome.Plains:
+                        switch (_Season.Value)
+                        {
+                            case Season.Winter:
+                                weathers.Add(_Winter_Plains_Weather1.Value);
+                                weathers.Add(_Winter_Plains_Weather2.Value);
+                                weathers.Add(_Winter_Plains_Weather3.Value);
+                                weathers.Add(_Winter_Plains_Weather4.Value);
+                                break;
+                            case Season.Fall:
+                                weathers.Add(_Fall_Plains_Weather1.Value);
+                                weathers.Add(_Fall_Plains_Weather2.Value);
+                                weathers.Add(_Fall_Plains_Weather3.Value);
+                                weathers.Add(_Fall_Plains_Weather4.Value);
+                                break;
+                            case Season.Spring:
+                                weathers.Add(_Spring_Plains_Weather1.Value);
+                                weathers.Add(_Spring_Plains_Weather2.Value);
+                                weathers.Add(_Spring_Plains_Weather3.Value);
+                                weathers.Add(_Spring_Plains_Weather4.Value);
+                                break;
+                            case Season.Summer:
+                                weathers.Add(_Summer_Plains_Weather1.Value);
+                                weathers.Add(_Summer_Plains_Weather2.Value);
+                                weathers.Add(_Summer_Plains_Weather3.Value);
+                                weathers.Add(_Summer_Plains_Weather4.Value);
+                                break;
+                        }
+                        break;
+                    case Heightmap.Biome.Mistlands:
+                        switch (_Season.Value)
+                        {
+                            case Season.Winter:
+                                weathers.Add(_Winter_MistLands_Weather1.Value);
+                                weathers.Add(_Winter_MistLands_Weather2.Value);
+                                weathers.Add(_Winter_MistLands_Weather3.Value);
+                                weathers.Add(_Winter_MistLands_Weather4.Value);
+                                break;
+                            case Season.Fall:
+                                weathers.Add(_Fall_MistLands_Weather1.Value);
+                                weathers.Add(_Fall_MistLands_Weather2.Value);
+                                weathers.Add(_Fall_MistLands_Weather3.Value);
+                                weathers.Add(_Fall_MistLands_Weather4.Value);
+                                break;
+                            case Season.Spring:
+                                weathers.Add(_Spring_MistLands_Weather1.Value);
+                                weathers.Add(_Spring_MistLands_Weather2.Value);
+                                weathers.Add(_Spring_MistLands_Weather3.Value);
+                                weathers.Add(_Spring_MistLands_Weather4.Value);
+                                break;
+                            case Season.Summer:
+                                weathers.Add(_Summer_MistLands_Weather1.Value);
+                                weathers.Add(_Summer_MistLands_Weather2.Value);
+                                weathers.Add(_Summer_MistLands_Weather3.Value);
+                                weathers.Add(_Summer_MistLands_Weather4.Value);
+                                break;
+                        }
+                        break;
+                    case Heightmap.Biome.Ocean:
+                        switch (_Season.Value)
+                        {
+                            case Season.Winter:
+                                weathers.Add(_Winter_Ocean_Weather1.Value);
+                                weathers.Add(_Winter_Ocean_Weather2.Value);
+                                weathers.Add(_Winter_Ocean_Weather3.Value);
+                                weathers.Add(_Winter_Ocean_Weather4.Value);
+                                break;
+                            case Season.Fall:
+                                weathers.Add(_Fall_Ocean_Weather1.Value);
+                                weathers.Add(_Fall_Ocean_Weather2.Value);
+                                weathers.Add(_Fall_Ocean_Weather3.Value);
+                                weathers.Add(_Fall_Ocean_Weather4.Value);
+                                break;
+                            case Season.Spring:
+                                weathers.Add(_Spring_Ocean_Weather1.Value);
+                                weathers.Add(_Spring_Ocean_Weather2.Value);
+                                weathers.Add(_Spring_Ocean_Weather3.Value);
+                                weathers.Add(_Spring_Ocean_Weather4.Value);
+                                break;
+                            case Season.Summer:
+                                weathers.Add(_Summer_Ocean_Weather1.Value);
+                                weathers.Add(_Summer_Ocean_Weather2.Value);
+                                weathers.Add(_Summer_Ocean_Weather3.Value);
+                                weathers.Add(_Summer_Ocean_Weather4.Value);
+                                break;
+                        }
+                        break;
+                    case Heightmap.Biome.AshLands:
+                        switch (_Season.Value)
+                        {
+                            case Season.Winter:
+                                weathers.Add(_Winter_AshLands_Weather1.Value);
+                                weathers.Add(_Winter_AshLands_Weather2.Value);
+                                weathers.Add(_Winter_AshLands_Weather3.Value);
+                                weathers.Add(_Winter_AshLands_Weather4.Value);
+                                break;
+                            case Season.Fall:
+                                weathers.Add(_Fall_AshLands_Weather1.Value);
+                                weathers.Add(_Fall_AshLands_Weather2.Value);
+                                weathers.Add(_Fall_AshLands_Weather3.Value);
+                                weathers.Add(_Fall_AshLands_Weather4.Value);
+                                break;
+                            case Season.Spring:
+                                weathers.Add(_Spring_AshLands_Weather1.Value);
+                                weathers.Add(_Spring_AshLands_Weather2.Value);
+                                weathers.Add(_Spring_AshLands_Weather3.Value);
+                                weathers.Add(_Spring_AshLands_Weather4.Value);
+                                break;
+                            case Season.Summer:
+                                weathers.Add(_Summer_AshLands_Weather1.Value);
+                                weathers.Add(_Summer_AshLands_Weather2.Value);
+                                weathers.Add(_Summer_AshLands_Weather3.Value);
+                                weathers.Add(_Summer_AshLands_Weather4.Value);
+                                break;
+                        }
+                        break;
+                    case Heightmap.Biome.DeepNorth:
+                        switch (_Season.Value)
+                        {
+                            case Season.Winter:
+                                weathers.Add(_Winter_DeepNorth_Weather1.Value);
+                                weathers.Add(_Winter_DeepNorth_Weather2.Value);
+                                weathers.Add(_Winter_DeepNorth_Weather3.Value);
+                                weathers.Add(_Winter_DeepNorth_Weather4.Value);
+                                break;
+                            case Season.Fall:
+                                weathers.Add(_Fall_DeepNorth_Weather1.Value);
+                                weathers.Add(_Fall_DeepNorth_Weather2.Value);
+                                weathers.Add(_Fall_DeepNorth_Weather3.Value);
+                                weathers.Add(_Fall_DeepNorth_Weather4.Value);
+                                break;
+                            case Season.Spring:
+                                weathers.Add(_Spring_DeepNorth_Weather1.Value);
+                                weathers.Add(_Spring_DeepNorth_Weather2.Value);
+                                weathers.Add(_Spring_DeepNorth_Weather3.Value);
+                                weathers.Add(_Spring_DeepNorth_Weather4.Value);
+                                break;
+                            case Season.Summer:
+                                weathers.Add(_Summer_DeepNorth_Weather1.Value);
+                                weathers.Add(_Summer_DeepNorth_Weather2.Value);
+                                weathers.Add(_Summer_DeepNorth_Weather3.Value);
+                                weathers.Add(_Summer_DeepNorth_Weather4.Value);
+                                break;
+                        }
+                        break;
+                }
+
+                List<EnvEntry> serverEntries = new();
+                
+                AddToEntries(weathers, serverEntries);
+                ServerWeatherMap[land] = serverEntries;
             }
-        }
-        private static bool OldEnvironment(EnvMan __instance, long sec, Heightmap.Biome biome, List<EnvEntry> environments)
-        {
-            long duration = __instance.m_environmentDuration * _WeatherDuration.Value;
             
-            List<Action> actions = new();
-            if (duration == 0)
+            double totalSeconds = (lastEnvironmentChange + _WeatherDuration.Value * 60) - __instance.m_totalSeconds;
+            if (_WeatherDuration.Value == 0) totalSeconds = (lastEnvironmentChange + 60) - __instance.m_totalSeconds;
+
+            if (totalSeconds > 3) return;
+
+            lastEnvironmentChange = __instance.m_totalSeconds;
+
+            if (ServerWeatherMap[Heightmap.Biome.Meadows].Count != 0)
             {
-                foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
-                Utils.ApplyRandomly(actions);
-                
-                return false;
+                MeadowIndex = (MeadowIndex + 1) % ServerWeatherMap[Heightmap.Biome.Meadows].Count;
             }
-            long seed = sec / duration;
-            if (__instance.m_environmentPeriod == seed) return false;
-                
-            __instance.m_environmentPeriod = seed;
-            __instance.m_currentBiome = biome;
 
-            foreach (EnvEntry? env in environments) actions.Add(() => __instance.QueueEnvironment(env.m_environment));
-            Utils.ApplyRandomly(actions);
+            if (ServerWeatherMap[Heightmap.Biome.BlackForest].Count != 0)
+            {
+                BlackForestIndex = (BlackForestIndex + 1) % ServerWeatherMap[Heightmap.Biome.BlackForest].Count;
+            }
 
-            return false;
+            if (ServerWeatherMap[Heightmap.Biome.Swamp].Count != 0)
+            {
+                SwampIndex = (SwampIndex + 1) % ServerWeatherMap[Heightmap.Biome.Swamp].Count;
+            }
+
+            if (ServerWeatherMap[Heightmap.Biome.Mountain].Count != 0)
+            {
+                MountainIndex = (MountainIndex + 1) % ServerWeatherMap[Heightmap.Biome.Mountain].Count;
+            }
+
+            if (ServerWeatherMap[Heightmap.Biome.Plains].Count != 0)
+            {
+                PlainsIndex = (PlainsIndex + 1) % ServerWeatherMap[Heightmap.Biome.Plains].Count;
+            }
+
+            if (ServerWeatherMap[Heightmap.Biome.Mistlands].Count != 0)
+            {
+                MistLandsIndex = (MistLandsIndex + 1) % ServerWeatherMap[Heightmap.Biome.Mistlands].Count;
+            }
+
+            if (ServerWeatherMap[Heightmap.Biome.AshLands].Count != 0)
+            {
+                AshLandsIndex = (AshLandsIndex + 1) % ServerWeatherMap[Heightmap.Biome.AshLands].Count;
+            }
+
+            if (ServerWeatherMap[Heightmap.Biome.DeepNorth].Count != 0)
+            {
+                DeepNorthIndex = (DeepNorthIndex + 1) % ServerWeatherMap[Heightmap.Biome.DeepNorth].Count;
+            }
+
+            if (ServerWeatherMap[Heightmap.Biome.Ocean].Count != 0)
+            {
+                OceanIndex = (OceanIndex + 1) % ServerWeatherMap[Heightmap.Biome.Ocean].Count;
+            }
+
+            ServerWeatherIndexes[Heightmap.Biome.Meadows] = MeadowIndex;
+            ServerWeatherIndexes[Heightmap.Biome.BlackForest] = BlackForestIndex;
+            ServerWeatherIndexes[Heightmap.Biome.Swamp] = SwampIndex;
+            ServerWeatherIndexes[Heightmap.Biome.Mountain] = MountainIndex;
+            ServerWeatherIndexes[Heightmap.Biome.Plains] = PlainsIndex;
+            ServerWeatherIndexes[Heightmap.Biome.Mistlands] = MistLandsIndex;
+            ServerWeatherIndexes[Heightmap.Biome.AshLands] = AshLandsIndex;
+            ServerWeatherIndexes[Heightmap.Biome.DeepNorth] = DeepNorthIndex;
+            ServerWeatherIndexes[Heightmap.Biome.Ocean] = OceanIndex;
+            
+            UpdateServerWeatherMan();
+        }
+        private static void ServerSyncedChangeWeather(Heightmap.Biome currentBiome, EnvMan __instance, List<EnvEntry> entries, long sec)
+        {
+            int serverIndex = GetServerWeatherManIndex(currentBiome);
+            __instance.QueueEnvironment(entries[serverIndex].m_environment);
+            SetWeatherMan(entries[serverIndex].m_environment);
+            currentEnv = entries[serverIndex].m_environment;
+            lastEnvironmentChange = sec;
+            WeatherTweaked = true;
         }
         
         private static int environmentIndex;
@@ -510,54 +1002,18 @@ public static class Environment
         public static string GetEnvironmentCountDown()
         {
             if (!EnvMan.instance) return "";
+            if (!WeatherTweaked) return "";
+            
             double totalSeconds = (lastEnvironmentChange + _WeatherDuration.Value * 60) - EnvMan.instance.m_totalSeconds;
             if (_WeatherDuration.Value == 0) totalSeconds = (lastEnvironmentChange + 60) - EnvMan.instance.m_totalSeconds;
 
             int hours = TimeSpan.FromSeconds(totalSeconds).Hours;
             int minutes = TimeSpan.FromSeconds(totalSeconds).Minutes;
             int seconds = TimeSpan.FromSeconds(totalSeconds).Seconds;
+
+            if (totalSeconds < 0) return "";
             
             return hours > 0 ? $"{hours:D2}:{minutes:D2}:{seconds:D2}" : $"{minutes:D2}:{seconds:D2}";
-        }
-
-        private static string GetEnvironmentTooltip(string environment)
-        {
-            return (environment) switch
-            {
-                "Clear" => "The weather is clear and peaceful",
-                "Misty" => "The gods do not engage with visionaries",
-                "Darklands_dark" => "A true warrior is never afraid of the dark",
-                "Heath clear" => "The weather is clear yet dangerous",
-                "DeepForest Mist" => "Be careful of the deep forest mist",
-                "GDKing" => "The energy of the forest swells into the sky",
-                "Rain" => "A great day to stay indoors",
-                "LightRain" => "Time to hunt the necks",
-                "ThunderStorm" => "The gods are enraged",
-                "Eikthyr" => "The might of Eikthyr thunders through the air",
-                "GoblinKing" => "The air is charged with the king's energy",
-                "nofogts" => "",
-                "SwampRain" => "There is a hint of acidity to these rain drops",
-                "Bonemass" => "The gaseous might of the swamps is palpable",
-                "Snow" => "The air is cold and frigid",
-                "Twilight_Clear" => "The calm before the storm",
-                "Twilight_Snow" => "Beautiful comes in a multitude of shapes",
-                "Twilight_SnowStorm" => "The frozen sky is cold and terrifying",
-                "SnowStorm" => "A true viking knows how to navigate through the harshest of weathers",
-                "Moder" => "Something powerful is soaring through the frigid skies",
-                "AshRain" => "Not even Hela can withstand the burning temperature",
-                "Crypt" => "Eerie times calls for tempered measures",
-                "SunkenCrypts" => "The sound of gutters radiate through the land",
-                "Caves" => "The shallow bowels of the mountains calls for you",
-                "Mistlands_clear" => "The weather clears, yet the dread increases",
-                "Mistlands_rain" => "The gods cry upon your arrival",
-                "Mistlands_thunder" => "The sky breaks open to reveal magical moments",
-                "InfectedMine" => "The time to fret was long ago",
-                "Queen" => "This is when you display your bravery",
-                "WarmSnow" => "Bright and warm, the air still showers you with snow",
-                "ClearWarmSnow" => "A moment of peaceful tranquility is all one needs",
-                "NightFrost" => "The nights are frozen with trepidation",
-                _ => ""
-            };
         }
         private static bool ControlledEnvironments(EnvMan __instance, long sec, List<EnvEntry> environments)
         {
@@ -566,49 +1022,27 @@ public static class Environment
             if (duration == 0)
             {
                 if ((lastEnvironmentChange + 60) - EnvMan.instance.m_totalSeconds > 0) return false;
-                
-                environmentIndex = (environmentIndex + 1) % (environments.Count);
-                
-                EnvironmentEffectData EnvData = new EnvironmentEffectData()
-                {
-                    name = "WeatherMan_SE",
-                    m_name = environments[environmentIndex].m_environment,
-                    m_sprite = CustomTextures.ValknutIcon,
-                    m_start_msg = "The weather is changing to " + environments[environmentIndex].m_environment,
-                    m_tooltip = GetEnvironmentTooltip(environments[environmentIndex].m_environment)
-                };
-                Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
-                StatusEffect WeatherEffect = EnvData.InitEnvEffect();
-                Player.m_localPlayer.GetSEMan().AddStatusEffect(WeatherEffect);
-
-                __instance.QueueEnvironment(environments[environmentIndex].m_environment);
-                lastEnvironmentChange = sec;
+                ChangeWeather(__instance, environments, sec);
             }
             else
             {
                 if ((lastEnvironmentChange + _WeatherDuration.Value * 60) - EnvMan.instance.m_totalSeconds > 0) return false;
-
-                environmentIndex = (environmentIndex + 1) % (environments.Count);
-                __instance.QueueEnvironment(environments[environmentIndex].m_environment);
-                lastEnvironmentChange = sec;
-                
-                EnvironmentEffectData EnvData = new EnvironmentEffectData()
-                {
-                    name = "WeatherMan_SE",
-                    m_name = environments[environmentIndex].m_environment,
-                    m_sprite = CustomTextures.ValknutIcon,
-                    m_start_msg = "The weather is changing to " + environments[environmentIndex].m_environment,
-                    m_tooltip = GetEnvironmentTooltip(environments[environmentIndex].m_environment)
-                };
-                Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
-                StatusEffect WeatherEffect = EnvData.InitEnvEffect();
-                Player.m_localPlayer.GetSEMan().AddStatusEffect(WeatherEffect);
+                ChangeWeather(__instance, environments, sec);
             }
 
             return false;
         }
-    }
 
+        private static void ChangeWeather(EnvMan __instance, List<EnvEntry> environments, long sec)
+        {
+            environmentIndex = (environmentIndex + 1) % (environments.Count);
+            __instance.QueueEnvironment(environments[environmentIndex].m_environment);
+            SetWeatherMan(environments[environmentIndex].m_environment);
+            currentEnv = environments[environmentIndex].m_environment;
+            lastEnvironmentChange = sec;
+            WeatherTweaked = true;
+        }
+    }
     public class EnvironmentEffectData
     {
         public string name = null!;
@@ -625,7 +1059,7 @@ public static class Environment
             EnvironmentEffect effect = ScriptableObject.CreateInstance<EnvironmentEffect>();
             effect.name = name;
             effect.m_name = m_name;
-            effect.m_icon = m_sprite;
+            effect.m_icon = _WeatherIconEnabled.Value is Toggle.On ? m_sprite : null;
             effect.m_startMessageType = MessageHud.MessageType.TopLeft;
             effect.m_startMessage = m_start_msg;
             effect.m_tooltip = m_tooltip;

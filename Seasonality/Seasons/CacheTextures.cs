@@ -6,8 +6,8 @@ namespace Seasonality.Seasons;
 
 public static class CacheTextures
 {
-    public static Dictionary<string, Texture> CachedTextures = new();
-    public static Dictionary<string, Material> CachedMaterials = new();
+    public static readonly Dictionary<string, Texture> CachedTextures = new();
+    public static readonly Dictionary<string, Material> CachedMaterials = new();
 
     [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.Start))]
     static class ZoneSystemPatch

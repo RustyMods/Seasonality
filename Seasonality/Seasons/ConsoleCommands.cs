@@ -114,6 +114,21 @@ public static class ConsoleCommands
                 }
             });
 
+            Terminal.ConsoleCommand SearchCachedMaterials = new("search_materials", "", (Terminal.ConsoleEventFailable)(
+                args =>
+                {
+                    if (args.Length < 2) return false;
+                    SeasonalityLogger.LogInfo("Search results: ");
+                    foreach (var mat in CacheTextures.CachedMaterials)
+                    {
+                        if (mat.Key.Contains(args[1]) || mat.Key.StartsWith(args[1]) || mat.Key.EndsWith(args[1]))
+                        {
+                            SeasonalityLogger.LogInfo(mat.Key + " = " + mat.Value.name);
+                        }
+                    }
+                    return true;
+                }), isSecret: false);
+
             Terminal.ConsoleCommand SearchCachedTextures = new("search_textures", "", (Terminal.ConsoleEventFailable)(
                 args =>
                 {
@@ -132,7 +147,7 @@ public static class ConsoleCommands
                         SeasonalityLogger.LogInfo(output);
                     }
                     return true;
-                }));
+                }),isSecret:true);
 
             Terminal.ConsoleCommand PrintTextureDetails = new("print_texture_details", "", (Terminal.ConsoleEventFailable)(args =>
             {
@@ -151,11 +166,10 @@ public static class ConsoleCommands
                         SeasonalityLogger.LogInfo("wrap mode : " + kvp.Value.wrapMode);
                         SeasonalityLogger.LogInfo("dimensions : " + kvp.Value.dimension);
                         SeasonalityLogger.LogInfo(" ");
-
                     }
                 }
                 return true;
-            }));
+            }),isSecret:true);
         }
     }
 }

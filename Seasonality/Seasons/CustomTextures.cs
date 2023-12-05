@@ -32,7 +32,6 @@ public static class CustomTextures
 
         return texture.LoadImage(buffer) ? texture : null;
     }
-
     private static Sprite? RegisterSprite(string fileName, string folderName = "icons")
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
