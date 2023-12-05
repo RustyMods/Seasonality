@@ -121,6 +121,7 @@
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Seasons\BossStonePatcher.cs" />
+        <Compile Include="Seasons\CacheTextures.cs" />
         <Compile Include="Seasons\ConsoleCommands.cs" />
         <Compile Include="Seasons\CreatureReplacement.cs" />
         <Compile Include="Seasons\CustomTextures.cs" />

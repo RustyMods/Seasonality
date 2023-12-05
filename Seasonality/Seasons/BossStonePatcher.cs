@@ -20,7 +20,7 @@ public static class BossStonePatcher
                     if (snowTex) Utils.SetMossTex(__instance.gameObject, snowTex);
                     break;
                 case Season.Fall:
-                    Utils.SetMossTex(__instance.gameObject, Vegetation.HeathMossTexture);
+                    Utils.SetMossTex(__instance.gameObject, CacheTextures.CachedTextures["rock_heath_moss"]);
                     break;
             }
         }

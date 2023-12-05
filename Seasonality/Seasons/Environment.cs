@@ -106,7 +106,19 @@ public static class Environment
             ClearWarmSnow.m_fogDensityEvening = 0.00f;
             ClearWarmSnow.m_fogDensityNight = 0.00f;
             ClearWarmSnow.m_lightIntensityDay = 0.6f;
+
+            EnvSetup NightFrost = CloneEnvSetup(__instance, "Snow", "NightFrost");
+            ClearWarmSnow.m_isFreezing = false;
+            ClearWarmSnow.m_isFreezingAtNight = true;
+            ClearWarmSnow.m_isCold = true;
+            ClearWarmSnow.m_isColdAtNight = false;
+            ClearWarmSnow.m_fogDensityMorning = 0.00f;
+            ClearWarmSnow.m_fogDensityDay = 0.00f;
+            ClearWarmSnow.m_fogDensityEvening = 0.00f;
+            ClearWarmSnow.m_fogDensityNight = 0.00f;
+            ClearWarmSnow.m_lightIntensityDay = 0.6f;
             
+            __instance.m_environments.Add(NightFrost);
             __instance.m_environments.Add(ClearWarmSnow);
             __instance.m_environments.Add(WarmSnow);
         }

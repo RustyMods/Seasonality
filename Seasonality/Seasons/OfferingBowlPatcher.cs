@@ -31,10 +31,10 @@ public static class OfferingBowlPatcher
                 case Season.Fall:
                     if (!parent)
                     {
-                        Utils.SetMossTex(altar, Vegetation.HeathMossTexture);
+                        Utils.SetMossTex(altar, CacheTextures.CachedTextures["rock_heath_moss"]);
                         break;
                     }
-                    Utils.SetMossTex(parent.gameObject, Vegetation.HeathMossTexture);
+                    Utils.SetMossTex(parent.gameObject, CacheTextures.CachedTextures["rock_heath_moss"]);
                     break;
                 
             }

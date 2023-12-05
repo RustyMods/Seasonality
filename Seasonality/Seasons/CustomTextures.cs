@@ -48,7 +48,7 @@ public static class CustomTextures
         if (sprite != null) sprite.name = fileName;
         return sprite;
     }
-    private static Texture? RegisterCustomTexture(string filePath, TextureFormat format, FilterMode filter)
+    private static Texture? RegisterCustomTexture(string filePath, TextureFormat format, FilterMode filter, int aniso = 1, int mipMapBias = 0, TextureWrapMode wrap = TextureWrapMode.Repeat, bool isBark = false)
     {
         if (!File.Exists(filePath)) return null;
 
@@ -57,7 +57,29 @@ public static class CustomTextures
         {
             filterMode = filter,
         };
-        if (texture.LoadImage(fileData)) return texture;
+        if (isBark)
+        {
+            texture.anisoLevel = aniso;
+            texture.mipMapBias = mipMapBias;
+            texture.wrapMode = wrap;
+        }
+
+        if (texture.LoadImage(fileData))
+        {
+            // if (isBark)
+            // {
+            //     texture.name = filePath;
+            //     SeasonalityLogger.LogInfo("*** name : " + texture.name);
+            //     SeasonalityLogger.LogInfo("format : " + texture.format);
+            //     SeasonalityLogger.LogInfo("mip map bias : " + texture.mipMapBias);
+            //     SeasonalityLogger.LogInfo("mip map count : " + texture.mipmapCount);
+            //     SeasonalityLogger.LogInfo("aniso level : " +  texture.anisoLevel);
+            //     SeasonalityLogger.LogInfo("texel size : " + texture.texelSize);
+            //     SeasonalityLogger.LogInfo("filter mode : " + texture.filterMode);
+            // }
+            
+            return texture;
+        }
         return null;
     }
     
@@ -184,7 +206,7 @@ public static class CustomTextures
 
             if (File.Exists(BarkFilePath))
             {
-                Texture? tex = RegisterCustomTexture(filePath, textureFormat, filterMode);
+                Texture? tex = RegisterCustomTexture(BarkFilePath, TextureFormat.BC7, FilterMode.Point, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
                 if (!tex)
                 {
                     SeasonalityLogger.LogDebug($"Failed: {barkMessage}");

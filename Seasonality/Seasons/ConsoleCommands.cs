@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using HarmonyLib;
+using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
@@ -99,6 +100,62 @@ public static class ConsoleCommands
                         return false;
                     }), false){OnlyAdmin = true};
             if (!SeasonCommands.ContainsKey("season duration")) SeasonCommands.Add("season duration", SeasonTimer);
+
+            Terminal.ConsoleCommand LogCacheTextures = new("seasonality_textures", "", args =>
+            {
+                foreach (var kvp in CacheTextures.CachedTextures)
+                {
+                    if (!kvp.Value)
+                    {
+                        SeasonalityLogger.LogWarning("Failed to get value of " + kvp.Key);
+                        continue;
+                    }
+                    SeasonalityLogger.LogInfo(kvp.Key + ": " + kvp.Value.name);
+                }
+            });
+
+            Terminal.ConsoleCommand SearchCachedTextures = new("search_textures", "", (Terminal.ConsoleEventFailable)(
+                args =>
+                {
+                    if (args.Length < 2) return false;
+                    List<string> results = new();
+                    foreach (var kvp in CacheTextures.CachedTextures)
+                    {
+                        if (kvp.Key.Contains(args[1]))
+                        {
+                            results.Add($"{kvp.Key} = {kvp.Value}");
+                        }
+                    }
+
+                    foreach (string output in results)
+                    {
+                        SeasonalityLogger.LogInfo(output);
+                    }
+                    return true;
+                }));
+
+            Terminal.ConsoleCommand PrintTextureDetails = new("print_texture_details", "", (Terminal.ConsoleEventFailable)(args =>
+            {
+                if (args.Length < 2) return false;
+
+                foreach (var kvp in CacheTextures.CachedTextures)
+                {
+                    if (kvp.Key.Contains(args[1]))
+                    {
+                        SeasonalityLogger.LogInfo("****** name : " + kvp.Value.name);
+                        SeasonalityLogger.LogInfo("filter mode :" + kvp.Value.filterMode);
+                        SeasonalityLogger.LogInfo("aniso level : " + kvp.Value.anisoLevel);
+                        SeasonalityLogger.LogInfo("graphic format : " + kvp.Value.graphicsFormat);
+                        SeasonalityLogger.LogInfo("mip map count : " + kvp.Value.mipmapCount);
+                        SeasonalityLogger.LogInfo("mip map bias : " + kvp.Value.mipMapBias);
+                        SeasonalityLogger.LogInfo("wrap mode : " + kvp.Value.wrapMode);
+                        SeasonalityLogger.LogInfo("dimensions : " + kvp.Value.dimension);
+                        SeasonalityLogger.LogInfo(" ");
+
+                    }
+                }
+                return true;
+            }));
         }
     }
 }
