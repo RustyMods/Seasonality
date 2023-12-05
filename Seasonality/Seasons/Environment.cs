@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
@@ -43,6 +44,7 @@ public static class Environment
             Environments.Queen => "Queen",
             Environments.WarmSnow => "WarmSnow",
             Environments.ClearWarmSnow => "ClearWarmSnow",
+            Environments.NightFrost => "NightFrost",
             _ => ""
         };
     }
@@ -80,6 +82,7 @@ public static class Environment
         Queen,
         WarmSnow,
         ClearWarmSnow,
+        NightFrost,
     }
 
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.Awake))]
@@ -462,7 +465,7 @@ public static class Environment
 
             AddToEntries(configs, entries);
 
-            return ModifyEnvironment(__instance, sec, biome, entries);
+            return ControlledEnvironments(__instance, sec, entries);
         }
 
         private static void AddToEntries(List<Environments> environments, List<EnvEntry> entries)
@@ -478,8 +481,7 @@ public static class Environment
                 entries.Add(entry);
             }
         }
-
-        private static bool ModifyEnvironment(EnvMan __instance, long sec, Heightmap.Biome biome, List<EnvEntry> environments)
+        private static bool OldEnvironment(EnvMan __instance, long sec, Heightmap.Biome biome, List<EnvEntry> environments)
         {
             long duration = __instance.m_environmentDuration * _WeatherDuration.Value;
             
@@ -502,5 +504,145 @@ public static class Environment
 
             return false;
         }
+        
+        private static int environmentIndex;
+        private static double lastEnvironmentChange = EnvMan.instance.m_totalSeconds;
+        public static string GetEnvironmentCountDown()
+        {
+            if (!EnvMan.instance) return "";
+            double totalSeconds = (lastEnvironmentChange + _WeatherDuration.Value * 60) - EnvMan.instance.m_totalSeconds;
+            if (_WeatherDuration.Value == 0) totalSeconds = (lastEnvironmentChange + 60) - EnvMan.instance.m_totalSeconds;
+
+            int hours = TimeSpan.FromSeconds(totalSeconds).Hours;
+            int minutes = TimeSpan.FromSeconds(totalSeconds).Minutes;
+            int seconds = TimeSpan.FromSeconds(totalSeconds).Seconds;
+            
+            return hours > 0 ? $"{hours:D2}:{minutes:D2}:{seconds:D2}" : $"{minutes:D2}:{seconds:D2}";
+        }
+
+        private static string GetEnvironmentTooltip(string environment)
+        {
+            return (environment) switch
+            {
+                "Clear" => "The weather is clear and peaceful",
+                "Misty" => "The gods do not engage with visionaries",
+                "Darklands_dark" => "A true warrior is never afraid of the dark",
+                "Heath clear" => "The weather is clear yet dangerous",
+                "DeepForest Mist" => "Be careful of the deep forest mist",
+                "GDKing" => "The energy of the forest swells into the sky",
+                "Rain" => "A great day to stay indoors",
+                "LightRain" => "Time to hunt the necks",
+                "ThunderStorm" => "The gods are enraged",
+                "Eikthyr" => "The might of Eikthyr thunders through the air",
+                "GoblinKing" => "The air is charged with the king's energy",
+                "nofogts" => "",
+                "SwampRain" => "There is a hint of acidity to these rain drops",
+                "Bonemass" => "The gaseous might of the swamps is palpable",
+                "Snow" => "The air is cold and frigid",
+                "Twilight_Clear" => "The calm before the storm",
+                "Twilight_Snow" => "Beautiful comes in a multitude of shapes",
+                "Twilight_SnowStorm" => "The frozen sky is cold and terrifying",
+                "SnowStorm" => "A true viking knows how to navigate through the harshest of weathers",
+                "Moder" => "Something powerful is soaring through the frigid skies",
+                "AshRain" => "Not even Hela can withstand the burning temperature",
+                "Crypt" => "Eerie times calls for tempered measures",
+                "SunkenCrypts" => "The sound of gutters radiate through the land",
+                "Caves" => "The shallow bowels of the mountains calls for you",
+                "Mistlands_clear" => "The weather clears, yet the dread increases",
+                "Mistlands_rain" => "The gods cry upon your arrival",
+                "Mistlands_thunder" => "The sky breaks open to reveal magical moments",
+                "InfectedMine" => "The time to fret was long ago",
+                "Queen" => "This is when you display your bravery",
+                "WarmSnow" => "Bright and warm, the air still showers you with snow",
+                "ClearWarmSnow" => "A moment of peaceful tranquility is all one needs",
+                "NightFrost" => "The nights are frozen with trepidation",
+                _ => ""
+            };
+        }
+        private static bool ControlledEnvironments(EnvMan __instance, long sec, List<EnvEntry> environments)
+        {
+            long duration = _WeatherDuration.Value * 60; // Total seconds
+
+            if (duration == 0)
+            {
+                if ((lastEnvironmentChange + 60) - EnvMan.instance.m_totalSeconds > 0) return false;
+                
+                environmentIndex = (environmentIndex + 1) % (environments.Count);
+                
+                EnvironmentEffectData EnvData = new EnvironmentEffectData()
+                {
+                    name = "WeatherMan_SE",
+                    m_name = environments[environmentIndex].m_environment,
+                    m_sprite = CustomTextures.ValknutIcon,
+                    m_start_msg = "The weather is changing to " + environments[environmentIndex].m_environment,
+                    m_tooltip = GetEnvironmentTooltip(environments[environmentIndex].m_environment)
+                };
+                Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
+                StatusEffect WeatherEffect = EnvData.InitEnvEffect();
+                Player.m_localPlayer.GetSEMan().AddStatusEffect(WeatherEffect);
+
+                __instance.QueueEnvironment(environments[environmentIndex].m_environment);
+                lastEnvironmentChange = sec;
+            }
+            else
+            {
+                if ((lastEnvironmentChange + _WeatherDuration.Value * 60) - EnvMan.instance.m_totalSeconds > 0) return false;
+
+                environmentIndex = (environmentIndex + 1) % (environments.Count);
+                __instance.QueueEnvironment(environments[environmentIndex].m_environment);
+                lastEnvironmentChange = sec;
+                
+                EnvironmentEffectData EnvData = new EnvironmentEffectData()
+                {
+                    name = "WeatherMan_SE",
+                    m_name = environments[environmentIndex].m_environment,
+                    m_sprite = CustomTextures.ValknutIcon,
+                    m_start_msg = "The weather is changing to " + environments[environmentIndex].m_environment,
+                    m_tooltip = GetEnvironmentTooltip(environments[environmentIndex].m_environment)
+                };
+                Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
+                StatusEffect WeatherEffect = EnvData.InitEnvEffect();
+                Player.m_localPlayer.GetSEMan().AddStatusEffect(WeatherEffect);
+            }
+
+            return false;
+        }
     }
+
+    public class EnvironmentEffectData
+    {
+        public string name = null!;
+        public string m_name = null!;
+        public Sprite? m_sprite;
+        public string? m_start_msg;
+        public string? m_tooltip;
+        
+        public StatusEffect InitEnvEffect()
+        {
+            ObjectDB obd = ObjectDB.instance;
+            obd.m_StatusEffects.RemoveAll(effect => effect is EnvironmentEffect);
+
+            EnvironmentEffect effect = ScriptableObject.CreateInstance<EnvironmentEffect>();
+            effect.name = name;
+            effect.m_name = m_name;
+            effect.m_icon = m_sprite;
+            effect.m_startMessageType = MessageHud.MessageType.TopLeft;
+            effect.m_startMessage = m_start_msg;
+            effect.m_tooltip = m_tooltip;
+            
+            obd.m_StatusEffects.Add(effect);
+
+            return effect;
+        }
+    }
+    public class EnvironmentEffect : StatusEffect
+    {
+        public EnvironmentEffectData data = null!;
+        public override string GetIconText()
+        {
+            return EnvManPatch.GetEnvironmentCountDown();
+        }
+    }
+    
+    
 }

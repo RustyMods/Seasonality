@@ -365,24 +365,6 @@ namespace Seasonality
         public static ConfigEntry<string> _LastSavedSeasonChange = null!;
 
         #endregion
-
-        // #region Texture Configs
-        //
-        // public static ConfigEntry<TextureFormat> _TextureFormat = null!;
-        // public static ConfigEntry<FilterMode> _TextureFilterMode = null!;
-        // public static ConfigEntry<int> _TextureAnisoLevel = null!;
-        // public static ConfigEntry<int> _TextureMipMapBias = null!;
-        // public static ConfigEntry<TextureWrapMode> _TextureWrapMode = null!;
-        // #endregion
-        //
-        // private void InitTextureConfigs()
-        // {
-        //     _TextureFormat = config("0 - Texture Debug", "Texture Format", TextureFormat.BC7, "Load format", false);
-        //     _TextureFilterMode = config("0 - Texture Debug", "Filter Mode", FilterMode.Point, "", false);
-        //     _TextureAnisoLevel = config("0 - Texture Debug", "Aniso Level", 1, "", false);
-        //     _TextureMipMapBias = config("0 - Texture Debug", "Mip Map Bias", 0, "", false);
-        //     _TextureWrapMode = config("0 - Texture Debug", "Wrap Mode", TextureWrapMode.Repeat, "", false);
-        // }
         private void InitConfigs()
         {
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
