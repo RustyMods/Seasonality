@@ -25,6 +25,7 @@ public static class Vegetation
     private static List<Material[]> VinesMaterials = new();
     private static List<Material[]> RaspberryMaterials = new();
     private static List<Material[]> BlueberryMaterials = new();
+    private static readonly int ColorProp = Shader.PropertyToID("_Color");
 
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     [HarmonyPriority(Priority.Last)]
@@ -84,6 +85,11 @@ public static class Vegetation
                     Texture? tex = Utils.GetCustomTexture(directory, Season.Fall.ToString());
                     leafMat.SetTexture(mainProp, tex ? tex : GetDefaultTextures(type, prefab.name));
                     leafMat.color = SeasonColors.FallColors[index];
+
+                    if (directory is VegDirectories.Vines)
+                    {
+                        leafMat.SetColor(ColorProp, Color.white);
+                    }
                 }
             }
 
@@ -171,6 +177,61 @@ public static class Vegetation
             if (type is VegetationType.None) return;
 
             ApplyMaterialToObj(prefab, type);
+        }
+        ModifyCachedMaterials();
+    }
+
+    private static void ModifyCachedMaterials()
+    {
+        if (CachedMaterials.TryGetValue("leviathan", out Material LeviathanMossMaterial))
+        {
+            string[] properties = LeviathanMossMaterial.GetTexturePropertyNames();
+            if (!Utils.FindTexturePropName(properties, "moss", out string mainProp)) return;
+            switch (_Season.Value)
+            {
+                case Season.Winter:
+                    if (!CachedTextures.TryGetValue("Pillar_snow_mat_moss", out Texture snowTexture)) return;
+                    LeviathanMossMaterial.SetTexture(mainProp, snowTexture);
+                    break;
+                default:
+                    if (!CachedTextures.TryGetValue("swamptree_log_moss", out Texture swampMossTexture)) return;
+                    LeviathanMossMaterial.SetTexture(mainProp, swampMossTexture);
+                    break;
+            }
+        }
+
+        if (CachedMaterials.TryGetValue("barnacle", out Material BarnacleMaterial))
+        {
+            string[] properties = BarnacleMaterial.GetTexturePropertyNames();
+            if (!Utils.FindTexturePropName(properties, "moss", out string mainProp)) return;
+            switch (_Season.Value)
+            {
+                case Season.Winter:
+                    if (!CachedTextures.TryGetValue("Pillar_snow_mat_moss", out Texture snowTexture)) return;
+                    BarnacleMaterial.SetTexture(mainProp, snowTexture);
+                    break;
+                default:
+                    if (!CachedTextures.TryGetValue("swamptree_log_moss", out Texture swampMossTexture)) return;
+                    BarnacleMaterial.SetTexture(mainProp, swampMossTexture);
+                    break;
+            }
+        }
+
+        if (CachedMaterials.TryGetValue("leviathan_rock_4", out Material LeviathanRockMaterial))
+        {
+            string[] properties = LeviathanRockMaterial.GetTexturePropertyNames();
+            if (!Utils.FindTexturePropName(properties, "moss", out string mainProp)) return;
+            switch (_Season.Value)
+            {
+                case Season.Winter:
+                    if (!CachedTextures.TryGetValue("Pillar_snow_mat_moss", out Texture snowTexture)) return;
+                    LeviathanRockMaterial.SetTexture(mainProp, snowTexture);
+                    break;
+                default:
+                    if (!CachedTextures.TryGetValue("swamptree_log_moss", out Texture swampMossTexture)) return;
+                    LeviathanRockMaterial.SetTexture(mainProp, swampMossTexture);
+                    break;
+            }
         }
     }
     public static void ResetBaseVegetation()
@@ -523,29 +584,6 @@ public static class Vegetation
     }
     private static void SetTextureColor(List<Material[]> materialsList, string propertyName, Texture? tex, bool isBark)
     {
-        // if (CachedMaterials.TryGetValue("VinesBranch_mat", out Material vineMat))
-        // {
-        //     SeasonalityLogger.LogWarning("Tweaking the shit of vines");
-        //     Color color = new Color();
-        //     switch (_Season.Value)
-        //     {
-        //         case Season.Fall:
-        //             color = _FallColor1.Value;
-        //             break;
-        //         case Season.Spring:
-        //             color = _SpringColor1.Value;
-        //             break;
-        //         case Season.Winter:
-        //             color = _WinterColor1.Value;
-        //             break;
-        //         case Season.Summer:
-        //             color = _SummerColor1.Value;
-        //             break;
-        //     }
-        //
-        //     vineMat.color = color;
-        // }
-        
         if (!tex) return;
         // List of 4
         for (int i = 0; i < materialsList.Count; ++i)

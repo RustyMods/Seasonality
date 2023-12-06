@@ -29,26 +29,19 @@ namespace Seasonality
         private static string ConfigFileFullPath = Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
         internal static string ConnectionError = "";
         private readonly Harmony _harmony = new(ModGUID);
-
-        public static readonly ManualLogSource SeasonalityLogger =
-            BepInEx.Logging.Logger.CreateLogSource(ModName);
-
-        public static readonly ConfigSync ConfigSync = new(ModGUID)
-            { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
-
+        public static readonly ManualLogSource SeasonalityLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
+        public static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
         public enum Toggle
         {
             On = 1,
             Off = 0
         }
-
         public enum WorkingAs
         {
             Client,
             Server,
             Both
         }
-
         public static WorkingAs workingAsType;
         public void Awake()
         {
@@ -61,13 +54,12 @@ namespace Seasonality
                 : WorkingAs.Client;
 
             CustomTextures.ReadCustomTextures();
-            
+
             InitConfigs();
             Assembly assembly = Assembly.GetExecutingAssembly(); 
             _harmony.PatchAll(assembly);
             SetupWatcher();
         }
-        
         public enum Season
         {
             Spring = 0,
@@ -75,7 +67,6 @@ namespace Seasonality
             Fall = 2,
             Winter = 3
         }
-
         public enum Element
         {
             Fire,
@@ -85,7 +76,6 @@ namespace Seasonality
             Spirit,
             None
         }
-
         public enum DamageModifier
         {
              Normal,
@@ -359,20 +349,19 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _SummerNeverCold = null!;
         public static ConfigEntry<Toggle> _WinterAlwaysCold = null!;
 
-        public static ConfigEntry<Toggle> _ReplaceLeech = null!;
-        public static ConfigEntry<Toggle> _ReplaceLox = null!;
-        public static ConfigEntry<Toggle> _ReplaceTroll = null!;
-
+        public static ConfigEntry<Toggle> _ReplaceCreatureTextures = null!;
+        
         public static ConfigEntry<string> _LastSavedSeasonChange = null!;
 
         #endregion
         private void InitConfigs()
         {
+            _LastSavedSeasonChange = config("8 - Data", "Last Season Change DateTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture), "Do not touch, unless you want to manipulate last season change");
+            
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
             _SeasonControl = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
             _Season = config("1 - General", "4 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
             
-            _LastSavedSeasonChange = config("8 - Data", "Last Season Change DateTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture), "Do not touch, unless you want to manipulate last season change");
             #region Season Timer
             _SeasonDurationDays = config("1 - Seasons", "1 - Days", 0, new ConfigDescription("Real-time days between season", new AcceptableValueRange<int>(0, 365)));
             _SeasonDurationHours = config("1 - Seasons", "2 - Hours", 1, new ConfigDescription("Real time hours between seasons", new AcceptableValueRange<int>(0, 24)));
@@ -380,19 +369,20 @@ namespace Seasonality
             _StatusEffectVisible = config("1 - Seasons", "4 - Season Icon Visible", Toggle.On, "If on, season icon is visible", false);
             _CounterVisible = config("1 - Seasons", "5 - Timer Visible", Toggle.On, "If on, timer under season is visible", false);
             #endregion
+            
             _SeasonalEffectsEnabled = config("2 - Utilities", "1 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");
             _SummerNeverCold = config("2 - Utilities", "2 - Summer Never Cold", Toggle.Off, "If on, players are never cold during summer");
             _WinterAlwaysCold = config("2 - Utilities", "3 - Winter Always Cold", Toggle.Off, "If on, winter sets cold status effect on players regardless of environment");
+           
             #region Weather Man
             _WeatherControl = config("1 - Weather", "1 - Weather Enabled", Toggle.On, "If on, seasons can control the weather");
             _WeatherDuration = config("1 - Weather", "2 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
             _WeatherIconEnabled = config("1 - Weather", "3 - Icon Visible", Toggle.On, "If on, HUD displays weather information");
             #endregion
-            #region Creatures
-            _ReplaceLeech = config("7 - Creature Replacement", "Leeches", Toggle.On, "If on, winter replaces leeches for leech_cave (white leech)");
-            _ReplaceLox = config("7 - Creature Replacement", "Loxen", Toggle.On, "If on, plugin replaces lox textures");
-            _ReplaceTroll = config("7 - Creature Replacement", "Trolls", Toggle.On, "If on, plugin replaces troll textures");
             
+            #region Creatures
+
+            _ReplaceCreatureTextures = config("2 - Utilities", "Creatures Textures", Toggle.On, "If on, plugin replaces creature textures");
             #endregion
             
             #region SpringConfigs

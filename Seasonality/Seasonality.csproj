@@ -127,7 +127,7 @@
         <Compile Include="Seasons\CustomTextures.cs" />
         <Compile Include="Seasons\Environment.cs" />
         <Compile Include="Seasons\GrassTypes.cs" />
-        <Compile Include="Seasons\Location.cs" />
+        <Compile Include="Seasons\LocationPatch.cs" />
         <Compile Include="Seasons\OfferingBowlPatcher.cs" />
         <Compile Include="Seasons\SeasonalEffects.cs" />
         <Compile Include="Seasons\SeasonColors.cs" />

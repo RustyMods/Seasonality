@@ -187,7 +187,7 @@ public static class TerrainPatch
                 { Heightmap.Biome.Ocean , new Color32((byte) 0, (byte) 0, (byte) 0, (byte) 0) },
             };
 
-            if (_ModEnabled.Value is Toggle.Off) { __result = conversionMap[biome]; return false; }
+            if (_ModEnabled.Value is Toggle.Off) { __result = conversionMap[biome]; return true;; }
             switch (biome)
             {
                 case Heightmap.Biome.Swamp: __result = conversionMap[Heightmap.Biome.Swamp]; break;
@@ -199,14 +199,14 @@ public static class TerrainPatch
                         case Season.Fall: __result = HDPackLoaded ? conversionMap[Heightmap.Biome.BlackForest] : conversionMap[Heightmap.Biome.AshLands]; break;
                         default: __result = conversionMap[Heightmap.Biome.BlackForest]; break;
                     }
-                    break;
+                    return false;
                 case Heightmap.Biome.Plains:
                     switch (_Season.Value)
                     {
                         case Season.Winter: __result = conversionMap[Heightmap.Biome.Mountain]; break;
                         default: __result = conversionMap[Heightmap.Biome.Plains]; break;
                     }
-                    break;
+                    return false;
                 case Heightmap.Biome.AshLands: __result = conversionMap[Heightmap.Biome.AshLands]; break;
                 case Heightmap.Biome.DeepNorth: __result = conversionMap[Heightmap.Biome.DeepNorth]; break;
                 case Heightmap.Biome.Mistlands:
@@ -215,7 +215,7 @@ public static class TerrainPatch
                         case Season.Winter: __result = conversionMap[Heightmap.Biome.Mountain]; break;
                         default: __result = conversionMap[Heightmap.Biome.Mistlands]; break;
                     }
-                    break;
+                    return false;
                 case Heightmap.Biome.Meadows:
                     switch (_Season.Value)
                     {
@@ -223,10 +223,9 @@ public static class TerrainPatch
                         case Season.Winter: __result = conversionMap[Heightmap.Biome.Mountain]; break;
                         default: __result = conversionMap[Heightmap.Biome.Meadows]; break;
                     }
-                    break;
-                default: __result = conversionMap[Heightmap.Biome.Meadows]; break;
+                    return false;
             }
-            return false;
+            return true;
         }
     }
 

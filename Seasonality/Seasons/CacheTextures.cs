@@ -18,30 +18,31 @@ public static class CacheTextures
             GetAllMaterials();
             GetAllTextures();
         }
-        private static void GetAllMaterials()
+    }
+    
+    private static void GetAllMaterials()
+    {
+        Material[] allMats = Resources.FindObjectsOfTypeAll<Material>();
+        foreach (Material item in allMats)
         {
-            Material[] allMats = Resources.FindObjectsOfTypeAll<Material>();
-            foreach (Material item in allMats)
-            {
-                if (!item) continue;
-                CachedMaterials[item.name.Replace("(Instance)", "")] = item;
-            }
+            if (!item) continue;
+            CachedMaterials[item.name.Replace("(Instance)", "")] = item;
         }
+    }
 
-        private static void GetAllTextures()
+    private static void GetAllTextures()
+    {
+        foreach (Material material in CachedMaterials.Values)
         {
-            foreach (Material material in CachedMaterials.Values)
+            if (!material) continue;
+            string[] properties = material.GetTexturePropertyNames();
+            if (Utils.FindTexturePropName(properties, "moss", out string mossProp))
             {
-                if (!material) continue;
-                string[] properties = material.GetTexturePropertyNames();
-                if (Utils.FindTexturePropName(properties, "moss", out string mossProp))
-                {
-                    Texture? tex = material.GetTexture(mossProp);
-                    if (tex) CachedTextures[material.name.Replace("(Instance)", "").Replace(" ", "") + "_moss"] = tex;
-                }
-                if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) continue;
-                CachedTextures[material.name.Replace("(Instance)", "").Replace(" ", "")] = material.GetTexture(mainProp);
+                Texture? tex = material.GetTexture(mossProp);
+                if (tex) CachedTextures[material.name.Replace("(Instance)", "").Replace(" ", "") + "_moss"] = tex;
             }
+            if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) continue;
+            CachedTextures[material.name.Replace("(Instance)", "").Replace(" ", "")] = material.GetTexture(mainProp);
         }
     }
     

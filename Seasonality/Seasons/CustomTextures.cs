@@ -113,6 +113,7 @@ public static class CustomTextures
         PlainsFlowers,
         Ormbunke,
         Vass,
+        Vines,
         WaterLilies,
         RockPlant,
         Clutter,
@@ -125,6 +126,9 @@ public static class CustomTextures
         None,
         Lox,
         Troll,
+        Hare,
+        Tick,
+        Serpent
     }
 
     public static bool HDPackLoaded;
@@ -151,7 +155,7 @@ public static class CustomTextures
 
             switch (directory)
             {
-                case VegDirectories.MistlandsGrass or VegDirectories.PlainsGrass or VegDirectories.SwampGrass or VegDirectories.BlackForestGrass or VegDirectories.BlackForestGrassAlt:
+                case VegDirectories.PlainsGrass or VegDirectories.SwampGrass or VegDirectories.BlackForestGrass or VegDirectories.BlackForestGrassAlt:
                     Dictionary<string, Texture?> compressedMap = RegisterCustomTextures(type, VegTexturePath, TextureFormat.DXT1, FilterMode.Point);
                     if (compressedMap.Count == 0) continue;
                     CustomRegisteredTextures.Add(directory, compressedMap);

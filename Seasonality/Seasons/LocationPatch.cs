@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
 
-public static class Location
+public static class LocationPatches
 {
     [HarmonyPatch(typeof(LocationProxy), nameof(LocationProxy.Awake))]
     static class LocationProxyAwakePatch
@@ -28,7 +29,5 @@ public static class Location
                     break;
             }
         }
-
-        
     }
 }

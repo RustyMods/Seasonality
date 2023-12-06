@@ -103,6 +103,7 @@ public static class ConsoleCommands
 
             Terminal.ConsoleCommand LogCacheTextures = new("seasonality_textures", "", args =>
             {
+                SeasonalityLogger.LogInfo("All cached textures:");
                 foreach (var kvp in CacheTextures.CachedTextures)
                 {
                     if (!kvp.Value)
@@ -118,7 +119,7 @@ public static class ConsoleCommands
                 args =>
                 {
                     if (args.Length < 2) return false;
-                    SeasonalityLogger.LogInfo("Search results: ");
+                    SeasonalityLogger.LogInfo("Material search results: ");
                     foreach (var mat in CacheTextures.CachedMaterials)
                     {
                         if (mat.Key.Contains(args[1]) || mat.Key.StartsWith(args[1]) || mat.Key.EndsWith(args[1]))
@@ -127,7 +128,7 @@ public static class ConsoleCommands
                         }
                     }
                     return true;
-                }), isSecret: false);
+                }), isSecret: true);
 
             Terminal.ConsoleCommand SearchCachedTextures = new("search_textures", "", (Terminal.ConsoleEventFailable)(
                 args =>
@@ -141,7 +142,7 @@ public static class ConsoleCommands
                             results.Add($"{kvp.Key} = {kvp.Value}");
                         }
                     }
-
+                    SeasonalityLogger.LogInfo("Texture search results:");
                     foreach (string output in results)
                     {
                         SeasonalityLogger.LogInfo(output);
@@ -152,7 +153,7 @@ public static class ConsoleCommands
             Terminal.ConsoleCommand PrintTextureDetails = new("print_texture_details", "", (Terminal.ConsoleEventFailable)(args =>
             {
                 if (args.Length < 2) return false;
-
+                SeasonalityLogger.LogInfo("Cached texture details: ");
                 foreach (var kvp in CacheTextures.CachedTextures)
                 {
                     if (kvp.Key.Contains(args[1]))

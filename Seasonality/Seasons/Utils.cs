@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
@@ -13,6 +14,8 @@ public static class Utils
     public static VegetationType GetVegetationType(string prefabName)
     {
         string normalizedName = prefabName.Replace("(Clone)", "");
+        normalizedName = Regex.Replace(normalizedName, @"\(.*?\)", "");
+        normalizedName = normalizedName.Replace(" ", "");
         if (normalizedName.ToLower().Contains("runestone")) return VegetationType.Rock;
         return normalizedName switch
         {
@@ -197,6 +200,7 @@ public static class Utils
             VegetationType.Rock => VegDirectories.Rock,
             VegetationType.Swamp => VegDirectories.SwampTrees,
             VegetationType.CloudberryBush => VegDirectories.CloudberryBush,
+            VegetationType.Vines => VegDirectories.Vines,
             _ => VegDirectories.None,
         };
     }

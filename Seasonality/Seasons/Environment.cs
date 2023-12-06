@@ -11,14 +11,12 @@ namespace Seasonality.Seasons;
 public static class Environment
 {
     private static readonly CustomSyncedValue<string> SyncedWeatherData = new(SeasonalityPlugin.ConfigSync, "ServerWeather", "");
-
     private static void UpdateServerWeatherMan()
     {
         ISerializer serializer = new SerializerBuilder().Build();
         string data = serializer.Serialize(ServerWeatherIndexes);
         SyncedWeatherData.Value = data;
     }
-
     private static int GetServerWeatherManIndex(Heightmap.Biome land)
     {
         if (SyncedWeatherData.Value == "") return 0;
@@ -644,7 +642,6 @@ public static class Environment
 
             return ControlledEnvironments(__instance, sec, entries);
         }
-
         private static void ServerSyncedWeatherMan(EnvMan __instance)
         {
             foreach (Heightmap.Biome land in Enum.GetValues(typeof(Heightmap.Biome)))
@@ -1032,7 +1029,6 @@ public static class Environment
 
             return false;
         }
-
         private static void ChangeWeather(EnvMan __instance, List<EnvEntry> environments, long sec)
         {
             environmentIndex = (environmentIndex + 1) % (environments.Count);
@@ -1072,11 +1068,7 @@ public static class Environment
     public class EnvironmentEffect : StatusEffect
     {
         public EnvironmentEffectData data = null!;
-        public override string GetIconText()
-        {
-            return EnvManPatch.GetEnvironmentCountDown();
-        }
+        public override string GetIconText() => EnvManPatch.GetEnvironmentCountDown();
+        
     }
-    
-    
 }
