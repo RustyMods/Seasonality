@@ -120,15 +120,11 @@
     <ItemGroup>
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Seasons\BossStonePatcher.cs" />
-        <Compile Include="Seasons\CacheTextures.cs" />
+        <Compile Include="Seasons\MaterialReplacement.cs" />
         <Compile Include="Seasons\ConsoleCommands.cs" />
-        <Compile Include="Seasons\CreatureReplacement.cs" />
         <Compile Include="Seasons\CustomTextures.cs" />
         <Compile Include="Seasons\Environment.cs" />
         <Compile Include="Seasons\GrassTypes.cs" />
-        <Compile Include="Seasons\LocationPatch.cs" />
-        <Compile Include="Seasons\OfferingBowlPatcher.cs" />
         <Compile Include="Seasons\SeasonalEffects.cs" />
         <Compile Include="Seasons\SeasonColors.cs" />
         <Compile Include="Seasons\SeasonStatusEffects.cs" />

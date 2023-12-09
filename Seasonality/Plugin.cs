@@ -18,11 +18,10 @@ using static Seasonality.Seasons.Environment;
 namespace Seasonality
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
-    [BepInIncompatibility("org.bepinex.plugins.valheim_plus")]
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "2.0.7";
+        internal const string ModVersion = "3.0.0";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -96,6 +95,7 @@ namespace Seasonality
         
         public static ConfigEntry<int> _WeatherDuration = null!;
         public static ConfigEntry<Toggle> _WeatherIconEnabled = null!;
+        public static ConfigEntry<Toggle> _WeatherTimerEnabled = null!;
 
         public static ConfigEntry<Toggle> _SeasonalEffectsEnabled = null!;
         
@@ -378,6 +378,7 @@ namespace Seasonality
             _WeatherControl = config("1 - Weather", "1 - Weather Enabled", Toggle.On, "If on, seasons can control the weather");
             _WeatherDuration = config("1 - Weather", "2 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
             _WeatherIconEnabled = config("1 - Weather", "3 - Icon Visible", Toggle.On, "If on, HUD displays weather information");
+            _WeatherTimerEnabled = config("1 - Weather", "4 - Timer Visible", Toggle.On, "If on, weather icon displays timer");
             #endregion
             
             #region Creatures

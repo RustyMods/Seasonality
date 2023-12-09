@@ -330,22 +330,8 @@ public class SeasonEffect : StatusEffect
         int hour = span.Hours;
         int minutes = span.Minutes;
         int seconds = span.Seconds;
-
-        string TimeDays = $"{days:D2}:{hour:D2}:{minutes:D2}:{seconds:D2}";
-        string TimeHours = $"{hour:D2}:{minutes:D2}:{seconds:D2}";
-        return days > 0 ? TimeDays : hour > 0 ? TimeHours : $"{minutes:D2}:{seconds:D2}";
         
-        // Broken
-        // [Error  : Unity Log] FormatException: Input string was not in a correct format.
-        // Stack trace:
-        // System.Globalization.TimeSpanFormat.FormatCustomized (System.TimeSpan value, System.ReadOnlySpan`1[T] format, System.Globalization.DateTimeFormatInfo dtfi, System.Text.StringBuilder result) (at <834b2ded5dad441e8c7a4287897d63c7>:0)
-        // System.Globalization.TimeSpanFormat.FormatToBuilder (System.TimeSpan value, System.ReadOnlySpan`1[T] format, System.IFormatProvider formatProvider) (at <834b2ded5dad441e8c7a4287897d63c7>:0)
-        // System.Globalization.TimeSpanFormat.Format (System.TimeSpan value, System.String format, System.IFormatProvider formatProvider) (at <834b2ded5dad441e8c7a4287897d63c7>:0)
-        // System.TimeSpan.ToString (System.String format) (at <834b2ded5dad441e8c7a4287897d63c7>:0)
-        // Seasonality.Seasons.SeasonEffect.GetIconText () (at <7874cc242b324d5ca7097f6a07c1e904>:0)
-        // (wrapper dynamic-method) Hud.DMD<Hud::UpdateStatusEffects>(Hud,System.Collections.Generic.List`1<StatusEffect>)
-        // (wrapper dynamic-method) Hud.DMD<Hud::Update>(Hud)
-        return span.ToString(span.Days > 0 ? @"d\d hh\:mm\:ss" : span.Hours > 0 ? @"hh\:mm\:ss" : @"mm\:ss");
+        return days > 0 ? $"{days}:{hour:D2}:{minutes:D2}:{seconds:D2}" : hour > 0 ? $"{hour}:{minutes:D2}:{seconds:D2}" : minutes > 0 ? $"{minutes}:{seconds:D2}" : $"{seconds}";
     }
 
 }

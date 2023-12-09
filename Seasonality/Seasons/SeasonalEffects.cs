@@ -161,7 +161,10 @@ public static class SeasonalEffects
                 StatusEffect? currentEffect = SEMan.GetStatusEffects().Find(effect => effect is SeasonEffect);
                 if (currentEffect) SEMan.RemoveStatusEffect(currentEffect);
                 TerrainPatch.UpdateTerrain();
-                Vegetation.ResetBaseVegetation();
+                // Set season to summer as it uses mostly default values
+                _SeasonControl.Value = Toggle.On;
+                _Season.Value = Season.Summer;
+                MaterialReplacer.ModifyCachedMaterials();
 
                 lastToggled = Toggle.Off;
                 return;
@@ -173,7 +176,7 @@ public static class SeasonalEffects
                 ApplySeasonalEffects(__instance);
                 SetSeasonalKey();
                 TerrainPatch.UpdateTerrain();
-                Vegetation.ModifyBaseVegetation();
+                MaterialReplacer.ModifyCachedMaterials();
                 lastToggled = Toggle.On;
             }
             if (currentSeason == _Season.Value) return;
@@ -181,7 +184,7 @@ public static class SeasonalEffects
             TerrainPatch.UpdateTerrain();
             ApplySeasonalEffects(__instance);
             SetSeasonalKey();
-            Vegetation.ModifyBaseVegetation();
+            MaterialReplacer.ModifyCachedMaterials();
         }
     }
 
@@ -204,7 +207,7 @@ public static class SeasonalEffects
             ApplySeasonalEffects(__instance);
             SetSeasonalKey();
             TerrainPatch.UpdateTerrain();
-            Vegetation.ModifyBaseVegetation();
+            MaterialReplacer.ModifyCachedMaterials();
         }
     }
 
@@ -232,10 +235,9 @@ public static class SeasonalEffects
         if (newKey != null) ZoneSystem.instance.SetGlobalKey(newKey);
         
     }
-
     private static void ApplySeasonalEffects(Player __instance)
     {
-        SeasonalityPlugin.Toggle toggle = _SeasonalEffectsEnabled.Value;
+        Toggle toggle = _SeasonalEffectsEnabled.Value;
         SEMan? SEMan = __instance.GetSEMan();
         if (SEMan == null) return;
         // Remove all seasonal effects
@@ -331,7 +333,6 @@ public static class SeasonalEffects
         
         currentSeason = _Season.Value;
     }
-
     private static StatusEffect? InitWinterAlwaysColdEffect()
     {
         StatusEffect? coldEffect = ObjectDB.instance.GetStatusEffect("Cold".GetStableHashCode());

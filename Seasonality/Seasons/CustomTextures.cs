@@ -18,6 +18,8 @@ public static class CustomTextures
     public static readonly Dictionary<VegDirectories, Dictionary<string, Texture?>> CustomRegisteredTextures = new();
 
     public static readonly Dictionary<CreatureDirectories, Dictionary<string, Texture?>> CustomRegisteredCreatureTex = new();
+
+    public static readonly Dictionary<PieceDirectories, Dictionary<string, Texture?>> CustomRegisteredPieceTextures = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -85,6 +87,7 @@ public static class CustomTextures
     private static readonly string folderPath = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality";
     private static readonly string VegTexturePath = folderPath + Path.DirectorySeparatorChar + "Textures";
     private static readonly string creatureTexPath = folderPath + Path.DirectorySeparatorChar + "Creatures";
+    private static readonly string PieceTexPath = folderPath + Path.DirectorySeparatorChar + "Pieces";
 
     public enum VegDirectories
     {
@@ -94,14 +97,17 @@ public static class CustomTextures
         Bushes,
         Oak,
         Pine,
+        PineParticles,
+        FirSmall,
+        FirDead,
+        FirDeadParticles,
         Fir,
+        FirParticles,
         YggaShoot,
         SwampTrees,
         PlainsBush,
         Shrub,
-        Moss,
-        PlainsMoss,
-        SwampMoss,
+        ShrubParticles,
         Rock,
         MeadowGrass,
         MeadowGrassShort,
@@ -121,6 +127,14 @@ public static class CustomTextures
         None
     }
 
+    public enum PieceDirectories
+    {
+        None,
+        Straw,
+        DarkWood,
+        GoblinVillage
+    }
+
     public enum CreatureDirectories
     {
         None,
@@ -128,7 +142,16 @@ public static class CustomTextures
         Troll,
         Hare,
         Tick,
-        Serpent
+        Serpent,
+        Leech,
+        Deathsquito,
+        Gull,
+        Neck,
+        Wraith,
+        Blob,
+        Oozer,
+        Gjall,
+        
     }
 
     public static bool HDPackLoaded;
@@ -182,6 +205,20 @@ public static class CustomTextures
             if (map.Count == 0) continue;
             CustomRegisteredCreatureTex.Add(creatureDir, map);
         }
+        
+        foreach (PieceDirectories pieceDir in Enum.GetValues(typeof(PieceDirectories)))
+        {
+            if (pieceDir is PieceDirectories.None) continue;
+            string type = pieceDir.ToString();
+            if (!Directory.Exists(PieceTexPath + Path.DirectorySeparatorChar + type))
+            {
+                Directory.CreateDirectory(PieceTexPath + Path.DirectorySeparatorChar + type);
+            }
+
+            Dictionary<string, Texture?> map = RegisterCustomTextures(type, PieceTexPath);
+            if (map.Count == 0) continue;
+            CustomRegisteredPieceTextures.Add(pieceDir, map);
+        }
     }
 
     private static Dictionary<string, Texture?> RegisterCustomTextures(string type, string path, TextureFormat textureFormat = TextureFormat.DXT5, FilterMode filterMode = FilterMode.Trilinear)
@@ -217,6 +254,51 @@ public static class CustomTextures
                 }
                 textureMap.Add(season.ToString() + "_bark", tex);
                 SeasonalityLogger.LogDebug($"Registered: {barkMessage}");
+            }
+
+            string WornFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_worn.png");
+            string WornMessage = type + "/" + season.ToString().ToLower() + "_worn.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+
+            if (File.Exists(WornFilePath))
+            {
+                Texture? tex = RegisterCustomTexture(WornFilePath, TextureFormat.BC7, FilterMode.Point, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
+                if (!tex)
+                {
+                    SeasonalityLogger.LogDebug($"Failed: {WornMessage}");
+                    continue;
+                }
+                textureMap.Add(season.ToString() + "_worn", tex);
+                SeasonalityLogger.LogDebug($"Registered: {WornMessage}");
+            }
+
+            string CornerFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_corner.png");
+            string CornerMessage = type + "/" + season.ToString().ToLower() + "_corner.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            
+            if (File.Exists(CornerFilePath))
+            {
+                Texture? tex = RegisterCustomTexture(CornerFilePath, TextureFormat.BC7, FilterMode.Point, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
+                if (!tex)
+                {
+                    SeasonalityLogger.LogDebug($"Failed: {CornerMessage}");
+                    continue;
+                }
+                textureMap.Add(season.ToString() + "_corner", tex);
+                SeasonalityLogger.LogDebug($"Registered: {CornerMessage}");
+            }
+
+            string CornerWornFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_corner_worn.png");
+            string CornerWornMessage = type + "/" + season.ToString().ToLower() + "_corner_worn.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            
+            if (File.Exists(CornerWornFilePath))
+            {
+                Texture? tex = RegisterCustomTexture(CornerWornFilePath, TextureFormat.BC7, FilterMode.Point, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
+                if (!tex)
+                {
+                    SeasonalityLogger.LogDebug($"Failed: {CornerWornMessage}");
+                    continue;
+                }
+                textureMap.Add(season.ToString() + "_corner_worn", tex);
+                SeasonalityLogger.LogDebug($"Registered: {CornerWornMessage}");
             }
         }
 

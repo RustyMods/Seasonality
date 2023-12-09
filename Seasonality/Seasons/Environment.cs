@@ -293,6 +293,7 @@ public static class Environment
         Player.m_localPlayer.GetSEMan().AddStatusEffect(WeatherEffect);
     }
 
+    private static Heightmap.Biome lastBiome = Heightmap.Biome.None;
     private static string currentEnv = null!;
     private static bool WeatherTweaked;
 
@@ -324,6 +325,7 @@ public static class Environment
                 return false;
             }
             
+            // If client is overriding weather system
             string environmentOverride = __instance.GetEnvironmentOverride();
             if (!string.IsNullOrEmpty(environmentOverride))
             {
@@ -340,6 +342,7 @@ public static class Environment
 
             if (!Player.m_localPlayer) return true;
             if (Player.m_localPlayer.IsDead()) return true;
+            
             Heightmap.Biome currentBiome = Heightmap.FindBiome(Player.m_localPlayer.transform.position);
             if (currentBiome == Heightmap.Biome.None) return false;
 
@@ -621,26 +624,32 @@ public static class Environment
             }
 
             AddToEntries(configs, entries);
+
+            // If client is server
+            if (ZNet.instance.IsServer()) return LocalWeatherMan(__instance, sec, entries, currentBiome);
             
-            if (!ZNet.instance.IsServer())
+            // If client is connected to server, then use server index
+            if (lastBiome != currentBiome)
             {
-                // If client is connected to server, then use server index
-                long duration = _WeatherDuration.Value * 60; // Total seconds
-
-                if (duration == 0)
-                {
-                    if ((lastEnvironmentChange + 60) - EnvMan.instance.m_totalSeconds > 0) return false;
-                    ServerSyncedChangeWeather(currentBiome, __instance, entries, sec);
-                }
-                else
-                {
-                    if ((lastEnvironmentChange + _WeatherDuration.Value * 60) - EnvMan.instance.m_totalSeconds > 0) return false;
-                    ServerSyncedChangeWeather(currentBiome, __instance, entries, sec);
-                }
-                return false;
+                ServerSyncedChangeWeather(currentBiome, __instance, entries, sec, false);
+                lastBiome = currentBiome;
             }
+            
+            long duration = _WeatherDuration.Value * 60; // Total seconds
 
-            return ControlledEnvironments(__instance, sec, entries);
+            if (duration == 0)
+            {
+                // Throttle weather change to a minimum of 1 minute
+                if ((lastEnvironmentChange + 60) - EnvMan.instance.m_totalSeconds > 0) return false;
+                ServerSyncedChangeWeather(currentBiome, __instance, entries, sec);
+            }
+            else
+            {
+                if ((lastEnvironmentChange + _WeatherDuration.Value * 60) - EnvMan.instance.m_totalSeconds > 0) return false;
+                ServerSyncedChangeWeather(currentBiome, __instance, entries, sec);
+            }
+            return false;
+
         }
         private static void ServerSyncedWeatherMan(EnvMan __instance)
         {
@@ -984,13 +993,14 @@ public static class Environment
             
             UpdateServerWeatherMan();
         }
-        private static void ServerSyncedChangeWeather(Heightmap.Biome currentBiome, EnvMan __instance, List<EnvEntry> entries, long sec)
+        private static void ServerSyncedChangeWeather(
+            Heightmap.Biome currentBiome, EnvMan __instance, List<EnvEntry> entries, long sec, bool resetTimer = true)
         {
             int serverIndex = GetServerWeatherManIndex(currentBiome);
             __instance.QueueEnvironment(entries[serverIndex].m_environment);
             SetWeatherMan(entries[serverIndex].m_environment);
             currentEnv = entries[serverIndex].m_environment;
-            lastEnvironmentChange = sec;
+            if (resetTimer) lastEnvironmentChange = sec;
             WeatherTweaked = true;
         }
         
@@ -998,9 +1008,8 @@ public static class Environment
         private static double lastEnvironmentChange = EnvMan.instance.m_totalSeconds;
         public static string GetEnvironmentCountDown()
         {
-            if (!EnvMan.instance) return "";
-            if (!WeatherTweaked) return "";
-            
+            if (EnvMan.instance == null || !WeatherTweaked || _WeatherTimerEnabled.Value == Toggle.Off) return "";
+
             double totalSeconds = (lastEnvironmentChange + _WeatherDuration.Value * 60) - EnvMan.instance.m_totalSeconds;
             if (_WeatherDuration.Value == 0) totalSeconds = (lastEnvironmentChange + 60) - EnvMan.instance.m_totalSeconds;
 
@@ -1010,10 +1019,17 @@ public static class Environment
 
             if (totalSeconds < 0) return "";
             
-            return hours > 0 ? $"{hours:D2}:{minutes:D2}:{seconds:D2}" : $"{minutes:D2}:{seconds:D2}";
+            return hours > 0 ? $"{hours}:{minutes:D2}:{seconds:D2}" : minutes > 0 ? $"{minutes}:{seconds:D2}" : $"{seconds}";
         }
-        private static bool ControlledEnvironments(EnvMan __instance, long sec, List<EnvEntry> environments)
+        private static bool LocalWeatherMan(EnvMan __instance, long sec, List<EnvEntry> environments, Heightmap.Biome biome)
         {
+            // If client changes biome before timer runs out
+            if (lastBiome != biome)
+            {
+                ChangeWeather(__instance, environments, sec);
+                lastBiome = biome;
+            }
+            
             long duration = _WeatherDuration.Value * 60; // Total seconds
 
             if (duration == 0)

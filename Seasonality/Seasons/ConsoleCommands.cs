@@ -104,7 +104,7 @@ public static class ConsoleCommands
             Terminal.ConsoleCommand LogCacheTextures = new("seasonality_textures", "", args =>
             {
                 SeasonalityLogger.LogInfo("All cached textures:");
-                foreach (var kvp in CacheTextures.CachedTextures)
+                foreach (var kvp in MaterialReplacer.CachedTextures)
                 {
                     if (!kvp.Value)
                     {
@@ -120,7 +120,7 @@ public static class ConsoleCommands
                 {
                     if (args.Length < 2) return false;
                     SeasonalityLogger.LogInfo("Material search results: ");
-                    foreach (var mat in CacheTextures.CachedMaterials)
+                    foreach (var mat in MaterialReplacer.CachedMaterials)
                     {
                         if (mat.Key.Contains(args[1]) || mat.Key.StartsWith(args[1]) || mat.Key.EndsWith(args[1]))
                         {
@@ -135,7 +135,7 @@ public static class ConsoleCommands
                 {
                     if (args.Length < 2) return false;
                     List<string> results = new();
-                    foreach (var kvp in CacheTextures.CachedTextures)
+                    foreach (var kvp in MaterialReplacer.CachedTextures)
                     {
                         if (kvp.Key.Contains(args[1]))
                         {
@@ -154,7 +154,7 @@ public static class ConsoleCommands
             {
                 if (args.Length < 2) return false;
                 SeasonalityLogger.LogInfo("Cached texture details: ");
-                foreach (var kvp in CacheTextures.CachedTextures)
+                foreach (var kvp in MaterialReplacer.CachedTextures)
                 {
                     if (kvp.Key.Contains(args[1]))
                     {
@@ -171,6 +171,35 @@ public static class ConsoleCommands
                 }
                 return true;
             }),isSecret:true);
+            
+            Terminal.ConsoleCommand SearchCustomTextures = new("search_custom_materials", "", (Terminal.ConsoleEventFailable)(
+                args =>
+                {
+                    if (args.Length < 2)
+                    {
+                        foreach (var kvp in MaterialReplacer.CustomMaterials)
+                        {
+                            SeasonalityLogger.LogInfo(kvp.Key + " = " + kvp.Value);
+                        }
+                    }
+                    else
+                    {
+                        List<string> results = new();
+                        foreach (var kvp in MaterialReplacer.CustomMaterials)
+                        {
+                            if (kvp.Key.Contains(args[1]))
+                            {
+                                results.Add($"{kvp.Key} = {kvp.Value}");
+                            }
+                        }
+                        SeasonalityLogger.LogInfo("Texture search results:");
+                        foreach (string output in results)
+                        {
+                            SeasonalityLogger.LogInfo(output);
+                        }
+                    }
+                    return true;
+                }),isSecret:true);
         }
     }
 }

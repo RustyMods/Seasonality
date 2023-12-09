@@ -6,6 +6,8 @@ public enum VegetationType
     BeechSmall,
     Birch,
     Fir,
+    FirSmall,
+    FirDead,
     Pine,
     Swamp,
     Yggashoot,

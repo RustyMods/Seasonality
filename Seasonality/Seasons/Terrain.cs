@@ -104,7 +104,7 @@ public static class TerrainPatch
                     mat.SetTexture(terrainProp, null);
                     if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
                     break;
-                case GrassTypes.ClutterShrubs or GrassTypes.Ormbunke:
+                case GrassTypes.ClutterShrubs or GrassTypes.Ormbunke or GrassTypes.OrmBunkeSwamp:
                     if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
                     switch (_Season.Value)
                     {

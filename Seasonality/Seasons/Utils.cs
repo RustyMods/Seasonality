@@ -33,9 +33,9 @@ public static class Utils
             "Oak" => VegetationType.Oak,
             "Oak1" => VegetationType.Oak,
 
-            "FirTree_small_dead" => VegetationType.Fir,
+            "FirTree_small_dead" => VegetationType.FirDead,
             "FirTree" => VegetationType.Fir,
-            "FirTree_small" => VegetationType.Fir,
+            "FirTree_small" => VegetationType.FirSmall,
 
             "Pinetree_01" => VegetationType.Pine,
 
@@ -124,34 +124,13 @@ public static class Utils
         int randomIndex = random.Next(methods.Count);
         methods[randomIndex]();
     }
-    public static void SetMossTex(GameObject prefab, Texture? tex)
-    {
-        if (!tex) return;
-        for (int i = 0; i < prefab.transform.childCount; ++i)
-        {
-            Transform? child = prefab.transform.GetChild(i);
-            if (!child) return;
-            if (child.name == "Terrain" || child.name.StartsWith("Music")) continue;
-                
-            if (child.childCount > 0) SetMossTex(child.gameObject, tex);
-
-            child.TryGetComponent(out MeshRenderer meshRenderer);
-            if (!meshRenderer) continue;
-            Material[]? materials = meshRenderer.materials;
-            foreach (Material mat in materials)
-            {
-                string[] properties = mat.GetTexturePropertyNames();
-                foreach (string prop in properties)
-                {
-                    if (!prop.ToLower().Contains("moss")) continue;
-                    mat.SetTexture(prop, tex);
-                }
-            }
-        }
-    }
     public static Texture? GetCustomTexture(VegDirectories type, string key)
     {
         return !CustomRegisteredTextures.TryGetValue(type, out Dictionary<string, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
+    }
+    public static Texture? GetCustomTexture(PieceDirectories type, string key)
+    {
+        return !CustomRegisteredPieceTextures.TryGetValue(type, out Dictionary<string, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
     }
     public static Texture? GetCustomTexture(CreatureDirectories type, Season key)
     {
