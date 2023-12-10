@@ -996,12 +996,19 @@ public static class Environment
         private static void ServerSyncedChangeWeather(
             Heightmap.Biome currentBiome, EnvMan __instance, List<EnvEntry> entries, long sec, bool resetTimer = true)
         {
-            int serverIndex = GetServerWeatherManIndex(currentBiome);
-            __instance.QueueEnvironment(entries[serverIndex].m_environment);
-            SetWeatherMan(entries[serverIndex].m_environment);
-            currentEnv = entries[serverIndex].m_environment;
-            if (resetTimer) lastEnvironmentChange = sec;
-            WeatherTweaked = true;
+            try
+            {
+                int serverIndex = GetServerWeatherManIndex(currentBiome);
+                __instance.QueueEnvironment(entries[serverIndex].m_environment);
+                SetWeatherMan(entries[serverIndex].m_environment);
+                currentEnv = entries[serverIndex].m_environment;
+                if (resetTimer) lastEnvironmentChange = sec;
+                WeatherTweaked = true;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                LocalWeatherMan(__instance, sec, entries, currentBiome);
+            }
         }
         
         private static int environmentIndex;
@@ -1073,7 +1080,7 @@ public static class Environment
             effect.m_name = m_name;
             effect.m_icon = _WeatherIconEnabled.Value is Toggle.On ? m_sprite : null;
             effect.m_startMessageType = MessageHud.MessageType.TopLeft;
-            effect.m_startMessage = m_start_msg;
+            effect.m_startMessage = _WeatherStartMessage.Value is Toggle.On ? m_start_msg : "";
             effect.m_tooltip = m_tooltip;
             
             obd.m_StatusEffects.Add(effect);

@@ -21,7 +21,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.0.0";
+        internal const string ModVersion = "3.0.1";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -96,6 +96,7 @@ namespace Seasonality
         public static ConfigEntry<int> _WeatherDuration = null!;
         public static ConfigEntry<Toggle> _WeatherIconEnabled = null!;
         public static ConfigEntry<Toggle> _WeatherTimerEnabled = null!;
+        public static ConfigEntry<Toggle> _WeatherStartMessage = null!;
 
         public static ConfigEntry<Toggle> _SeasonalEffectsEnabled = null!;
         
@@ -379,6 +380,7 @@ namespace Seasonality
             _WeatherDuration = config("1 - Weather", "2 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
             _WeatherIconEnabled = config("1 - Weather", "3 - Icon Visible", Toggle.On, "If on, HUD displays weather information");
             _WeatherTimerEnabled = config("1 - Weather", "4 - Timer Visible", Toggle.On, "If on, weather icon displays timer");
+            _WeatherStartMessage = config("1 - Weather", "5 - Start Message", Toggle.Off, "If on, weather notifications appear");
             #endregion
             
             #region Creatures
