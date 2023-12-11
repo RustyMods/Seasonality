@@ -152,7 +152,6 @@
         <Content Include="Libs\ServerSync.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="LICENSE.md" />
         <Content Include="UpdateManifest.ps1" />
     </ItemGroup>
     <ItemGroup>

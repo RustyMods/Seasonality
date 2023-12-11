@@ -78,7 +78,7 @@ public static class CustomTextures
             //     SeasonalityLogger.LogInfo("texel size : " + texture.texelSize);
             //     SeasonalityLogger.LogInfo("filter mode : " + texture.filterMode);
             // }
-            
+            texture.name = filePath;
             return texture;
         }
         return null;
@@ -242,7 +242,7 @@ public static class CustomTextures
             };
             
             string BarkFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_bark.png");
-            string barkMessage = type + "/" + season.ToString().ToLower() + "_bark.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            string barkMessage = type + "/" + season.ToString().ToLower() + "_bark.png" + $" compressed as {TextureFormat.BC7.ToString()}, filter {FilterMode.Point.ToString()}";
 
             if (File.Exists(BarkFilePath))
             {
@@ -255,9 +255,25 @@ public static class CustomTextures
                 textureMap.Add(season.ToString() + "_bark", tex);
                 SeasonalityLogger.LogDebug($"Registered: {barkMessage}");
             }
+            
+            string NormalFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_normal.png");
+            string NormalMessage = type + "/" + season.ToString().ToLower() + "_normal.png" + $" compressed as {TextureFormat.BC7.ToString()}, filter {FilterMode.Point.ToString()}";
+
+            if (File.Exists(NormalFilePath))
+            {
+                Texture? tex = RegisterCustomTexture(NormalFilePath, TextureFormat.BC7, FilterMode.Point, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
+                if (!tex)
+                {
+                    SeasonalityLogger.LogDebug($"Failed: {NormalMessage}");
+                    continue;
+                }
+                textureMap.Add(season.ToString() + "_normal", tex);
+                SeasonalityLogger.LogDebug($"Registered: {NormalMessage}");
+            }
+            
 
             string WornFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_worn.png");
-            string WornMessage = type + "/" + season.ToString().ToLower() + "_worn.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            string WornMessage = type + "/" + season.ToString().ToLower() + "_worn.png" + $" compressed as {TextureFormat.BC7.ToString()}, filter {FilterMode.Point.ToString()}";
 
             if (File.Exists(WornFilePath))
             {
@@ -272,7 +288,7 @@ public static class CustomTextures
             }
 
             string CornerFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_corner.png");
-            string CornerMessage = type + "/" + season.ToString().ToLower() + "_corner.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            string CornerMessage = type + "/" + season.ToString().ToLower() + "_corner.png" + $" compressed as {TextureFormat.BC7.ToString()}, filter {FilterMode.Point.ToString()}";
             
             if (File.Exists(CornerFilePath))
             {
@@ -287,7 +303,7 @@ public static class CustomTextures
             }
 
             string CornerWornFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_corner_worn.png");
-            string CornerWornMessage = type + "/" + season.ToString().ToLower() + "_corner_worn.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            string CornerWornMessage = type + "/" + season.ToString().ToLower() + "_corner_worn.png" + $" compressed as {TextureFormat.BC7.ToString()}, filter {FilterMode.Point.ToString()}";
             
             if (File.Exists(CornerWornFilePath))
             {

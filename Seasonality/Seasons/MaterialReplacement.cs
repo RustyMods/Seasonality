@@ -42,8 +42,16 @@ public static class MaterialReplacer
                 Texture? tex = material.GetTexture(mossProp);
                 if (tex) CachedTextures[material.name.Replace("(Instance)", "").Replace(" ", "") + "_moss"] = tex;
             }
+
+            if (Utils.FindTexturePropName(properties, "normal", out string normalProp))
+            {
+                Texture? normal = material.GetTexture(normalProp);
+                if (normal)
+                    CachedTextures[material.name.Replace("(Instance)", "").Replace(" ", "") + "_normal"] = normal;
+            }
             if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) continue;
             CachedTextures[material.name.Replace("(Instance)", "").Replace(" ", "")] = material.GetTexture(mainProp);
+            
         }
     }
     private static void SetMossTexture(string materialName, Texture originalTex)
@@ -101,6 +109,18 @@ public static class MaterialReplacer
         
         material.SetTexture(mainProp, tex);
     }
+    private static void SetNormalTexture(string materialName, Texture? normal)
+    {
+        if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
+
+        string[] properties = material.GetTexturePropertyNames();
+        if (normal == null) return;
+        if (Utils.FindTexturePropName(properties, "normal", out string normalProp))
+        {
+            SeasonalityLogger.LogWarning("changing normal map for " + materialName + " " + normal.name);
+            material.SetTexture(normalProp, normal);
+        }
+    }
     private static void SetCustomMainTexture(string materialName, Texture? tex, int index = 0)
     {
         if (!CustomMaterials.TryGetValue(materialName, out Material material))
@@ -130,6 +150,7 @@ public static class MaterialReplacer
         ModifyVegetation(); 
         ModifyCustomMaterials();
         ModifyPieceMaterials();
+        // ModifyNormals();
     }
 
     private static void ModifyPieceMaterials()
@@ -396,6 +417,21 @@ public static class MaterialReplacer
             SetMainTexture(kvp.Key, texture);
         }
     }
+
+    private static void ModifyNormals()
+    {
+        Dictionary<string, VegDirectories> NormalReplacementMap = new()
+        {
+            {"beech_bark", VegDirectories.Beech}
+        };
+        foreach (KeyValuePair<string, VegDirectories> kvp in NormalReplacementMap)
+        {
+            Texture? normal = GetCustomNormals(kvp.Value, kvp.Key);
+            if (!normal) continue;
+            
+            SetNormalTexture(kvp.Key, normal);
+        }
+    }
     private static void ModifyCustomMaterials()
     {
         Dictionary<string, VegDirectories> CustomReplacementMap = new()
@@ -506,6 +542,13 @@ public static class MaterialReplacer
     {
         Texture? customTexture = Utils.GetCustomTexture(directory,  isBark ? _Season.Value + "_bark" : _Season.Value.ToString());
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
+        return customTexture ? customTexture : originalTexture ? originalTexture : null;
+    }
+
+    private static Texture? GetCustomNormals(VegDirectories directory, string originalMaterialName)
+    {
+        Texture? customTexture = Utils.GetCustomTexture(directory,  _Season.Value + "_normal");
+        CachedTextures.TryGetValue(originalMaterialName + "_normal", out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
 }
