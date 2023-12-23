@@ -128,6 +128,10 @@ public static class Utils
     {
         return !CustomRegisteredTextures.TryGetValue(type, out Dictionary<string, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
     }
+    public static Texture? GetCustomTexture(PickableDirectories type, string key)
+    {
+        return !CustomRegisteredPickableTex.TryGetValue(type, out Dictionary<string, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
+    }
     public static Texture? GetCustomTexture(PieceDirectories type, string key)
     {
         return !CustomRegisteredPieceTextures.TryGetValue(type, out Dictionary<string, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;

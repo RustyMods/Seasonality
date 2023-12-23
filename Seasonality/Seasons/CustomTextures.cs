@@ -16,10 +16,9 @@ public static class CustomTextures
     public static readonly Texture? Mistlands_Rock_Plant = RegisterTexture("MistlandsVegetation_d.png");
 
     public static readonly Dictionary<VegDirectories, Dictionary<string, Texture?>> CustomRegisteredTextures = new();
-
     public static readonly Dictionary<CreatureDirectories, Dictionary<string, Texture?>> CustomRegisteredCreatureTex = new();
-
     public static readonly Dictionary<PieceDirectories, Dictionary<string, Texture?>> CustomRegisteredPieceTextures = new();
+    public static readonly Dictionary<PickableDirectories, Dictionary<string, Texture?>> CustomRegisteredPickableTex = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -88,7 +87,35 @@ public static class CustomTextures
     private static readonly string VegTexturePath = folderPath + Path.DirectorySeparatorChar + "Textures";
     private static readonly string creatureTexPath = folderPath + Path.DirectorySeparatorChar + "Creatures";
     private static readonly string PieceTexPath = folderPath + Path.DirectorySeparatorChar + "Pieces";
+    private static readonly string PickableTexturePath = folderPath + Path.DirectorySeparatorChar + "Pickables";
 
+    public enum PickableDirectories
+    {
+        None,
+        Mushroom,
+        MushroomYellow,
+        MushroomBlue,
+        JotunPuff,
+        Magecap,
+        Raspberry,
+        Blueberry,
+        Dandelion,
+        Barley,
+        Flax,
+        Carrot,
+        Turnip,
+        Onion,
+        CarrotSeed,
+        TurnipSeed,
+        OnionSeed,
+        Branches,
+        Flint,
+        Rock,
+        BoneRemains,
+        SurtlingCore,
+        BlackCore,
+        Thistle
+    }
     public enum VegDirectories
     {
         Beech,
@@ -124,6 +151,7 @@ public static class CustomTextures
         RockPlant,
         Clutter,
         CloudberryBush,
+        YggdrasilSkyTree,
         None
     }
 
@@ -218,6 +246,20 @@ public static class CustomTextures
             Dictionary<string, Texture?> map = RegisterCustomTextures(type, PieceTexPath);
             if (map.Count == 0) continue;
             CustomRegisteredPieceTextures.Add(pieceDir, map);
+        }
+        
+        foreach (PickableDirectories pickableDir in Enum.GetValues(typeof(PickableDirectories)))
+        {
+            if (pickableDir is PickableDirectories.None) continue;
+            string type = pickableDir.ToString();
+            if (!Directory.Exists(PickableTexturePath + Path.DirectorySeparatorChar + type))
+            {
+                Directory.CreateDirectory(PickableTexturePath + Path.DirectorySeparatorChar + type);
+            }
+
+            Dictionary<string, Texture?> map = RegisterCustomTextures(type, PickableTexturePath, filterMode: FilterMode.Point);
+            if (map.Count == 0) continue;
+            CustomRegisteredPickableTex.Add(pickableDir, map);
         }
     }
 

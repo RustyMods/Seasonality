@@ -78,6 +78,23 @@ public class SeasonalEffect
         { Modifier.EitrRegen , 1f }
     };
 
+    private Dictionary<Modifier, float> defaultModifiers = new()
+    {
+        { Modifier.Attack, 1f },
+        { Modifier.HealthRegen , 1f },
+        { Modifier.StaminaRegen , 1f },
+        { Modifier.RaiseSkills , 1f },
+        { Modifier.Speed , 1f },
+        { Modifier.Noise , 1f },
+        { Modifier.MaxCarryWeight , 0f },
+        { Modifier.Stealth , 1f },
+        { Modifier.RunStaminaDrain , 1f },
+        { Modifier.DamageReduction , 0f },
+        { Modifier.FallDamage , 1f },
+        { Modifier.EitrRegen , 1f }
+    };
+    public bool useModifiers = false;
+
     public readonly List<HitData.DamageModPair> damageMods = new();
 
     public StatusEffect? Init()
@@ -102,41 +119,102 @@ public class SeasonalEffect
                 normalizedString += modName[i];
             }
         }
-        Modifiers[Modifier] = m_newValue;
-        switch (Modifier)
-        {
-            case Modifier.None:
-                break;
-            case Modifier.DamageReduction:
-                float reductionValue = Mathf.Clamp01(m_newValue);
-                string damageString = $"\n{modName} -<color=orange>{reductionValue * 100}</color>%";
-                appendedTooltip += damageString;
 
-                break;
-            case Modifier.MaxCarryWeight:
-                if (m_newValue > 0)
+        if (useModifiers == false)
+        {
+            Modifiers[Modifier] = m_newValue;
+            switch (Modifier)
+            {
+                case Modifier.None:
+                    break;
+                case Modifier.DamageReduction:
+                    float reductionValue = Mathf.Clamp01(m_newValue);
+                    string damageString = $"\n{modName} -<color=orange>{reductionValue * 100}</color>%";
+                    appendedTooltip += damageString;
+
+                    break;
+                case Modifier.MaxCarryWeight:
+                    if (m_newValue > 0)
+                    {
+                        string maxCarryString = $"\n{modName} +<color=orange>{m_newValue}</color>";
+                        appendedTooltip += maxCarryString;
+                    }
+                    if (m_newValue < 0)
+                    {
+                        string maxCarryString = $"\n{modName} -<color=orange>{m_newValue.ToString().Replace("-", "")}</color>";
+                        appendedTooltip += maxCarryString;
+                    }
+                    break;
+                default:
+                    if (m_newValue > 1)
+                    {
+                        string defaultString = $"\n{normalizedString} +<color=orange>{Mathf.Round((m_newValue - 1) * 100)}</color>%";
+                        appendedTooltip += defaultString;
+                    }
+                    if (m_newValue < 1)
+                    {
+                        string defaultString = $"\n{normalizedString} -<color=orange>{Mathf.Round((1 - m_newValue) * 100)}</color>%";
+                        appendedTooltip += defaultString;
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            foreach (KeyValuePair<Modifier, float> mod in Modifiers)
+            {
+                if (Math.Abs(mod.Value - defaultModifiers[mod.Key]) < 0.009f) continue;
+                
+                switch (mod.Key)
                 {
-                    string maxCarryString = $"\n{modName} +<color=orange>{m_newValue}</color>";
-                    appendedTooltip += maxCarryString;
+                    case Modifier.None:
+                        break;
+                    case Modifier.DamageReduction:
+                        float reductionValue = Mathf.Clamp01(mod.Value);
+                        string damageString = $"\n{mod.Key} -<color=orange>{reductionValue * 100}</color>%";
+                        appendedTooltip += damageString;
+
+                        break;
+                    case Modifier.MaxCarryWeight:
+                        if (m_newValue > 0)
+                        {
+                            string maxCarryString = $"\n{mod.Key} +<color=orange>{mod.Value}</color>";
+                            appendedTooltip += maxCarryString;
+                        }
+                        if (m_newValue < 0)
+                        {
+                            string maxCarryString = $"\n{mod.Key} -<color=orange>{mod.Value.ToString().Replace("-", "")}</color>";
+                            appendedTooltip += maxCarryString;
+                        }
+                        break;
+                    default:
+                        string normalizedStrings = "";
+                        for (int i = 0; i < mod.Key.ToString().Length; ++i)
+                        {
+                            if (i == 0) normalizedStrings += mod.Key.ToString()[i];
+                            else
+                            {
+                                if (char.IsUpper(mod.Key.ToString()[i]))
+                                {
+                                    normalizedStrings += " ";
+                                }
+                                normalizedStrings += mod.Key.ToString()[i];
+                            }
+                        }
+
+                        if (mod.Value > 1)
+                        {
+                            string defaultString = $"\n{normalizedStrings} +<color=orange>{Mathf.Round((mod.Value - 1) * 100)}</color>%";
+                            appendedTooltip += defaultString;
+                        }
+                        if (mod.Value < 1)
+                        {
+                            string defaultString = $"\n{normalizedStrings} -<color=orange>{Mathf.Round((1 - mod.Value) * 100)}</color>%";
+                            appendedTooltip += defaultString;
+                        }
+                        break;
                 }
-                if (m_newValue < 0)
-                {
-                    string maxCarryString = $"\n{modName} -<color=orange>{m_newValue.ToString().Replace("-", "")}</color>";
-                    appendedTooltip += maxCarryString;
-                }
-                break;
-            default:
-                if (m_newValue > 1)
-                {
-                    string defaultString = $"\n{normalizedString} +<color=orange>{Mathf.Round((m_newValue - 1) * 100)}</color>%";
-                    appendedTooltip += defaultString;
-                }
-                if (m_newValue < 1)
-                {
-                    string defaultString = $"\n{normalizedString} -<color=orange>{Mathf.Round((1 - m_newValue) * 100)}</color>%";
-                    appendedTooltip += defaultString;
-                }
-                break;
+            } 
         }
 
         if (!string.IsNullOrWhiteSpace(damageMod))

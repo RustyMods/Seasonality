@@ -21,7 +21,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.0.1";
+        internal const string ModVersion = "3.0.4";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -53,6 +53,8 @@ namespace Seasonality
                 : WorkingAs.Client;
 
             CustomTextures.ReadCustomTextures();
+            
+            YamlConfigurations.ReadYamlFile();
 
             InitConfigs();
             Assembly assembly = Assembly.GetExecutingAssembly(); 
@@ -88,7 +90,9 @@ namespace Seasonality
         }
         #region CustomConfigs
         public static ConfigEntry<Season> _Season = null!;
-        
+
+        public static ConfigEntry<Toggle> _YamlConfigurations = null!;
+
         public static ConfigEntry<int> _SeasonDurationDays = null!;
         public static ConfigEntry<int> _SeasonDurationHours = null!;
         public static ConfigEntry<int> _SeasonDurationMinutes = null!;
@@ -362,6 +366,9 @@ namespace Seasonality
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
             _SeasonControl = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
             _Season = config("1 - General", "4 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
+
+            _YamlConfigurations = config("1 - General", "5 - Use YML Configurations", Toggle.Off,
+                "If on, plugin uses YML configuration files");
             
             #region Season Timer
             _SeasonDurationDays = config("1 - Seasons", "1 - Days", 0, new ConfigDescription("Real-time days between season", new AcceptableValueRange<int>(0, 365)));

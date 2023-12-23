@@ -120,6 +120,7 @@
     <ItemGroup>
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Seasons\AttachToModel.cs" />
         <Compile Include="Seasons\MaterialReplacement.cs" />
         <Compile Include="Seasons\ConsoleCommands.cs" />
         <Compile Include="Seasons\CustomTextures.cs" />
@@ -130,9 +131,10 @@
         <Compile Include="Seasons\SeasonStatusEffects.cs" />
         <Compile Include="Seasons\SpecialEffects.cs" />
         <Compile Include="Seasons\Terrain.cs" />
-        <Compile Include="Seasons\Vegetation.cs" />
+        <Compile Include="Seasons\CachePrefabs.cs" />
         <Compile Include="Seasons\VegetationType.cs" />
         <Compile Include="Seasons\Utils.cs" />
+        <Compile Include="Seasons\YamlConfigurations.cs" />
         <Compile Include="VersionHandshake.cs" />
     </ItemGroup>
     <ItemGroup>

@@ -10,7 +10,7 @@ using Random = System.Random;
 
 namespace Seasonality.Seasons;
 
-public static class Vegetation
+public static class CacheResources
 {
     private static List<Material[]> BeechMaterials = new();
     private static List<Material[]> BeechSmallMaterials = new();
@@ -24,7 +24,7 @@ public static class Vegetation
     private static List<Material[]> RaspberryMaterials = new();
     private static List<Material[]> BlueberryMaterials = new();
     private static readonly int ColorProp = Shader.PropertyToID("_Color");
-
+    
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     [HarmonyPriority(Priority.Last)]
     static class ZNetSceneVegetationPatch
@@ -39,6 +39,7 @@ public static class Vegetation
                 if (type is VegetationType.None) continue;
                 CacheBaseMaterials(prefab);
             }
+            
         }
         private static List<Material[]> CreateBaseMaterials(GameObject prefab, string specifier, bool contains = true)
         {
