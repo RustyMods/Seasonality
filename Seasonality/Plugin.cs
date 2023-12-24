@@ -14,6 +14,7 @@ using ServerSync;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static Seasonality.Seasons.Environment;
+using Environment = Seasonality.Seasons.Environment;
 
 namespace Seasonality
 {
@@ -54,8 +55,8 @@ namespace Seasonality
 
             CustomTextures.ReadCustomTextures();
             
-            YamlConfigurations.ReadYamlFile();
-
+            YamlConfigurations.InitYamlConfigurations();
+            
             InitConfigs();
             Assembly assembly = Assembly.GetExecutingAssembly(); 
             _harmony.PatchAll(assembly);

@@ -1,16 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using BepInEx;
 using JetBrains.Annotations;
-using UnityEngine;
+using ServerSync;
 using YamlDotNet.Serialization;
 
 namespace Seasonality.Seasons;
 
 public static class YamlConfigurations
 {
+    private static readonly CustomSyncedValue<string> SyncedSpringData = new(SeasonalityPlugin.ConfigSync, "SpringData", "");
+    private static readonly CustomSyncedValue<string> SyncedSummerData = new(SeasonalityPlugin.ConfigSync, "SummerData", "");
+    private static readonly CustomSyncedValue<string> SyncedFallData = new(SeasonalityPlugin.ConfigSync, "FallData", "");
+    private static readonly CustomSyncedValue<string> SyncedWinterData = new(SeasonalityPlugin.ConfigSync, "WinterData", "");
+    
     [Serializable]
     [CanBeNull]
     public class ConfigurationData
@@ -50,28 +54,15 @@ public static class YamlConfigurations
         public List<string> ashLandWeather = new();
         public List<string> deepNorthWeather = new();
         public List<string> oceanWeather = new();
-        public List<string> colors = new();
     }
-    
-    private static readonly string SpringFilePath =
-        Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality" + Path.DirectorySeparatorChar +
-        "spring_configurations.yml";
-    private static readonly string SummerFilePath =
-        Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality" + Path.DirectorySeparatorChar +
-        "summer_configurations.yml";
-    private static readonly string FallFilePath =
-        Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality" + Path.DirectorySeparatorChar +
-        "fall_configurations.yml";
-    private static readonly string WinterFilePath =
-        Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality" + Path.DirectorySeparatorChar +
-        "winter_configurations.yml";
-    
-    private static readonly List<string> filePaths = new()
-    {
-        SpringFilePath, SummerFilePath, FallFilePath, WinterFilePath
-    };
 
-    private static readonly ConfigurationData SpringDefaultConfigurations = new ConfigurationData()
+    private static readonly string SeasonalityFolderPath = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality";
+    private static readonly string SpringFilePath = SeasonalityFolderPath + Path.DirectorySeparatorChar + "spring_configurations.yml";
+    private static readonly string SummerFilePath = SeasonalityFolderPath + Path.DirectorySeparatorChar + "summer_configurations.yml";
+    private static readonly string FallFilePath = SeasonalityFolderPath + Path.DirectorySeparatorChar + "fall_configurations.yml";
+    private static readonly string WinterFilePath = SeasonalityFolderPath + Path.DirectorySeparatorChar + "winter_configurations.yml";
+
+    private static readonly ConfigurationData SpringDefaultConfigurations = new()
     {
         name = "Spring",
         modifiers = new Dictionary<Modifier, float>()
@@ -99,9 +90,7 @@ public static class YamlConfigurations
         },
         startMessage = "Spring has finally arrived",
         tooltip = "The land is bursting with energy",
-        colors = new List<string>(){"#80CC33B2","#FFCC33FF","#FF4C80FF","#FF4C99FF"}
     };
-
     private static readonly ConfigurationData FallDefaultConfigurations = new()
     {
         name = "Autumn",
@@ -130,9 +119,7 @@ public static class YamlConfigurations
         },
         startMessage = "Fall is upon us",
         tooltip = "The ground is wet",
-        colors = new List<string>(){"#CC8000FF","#CC4C00FF","#CC3300FF","#E68000FF"}
     };
-
     private static readonly ConfigurationData SummerDefaultConfigurations = new()
     {
         name = "Summer",
@@ -161,9 +148,7 @@ public static class YamlConfigurations
         },
         startMessage = "Summer has landed",
         tooltip = "The air is warm",
-        colors = new List<string>(){"#80B233FF","#B2B233FF","#808000FF","#B2B200FF"}
     };
-
     private static readonly ConfigurationData WinterDefaultConfigurations = new()
     {
         name = "Winter",
@@ -192,7 +177,6 @@ public static class YamlConfigurations
         },
         startMessage = "Winter is coming!",
         tooltip = "The air is cold",
-        colors = new List<string>(){"#B2B2B2FF","#B2B2B2FF","#B2B2B2FF","#B2B2B2FF"},
         meadowWeather = new List<string>(){"WarmSnow"},
         blackForestWeather =  new List<string>(){"WarmSnow"},
         swampWeather = new List<string>(){"WarmSnow"},
@@ -236,7 +220,6 @@ public static class YamlConfigurations
             string env = value.ToString();
             tutorial.Add($"- {env}");
         }
-
         List<string> nextTutorial = new()
         {
             "```",
@@ -256,18 +239,77 @@ public static class YamlConfigurations
             "```"
         };
         tutorial.AddRange(nextTutorial);
-        string filePath = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality" + Path.DirectorySeparatorChar +
-                          "YML_README.md";
-        if (!File.Exists(filePath))
-        {
-            File.WriteAllLines(filePath, tutorial);
-        }
+        string filePath = SeasonalityFolderPath + Path.DirectorySeparatorChar + "YML_README.md";
+        if (!File.Exists(filePath)) File.WriteAllLines(filePath, tutorial);
     }
-
-    public static void ReadYamlFile()
+    public static void InitYamlConfigurations()
     {
         WriteTutorial();
         
+        WriteDefaultConfigurations();
+        
+        // Set local yml data
+        springData = ReadFile(SpringFilePath, SpringDefaultConfigurations);
+        summerData = ReadFile(SummerFilePath, SummerDefaultConfigurations);
+        fallData = ReadFile(FallFilePath, FallDefaultConfigurations);
+        winterData = ReadFile(WinterFilePath, WinterDefaultConfigurations);
+        // Set server data
+        if (SeasonalityPlugin.workingAsType is SeasonalityPlugin.WorkingAs.Server)
+        {
+            SyncedSpringData.Value = ReadFileRaw(SpringFilePath);
+            SyncedSummerData.Value = ReadFileRaw(SummerFilePath);
+            SyncedFallData.Value = ReadFileRaw(FallFilePath);
+            SyncedWinterData.Value = ReadFileRaw(WinterFilePath);
+        }
+    }
+
+    public static void SetServerSyncedYmlData()
+    {
+        if (SeasonalityPlugin.workingAsType != SeasonalityPlugin.WorkingAs.Client) return;
+        springData = ReadSyncedData(SyncedSpringData.Value, SpringDefaultConfigurations);
+        summerData = ReadSyncedData(SyncedSummerData.Value, SummerDefaultConfigurations);
+        fallData = ReadSyncedData(SyncedFallData.Value, FallDefaultConfigurations);
+        winterData = ReadSyncedData(SyncedWinterData.Value, WinterDefaultConfigurations);
+    }
+
+    private static ConfigurationData ReadSyncedData(string serverData, ConfigurationData defaultData)
+    {
+        if (serverData == "") return defaultData;
+        IDeserializer deserializer = new DeserializerBuilder().Build();
+        try
+        {
+            ConfigurationData data = deserializer.Deserialize<ConfigurationData>(serverData);
+            return data;
+        }
+        catch (Exception)
+        {
+            SeasonalityPlugin.SeasonalityLogger.LogFatal("Server YML configuration error: ");
+            SeasonalityPlugin._YamlConfigurations.Value = SeasonalityPlugin.Toggle.Off;
+        }
+
+        return defaultData;
+    }
+    private static string ReadFileRaw(string filePath) => File.ReadAllText(filePath);
+    private static ConfigurationData ReadFile(string filePath, ConfigurationData defaultData)
+    {
+        IDeserializer deserializer = new DeserializerBuilder().Build();
+
+        try
+        {
+            ConfigurationData data = deserializer.Deserialize<ConfigurationData>(File.ReadAllText(filePath));
+            return data;
+        }
+        catch (Exception)
+        {
+            SeasonalityPlugin.SeasonalityLogger.LogFatal("YML configuration error: ");
+            SeasonalityPlugin.SeasonalityLogger.LogWarning(filePath);
+            SeasonalityPlugin._YamlConfigurations.Value = SeasonalityPlugin.Toggle.Off;
+        }
+
+        return defaultData;
+    }
+    private static void WriteDefaultConfigurations()
+    {
         ISerializer serializer = new SerializerBuilder().Build();
         if (!File.Exists(SpringFilePath))
         {
@@ -288,28 +330,6 @@ public static class YamlConfigurations
         {
             string data = serializer.Serialize(WinterDefaultConfigurations);
             File.WriteAllText(WinterFilePath, data);
-        }
-
-        IDeserializer deserializer = new DeserializerBuilder().Build();
-
-        foreach (string path in filePaths)
-        {
-            string input = File.ReadAllText(path);
-            try
-            {
-                ConfigurationData data = deserializer.Deserialize<ConfigurationData>(input);
-                if (path == SpringFilePath) springData = data;
-                if (path == SummerFilePath) summerData = data;
-                if (path == FallFilePath) fallData = data;
-                if (path == WinterFilePath) winterData = data;
-            }
-            catch (Exception)
-            {
-                SeasonalityPlugin.SeasonalityLogger.LogFatal("YML configuration error: ");
-                SeasonalityPlugin.SeasonalityLogger.LogWarning(path);
-                SeasonalityPlugin._YamlConfigurations.Value = SeasonalityPlugin.Toggle.Off;
-                break;
-            }
         }
     }
 }
