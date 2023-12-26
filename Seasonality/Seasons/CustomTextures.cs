@@ -179,7 +179,7 @@ public static class CustomTextures
         Blob,
         Oozer,
         Gjall,
-        
+        Skeleton
     }
 
     public static bool HDPackLoaded;

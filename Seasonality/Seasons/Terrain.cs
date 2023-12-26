@@ -102,10 +102,10 @@ public static class TerrainPatch
             {
                 case GrassTypes.GreenGrass or GrassTypes.GreenGrassShort or GrassTypes.MistlandGrassShort:
                     mat.SetTexture(terrainProp, null);
-                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
+                    Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
                     break;
                 case GrassTypes.ClutterShrubs or GrassTypes.Ormbunke or GrassTypes.OrmBunkeSwamp:
-                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
+                    Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
                     switch (_Season.Value)
                     {
                         case Season.Fall:
@@ -114,10 +114,10 @@ public static class TerrainPatch
                     }
                     continue;
                 case GrassTypes.GroundCover:
-                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
+                    Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
                     continue;
                 default:
-                    if (Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp));
+                    Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
                     break;
             }
         }

@@ -15,7 +15,6 @@ namespace Seasonality.Seasons;
 public static class Environment
 {
     private static readonly CustomSyncedValue<string> SyncedWeatherData = new(SeasonalityPlugin.ConfigSync, "ServerWeather", "");
-
     private static readonly CustomSyncedValue<List<string>> SyncedCustomEnvironments = new(SeasonalityPlugin.ConfigSync, "ServerEnvironments", new());
     private static void UpdateServerWeatherMan()
     {
@@ -145,7 +144,7 @@ public static class Environment
         public float m_windMax = 1f;
         public bool m_psystemsOutsideOnly;
         public float m_rainCloudAlpha;
-        public string m_ambientLoop;
+        public string m_ambientLoop = "SW008_Wendland_Autumn_Wind_In_Reeds_Medium_Distance_Leaves_Only";
         public float m_ambientVol = 0.3f;
         public string m_ambientList = "";
         public string m_musicMorning = "";
@@ -211,7 +210,6 @@ public static class Environment
 
             WriteWeatherSetup(__instance);
         }
-        
         private static void WriteWeatherSetup(EnvMan __instance)
         {
             ISerializer serializer = new SerializerBuilder().Build();
@@ -271,7 +269,7 @@ public static class Environment
                     string data = serializer.Serialize(setup);
                     File.WriteAllText(registryPath + Path.DirectorySeparatorChar + $"{setup.m_name}.yml", data);
                 }
-                catch (NullReferenceException e)
+                catch (NullReferenceException)
                 {
 
                 }
@@ -324,7 +322,6 @@ public static class Environment
             return newSetup;
         }
     }
-
     public static void RegisterServerEnvironments(EnvMan __instance)
     {
         EnvSetup? exampleSetup = __instance.m_environments.Find(x => x.m_name == "Snow");
@@ -400,72 +397,72 @@ public static class Environment
         string[] values = format.Split(',');
         return new Color(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));
     }
-    public static List<EnvSetup> ReadWeatherSetup()
+    private static List<EnvSetup> ReadWeatherSetup()
+    {
+        IDeserializer deserializer = new DeserializerBuilder().Build();
+        string folderPath = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality" +
+                            Path.DirectorySeparatorChar +
+                            "Environments";
+        if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+
+        string[] files = Directory.GetFiles(folderPath, "*.yml");
+        List<EnvSetup> output = new();
+        foreach (string file in files)
         {
-            IDeserializer deserializer = new DeserializerBuilder().Build();
-            string folderPath = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality" +
-                                Path.DirectorySeparatorChar +
-                                "Environments";
-            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
-
-            string[] files = Directory.GetFiles(folderPath, "*.yml");
-            List<EnvSetup> output = new();
-            foreach (string file in files)
-            {
-                string rawData = File.ReadAllText(file);
-                if (workingAsType is WorkingAs.Server)
-                { 
-                    SyncedCustomEnvironments.Value.Add(rawData);
-                }
-                WeatherSetup setup = deserializer.Deserialize<WeatherSetup>(rawData);
-                EnvSetup newEnvSetup = new EnvSetup()
-                {
-                    m_name = setup.m_name,
-                    m_default = setup.m_default,
-                    m_isWet = setup.m_isWet,
-                    m_isFreezing = setup.m_isFreezing,
-                    m_isFreezingAtNight = setup.m_isFreezingAtNight,
-                    m_isCold = setup.m_isCold,
-                    m_isColdAtNight = setup.m_isColdAtNight,
-                    m_alwaysDark = setup.m_alwaysDark,
-                    m_ambColorNight = GetColorFromString(setup.m_ambColorNight),
-                    m_ambColorDay = GetColorFromString(setup.m_ambColorDay),
-                    m_fogColorNight = GetColorFromString(setup.m_fogColorNight),
-                    m_fogColorMorning = GetColorFromString(setup.m_fogColorMorning),
-                    m_fogColorDay = GetColorFromString(setup.m_fogColorDay),
-                    m_fogColorEvening = GetColorFromString(setup.m_fogColorEvening),
-                    m_fogColorSunNight = GetColorFromString(setup.m_fogColorSunNight),
-                    m_fogColorSunMorning = GetColorFromString(setup.m_fogColorSunMorning),
-                    m_fogColorSunDay = GetColorFromString(setup.m_fogColorSunDay),
-                    m_fogColorSunEvening = GetColorFromString(setup.m_fogColorSunEvening),
-                    m_fogDensityNight = setup.m_fogDensityNight,
-                    m_fogDensityMorning = setup.m_fogDensityMorning,
-                    m_fogDensityDay = setup.m_fogDensityDay,
-                    m_fogDensityEvening = setup.m_fogDensityEvening,
-                    m_sunColorNight = GetColorFromString(setup.m_sunColorNight),
-                    m_sunColorMorning = GetColorFromString(setup.m_sunColorMorning),
-                    m_sunColorDay = GetColorFromString(setup.m_sunColorDay),
-                    m_sunColorEvening = GetColorFromString(setup.m_sunColorEvening),
-                    m_lightIntensityDay = setup.m_lightIntensityDay,
-                    m_lightIntensityNight = setup.m_lightIntensityNight,
-                    m_sunAngle = setup.m_sunAngle,
-                    m_windMin = setup.m_windMin,
-                    m_windMax = setup.m_windMax,
-                    m_psystemsOutsideOnly = setup.m_psystemsOutsideOnly,
-                    m_rainCloudAlpha = setup.m_rainCloudAlpha,
-                    m_ambientLoop = Resources.Load<AudioClip>(setup.m_ambientLoop),
-                    m_ambientVol = setup.m_ambientVol,
-                    m_ambientList = setup.m_ambientList,
-                    m_musicMorning = setup.m_musicMorning,
-                    m_musicEvening = setup.m_musicEvening,
-                    m_musicDay = setup.m_musicDay,
-                    m_musicNight = setup.m_musicNight
-                };
-                output.Add(newEnvSetup);
+            string rawData = File.ReadAllText(file);
+            if (workingAsType is WorkingAs.Server)
+            { 
+                SyncedCustomEnvironments.Value.Add(rawData);
             }
-
-            return output;
+            WeatherSetup setup = deserializer.Deserialize<WeatherSetup>(rawData);
+            EnvSetup newEnvSetup = new EnvSetup()
+            {
+                m_name = setup.m_name,
+                m_default = setup.m_default,
+                m_isWet = setup.m_isWet,
+                m_isFreezing = setup.m_isFreezing,
+                m_isFreezingAtNight = setup.m_isFreezingAtNight,
+                m_isCold = setup.m_isCold,
+                m_isColdAtNight = setup.m_isColdAtNight,
+                m_alwaysDark = setup.m_alwaysDark,
+                m_ambColorNight = GetColorFromString(setup.m_ambColorNight),
+                m_ambColorDay = GetColorFromString(setup.m_ambColorDay),
+                m_fogColorNight = GetColorFromString(setup.m_fogColorNight),
+                m_fogColorMorning = GetColorFromString(setup.m_fogColorMorning),
+                m_fogColorDay = GetColorFromString(setup.m_fogColorDay),
+                m_fogColorEvening = GetColorFromString(setup.m_fogColorEvening),
+                m_fogColorSunNight = GetColorFromString(setup.m_fogColorSunNight),
+                m_fogColorSunMorning = GetColorFromString(setup.m_fogColorSunMorning),
+                m_fogColorSunDay = GetColorFromString(setup.m_fogColorSunDay),
+                m_fogColorSunEvening = GetColorFromString(setup.m_fogColorSunEvening),
+                m_fogDensityNight = setup.m_fogDensityNight,
+                m_fogDensityMorning = setup.m_fogDensityMorning,
+                m_fogDensityDay = setup.m_fogDensityDay,
+                m_fogDensityEvening = setup.m_fogDensityEvening,
+                m_sunColorNight = GetColorFromString(setup.m_sunColorNight),
+                m_sunColorMorning = GetColorFromString(setup.m_sunColorMorning),
+                m_sunColorDay = GetColorFromString(setup.m_sunColorDay),
+                m_sunColorEvening = GetColorFromString(setup.m_sunColorEvening),
+                m_lightIntensityDay = setup.m_lightIntensityDay,
+                m_lightIntensityNight = setup.m_lightIntensityNight,
+                m_sunAngle = setup.m_sunAngle,
+                m_windMin = setup.m_windMin,
+                m_windMax = setup.m_windMax,
+                m_psystemsOutsideOnly = setup.m_psystemsOutsideOnly,
+                m_rainCloudAlpha = setup.m_rainCloudAlpha,
+                m_ambientLoop = Resources.Load<AudioClip>(setup.m_ambientLoop),
+                m_ambientVol = setup.m_ambientVol,
+                m_ambientList = setup.m_ambientList,
+                m_musicMorning = setup.m_musicMorning,
+                m_musicEvening = setup.m_musicEvening,
+                m_musicDay = setup.m_musicDay,
+                m_musicNight = setup.m_musicNight
+            };
+            output.Add(newEnvSetup);
         }
+
+        return output;
+    }
     private static void AddToEntries(List<Environments> environments, List<EnvEntry> entries)
     {
         foreach (Environments value in environments)
@@ -567,6 +564,7 @@ public static class Environment
     }
 
     private static Heightmap.Biome lastBiome = Heightmap.Biome.None;
+    private static Season lastSeason = Season.Fall;
     private static string currentEnv = null!;
     private static bool WeatherTweaked;
 
@@ -1170,32 +1168,27 @@ public static class Environment
 
             if (configs.TrueForAll(x => x is Environments.None) && _YamlConfigurations.Value is Toggle.Off)
             {
-                if (__instance.m_currentEnv.m_name == currentEnv) return true;
-                SetWeatherMan(__instance.m_currentEnv.m_name);
-                currentEnv = __instance.m_currentEnv.m_name;
-                WeatherTweaked = false;
-                return true;
+                return SetDefaultEnvironment(__instance, currentBiome);
             }
 
-            if (_YamlConfigurations.Value is Toggle.Off) AddToEntries(configs, entries);
-
-            if (_YamlConfigurations.Value is Toggle.On && entries.Count == 0)
+            switch (_YamlConfigurations.Value)
             {
-                if (__instance.m_currentEnv.m_name == currentEnv) return true;
-                SetWeatherMan(__instance.m_currentEnv.m_name);
-                currentEnv = __instance.m_currentEnv.m_name;
-                WeatherTweaked = false;
-                return true;
+                case Toggle.Off:
+                    AddToEntries(configs, entries);
+                    break;
+                case Toggle.On when entries.Count == 0:
+                    return SetDefaultEnvironment(__instance, currentBiome);
             }
 
             // If client is server
             if (ZNet.instance.IsServer()) return LocalWeatherMan(__instance, sec, entries, currentBiome);
             
             // If client is connected to server, then use server index
-            if (lastBiome != currentBiome)
+            if (lastBiome != currentBiome || lastSeason != _Season.Value)
             {
                 ServerSyncedChangeWeather(currentBiome, __instance, entries, sec, false);
                 lastBiome = currentBiome;
+                lastSeason = _Season.Value;
             }
             
             long duration = _WeatherDuration.Value * 60; // Total seconds
@@ -1212,6 +1205,29 @@ public static class Environment
                 ServerSyncedChangeWeather(currentBiome, __instance, entries, sec);
             }
             return false;
+        }
+
+        private static bool SetDefaultEnvironment(EnvMan __instance, Heightmap.Biome biome)
+        {
+            // if (__instance.m_currentEnv.m_name == currentEnv) return true;
+            // SetWeatherMan(__instance.m_currentEnv.m_name);
+            // currentEnv = __instance.m_currentEnv.m_name;
+            // WeatherTweaked = false;
+            // return true;
+            if (lastSeason == _Season.Value) return true;
+            List<EnvEntry> availableEnvironments = __instance.GetAvailableEnvironments(biome);
+            EnvSetup selectedEnvironment = __instance.SelectWeightedEnvironment(availableEnvironments);
+            if (availableEnvironments != null && availableEnvironments.Count > 0)
+            {
+                __instance.QueueEnvironment(selectedEnvironment);
+                if (selectedEnvironment.m_name == currentEnv) return false;
+                SetWeatherMan(selectedEnvironment.m_name);
+                currentEnv = selectedEnvironment.m_name;
+                WeatherTweaked = false;
+                lastSeason = _Season.Value;
+                return false;
+            }
+            return true;
         }
         private static void ServerSyncedWeatherMan(EnvMan __instance)
         {
@@ -1848,8 +1864,9 @@ public static class Environment
                 if (resetTimer) lastEnvironmentChange = sec;
                 WeatherTweaked = true;
             }
-            catch (IndexOutOfRangeException)
+            catch (Exception)
             {
+                SeasonalityLogger.LogDebug("Failed to use server synced weather, using local data");
                 LocalWeatherMan(__instance, sec, entries, currentBiome);
             }
         }
@@ -1874,10 +1891,11 @@ public static class Environment
         private static bool LocalWeatherMan(EnvMan __instance, long sec, List<EnvEntry> environments, Heightmap.Biome biome)
         {
             // If client changes biome before timer runs out
-            if (lastBiome != biome)
+            if (lastBiome != biome || lastSeason != _Season.Value)
             {
                 ChangeWeather(__instance, environments, sec);
                 lastBiome = biome;
+                lastSeason = _Season.Value;
             }
             
             long duration = _WeatherDuration.Value * 60; // Total seconds

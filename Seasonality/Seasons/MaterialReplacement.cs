@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Seasons.CustomTextures;
 
@@ -465,7 +466,8 @@ public static class MaterialReplacer
             { "wraith", CreatureDirectories.Wraith },
             { "blob", CreatureDirectories.Blob },
             { "blob_elite", CreatureDirectories.Oozer },
-            { "gjall_mat", CreatureDirectories.Gjall }
+            { "gjall_mat", CreatureDirectories.Gjall },
+            { "Skeleton", CreatureDirectories.Skeleton }
 
         };
         foreach (KeyValuePair<string, CreatureDirectories> kvp in CreatureReplacementMap)
@@ -610,10 +612,10 @@ public static class MaterialReplacer
             { "custom_shrub_heath_2", VegDirectories.Shrub },
             { "custom_shrub_heath_3", VegDirectories.Shrub },
             
-            { "custom_Vines_Mat_0", VegDirectories.Vines },
-            { "custom_Vines_Mat_1", VegDirectories.Vines },
-            { "custom_Vines_Mat_2", VegDirectories.Vines },
-            { "custom_Vines_Mat_3", VegDirectories.Vines },
+            // { "custom_Vines_Mat_0", VegDirectories.Vines },
+            // { "custom_Vines_Mat_1", VegDirectories.Vines },
+            // { "custom_Vines_Mat_2", VegDirectories.Vines },
+            // { "custom_Vines_Mat_3", VegDirectories.Vines },
             
             { "custom_Shoot_Leaf_mat_0", VegDirectories.YggaShoot },
             { "custom_Shoot_Leaf_mat_1", VegDirectories.YggaShoot },

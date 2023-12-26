@@ -36,6 +36,7 @@ public static class ConsoleCommands
                 ), isCheat: false, optionsFetcher: ((Terminal.ConsoleOptionsFetcher) (() => new List<string>(){"help"})));
             
             ConfigCommands();
+            SearchCommands();
         }
 
         private static void ConfigCommands()
@@ -114,17 +115,20 @@ public static class ConsoleCommands
                     SeasonalityLogger.LogInfo(kvp.Key + ": " + kvp.Value.name);
                 }
             });
+        }
 
+        private static void SearchCommands()
+        {
             Terminal.ConsoleCommand SearchCachedMaterials = new("search_materials", "", (Terminal.ConsoleEventFailable)(
                 args =>
                 {
                     if (args.Length < 2) return false;
                     SeasonalityLogger.LogInfo("Material search results: ");
-                    foreach (var mat in MaterialReplacer.CachedMaterials)
+                    foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CachedMaterials)
                     {
-                        if (mat.Key.Contains(args[1]) || mat.Key.StartsWith(args[1]) || mat.Key.EndsWith(args[1]))
+                        if (kvp.Key.Contains(args[1]) || kvp.Key.StartsWith(args[1]) || kvp.Key.EndsWith(args[1]))
                         {
-                            SeasonalityLogger.LogInfo(mat.Key + " = " + mat.Value.name);
+                            SeasonalityLogger.LogInfo(kvp.Key + " = " + kvp.Value.name);
                         }
                     }
                     return true;
@@ -134,18 +138,13 @@ public static class ConsoleCommands
                 args =>
                 {
                     if (args.Length < 2) return false;
-                    List<string> results = new();
-                    foreach (var kvp in MaterialReplacer.CachedTextures)
+                    SeasonalityLogger.LogInfo("Texture search results: ");
+                    foreach (KeyValuePair<string, Texture> kvp in MaterialReplacer.CachedTextures)
                     {
-                        if (kvp.Key.Contains(args[1]))
+                        if (kvp.Key.Contains(args[1]) || kvp.Key.StartsWith(args[1]) || kvp.Key.EndsWith(args[1]))
                         {
-                            results.Add($"{kvp.Key} = {kvp.Value}");
+                            SeasonalityLogger.LogInfo($"{kvp.Key} = {kvp.Value}");
                         }
-                    }
-                    SeasonalityLogger.LogInfo("Texture search results:");
-                    foreach (string output in results)
-                    {
-                        SeasonalityLogger.LogInfo(output);
                     }
                     return true;
                 }),isSecret:true);
@@ -172,34 +171,56 @@ public static class ConsoleCommands
                 return true;
             }),isSecret:true);
             
-            Terminal.ConsoleCommand SearchCustomTextures = new("search_custom_materials", "", (Terminal.ConsoleEventFailable)(
+            Terminal.ConsoleCommand SearchCustomMaterials = new("search_custom_materials", "", (Terminal.ConsoleEventFailable)(
                 args =>
                 {
                     if (args.Length < 2)
                     {
-                        foreach (var kvp in MaterialReplacer.CustomMaterials)
+                        foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CustomMaterials)
                         {
                             SeasonalityLogger.LogInfo(kvp.Key + " = " + kvp.Value);
                         }
                     }
                     else
                     {
-                        List<string> results = new();
+                        SeasonalityLogger.LogInfo("Custom material search results:");
+
                         foreach (var kvp in MaterialReplacer.CustomMaterials)
                         {
-                            if (kvp.Key.Contains(args[1]))
+                            if (kvp.Key.Contains(args[1]) || kvp.Key.StartsWith(args[1]) || kvp.Key.EndsWith(args[1]))
                             {
-                                results.Add($"{kvp.Key} = {kvp.Value}");
+                                SeasonalityLogger.LogInfo($"{kvp.Key} = {kvp.Value}");
                             }
-                        }
-                        SeasonalityLogger.LogInfo("Texture search results:");
-                        foreach (string output in results)
-                        {
-                            SeasonalityLogger.LogInfo(output);
                         }
                     }
                     return true;
                 }),isSecret:true);
+
+            Terminal.ConsoleCommand SearchShaders = new("search_shaders", "", (Terminal.ConsoleEventFailable)(args =>
+            {
+                SeasonalityLogger.LogInfo("Shader search results: ");
+                if (args.Length < 2)
+                {
+                    foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CachedMaterials)
+                    {
+                        if (!kvp.Value) continue;
+                        SeasonalityLogger.LogInfo(kvp.Value.shader.name);
+                    }
+                };
+                foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CachedMaterials)
+                {
+                    if (!kvp.Value) continue;
+                    Shader? shader = kvp.Value.shader;
+                    if (!shader) continue;
+                    if (shader.name.Contains(args[1]) || shader.name.StartsWith(args[1]) ||
+                        shader.name.EndsWith(args[1]))
+                    {
+                        SeasonalityLogger.LogInfo($"{kvp.Key} = {kvp.Value} = {shader.name}");
+                    }
+                }
+                
+                return true;
+            }),isSecret:true);
         }
     }
 }
