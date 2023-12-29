@@ -16,6 +16,7 @@ public static class Environment
 {
     private static readonly CustomSyncedValue<string> SyncedWeatherData = new(SeasonalityPlugin.ConfigSync, "ServerWeather", "");
     private static readonly CustomSyncedValue<List<string>> SyncedCustomEnvironments = new(SeasonalityPlugin.ConfigSync, "ServerEnvironments", new());
+    
     private static void UpdateServerWeatherMan()
     {
         ISerializer serializer = new SerializerBuilder().Build();
@@ -589,7 +590,7 @@ public static class Environment
                 Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
                 return true;
             }
-            
+
             if (workingAsType is WorkingAs.Server)
             {
                 ServerSyncedWeatherMan(__instance);
@@ -613,6 +614,11 @@ public static class Environment
 
             if (!Player.m_localPlayer) return true;
             if (Player.m_localPlayer.IsDead()) return true;
+
+            if (!Player.m_localPlayer.GetSEMan().HaveStatusEffect("WeatherMan_SE".GetStableHashCode()))
+            {
+                SetWeatherMan(__instance.m_currentEnv.m_name);
+            }
             
             Heightmap.Biome currentBiome = Heightmap.FindBiome(Player.m_localPlayer.transform.position);
             if (currentBiome == Heightmap.Biome.None) return false;
@@ -1186,6 +1192,7 @@ public static class Environment
             // If client is connected to server, then use server index
             if (lastBiome != currentBiome || lastSeason != _Season.Value)
             {
+                if (SyncedWeatherData.Value == "") return LocalWeatherMan(__instance, sec, entries, currentBiome);
                 ServerSyncedChangeWeather(currentBiome, __instance, entries, sec, false);
                 lastBiome = currentBiome;
                 lastSeason = _Season.Value;
@@ -1214,17 +1221,23 @@ public static class Environment
             // currentEnv = __instance.m_currentEnv.m_name;
             // WeatherTweaked = false;
             // return true;
-            if (lastSeason == _Season.Value) return true;
+            if (currentEnv != __instance.m_currentEnv.m_name)
+            {
+                SetWeatherMan(__instance.m_currentEnv.m_name);
+                currentEnv = __instance.m_currentEnv.m_name;
+            }
+            if (lastSeason == _Season.Value && lastBiome == biome) return true;
             List<EnvEntry> availableEnvironments = __instance.GetAvailableEnvironments(biome);
             EnvSetup selectedEnvironment = __instance.SelectWeightedEnvironment(availableEnvironments);
             if (availableEnvironments != null && availableEnvironments.Count > 0)
             {
                 __instance.QueueEnvironment(selectedEnvironment);
-                if (selectedEnvironment.m_name == currentEnv) return false;
+                if (selectedEnvironment.m_name == currentEnv) return true;
                 SetWeatherMan(selectedEnvironment.m_name);
                 currentEnv = selectedEnvironment.m_name;
                 WeatherTweaked = false;
                 lastSeason = _Season.Value;
+                lastBiome = biome;
                 return false;
             }
             return true;

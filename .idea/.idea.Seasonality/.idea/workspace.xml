@@ -3,14 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/AttachToModel.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/CachePrefabs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/CachePrefabs.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/ConsoleCommands.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/ConsoleCommands.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/CustomTextures.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/CustomTextures.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/Terrain.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/Terrain.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +31,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/7a/bc860bc2/HitData.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/b3/d6adf5f6/EnvMan.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/b4/d7b665fb/EnvSetup.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/e1/f14429fe/SEMan.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/105da1159ec9496ab9310694c7b11dd2532bb0/2c/ca63fda7/Object.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/105da1159ec9496ab9310694c7b11dd2532bb0/6c/fc25fff5/Enum.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/105da1159ec9496ab9310694c7b11dd2532bb0/c8/0237e93f/Action.cs" root0="SKIP_HIGHLIGHTING" />
@@ -205,7 +200,9 @@
       <workItem from="1703343377107" duration="7901000" />
       <workItem from="1703430552436" duration="17584000" />
       <workItem from="1703523659934" duration="16050000" />
-      <workItem from="1703602255638" duration="454000" />
+      <workItem from="1703602255638" duration="2262000" />
+      <workItem from="1703780433578" duration="2912000" />
+      <workItem from="1703887605757" duration="1162000" />
     </task>
     <servers />
   </component>
