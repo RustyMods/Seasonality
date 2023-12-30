@@ -10,7 +10,6 @@ namespace Seasonality.Seasons;
 
 public static class CustomTextures
 {
-    
     public static readonly Sprite? ValknutIcon = RegisterSprite("valknutIcon.png");
     public static readonly Texture? MistLands_Moss = RegisterTexture("mistlands_moss.png");
     public static readonly Texture? Mistlands_Rock_Plant = RegisterTexture("MistlandsVegetation_d.png");
@@ -19,6 +18,7 @@ public static class CustomTextures
     public static readonly Dictionary<CreatureDirectories, Dictionary<string, Texture?>> CustomRegisteredCreatureTex = new();
     public static readonly Dictionary<PieceDirectories, Dictionary<string, Texture?>> CustomRegisteredPieceTextures = new();
     public static readonly Dictionary<PickableDirectories, Dictionary<string, Texture?>> CustomRegisteredPickableTex = new();
+    public static readonly Dictionary<ArmorDirectories, Dictionary<string, Texture?>> CustomRegisteredArmorTex = new();
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -88,6 +88,7 @@ public static class CustomTextures
     private static readonly string creatureTexPath = folderPath + Path.DirectorySeparatorChar + "Creatures";
     private static readonly string PieceTexPath = folderPath + Path.DirectorySeparatorChar + "Pieces";
     private static readonly string PickableTexturePath = folderPath + Path.DirectorySeparatorChar + "Pickables";
+    private static readonly string ArmorTexPath = folderPath + Path.DirectorySeparatorChar + "Armors";
 
     public enum PickableDirectories
     {
@@ -154,7 +155,6 @@ public static class CustomTextures
         YggdrasilSkyTree,
         None
     }
-
     public enum PieceDirectories
     {
         None,
@@ -162,11 +162,11 @@ public static class CustomTextures
         DarkWood,
         GoblinVillage
     }
-
     public enum CreatureDirectories
     {
         None,
         Lox,
+        LoxCalf,
         Troll,
         Hare,
         Tick,
@@ -182,19 +182,23 @@ public static class CustomTextures
         Skeleton
     }
 
-    public static bool HDPackLoaded;
-    public static void ReadCustomTextures()
+    public enum ArmorDirectories
     {
-        // Create directories if they are missing
-        if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
-        if (!Directory.Exists(VegTexturePath)) Directory.CreateDirectory(VegTexturePath);
+        None,
+        Rags,
+        Leather,
+        Troll,
+        Bronze,
+        Iron,
+        Wolf,
+        Padded,
+        Carapace,
+        Mage
+    }
 
-        if (File.Exists(folderPath + Path.DirectorySeparatorChar + "WillyBachHD.md"))
-        {
-            SeasonalityLogger.LogInfo("Willybach HD loaded");
-            HDPackLoaded = true;
-        }
-
+    public static bool HDPackLoaded;
+    private static void ReadVegDirectories()
+    {
         foreach (VegDirectories directory in Enum.GetValues(typeof(VegDirectories)))
         {
             if (directory is VegDirectories.None) continue;
@@ -217,9 +221,10 @@ public static class CustomTextures
                     CustomRegisteredTextures.Add(directory, map);
                     break;
             }
-            
         }
-
+    }
+    private static void ReadCreatureDirectories()
+    {
         foreach (CreatureDirectories creatureDir in Enum.GetValues(typeof(CreatureDirectories)))
         {
             if (creatureDir is CreatureDirectories.None) continue;
@@ -233,7 +238,9 @@ public static class CustomTextures
             if (map.Count == 0) continue;
             CustomRegisteredCreatureTex.Add(creatureDir, map);
         }
-        
+    }
+    private static void ReadPieceDirectories()
+    {
         foreach (PieceDirectories pieceDir in Enum.GetValues(typeof(PieceDirectories)))
         {
             if (pieceDir is PieceDirectories.None) continue;
@@ -247,7 +254,9 @@ public static class CustomTextures
             if (map.Count == 0) continue;
             CustomRegisteredPieceTextures.Add(pieceDir, map);
         }
-        
+    }
+    private static void ReadPickableDirectories()
+    {
         foreach (PickableDirectories pickableDir in Enum.GetValues(typeof(PickableDirectories)))
         {
             if (pickableDir is PickableDirectories.None) continue;
@@ -262,102 +271,220 @@ public static class CustomTextures
             CustomRegisteredPickableTex.Add(pickableDir, map);
         }
     }
+    private static void ReadArmorDirectories()
+    {
+        foreach (ArmorDirectories armorDir in Enum.GetValues(typeof(ArmorDirectories)))
+        {
+            if (armorDir is ArmorDirectories.None) continue;
+            string type = armorDir.ToString();
+            if (!Directory.Exists(ArmorTexPath + Path.DirectorySeparatorChar + type))
+            {
+                Directory.CreateDirectory(ArmorTexPath + Path.DirectorySeparatorChar + type);
+            }
+            Dictionary<string, Texture?> map = RegisterCustomTextures(type, ArmorTexPath,  filterMode: FilterMode.Point);
+            if (map.Count == 0) continue;
+            CustomRegisteredArmorTex.Add(armorDir, map);
+        }
+    }
+    public static void ReadCustomTextures()
+    {
+        // Create directories if they are missing
+        if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+        if (!Directory.Exists(VegTexturePath)) Directory.CreateDirectory(VegTexturePath);
 
+        if (File.Exists(folderPath + Path.DirectorySeparatorChar + "WillyBachHD.md"))
+        {
+            SeasonalityLogger.LogInfo("Willybach HD loaded");
+            HDPackLoaded = true;
+        }
+
+        ReadVegDirectories();
+        ReadCreatureDirectories();
+        ReadPieceDirectories();
+        ReadPickableDirectories();
+        ReadArmorDirectories();
+    }
+    private static void GetTexture(Dictionary<string, Texture?> textureMap, Season season, string path, string type, TextureFormat textureFormat, FilterMode filterMode)
+    {
+        string filePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + ".png");
+        string message = type + "/" + season.ToString().ToLower() + ".png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}"; // Beech/spring.png
+        if (!File.Exists(filePath)) return;
+        Texture? tex = RegisterCustomTexture(filePath, textureFormat, filterMode);
+        if (!tex)
+        {
+            SeasonalityLogger.LogDebug($"Failed: {message}");
+            return;
+        }
+        textureMap.Add(season.ToString(), tex);
+        SeasonalityLogger.LogDebug($"Registered: {message}");
+    }
+    private static void GetBark(Dictionary<string, Texture?> textureMap, Season season, string path, string type, TextureFormat textureFormat, FilterMode filterMode)
+    {
+        string BarkFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_bark.png");
+        string barkMessage = type + "/" + season.ToString().ToLower() + "_bark.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+
+        if (!File.Exists(BarkFilePath)) return;
+        Texture? tex = RegisterCustomTexture(BarkFilePath, textureFormat, filterMode, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
+        if (!tex)
+        {
+            SeasonalityLogger.LogDebug($"Failed: {barkMessage}");
+            return;
+        }
+        textureMap.Add(season + "_bark", tex);
+        SeasonalityLogger.LogDebug($"Registered: {barkMessage}");
+    }
+    private static void GetNormal(Dictionary<string, Texture?> textureMap, Season season, string path, string type, TextureFormat textureFormat, FilterMode filterMode)
+    {
+        string NormalFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_normal.png");
+        string NormalMessage = type + "/" + season.ToString().ToLower() + "_normal.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+
+        if (!File.Exists(NormalFilePath)) return;
+        Texture? tex = RegisterCustomTexture(NormalFilePath, textureFormat, filterMode, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
+        if (!tex)
+        {
+            SeasonalityLogger.LogDebug($"Failed: {NormalMessage}");
+            return;
+        }
+        textureMap.Add(season + "_normal", tex);
+        SeasonalityLogger.LogDebug($"Registered: {NormalMessage}");
+    }
+    private static void GetWorn(Dictionary<string, Texture?> textureMap, Season season, string path, string type, TextureFormat textureFormat, FilterMode filterMode)
+    {
+        string WornFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_worn.png");
+        string WornMessage = type + "/" + season.ToString().ToLower() + "_worn.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+
+        if (File.Exists(WornFilePath))
+        {
+            Texture? tex = RegisterCustomTexture(WornFilePath, textureFormat, filterMode, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
+            if (!tex)
+            {
+                SeasonalityLogger.LogDebug($"Failed: {WornMessage}");
+                return;
+            }
+            textureMap.Add(season + "_worn", tex);
+            SeasonalityLogger.LogDebug($"Registered: {WornMessage}");
+        }
+    }
+    private static void GetCorner(Dictionary<string, Texture?> textureMap, Season season, string path, string type, TextureFormat textureFormat, FilterMode filterMode)
+    {
+        string CornerFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_corner.png");
+        string CornerMessage = type + "/" + season.ToString().ToLower() + "_corner.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            
+        if (File.Exists(CornerFilePath))
+        {
+            Texture? tex = RegisterCustomTexture(CornerFilePath, textureFormat, filterMode, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
+            if (!tex)
+            {
+                SeasonalityLogger.LogDebug($"Failed: {CornerMessage}");
+                return;
+            }
+            textureMap.Add(season + "_corner", tex);
+            SeasonalityLogger.LogDebug($"Registered: {CornerMessage}");
+        }
+    }
+    private static void GetCornerWorn(Dictionary<string, Texture?> textureMap, Season season, string path, string type, TextureFormat textureFormat, FilterMode filterMode)
+    {
+        string CornerWornFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_corner_worn.png");
+        string CornerWornMessage = type + "/" + season.ToString().ToLower() + "_corner_worn.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            
+        if (File.Exists(CornerWornFilePath))
+        {
+            Texture? tex = RegisterCustomTexture(CornerWornFilePath, textureFormat, filterMode, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
+            if (!tex)
+            {
+                SeasonalityLogger.LogDebug($"Failed: {CornerWornMessage}");
+                return;
+            }
+            textureMap.Add(season + "_corner_worn", tex);
+            SeasonalityLogger.LogDebug($"Registered: {CornerWornMessage}");
+        }
+    }
+    private static void GetLegs(Dictionary<string, Texture?> textureMap, Season season, string path, string type, TextureFormat textureFormat, FilterMode filterMode)
+    {
+        string LegFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_legs.png");
+        string LegMessage = type + "/" + season.ToString().ToLower() + "_legs.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            
+        if (File.Exists(LegFilePath))
+        {
+            Texture? tex = RegisterCustomTexture(LegFilePath, textureFormat, filterMode, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat);
+            if (!tex)
+            {
+                SeasonalityLogger.LogDebug($"Failed: {LegMessage}");
+                return;
+            }
+            textureMap.Add(season + "_legs", tex);
+            SeasonalityLogger.LogDebug($"Registered: {LegMessage}");
+        }
+    }
+    private static void getChest(Dictionary<string, Texture?> textureMap, Season season, string path, string type, TextureFormat textureFormat, FilterMode filterMode)
+    {
+        string ChestFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_chest.png");
+        string ChestMessage = type + "/" + season.ToString().ToLower() + "_chest.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            
+        if (File.Exists(ChestFilePath))
+        {
+            Texture? tex = RegisterCustomTexture(ChestFilePath, textureFormat, filterMode, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat);
+            if (!tex)
+            {
+                SeasonalityLogger.LogDebug($"Failed: {ChestMessage}");
+                return;
+            }
+            textureMap.Add(season + "_chest", tex);
+            SeasonalityLogger.LogDebug($"Registered: {ChestMessage}");
+        }
+    }
+    private static void GetCape(Dictionary<string, Texture?> textureMap, Season season, string path, string type,
+        TextureFormat textureFormat, FilterMode filterMode)
+    {
+        string CapeFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_cape.png");
+        string CapeMessage = type + "/" + season.ToString().ToLower() + "_cape.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            
+        if (File.Exists(CapeFilePath))
+        {
+            Texture? tex = RegisterCustomTexture(CapeFilePath, textureFormat, filterMode, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat);
+            if (!tex)
+            {
+                SeasonalityLogger.LogDebug($"Failed: {CapeMessage}");
+                return;
+            }
+            textureMap.Add(season + "_cape", tex);
+            SeasonalityLogger.LogDebug($"Registered: {CapeMessage}");
+        }
+    }
+    private static void GetHelmet(Dictionary<string, Texture?> textureMap, Season season, string path, string type,
+        TextureFormat textureFormat, FilterMode filterMode)
+    {
+        string HelmetFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_helmet.png");
+        string HelmetMessage = type + "/" + season.ToString().ToLower() + "_helmet.png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}";
+            
+        if (File.Exists(HelmetFilePath))
+        {
+            Texture? tex = RegisterCustomTexture(HelmetFilePath, textureFormat, filterMode, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat);
+            if (!tex)
+            {
+                SeasonalityLogger.LogDebug($"Failed: {HelmetMessage}");
+                return;
+            }
+            textureMap.Add(season + "_helmet", tex);
+            SeasonalityLogger.LogDebug($"Registered: {HelmetMessage}");
+        }
+    }
     private static Dictionary<string, Texture?> RegisterCustomTextures(string type, string path, TextureFormat textureFormat = TextureFormat.DXT5, FilterMode filterMode = FilterMode.Trilinear)
     {
         Dictionary<string, Texture?> textureMap = new();
 
         foreach (Season season in Enum.GetValues(typeof(Season)))
         {
-            string filePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + ".png");
-            string message = type + "/" + season.ToString().ToLower() + ".png" + $" compressed as {textureFormat.ToString()}, filter {filterMode.ToString()}"; // Beech/spring.png
-            if (File.Exists(filePath))
-            {
-                Texture? tex = RegisterCustomTexture(filePath, textureFormat, filterMode);
-                if (!tex)
-                {
-                    SeasonalityLogger.LogDebug($"Failed: {message}");
-                    continue;
-                }
-                textureMap.Add(season.ToString(), tex);
-                SeasonalityLogger.LogDebug($"Registered: {message}");
-            };
-            
-            string BarkFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_bark.png");
-            string barkMessage = type + "/" + season.ToString().ToLower() + "_bark.png" + $" compressed as {TextureFormat.BC7.ToString()}, filter {FilterMode.Point.ToString()}";
-
-            if (File.Exists(BarkFilePath))
-            {
-                Texture? tex = RegisterCustomTexture(BarkFilePath, TextureFormat.BC7, FilterMode.Point, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
-                if (!tex)
-                {
-                    SeasonalityLogger.LogDebug($"Failed: {barkMessage}");
-                    continue;
-                }
-                textureMap.Add(season.ToString() + "_bark", tex);
-                SeasonalityLogger.LogDebug($"Registered: {barkMessage}");
-            }
-            
-            string NormalFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_normal.png");
-            string NormalMessage = type + "/" + season.ToString().ToLower() + "_normal.png" + $" compressed as {TextureFormat.BC7.ToString()}, filter {FilterMode.Point.ToString()}";
-
-            if (File.Exists(NormalFilePath))
-            {
-                Texture? tex = RegisterCustomTexture(NormalFilePath, TextureFormat.BC7, FilterMode.Point, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
-                if (!tex)
-                {
-                    SeasonalityLogger.LogDebug($"Failed: {NormalMessage}");
-                    continue;
-                }
-                textureMap.Add(season.ToString() + "_normal", tex);
-                SeasonalityLogger.LogDebug($"Registered: {NormalMessage}");
-            }
-            
-
-            string WornFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_worn.png");
-            string WornMessage = type + "/" + season.ToString().ToLower() + "_worn.png" + $" compressed as {TextureFormat.BC7.ToString()}, filter {FilterMode.Point.ToString()}";
-
-            if (File.Exists(WornFilePath))
-            {
-                Texture? tex = RegisterCustomTexture(WornFilePath, TextureFormat.BC7, FilterMode.Point, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
-                if (!tex)
-                {
-                    SeasonalityLogger.LogDebug($"Failed: {WornMessage}");
-                    continue;
-                }
-                textureMap.Add(season.ToString() + "_worn", tex);
-                SeasonalityLogger.LogDebug($"Registered: {WornMessage}");
-            }
-
-            string CornerFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_corner.png");
-            string CornerMessage = type + "/" + season.ToString().ToLower() + "_corner.png" + $" compressed as {TextureFormat.BC7.ToString()}, filter {FilterMode.Point.ToString()}";
-            
-            if (File.Exists(CornerFilePath))
-            {
-                Texture? tex = RegisterCustomTexture(CornerFilePath, TextureFormat.BC7, FilterMode.Point, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
-                if (!tex)
-                {
-                    SeasonalityLogger.LogDebug($"Failed: {CornerMessage}");
-                    continue;
-                }
-                textureMap.Add(season.ToString() + "_corner", tex);
-                SeasonalityLogger.LogDebug($"Registered: {CornerMessage}");
-            }
-
-            string CornerWornFilePath = path + Path.DirectorySeparatorChar + type + Path.DirectorySeparatorChar + (season.ToString().ToLower() + "_corner_worn.png");
-            string CornerWornMessage = type + "/" + season.ToString().ToLower() + "_corner_worn.png" + $" compressed as {TextureFormat.BC7.ToString()}, filter {FilterMode.Point.ToString()}";
-            
-            if (File.Exists(CornerWornFilePath))
-            {
-                Texture? tex = RegisterCustomTexture(CornerWornFilePath, TextureFormat.BC7, FilterMode.Point, aniso: 1, mipMapBias: 0, wrap: TextureWrapMode.Repeat, true);
-                if (!tex)
-                {
-                    SeasonalityLogger.LogDebug($"Failed: {CornerWornMessage}");
-                    continue;
-                }
-                textureMap.Add(season.ToString() + "_corner_worn", tex);
-                SeasonalityLogger.LogDebug($"Registered: {CornerWornMessage}");
-            }
+            GetTexture(textureMap, season, path, type, textureFormat, filterMode);
+            GetBark(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
+            GetNormal(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
+            GetWorn(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
+            GetCorner(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
+            GetCornerWorn(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
+            getChest(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
+            GetLegs(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
+            GetCape(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
+            GetHelmet(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
         }
 
         return textureMap;

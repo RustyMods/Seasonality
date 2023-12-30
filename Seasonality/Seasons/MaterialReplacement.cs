@@ -12,6 +12,19 @@ public static class MaterialReplacer
     public static readonly Dictionary<string, Texture> CachedTextures = new();
     public static readonly Dictionary<string, Material> CachedMaterials = new();
     public static readonly Dictionary<string, Material> CustomMaterials = new();
+    private static readonly List<string> DefaultColorChange = new()
+    {
+        "CapeDeerHide",
+        "CapeTrollHide",
+        "helmet_trollleather"
+    };
+    private static readonly int ChestTex = Shader.PropertyToID("_ChestTex");
+    private static readonly int LegsTex = Shader.PropertyToID("_LegsTex");
+    private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+    private static readonly int MossTex = Shader.PropertyToID("_MossTex");
+    private static readonly int ColorProp = Shader.PropertyToID("_Color");
+    private static readonly int BumpMap = Shader.PropertyToID("_BumpMap");
+
 
     [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.Start))]
     static class ZoneSystemPatch
@@ -29,7 +42,15 @@ public static class MaterialReplacer
         foreach (Material item in allMats)
         {
             if (!item) continue;
-            CachedMaterials[item.name.Replace("(Instance)", "").Replace(" ", "")] = item;
+            string normalizedName = item.name.Replace("(Instance)", "").Replace(" ", "");
+            if (DefaultColorChange.Contains(normalizedName))
+            {
+                if (!HDPackLoaded)
+                {
+                    item.SetColor(ColorProp, Color.white);
+                }
+            }
+            CachedMaterials[normalizedName] = item;
         }
     }
     private static void GetAllTextures()
@@ -37,21 +58,12 @@ public static class MaterialReplacer
         foreach (Material material in CachedMaterials.Values)
         {
             if (!material) continue;
-            string[] properties = material.GetTexturePropertyNames();
-            if (Utils.FindTexturePropName(properties, "moss", out string mossProp))
-            {
-                Texture? tex = material.GetTexture(mossProp);
-                if (tex) CachedTextures[material.name.Replace("(Instance)", "").Replace(" ", "") + "_moss"] = tex;
-            }
-
-            if (Utils.FindTexturePropName(properties, "normal", out string normalProp))
-            {
-                Texture? normal = material.GetTexture(normalProp);
-                if (normal) CachedTextures[material.name.Replace("(Instance)", "").Replace(" ", "") + "_normal"] = normal;
-            }
-            if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) continue;
-            CachedTextures[material.name.Replace("(Instance)", "").Replace(" ", "")] = material.GetTexture(mainProp);
-            
+            string normalizedName = material.name.Replace("(Instance)", "").Replace(" ", "");
+            if (material.HasProperty(MainTex)) CachedTextures[normalizedName] = material.GetTexture(MainTex);
+            if (material.HasProperty(MossTex)) CachedTextures[normalizedName + "_moss"] = material.GetTexture(MossTex);
+            if (material.HasProperty(BumpMap)) CachedTextures[normalizedName + "_normal"] = material.GetTexture(BumpMap);
+            if (material.HasProperty(ChestTex)) CachedTextures[normalizedName + "_chest"] = material.GetTexture(ChestTex);
+            if (material.HasProperty(LegsTex)) CachedTextures[normalizedName + "_legs"] = material.GetTexture(LegsTex);
         }
     }
     private static void SetMossTexture(string materialName, Texture originalTex)
@@ -61,19 +73,16 @@ public static class MaterialReplacer
 
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
         
-        string[] properties = material.GetTexturePropertyNames();
-        if (!Utils.FindTexturePropName(properties, "moss", out string mossProp)) return;
-        
         switch (_Season.Value)
         {
             case Season.Winter:
-                material.SetTexture(mossProp, SnowMoss);
+                material.SetTexture(MossTex, SnowMoss);
                 break;
             case Season.Fall:
-                material.SetTexture(mossProp, HeathMoss);
+                material.SetTexture(MossTex, HeathMoss);
                 break;
             default:
-                material.SetTexture(mossProp, originalTex);
+                material.SetTexture(MossTex, originalTex);
                 break;
         }
     }
@@ -103,11 +112,22 @@ public static class MaterialReplacer
     private static void SetMainTexture(string materialName, Texture? tex)
     {
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
-        
-        string[] properties = material.GetTexturePropertyNames();
-        if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) return;
-        
-        material.SetTexture(mainProp, tex);
+        material.SetTexture(MainTex, tex);
+    }
+    private static void SetColor(string materialName, Color32 color)
+    {
+        if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
+        material.SetColor(ColorProp, color);
+    }
+    private static void SetChestTexture(string materialName, Texture? tex)
+    {
+        if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
+        material.SetTexture(ChestTex, tex);
+    }
+    private static void SetLegsTexture(string materialName, Texture? tex)
+    {
+        if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
+        material.SetTexture(LegsTex, tex);
     }
     private static void SetNormalTexture(string materialName, Texture? normal)
     {
@@ -149,12 +169,126 @@ public static class MaterialReplacer
         ModifyVegetation(); 
         ModifyCustomMaterials();
         ModifyPieceMaterials();
-        
         ModifyBarkMaterials();
         ModifyPickableMaterials();
         ModifyNormals();
+        if (_ReplaceArmorTextures.Value is Toggle.On) ModifyArmorMaterials();
     }
 
+    private static void ModifyArmorMaterials()
+    {
+        Dictionary<string, ArmorDirectories> ChestReplacementMap = new()
+        {
+            {"RagsChest",ArmorDirectories.Rags},
+            {"LeatherChest",ArmorDirectories.Leather},
+            {"TrollLeatherChest",ArmorDirectories.Troll},
+        };
+        Dictionary<string, ArmorDirectories> LegsReplacementMap = new()
+        {
+            {"RagsLegs",ArmorDirectories.Rags},
+            {"LeatherPants",ArmorDirectories.Leather},
+            {"TrollLeatherPants",ArmorDirectories.Troll}
+        };
+        Dictionary<string, ArmorDirectories> CapeReplacementMap = new()
+        {
+            {"CapeDeerHide", ArmorDirectories.Leather},
+            {"CapeTrollHide",ArmorDirectories.Troll},
+            {"WolfCape",ArmorDirectories.Wolf},
+            {"LoxCape_Mat",ArmorDirectories.Padded},
+            {"feathercape_mat",ArmorDirectories.Mage}
+        };
+        Dictionary<string, ArmorDirectories> HelmetReplacementMap = new()
+        {
+            {"helmet_leather_mat", ArmorDirectories.Leather},
+            {"helmet_trollleather",ArmorDirectories.Troll},
+            {"helmet_bronze_mat",ArmorDirectories.Bronze},
+            {"helmet_iron_mat",ArmorDirectories.Iron},
+            {"DragonVisor_Mat",ArmorDirectories.Wolf}
+        };
+        Dictionary<string, ArmorDirectories> ArmorReplacementMap = new()
+        {
+            {"BronzeArmorMesh_Mat",ArmorDirectories.Bronze},
+            {"IronArmorChest_mat",ArmorDirectories.Iron},
+            {"SilverArmourChest_mat", ArmorDirectories.Wolf},
+            {"Padded_mat",ArmorDirectories.Padded},
+            {"carapacearmor_mat",ArmorDirectories.Carapace},
+            {"MageArmor_mat",ArmorDirectories.Mage}
+        };
+        Dictionary<string, ArmorDirectories> ArmorLegsReplacementMap = new()
+        {
+            {"IronArmorLegs_mat",ArmorDirectories.Iron}
+        };
+        foreach (KeyValuePair<string, ArmorDirectories> kvp in ChestReplacementMap)
+        {
+            Texture? texture = GetCustomTexture(kvp.Value, kvp.Key);
+            if (!texture)
+            {
+                if (!CachedTextures.TryGetValue(kvp.Key + "_chest", out Texture tex)) continue;
+                SetChestTexture(kvp.Key, tex);
+                continue;
+            }
+            SetChestTexture(kvp.Key, texture);
+        }
+
+        foreach (KeyValuePair<string, ArmorDirectories> kvp in LegsReplacementMap)
+        {
+            Texture? texture = GetCustomTexture(kvp.Value, kvp.Key,  true);
+            if (!texture)
+            {
+                if (!CachedTextures.TryGetValue(kvp.Key + "_legs", out Texture tex)) continue;
+                SetLegsTexture(kvp.Key, tex);
+                continue;
+            }
+            SetLegsTexture(kvp.Key, texture);
+        }
+
+        foreach (KeyValuePair<string, ArmorDirectories> kvp in CapeReplacementMap)
+        {
+            Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, isCape: true);
+            if (!texture)
+            {
+                if (!CachedTextures.TryGetValue(kvp.Key + "_cape", out Texture tex)) continue;
+                SetMainTexture(kvp.Key, tex);
+                continue;
+            }
+            SetMainTexture(kvp.Key, texture);
+        }
+
+        foreach (KeyValuePair<string, ArmorDirectories> kvp in HelmetReplacementMap)
+        {
+            Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, isHelmet: true);
+            if (!texture)
+            {
+                if (!CachedTextures.TryGetValue(kvp.Key, out Texture tex)) continue;
+                SetMainTexture(kvp.Key, tex);
+                continue;
+            }
+            SetMainTexture(kvp.Key, texture);
+        }
+
+        foreach (KeyValuePair<string, ArmorDirectories> kvp in ArmorReplacementMap)
+        {
+            Texture? texture = GetCustomTexture(kvp.Value, kvp.Key);
+            if (!texture)
+            {
+                if (!CachedTextures.TryGetValue(kvp.Key, out Texture tex)) continue;
+                SetMainTexture(kvp.Key, tex);
+                continue;
+            }
+            SetMainTexture(kvp.Key, texture);
+        }
+        foreach (KeyValuePair<string, ArmorDirectories> kvp in ArmorLegsReplacementMap)
+        {
+            Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, isLegs: true);
+            if (!texture)
+            {
+                if (!CachedTextures.TryGetValue(kvp.Key, out Texture tex)) continue;
+                SetMainTexture(kvp.Key, tex);
+                continue;
+            }
+            SetMainTexture(kvp.Key, texture);
+        }
+    }
     private static void ModifyPieceMaterials()
     {
         Dictionary<string, PieceDirectories> PiecesReplacementMap = new()
@@ -165,7 +299,6 @@ public static class MaterialReplacer
             { "GoblinVillage_Cloth", PieceDirectories.GoblinVillage },
             { "GoblinVillage", PieceDirectories.GoblinVillage },
         };
-        
         Dictionary<string, PieceDirectories> PiecesWornReplacementMap = new()
         {
             { "straw_roof_worn", PieceDirectories.Straw },
@@ -173,17 +306,14 @@ public static class MaterialReplacer
             { "RoofShingles_worn" , PieceDirectories.DarkWood },
             { "GoblinVillage", PieceDirectories.GoblinVillage }
         };
-
         Dictionary<string, PieceDirectories> PieceCornerReplacementMap = new()
         {
             { "straw_roof_corner_alpha", PieceDirectories.Straw },
         };
-
         Dictionary<string, PieceDirectories> PieceCornerWornReplacementMap = new()
         {
             { "straw_roof_corner_worn_alpha", PieceDirectories.Straw }
         };
-
         foreach (KeyValuePair<string, PieceDirectories> kvp in PiecesReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key);
@@ -191,7 +321,6 @@ public static class MaterialReplacer
             
             SetMainTexture(kvp.Key, texture);
         }
-
         foreach (KeyValuePair<string, PieceDirectories> kvp in PiecesWornReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, true);
@@ -199,7 +328,6 @@ public static class MaterialReplacer
             
             SetMainTexture(kvp.Key, texture);
         }
-
         foreach (KeyValuePair<string, PieceDirectories> kvp in PieceCornerReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, isCorner: true);
@@ -207,7 +335,6 @@ public static class MaterialReplacer
             
             SetMainTexture(kvp.Key, texture);
         }
-
         foreach (KeyValuePair<string, PieceDirectories> kvp in PieceCornerWornReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, true, true);
@@ -216,7 +343,6 @@ public static class MaterialReplacer
             SetMainTexture(kvp.Key, texture);
         }
     }
-
     private static void ModifyPickableMaterials()
     {
         Dictionary<string, PickableDirectories> PickableReplacementMap = new()
@@ -455,6 +581,8 @@ public static class MaterialReplacer
         Dictionary<string, CreatureDirectories> CreatureReplacementMap = new()
         {
             { "lox", CreatureDirectories.Lox },
+            { "HildirsLox", CreatureDirectories.Lox },
+            { "lox_calf", CreatureDirectories.LoxCalf },
             { "troll", CreatureDirectories.Troll },
             { "Hare_mat", CreatureDirectories.Hare },
             { "Feasting_mat", CreatureDirectories.Tick },
@@ -526,7 +654,6 @@ public static class MaterialReplacer
             SetMainTexture(kvp.Key, texture);
         }
     }
-
     private static void ModifyNormals()
     {
         Dictionary<string, VegDirectories> NormalReplacementMap = new()
@@ -660,17 +787,21 @@ public static class MaterialReplacer
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
-
     private static Texture? GetCustomNormals(VegDirectories directory, string originalMaterialName)
     {
         Texture? customTexture = Utils.GetCustomTexture(directory,  _Season.Value + "_normal");
         CachedTextures.TryGetValue(originalMaterialName + "_normal", out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
-
     private static Texture? GetCustomTexture(PickableDirectories directory, string originalMaterialName)
     {
         Texture? customTexture = Utils.GetCustomTexture(directory, _Season.Value.ToString());
+        CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
+        return customTexture ? customTexture : originalTexture ? originalTexture : null;
+    }
+    private static Texture? GetCustomTexture(ArmorDirectories directory, string originalMaterialName, bool isLegs = false, bool isCape = false, bool isHelmet = false)
+    {
+        Texture? customTexture = isHelmet ? Utils.GetCustomTexture(directory, _Season.Value +  "_helmet") : Utils.GetCustomTexture(directory, _Season.Value + (isCape ? "_cape" : isLegs ? "_legs" : "_chest"));
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }

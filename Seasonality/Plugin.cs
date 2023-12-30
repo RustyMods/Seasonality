@@ -355,7 +355,7 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _SummerNeverCold = null!;
         public static ConfigEntry<Toggle> _WinterAlwaysCold = null!;
 
-        public static ConfigEntry<Toggle> _ReplaceCreatureTextures = null!;
+        public static ConfigEntry<Toggle> _ReplaceArmorTextures = null!;
         
         public static ConfigEntry<string> _LastSavedSeasonChange = null!;
 
@@ -370,7 +370,8 @@ namespace Seasonality
 
             _YamlConfigurations = config("1 - General", "5 - Use YML Configurations", Toggle.Off,
                 "If on, plugin uses YML configuration files");
-            
+
+            _ReplaceArmorTextures = config("1 - General", "6 - Replace Armor Textures", Toggle.Off, "If on, plugin modifies armor textures");
             #region Season Timer
             _SeasonDurationDays = config("1 - Seasons", "1 - Days", 0, new ConfigDescription("Real-time days between season", new AcceptableValueRange<int>(0, 365)));
             _SeasonDurationHours = config("1 - Seasons", "2 - Hours", 1, new ConfigDescription("Real time hours between seasons", new AcceptableValueRange<int>(0, 24)));
@@ -390,12 +391,6 @@ namespace Seasonality
             _WeatherTimerEnabled = config("1 - Weather", "4 - Timer Visible", Toggle.On, "If on, weather icon displays timer");
             _WeatherStartMessage = config("1 - Weather", "5 - Start Message", Toggle.Off, "If on, weather notifications appear");
             #endregion
-            
-            #region Creatures
-
-            _ReplaceCreatureTextures = config("2 - Utilities", "Creatures Textures", Toggle.On, "If on, plugin replaces creature textures");
-            #endregion
-            
             #region SpringConfigs
             _SpringName = config("3 - Spring", "Name", "Spring", "Display name");
             _SpringStartMsg = config("3 - Spring", "Start Message", "Spring has finally arrived", "Start of the season message");

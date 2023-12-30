@@ -58,7 +58,7 @@ public static class SeasonalEffects
                 if (!Player.m_localPlayer) return;
                 if (Player.m_localPlayer.IsDead()) return;
                 
-                if (workingAsType is WorkingAs.Client)
+                if (workingAsType is WorkingAs.Client && Environment.SyncedWeatherData.Value != "")
                 {
                     // If user is a client connected to a server, then do not set seasons
                     // Wait for server to change config value
@@ -164,11 +164,10 @@ public static class SeasonalEffects
                 _SeasonControl.Value = Toggle.On;
                 _Season.Value = Season.Summer;
                 MaterialReplacer.ModifyCachedMaterials();
-
                 lastToggled = Toggle.Off;
                 return;
             }
-
+            if (_WinterAlwaysCold.Value is Toggle.On) UpdateAlwaysColdEffect(__instance);
             if (_ModEnabled.Value is Toggle.On && lastToggled is Toggle.Off)
             {
                 // Make sure when mod is re-enabled, that the seasonal effects are re-applied
@@ -185,6 +184,26 @@ public static class SeasonalEffects
             SetSeasonalKey();
             MaterialReplacer.ModifyCachedMaterials();
         }
+
+        private static void UpdateAlwaysColdEffect(Player instance)
+        {
+            SEMan SEMan = instance.GetSEMan();
+            bool isColdPlus = SEMan.HaveStatusEffect("AlwaysCold");
+            bool isBurning = SEMan.HaveStatusEffect("Burning");
+            bool isWarm = SEMan.HaveStatusEffect("CampFire");
+            
+            if (!isColdPlus)
+            {
+                if (_WinterAlwaysCold.Value is Toggle.Off || _Season.Value is not Season.Winter) return;
+                if (isBurning || isWarm) return;
+                StatusEffect? AlwaysCold = InitWinterAlwaysColdEffect();
+                if (AlwaysCold) SEMan.AddStatusEffect(AlwaysCold);
+            }
+            else if (isColdPlus && (isBurning || isWarm))
+            {
+                SEMan.RemoveStatusEffect("AlwaysCold".GetStableHashCode());
+            }
+        }
     }
 
     [HarmonyPatch(typeof(Player), nameof(Player.Awake))]
@@ -196,13 +215,11 @@ public static class SeasonalEffects
             if (!ZNetScene.instance) return;
             if (workingAsType is WorkingAs.Client)
             {
-                if (ZNet.instance.IsServer())
-                {
-                    workingAsType = WorkingAs.Both;
-                }
+                // Check if client is also a server
+                if (ZNet.instance.IsServer()) workingAsType = WorkingAs.Both;
             }
             if (_ModEnabled.Value is Toggle.Off) return;
-
+            // Apply seasons
             ApplySeasonalEffects(__instance);
             SetSeasonalKey();
             TerrainPatch.UpdateTerrain();
