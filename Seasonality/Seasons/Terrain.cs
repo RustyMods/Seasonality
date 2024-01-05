@@ -9,8 +9,10 @@ using static Seasonality.Seasons.CustomTextures;
 namespace Seasonality.Seasons;
 public static class TerrainPatch
 {
-    // private static readonly List<Texture> clutterTextures = new();
     private static readonly Dictionary<string, Texture> clutterTexMap = new();
+    private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+    private static readonly int TerrainColorTex = Shader.PropertyToID("_TerrainColorTex");
+
     public static void UpdateTerrain()
     {
         if (!ClutterSystem.instance) return;
@@ -32,9 +34,9 @@ public static class TerrainPatch
 
             Material mat = instanceRenderer.m_material;
             mat.color = Color.white;
-            string[] props = mat.GetTexturePropertyNames();
-            if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
-            if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
+            // string[] props = mat.GetTexturePropertyNames();
+            // if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
+            // if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
 
             Texture? texture = GetDefaultTexture(type);
             
@@ -43,11 +45,11 @@ public static class TerrainPatch
             switch (type)
             {
                 case GrassTypes.MistlandGrassShort or GrassTypes.GreenGrass or GrassTypes.GreenGrassShort:
-                    if (texture) mat.SetTexture(mainProp, texture);
-                    if (grassTerrainColor) mat.SetTexture(terrainProp, grassTerrainColor);
+                    if (texture) mat.SetTexture(MainTex, texture);
+                    if (grassTerrainColor) mat.SetTexture(TerrainColorTex, grassTerrainColor);
                     break;
                 default:
-                    if (texture) mat.SetTexture(mainProp, texture);
+                    if (texture) mat.SetTexture(MainTex, texture);
                     break;
             }
         }
@@ -95,7 +97,7 @@ public static class TerrainPatch
             // Set texture to default value
             Texture? tex = GetDefaultTexture(type);
             mat.color = Color.white;
-            if (tex != null) mat.SetTexture(mainProp, tex);
+            if (tex != null) mat.SetTexture(MainTex, tex);
             
             // If texture file recognized, use it and move on
             switch (type)

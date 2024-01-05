@@ -27,6 +27,7 @@ public static class SeasonalEffects
         
         if (workingAsType is WorkingAs.Server)
         {
+            if (SyncedServerSeasons.Value != "true") SyncedServerSeasons.Value = "true";
             TimeSpan TimeDifference = GetTimeDifference(); 
         
             if (TimeDifference <= TimeSpan.Zero + TimeSpan.FromSeconds(3))
@@ -43,14 +44,12 @@ public static class SeasonalEffects
                 }
                 _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
                 LastSeasonChange = DateTime.UtcNow;
-                SyncedServerSeasons.Value = "true";
             }
             else if (_Season.Value != (Season)SeasonIndex)
             {
                 // To switch it back to timer settings if configs changed
                 _Season.Value = (Season)SeasonIndex;
                 LastSeasonChange = DateTime.UtcNow;
-                SyncedServerSeasons.Value = "true";
             }
         }
         else
@@ -88,7 +87,6 @@ public static class SeasonalEffects
             }
         }
     }
-    
     private static void OldTimer(TMP_Text timer)
     {
         // Valheim days are 30min long 
@@ -211,7 +209,8 @@ public static class SeasonalEffects
     {
         private static void Postfix(Player __instance)
         {
-            if (!__instance.IsPlayer() || !__instance) return;
+            if (!__instance) return;
+            if (!__instance.IsPlayer()) return;
             if (!ZNetScene.instance) return;
             if (workingAsType is WorkingAs.Client)
             {
@@ -225,6 +224,7 @@ public static class SeasonalEffects
             TerrainPatch.UpdateTerrain();
             MaterialReplacer.ModifyCachedMaterials();
             SetServerSyncedYmlData();
+            
             if (!EnvMan.instance) return;
             Environment.RegisterServerEnvironments(EnvMan.instance);
         }

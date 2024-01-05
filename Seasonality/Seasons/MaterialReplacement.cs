@@ -93,19 +93,19 @@ public static class MaterialReplacer
 
         if (!CustomMaterials.TryGetValue(materialName, out Material material)) return;
         
-        string[] properties = material.GetTexturePropertyNames();
-        if (!Utils.FindTexturePropName(properties, "moss", out string mossProp)) return;
-        
+        // string[] properties = material.GetTexturePropertyNames();
+        // if (!Utils.FindTexturePropName(properties, "moss", out string mossProp)) return;
+        //
         switch (_Season.Value)
         {
             case Season.Winter:
-                material.SetTexture(mossProp, SnowMoss);
+                material.SetTexture(MossTex, SnowMoss);
                 break;
             case Season.Fall:
-                material.SetTexture(mossProp, HeathMoss);
+                material.SetTexture(MossTex, HeathMoss);
                 break;
             default:
-                material.SetTexture(mossProp, originalTex);
+                material.SetTexture(MossTex, originalTex);
                 break;
         }
     }
@@ -132,13 +132,9 @@ public static class MaterialReplacer
     private static void SetNormalTexture(string materialName, Texture? normal)
     {
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
-        string[] properties = material.GetTexturePropertyNames();
         if (normal == null) return;
-        if (Utils.FindTexturePropName(properties, "bump", out string normalProp))
-        {
-            SeasonalityLogger.LogDebug($"changing {normalProp} for " + materialName + " " + normal.name);
-            material.SetTexture(normalProp, normal);
-        }
+        // SeasonalityLogger.LogDebug($"changing normals for " + materialName + " " + normal.name);
+        material.SetTexture(BumpMap, normal);
     }
     private static void SetCustomMainTexture(string materialName, Texture? tex, int index = 0)
     {
@@ -148,10 +144,10 @@ public static class MaterialReplacer
             return;
         }
         
-        string[] properties = material.GetTexturePropertyNames();
-        if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) return;
+        // string[] properties = material.GetTexturePropertyNames();
+        // if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) return;
         
-        material.SetTexture(mainProp, tex);
+        material.SetTexture(MainTex, tex);
         switch (_Season.Value)
         {
             case Season.Fall:
@@ -426,8 +422,12 @@ public static class MaterialReplacer
         
         foreach (KeyValuePair<string, VegDirectories> kvp in CustomBarkReplacementMap)
         {
-            string normalizedName = kvp.Key.Replace("custom_", "")
-                .Replace("_0", "").Replace("_1", "").Replace("_2", "").Replace("_3", "");
+            string normalizedName = kvp.Key
+                .Replace("custom_", "")
+                .Replace("_0", "")
+                .Replace("_1", "")
+                .Replace("_2", "")
+                .Replace("_3", "");
             Texture? texture = GetCustomTexture(kvp.Value, normalizedName, true);
             if (!texture) continue;
             SetBarkMaterial(kvp.Key, texture, true);
@@ -438,15 +438,15 @@ public static class MaterialReplacer
         if (isCustom)
         {
             if (!CustomMaterials.TryGetValue(materialName, out Material customMaterial)) return;
-            string[] customProperties = customMaterial.GetTexturePropertyNames();
-            if (!Utils.FindTexturePropName(customProperties, "main", out string customMainProp)) return;
-            customMaterial.SetTexture(customMainProp, tex);
+            // string[] customProperties = customMaterial.GetTexturePropertyNames();
+            // if (!Utils.FindTexturePropName(customProperties, "main", out string customMainProp)) return;
+            customMaterial.SetTexture(MainTex, tex);
             return;
         }
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
-        string[] properties = material.GetTexturePropertyNames();
-        if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) return;
-        material.SetTexture(mainProp, tex);
+        // string[] properties = material.GetTexturePropertyNames();
+        // if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) return;
+        material.SetTexture(MainTex, tex);
     }
     private static void ModifyMossMaterials()
     {
@@ -631,7 +631,7 @@ public static class MaterialReplacer
             // { "Shoot_Leaf_mat", VegDirectories.YggaShoot },
             // { "shoot_leaf_particle", VegDirectories.YggaShoot },
             { "swamptree1_branch", VegDirectories.SwampTrees },
-            { "swamptree2_branch", VegDirectories.SwampGrass },
+            { "swamptree2_branch", VegDirectories.SwampTrees },
             // { "Bush01", VegDirectories.Bushes },
             // { "Bush01_blueberry", VegDirectories.Bushes },
             // { "Bush01_heath", VegDirectories.Bushes },
@@ -752,8 +752,12 @@ public static class MaterialReplacer
 
         foreach (KeyValuePair<string, VegDirectories> kvp in CustomReplacementMap)
         {
-            string normalizedName = kvp.Key.Replace("custom_", "")
-                .Replace("_0", "").Replace("_1", "").Replace("_2", "").Replace("_3", "");
+            string normalizedName = kvp.Key
+                .Replace("custom_", "")
+                .Replace("_0", "")
+                .Replace("_1", "")
+                .Replace("_2", "")
+                .Replace("_3", "");
             int index = int.Parse(kvp.Key.Substring(kvp.Key.Length - 1));
             Texture? texture = GetCustomTexture(kvp.Value, normalizedName);
             SetCustomMainTexture(kvp.Key, texture, index);
