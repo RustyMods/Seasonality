@@ -2,13 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Seasonality/Seasons/HDConfigurations.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/CustomTextures.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/CustomTextures.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/SeasonStatusEffects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/SeasonStatusEffects.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/SeasonalEffects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/SeasonalEffects.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/Utils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/Utils.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/YamlConfigurations.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/YamlConfigurations.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -212,7 +215,12 @@
       <workItem from="1703887605757" duration="1162000" />
       <workItem from="1703895326945" duration="1300000" />
       <workItem from="1703909930164" duration="4246000" />
-      <workItem from="1703952693319" duration="13948000" />
+      <workItem from="1703952693319" duration="20687000" />
+      <workItem from="1704164765245" duration="2656000" />
+      <workItem from="1704229086974" duration="9987000" />
+      <workItem from="1704300750363" duration="2034000" />
+      <workItem from="1704325743014" duration="1368000" />
+      <workItem from="1704454860905" duration="2071000" />
     </task>
     <servers />
   </component>
@@ -233,5 +241,37 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Seasonality/Seasons/Environment.cs</url>
+          <line>337</line>
+          <properties documentPath="C:\Users\peima\Desktop\VALHEIM MODDING\projects\Seasonality\Seasonality\Seasons\Environment.cs" initialLine="338" containingFunctionPresentation="method 'RegisterServerEnvironments'">
+            <startOffsets>
+              <option value="15165" />
+            </startOffsets>
+            <endOffsets>
+              <option value="15166" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Seasonality/Seasons/Environment.cs</url>
+          <line>32</line>
+          <properties documentPath="C:\Users\peima\Desktop\VALHEIM MODDING\projects\Seasonality\Seasonality\Seasons\Environment.cs" initialLine="33" containingFunctionPresentation="method 'GetServerWeatherManIndex'">
+            <startOffsets>
+              <option value="1262" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1263" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

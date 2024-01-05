@@ -188,7 +188,6 @@ public static class YamlConfigurations
     public static ConfigurationData summerData = SummerDefaultConfigurations;
     public static ConfigurationData fallData = FallDefaultConfigurations;
     public static ConfigurationData winterData = WinterDefaultConfigurations;
-
     private static void WriteTutorial()
     {
         List<string> tutorial = new()
@@ -262,7 +261,6 @@ public static class YamlConfigurations
             SyncedWinterData.Value = ReadFileRaw(WinterFilePath);
         }
     }
-
     public static void SetServerSyncedYmlData()
     {
         if (SeasonalityPlugin.workingAsType != SeasonalityPlugin.WorkingAs.Client) return;
@@ -271,7 +269,6 @@ public static class YamlConfigurations
         fallData = ReadSyncedData(SyncedFallData.Value, FallDefaultConfigurations);
         winterData = ReadSyncedData(SyncedWinterData.Value, WinterDefaultConfigurations);
     }
-
     private static ConfigurationData ReadSyncedData(string serverData, ConfigurationData defaultData)
     {
         if (serverData == "") return defaultData;

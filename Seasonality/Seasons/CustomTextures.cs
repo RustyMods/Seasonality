@@ -5,6 +5,7 @@ using System.Reflection;
 using BepInEx;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
+using static Seasonality.Seasons.HDConfigurations;
 
 namespace Seasonality.Seasons;
 
@@ -181,7 +182,6 @@ public static class CustomTextures
         Gjall,
         Skeleton
     }
-
     public enum ArmorDirectories
     {
         None,
@@ -211,12 +211,16 @@ public static class CustomTextures
             switch (directory)
             {
                 case VegDirectories.PlainsGrass or VegDirectories.SwampGrass or VegDirectories.BlackForestGrass or VegDirectories.BlackForestGrassAlt:
-                    Dictionary<string, Texture?> compressedMap = RegisterCustomTextures(type, VegTexturePath, TextureFormat.DXT1, FilterMode.Point);
+                    Dictionary<string, Texture?> compressedMap = RegisterCustomTextures(type, VegTexturePath, 
+                        HDPackLoaded ? HdConfigurations.GrassSettings.TextureFormat : TextureFormat.DXT1, 
+                        HDPackLoaded ? HdConfigurations.GrassSettings.TextureFilter : FilterMode.Point);
                     if (compressedMap.Count == 0) continue;
                     CustomRegisteredTextures.Add(directory, compressedMap);
                     break;
                 default:
-                    Dictionary<string, Texture?> map = RegisterCustomTextures(type, VegTexturePath);
+                    Dictionary<string, Texture?> map = HDPackLoaded 
+                        ? RegisterCustomTextures(type, VegTexturePath, HdConfigurations.defaultSettings.TextureFormat, HdConfigurations.defaultSettings.TextureFilter) 
+                        : RegisterCustomTextures(type, VegTexturePath);
                     if (map.Count == 0) continue;
                     CustomRegisteredTextures.Add(directory, map);
                     break;
@@ -234,7 +238,9 @@ public static class CustomTextures
                 Directory.CreateDirectory(creatureTexPath + Path.DirectorySeparatorChar + type);
             }
 
-            Dictionary<string, Texture?> map = RegisterCustomTextures(type, creatureTexPath);
+            Dictionary<string, Texture?> map = HDPackLoaded 
+                ? RegisterCustomTextures(type, creatureTexPath, HdConfigurations.CreatureSettings.TextureFormat, HdConfigurations.CreatureSettings.TextureFilter) 
+                : RegisterCustomTextures(type, creatureTexPath, TextureFormat.BC7, FilterMode.Point);
             if (map.Count == 0) continue;
             CustomRegisteredCreatureTex.Add(creatureDir, map);
         }
@@ -250,7 +256,9 @@ public static class CustomTextures
                 Directory.CreateDirectory(PieceTexPath + Path.DirectorySeparatorChar + type);
             }
 
-            Dictionary<string, Texture?> map = RegisterCustomTextures(type, PieceTexPath);
+            Dictionary<string, Texture?> map = HDPackLoaded 
+                ? RegisterCustomTextures(type, PieceTexPath, HdConfigurations.PieceSettings.TextureFormat, HdConfigurations.PieceSettings.TextureFilter) 
+                : RegisterCustomTextures(type, PieceTexPath, TextureFormat.BC7, FilterMode.Point);
             if (map.Count == 0) continue;
             CustomRegisteredPieceTextures.Add(pieceDir, map);
         }
@@ -266,7 +274,9 @@ public static class CustomTextures
                 Directory.CreateDirectory(PickableTexturePath + Path.DirectorySeparatorChar + type);
             }
 
-            Dictionary<string, Texture?> map = RegisterCustomTextures(type, PickableTexturePath, filterMode: FilterMode.Point);
+            Dictionary<string, Texture?> map = HDPackLoaded 
+                ? RegisterCustomTextures(type, PickableTexturePath, HdConfigurations.PickableSettings.TextureFormat, HdConfigurations.PickableSettings.TextureFilter) :
+                RegisterCustomTextures(type, PickableTexturePath, TextureFormat.BC7, FilterMode.Point);
             if (map.Count == 0) continue;
             CustomRegisteredPickableTex.Add(pickableDir, map);
         }
@@ -281,7 +291,9 @@ public static class CustomTextures
             {
                 Directory.CreateDirectory(ArmorTexPath + Path.DirectorySeparatorChar + type);
             }
-            Dictionary<string, Texture?> map = RegisterCustomTextures(type, ArmorTexPath,  filterMode: FilterMode.Point);
+            Dictionary<string, Texture?> map = HDPackLoaded 
+                ? RegisterCustomTextures(type, ArmorTexPath, HdConfigurations.ArmorSettings.TextureFormat, HdConfigurations.ArmorSettings.TextureFilter) 
+                : RegisterCustomTextures(type, ArmorTexPath, TextureFormat.BC7, FilterMode.Point);
             if (map.Count == 0) continue;
             CustomRegisteredArmorTex.Add(armorDir, map);
         }
@@ -296,6 +308,7 @@ public static class CustomTextures
         {
             SeasonalityLogger.LogInfo("Willybach HD loaded");
             HDPackLoaded = true;
+            InitHDConfigurations();
         }
 
         ReadVegDirectories();
@@ -476,15 +489,15 @@ public static class CustomTextures
         foreach (Season season in Enum.GetValues(typeof(Season)))
         {
             GetTexture(textureMap, season, path, type, textureFormat, filterMode);
-            GetBark(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
-            GetNormal(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
-            GetWorn(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
-            GetCorner(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
-            GetCornerWorn(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
-            getChest(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
-            GetLegs(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
-            GetCape(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
-            GetHelmet(textureMap, season, path, type, TextureFormat.BC7, FilterMode.Point);
+            GetBark(textureMap, season, path, type, textureFormat, filterMode);
+            GetNormal(textureMap, season, path, type, textureFormat, filterMode);
+            GetWorn(textureMap, season, path, type, textureFormat, filterMode);
+            GetCorner(textureMap, season, path, type, textureFormat, filterMode);
+            GetCornerWorn(textureMap, season, path, type, textureFormat, filterMode);
+            getChest(textureMap, season, path, type, textureFormat, filterMode);
+            GetLegs(textureMap, season, path, type, textureFormat, filterMode);
+            GetCape(textureMap, season, path, type, textureFormat, filterMode);
+            GetHelmet(textureMap, season, path, type, textureFormat, filterMode);
         }
 
         return textureMap;

@@ -120,6 +120,7 @@
     <ItemGroup>
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Seasons\HDConfigurations.cs" />
         <Compile Include="Seasons\MaterialReplacement.cs" />
         <Compile Include="Seasons\ConsoleCommands.cs" />
         <Compile Include="Seasons\CustomTextures.cs" />

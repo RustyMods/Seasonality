@@ -14,9 +14,8 @@ namespace Seasonality.Seasons;
 
 public static class Environment
 {
-    public static readonly CustomSyncedValue<string> SyncedWeatherData = new(SeasonalityPlugin.ConfigSync, "ServerWeather", "");
+    private static readonly CustomSyncedValue<string> SyncedWeatherData = new(SeasonalityPlugin.ConfigSync, "ServerWeather", "");
     private static readonly CustomSyncedValue<List<string>> SyncedCustomEnvironments = new(SeasonalityPlugin.ConfigSync, "ServerEnvironments", new());
-    
     private static void UpdateServerWeatherMan()
     {
         ISerializer serializer = new SerializerBuilder().Build();
@@ -1213,14 +1212,8 @@ public static class Environment
             }
             return false;
         }
-
         private static bool SetDefaultEnvironment(EnvMan __instance, Heightmap.Biome biome)
         {
-            // if (__instance.m_currentEnv.m_name == currentEnv) return true;
-            // SetWeatherMan(__instance.m_currentEnv.m_name);
-            // currentEnv = __instance.m_currentEnv.m_name;
-            // WeatherTweaked = false;
-            // return true;
             if (currentEnv != __instance.m_currentEnv.m_name)
             {
                 SetWeatherMan(__instance.m_currentEnv.m_name);

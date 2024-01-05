@@ -22,7 +22,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.0.5";
+        internal const string ModVersion = "3.0.7";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -31,17 +31,8 @@ namespace Seasonality
         private readonly Harmony _harmony = new(ModGUID);
         public static readonly ManualLogSource SeasonalityLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
         public static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
-        public enum Toggle
-        {
-            On = 1,
-            Off = 0
-        }
-        public enum WorkingAs
-        {
-            Client,
-            Server,
-            Both
-        }
+        public enum Toggle { On = 1, Off = 0 }
+        public enum WorkingAs { Client, Server, Both }
         public static WorkingAs workingAsType;
         public void Awake()
         {
@@ -62,6 +53,12 @@ namespace Seasonality
             _harmony.PatchAll(assembly);
             SetupWatcher();
         }
+
+        private void Update()
+        {
+            SeasonalEffects.UpdateSeasons();
+        }
+
         public enum Season
         {
             Spring = 0,
@@ -371,7 +368,7 @@ namespace Seasonality
             _YamlConfigurations = config("1 - General", "5 - Use YML Configurations", Toggle.Off,
                 "If on, plugin uses YML configuration files");
 
-            _ReplaceArmorTextures = config("1 - General", "6 - Replace Armor Textures", Toggle.Off, "If on, plugin modifies armor textures");
+            _ReplaceArmorTextures = config("1 - General", "6 - Replace Armor Textures", Toggle.On, "If on, plugin modifies armor textures", false);
             #region Season Timer
             _SeasonDurationDays = config("1 - Seasons", "1 - Days", 0, new ConfigDescription("Real-time days between season", new AcceptableValueRange<int>(0, 365)));
             _SeasonDurationHours = config("1 - Seasons", "2 - Hours", 1, new ConfigDescription("Real time hours between seasons", new AcceptableValueRange<int>(0, 24)));

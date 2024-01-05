@@ -45,7 +45,7 @@ public static class MaterialReplacer
             string normalizedName = item.name.Replace("(Instance)", "").Replace(" ", "");
             if (DefaultColorChange.Contains(normalizedName))
             {
-                if (!HDPackLoaded)
+                if (!HDPackLoaded && _ReplaceArmorTextures.Value is Toggle.On)
                 {
                     item.SetColor(ColorProp, Color.white);
                 }
@@ -203,13 +203,13 @@ public static class MaterialReplacer
             {"helmet_trollleather",ArmorDirectories.Troll},
             {"helmet_bronze_mat",ArmorDirectories.Bronze},
             {"helmet_iron_mat",ArmorDirectories.Iron},
-            {"DragonVisor_Mat",ArmorDirectories.Wolf}
         };
         Dictionary<string, ArmorDirectories> ArmorReplacementMap = new()
         {
             {"BronzeArmorMesh_Mat",ArmorDirectories.Bronze},
             {"IronArmorChest_mat",ArmorDirectories.Iron},
             {"SilverArmourChest_mat", ArmorDirectories.Wolf},
+            {"DragonVisor_Mat",ArmorDirectories.Wolf},
             {"Padded_mat",ArmorDirectories.Padded},
             {"carapacearmor_mat",ArmorDirectories.Carapace},
             {"MageArmor_mat",ArmorDirectories.Mage}

@@ -397,12 +397,12 @@ public class SeasonEffect : StatusEffect
         damage = 0.0f;
     }
     public override void ModifyEitrRegen(ref float eitrRegen) => eitrRegen *= data.Modifiers[Modifier.EitrRegen];
-    
     public override string GetIconText()
     {
-        if (_SeasonDurationDays.Value == 0 
-            && _SeasonDurationHours.Value == 0 
-            && _SeasonDurationMinutes.Value == 0 || _SeasonControl.Value is Toggle.On) return "";
+        if ((_SeasonDurationDays.Value == 0 && _SeasonDurationHours.Value == 0 && _SeasonDurationMinutes.Value == 0) 
+            || _SeasonControl.Value is Toggle.On 
+            || _CounterVisible.Value is Toggle.Off) return "";
+        if (data.effectName == "AlwaysCold") return "";
         TimeSpan span = SeasonalEffects.GetTimeDifference();
         int days = span.Days;
         int hour = span.Hours;
