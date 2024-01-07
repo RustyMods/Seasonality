@@ -48,6 +48,8 @@ namespace Seasonality
             
             YamlConfigurations.InitYamlConfigurations();
             
+            WaterMaterial.InitSnowBundle();
+
             InitConfigs();
             Assembly assembly = Assembly.GetExecutingAssembly(); 
             _harmony.PatchAll(assembly);

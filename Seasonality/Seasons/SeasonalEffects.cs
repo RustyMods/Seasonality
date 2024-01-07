@@ -162,6 +162,8 @@ public static class SeasonalEffects
                 _SeasonControl.Value = Toggle.On;
                 _Season.Value = Season.Summer;
                 MaterialReplacer.ModifyCachedMaterials();
+                WaterMaterial.ReplaceWaterLoD();
+                WaterMaterial.ReplaceZoneWater();
                 lastToggled = Toggle.Off;
                 return;
             }
@@ -173,6 +175,8 @@ public static class SeasonalEffects
                 SetSeasonalKey();
                 TerrainPatch.UpdateTerrain();
                 MaterialReplacer.ModifyCachedMaterials();
+                WaterMaterial.ReplaceWaterLoD();
+                WaterMaterial.ReplaceZoneWater();
                 lastToggled = Toggle.On;
             }
             if (currentSeason == _Season.Value) return;
@@ -181,6 +185,8 @@ public static class SeasonalEffects
             ApplySeasonalEffects(__instance);
             SetSeasonalKey();
             MaterialReplacer.ModifyCachedMaterials();
+            WaterMaterial.ReplaceWaterLoD();
+            WaterMaterial.ReplaceZoneWater();
         }
 
         private static void UpdateAlwaysColdEffect(Player instance)
@@ -223,6 +229,8 @@ public static class SeasonalEffects
             SetSeasonalKey();
             TerrainPatch.UpdateTerrain();
             MaterialReplacer.ModifyCachedMaterials();
+            WaterMaterial.ReplaceWaterLoD();
+            WaterMaterial.ReplaceZoneWater();
             SetServerSyncedYmlData();
             
             if (!EnvMan.instance) return;

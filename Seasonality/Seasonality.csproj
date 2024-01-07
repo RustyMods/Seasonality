@@ -134,6 +134,7 @@
         <Compile Include="Seasons\CachePrefabs.cs" />
         <Compile Include="Seasons\VegetationType.cs" />
         <Compile Include="Seasons\Utils.cs" />
+        <Compile Include="Seasons\WaterMaterial.cs" />
         <Compile Include="Seasons\YamlConfigurations.cs" />
         <Compile Include="VersionHandshake.cs" />
     </ItemGroup>
@@ -146,6 +147,9 @@
         </EmbeddedResource>
         <EmbeddedResource Include="..\..\..\Textures\MistlandsVegetation_d.png">
           <Link>assets\MistlandsVegetation_d.png</Link>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\..\NewBundles\snowmaterialbundle">
+          <Link>assets\snowmaterialbundle</Link>
         </EmbeddedResource>
         <Content Include=".gitignore" />
         <Content Include="environment.props" />

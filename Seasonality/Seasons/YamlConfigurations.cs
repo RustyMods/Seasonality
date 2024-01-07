@@ -14,7 +14,6 @@ public static class YamlConfigurations
     private static readonly CustomSyncedValue<string> SyncedSummerData = new(SeasonalityPlugin.ConfigSync, "SummerData", "");
     private static readonly CustomSyncedValue<string> SyncedFallData = new(SeasonalityPlugin.ConfigSync, "FallData", "");
     private static readonly CustomSyncedValue<string> SyncedWinterData = new(SeasonalityPlugin.ConfigSync, "WinterData", "");
-    public static bool ServerChangedValues;
     
     [Serializable]
     [CanBeNull]

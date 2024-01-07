@@ -12,7 +12,7 @@ public static class ConsoleCommands
     [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
     static class TerminalInitPatch
     {
-        private static void Postfix()
+        private static void Postfix() 
         {
             Terminal.ConsoleCommand Help = new Terminal.ConsoleCommand(
                 "seasonality", "Shows a list of console commands for seasonality", (Terminal.ConsoleEventFailable) (args =>
