@@ -180,7 +180,9 @@ public static class CustomTextures
         Blob,
         Oozer,
         Gjall,
-        Skeleton
+        Skeleton,
+        Wolf,
+        WolfCub
     }
     public enum ArmorDirectories
     {

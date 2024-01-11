@@ -20,7 +20,7 @@ public static class YamlConfigurations
     public class ConfigurationData
     {
         public string name = null!;
-        public Dictionary<Modifier, float> modifiers = new Dictionary<Modifier, float>()
+        public Dictionary<Modifier, float> modifiers = new ()
         {
             { Modifier.Attack, 1f },
             { Modifier.HealthRegen , 1f },
@@ -35,7 +35,7 @@ public static class YamlConfigurations
             { Modifier.FallDamage , 1f },
             { Modifier.EitrRegen , 1f }
         };
-        public List<HitData.DamageModPair> resistances = new List<HitData.DamageModPair>()
+        public List<HitData.DamageModPair> resistances = new ()
         {
             new () {m_type = HitData.DamageType.Fire, m_modifier = HitData.DamageModifier.Normal},
             new () {m_type = HitData.DamageType.Frost, m_modifier = HitData.DamageModifier.Normal},
@@ -252,6 +252,7 @@ public static class YamlConfigurations
         summerData = ReadFile(SummerFilePath, SummerDefaultConfigurations);
         fallData = ReadFile(FallFilePath, FallDefaultConfigurations);
         winterData = ReadFile(WinterFilePath, WinterDefaultConfigurations);
+        
         // Set server data
         if (SeasonalityPlugin.workingAsType is SeasonalityPlugin.WorkingAs.Server)
         {

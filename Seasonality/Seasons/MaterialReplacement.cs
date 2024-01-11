@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.Rendering;
 using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Seasons.CustomTextures;
 
@@ -93,9 +92,6 @@ public static class MaterialReplacer
 
         if (!CustomMaterials.TryGetValue(materialName, out Material material)) return;
         
-        // string[] properties = material.GetTexturePropertyNames();
-        // if (!Utils.FindTexturePropName(properties, "moss", out string mossProp)) return;
-        //
         switch (_Season.Value)
         {
             case Season.Winter:
@@ -133,20 +129,12 @@ public static class MaterialReplacer
     {
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
         if (normal == null) return;
-        // SeasonalityLogger.LogDebug($"changing normals for " + materialName + " " + normal.name);
         material.SetTexture(BumpMap, normal);
     }
     private static void SetCustomMainTexture(string materialName, Texture? tex, int index = 0)
     {
-        if (!CustomMaterials.TryGetValue(materialName, out Material material))
-        {
-            // SeasonalityLogger.LogWarning("failed to get custom material for = " + materialName);
-            return;
-        }
-        
-        // string[] properties = material.GetTexturePropertyNames();
-        // if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) return;
-        
+        if (!CustomMaterials.TryGetValue(materialName, out Material material)) return;
+
         material.SetTexture(MainTex, tex);
         switch (_Season.Value)
         {
@@ -438,14 +426,10 @@ public static class MaterialReplacer
         if (isCustom)
         {
             if (!CustomMaterials.TryGetValue(materialName, out Material customMaterial)) return;
-            // string[] customProperties = customMaterial.GetTexturePropertyNames();
-            // if (!Utils.FindTexturePropName(customProperties, "main", out string customMainProp)) return;
             customMaterial.SetTexture(MainTex, tex);
             return;
         }
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
-        // string[] properties = material.GetTexturePropertyNames();
-        // if (!Utils.FindTexturePropName(properties, "main", out string mainProp)) return;
         material.SetTexture(MainTex, tex);
     }
     private static void ModifyMossMaterials()
@@ -595,7 +579,9 @@ public static class MaterialReplacer
             { "blob", CreatureDirectories.Blob },
             { "blob_elite", CreatureDirectories.Oozer },
             { "gjall_mat", CreatureDirectories.Gjall },
-            { "Skeleton", CreatureDirectories.Skeleton }
+            { "Skeleton", CreatureDirectories.Skeleton },
+            { "WolfSkinGrey", CreatureDirectories.Wolf },
+            { "WolfSkinGreycub", CreatureDirectories.WolfCub }
 
         };
         foreach (KeyValuePair<string, CreatureDirectories> kvp in CreatureReplacementMap)

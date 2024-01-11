@@ -16,7 +16,7 @@ public static class SeasonalEffects
     private static Season currentSeason = _Season.Value;
     private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
     private static DateTime LastSeasonChange = DateTime.UtcNow;
-    private static readonly CustomSyncedValue<string> SyncedServerSeasons = new(SeasonalityPlugin.ConfigSync, "SyncedSeasons", "");
+    private static readonly CustomSyncedValue<string> SyncedSeasons = new(SeasonalityPlugin.ConfigSync, "SyncedSeason", "");
     public static void UpdateSeasons()
     {
         if (_ModEnabled.Value is Toggle.Off) return;
@@ -27,7 +27,7 @@ public static class SeasonalEffects
         
         if (workingAsType is WorkingAs.Server)
         {
-            if (SyncedServerSeasons.Value != "true") SyncedServerSeasons.Value = "true";
+            if (SyncedSeasons.Value != "true") SyncedSeasons.Value = "true";
             TimeSpan TimeDifference = GetTimeDifference(); 
         
             if (TimeDifference <= TimeSpan.Zero + TimeSpan.FromSeconds(3))
@@ -57,7 +57,7 @@ public static class SeasonalEffects
             if (!Player.m_localPlayer) return;
             if (Player.m_localPlayer.IsDead()) return;
             
-            if (workingAsType is WorkingAs.Client && SyncedServerSeasons.Value != "")
+            if (workingAsType is WorkingAs.Client && SyncedSeasons.Value != "")
             {
                 // If user is a client connected to a server, then do not set seasons
                 // Wait for server to change config value
@@ -142,71 +142,117 @@ public static class SeasonalEffects
     }
 
     private static Toggle lastToggled = _ModEnabled.Value;
-    [HarmonyPatch(typeof(Player), nameof(Player.Update))]
-    static class PlayerUpdatePatch
+    // [HarmonyPatch(typeof(Player), nameof(Player.Update))]
+    // static class PlayerUpdatePatch
+    // {
+    //     private static void Postfix(Player __instance)
+    //     {
+    //         if (!__instance.IsPlayer() || !__instance) return;
+    //         if (__instance != Player.m_localPlayer) return;
+    //         if (_ModEnabled.Value is Toggle.Off)
+    //         {
+    //             // Make sure this code is only called once and stops updating until mod is re-enabled
+    //             if (lastToggled is Toggle.Off) return;
+    //             SEMan? SEMan = __instance.GetSEMan();
+    //             if (SEMan == null) return;
+    //             // Make sure to remove status effect when user disables mod
+    //             StatusEffect? currentEffect = SEMan.GetStatusEffects().Find(effect => effect is SeasonEffect);
+    //             if (currentEffect) SEMan.RemoveStatusEffect(currentEffect);
+    //             TerrainPatch.UpdateTerrain();
+    //             // Set season to summer as it uses mostly default values
+    //             _SeasonControl.Value = Toggle.On;
+    //             _Season.Value = Season.Summer;
+    //             MaterialReplacer.ModifyCachedMaterials();
+    //             WaterMaterial.ReplaceWaterLoD();
+    //             WaterMaterial.ReplaceZoneWater();
+    //             lastToggled = Toggle.Off;
+    //             return;
+    //         }
+    //         if (_WinterAlwaysCold.Value is Toggle.On) UpdateAlwaysColdEffect(__instance);
+    //         if (_ModEnabled.Value is Toggle.On && lastToggled is Toggle.Off)
+    //         {
+    //             // Make sure when mod is re-enabled, that the seasonal effects are re-applied
+    //             ApplySeasonalEffects(__instance);
+    //             SetSeasonalKey();
+    //             TerrainPatch.UpdateTerrain();
+    //             MaterialReplacer.ModifyCachedMaterials();
+    //             WaterMaterial.ReplaceWaterLoD();
+    //             WaterMaterial.ReplaceZoneWater();
+    //             lastToggled = Toggle.On;
+    //         }
+    //         if (currentSeason == _Season.Value) return;
+    //         // If season has changed, apply new seasonal effect
+    //         TerrainPatch.UpdateTerrain();
+    //         ApplySeasonalEffects(__instance);
+    //         SetSeasonalKey();
+    //         MaterialReplacer.ModifyCachedMaterials();
+    //         WaterMaterial.ReplaceWaterLoD();
+    //         WaterMaterial.ReplaceZoneWater();
+    //     }
+    //
+    // }
+    
+    public static void UpdateSeasonEffects()
     {
-        private static void Postfix(Player __instance)
+        if (!Player.m_localPlayer) return;
+        if (_ModEnabled.Value is Toggle.Off)
         {
-            if (!__instance.IsPlayer() || !__instance) return;
-            if (_ModEnabled.Value is Toggle.Off)
-            {
-                // Make sure this code is only called once and stops updating until mod is re-enabled
-                if (lastToggled is Toggle.Off) return;
-                SEMan? SEMan = __instance.GetSEMan();
-                if (SEMan == null) return;
-                // Make sure to remove status effect when user disables mod
-                StatusEffect? currentEffect = SEMan.GetStatusEffects().Find(effect => effect is SeasonEffect);
-                if (currentEffect) SEMan.RemoveStatusEffect(currentEffect);
-                TerrainPatch.UpdateTerrain();
-                // Set season to summer as it uses mostly default values
-                _SeasonControl.Value = Toggle.On;
-                _Season.Value = Season.Summer;
-                MaterialReplacer.ModifyCachedMaterials();
-                WaterMaterial.ReplaceWaterLoD();
-                WaterMaterial.ReplaceZoneWater();
-                lastToggled = Toggle.Off;
-                return;
-            }
-            if (_WinterAlwaysCold.Value is Toggle.On) UpdateAlwaysColdEffect(__instance);
-            if (_ModEnabled.Value is Toggle.On && lastToggled is Toggle.Off)
-            {
-                // Make sure when mod is re-enabled, that the seasonal effects are re-applied
-                ApplySeasonalEffects(__instance);
-                SetSeasonalKey();
-                TerrainPatch.UpdateTerrain();
-                MaterialReplacer.ModifyCachedMaterials();
-                WaterMaterial.ReplaceWaterLoD();
-                WaterMaterial.ReplaceZoneWater();
-                lastToggled = Toggle.On;
-            }
-            if (currentSeason == _Season.Value) return;
-            // If season has changed, apply new seasonal effect
+            // Make sure this code is only called once and stops updating until mod is re-enabled
+            if (lastToggled is Toggle.Off) return;
+            SEMan? SEMan = Player.m_localPlayer.GetSEMan();
+            if (SEMan == null) return;
+            // Make sure to remove status effect when user disables mod
+            StatusEffect? currentEffect = SEMan.GetStatusEffects().Find(effect => effect is SeasonEffect);
+            if (currentEffect) SEMan.RemoveStatusEffect(currentEffect);
             TerrainPatch.UpdateTerrain();
-            ApplySeasonalEffects(__instance);
-            SetSeasonalKey();
+            // Set season to summer as it uses mostly default values
+            _SeasonControl.Value = Toggle.On;
+            _Season.Value = Season.Summer;
             MaterialReplacer.ModifyCachedMaterials();
             WaterMaterial.ReplaceWaterLoD();
             WaterMaterial.ReplaceZoneWater();
+            lastToggled = Toggle.Off;
+            return;
         }
-
-        private static void UpdateAlwaysColdEffect(Player instance)
+        if (_WinterAlwaysCold.Value is Toggle.On) UpdateAlwaysColdEffect(Player.m_localPlayer);
+        if (_ModEnabled.Value is Toggle.On && lastToggled is Toggle.Off)
         {
-            SEMan SEMan = instance.GetSEMan();
-            bool isColdPlus = SEMan.HaveStatusEffect("AlwaysCold");
-            bool isBurning = SEMan.HaveStatusEffect("Burning");
-            bool isWarm = SEMan.HaveStatusEffect("CampFire");
-            
-            if (!isColdPlus)
-            {
-                if (_WinterAlwaysCold.Value is Toggle.Off || _Season.Value is not Season.Winter) return;
-                if (isBurning || isWarm) return;
-                StatusEffect? AlwaysCold = InitWinterAlwaysColdEffect();
-                if (AlwaysCold) SEMan.AddStatusEffect(AlwaysCold);
-            }
-            else if (isColdPlus && (isBurning || isWarm))
-            {
-                SEMan.RemoveStatusEffect("AlwaysCold".GetStableHashCode());
-            }
+            // Make sure when mod is re-enabled, that the seasonal effects are re-applied
+            ApplySeasons();
+            lastToggled = Toggle.On;
+        }
+        if (currentSeason == _Season.Value) return;
+        // If season has changed, apply new seasonal effect
+        ApplySeasons();
+    }
+
+    private static void ApplySeasons()
+    {
+        TerrainPatch.UpdateTerrain();
+        ApplySeasonalEffects(Player.m_localPlayer);
+        SetSeasonalKey();
+        MaterialReplacer.ModifyCachedMaterials();
+        WaterMaterial.ReplaceWaterLoD();
+        WaterMaterial.ReplaceZoneWater();
+    }
+
+    private static void UpdateAlwaysColdEffect(Player instance)
+    {
+        SEMan SEMan = instance.GetSEMan();
+        bool isColdPlus = SEMan.HaveStatusEffect("AlwaysCold");
+        bool isBurning = SEMan.HaveStatusEffect("Burning");
+        bool isWarm = SEMan.HaveStatusEffect("CampFire");
+        
+        if (!isColdPlus)
+        {
+            if (_WinterAlwaysCold.Value is Toggle.Off || _Season.Value is not Season.Winter) return;
+            if (isBurning || isWarm) return;
+            StatusEffect? AlwaysCold = InitWinterAlwaysColdEffect();
+            if (AlwaysCold) SEMan.AddStatusEffect(AlwaysCold);
+        }
+        else if (isColdPlus && (isBurning || isWarm))
+        {
+            SEMan.RemoveStatusEffect("AlwaysCold".GetStableHashCode());
         }
     }
 
@@ -259,7 +305,6 @@ public static class SeasonalEffects
         };
         // Set seasonal key
         if (newKey != null) ZoneSystem.instance.SetGlobalKey(newKey);
-        
     }
     private static void ApplySeasonalEffects(Player __instance)
     {

@@ -22,7 +22,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.0.8";
+        internal const string ModVersion = "3.1.2";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -59,6 +59,7 @@ namespace Seasonality
         private void Update()
         {
             SeasonalEffects.UpdateSeasons();
+            SeasonalEffects.UpdateSeasonEffects();
         }
 
         public enum Season
@@ -90,6 +91,8 @@ namespace Seasonality
         }
         #region CustomConfigs
         public static ConfigEntry<Season> _Season = null!;
+        
+        public static ConfigEntry<Toggle> _WinterFreezesWater = null!;
 
         public static ConfigEntry<Toggle> _YamlConfigurations = null!;
 
@@ -362,7 +365,10 @@ namespace Seasonality
         private void InitConfigs()
         {
             _LastSavedSeasonChange = config("8 - Data", "Last Season Change DateTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture), "Do not touch, unless you want to manipulate last season change");
-            
+
+            _WinterFreezesWater = config("1 - General", "7 - Winter Freezes Water", Toggle.Off,
+                "If on, plugin freezes water during winter");
+
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
             _SeasonControl = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
             _Season = config("1 - General", "4 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");

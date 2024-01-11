@@ -29,7 +29,6 @@ public static class WaterMaterial
         _snowBundle = GetAssetBundle("snowmaterialbundle");
         SnowMaterial = _snowBundle.LoadAsset<Material>("BallSnow04");
     }
-
     private static void CacheWaterLoD(Game instance)
     {
         if (!instance) return;
@@ -44,9 +43,9 @@ public static class WaterMaterial
         OriginalWaterLoDMaterial = meshRenderer.material;
 
     }
-
     public static void ReplaceWaterLoD()
     {
+        if (_WinterFreezesWater.Value is Toggle.Off) return;
         WaterLoDRenderer.material = _Season.Value is Season.Winter ? SnowMaterial : OriginalWaterLoDMaterial;
         WaterLoD.position = _Season.Value is Season.Winter
             ? OriginalWaterLevel + new Vector3(0f, -0.2f, 0f)
@@ -64,7 +63,6 @@ public static class WaterMaterial
     {
         private static void Postfix(ZoneSystem __instance) => CacheZoneWater(__instance);
     }
-
     private static void CacheZoneWater(ZoneSystem instance)
     {
         if (!instance) return;
@@ -88,9 +86,9 @@ public static class WaterMaterial
         ZoneWaterVolume = WaterVolume;
         
     }
-
     public static void ReplaceZoneWater()
     {
+        if (_WinterFreezesWater.Value is Toggle.Off) return;
         WaterSurfaceRenderer.material = _Season.Value is Season.Winter ? SnowMaterial : OriginalWaterMaterial;
         ZoneWaterCollider.enabled = _Season.Value is Season.Winter;
         ZoneWaterVolume.gameObject.SetActive(_Season.Value is not Season.Winter);
@@ -102,10 +100,9 @@ public static class WaterMaterial
         private static void Postfix(AudioMan __instance)
         {
             if (!__instance) return;
-            __instance.m_oceanAmbientSource.loop = _Season.Value is not Season.Winter;
+            __instance.m_haveOcean = _Season.Value is not Season.Winter;
         }
     }
-
     private static AssetBundle GetAssetBundle(string fileName)
     {
         Assembly execAssembly = Assembly.GetExecutingAssembly();

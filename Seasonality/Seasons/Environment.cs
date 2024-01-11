@@ -68,6 +68,7 @@ public static class Environment
             Environments.WarmSnow => "WarmSnow",
             Environments.ClearWarmSnow => "ClearWarmSnow",
             Environments.NightFrost => "NightFrost",
+            Environments.WinterClear => "WinterClear",
             _ => ""
         };
     }
@@ -106,6 +107,7 @@ public static class Environment
         WarmSnow,
         ClearWarmSnow,
         NightFrost,
+        WinterClear
     }
     
     [Serializable]
@@ -191,10 +193,14 @@ public static class Environment
             NightFrost.m_fogDensityEvening = 0.00f;
             NightFrost.m_fogDensityNight = 0.00f;
             NightFrost.m_lightIntensityDay = 0.6f;
-            
+
+            EnvSetup WinterClear = CloneEnvSetup(__instance, "Clear", "WinterClear");
+            WinterClear.m_lightIntensityDay = 0.6f;
+
             __instance.m_environments.Add(NightFrost);
             __instance.m_environments.Add(ClearWarmSnow);
             __instance.m_environments.Add(WarmSnow);
+            __instance.m_environments.Add(WinterClear);
             
             EnvSetup? exampleSetup = __instance.m_environments.Find(x => x.m_name == "Snow");
             
@@ -543,6 +549,7 @@ public static class Environment
             "WarmSnow" => "Fog Snow",
             "ClearWarmSnow" => "Clear Snow",
             "NightFrost" => "Night Frost",
+            "WinterClear" => "Winter Clear",
             _ => environment
         };
     }

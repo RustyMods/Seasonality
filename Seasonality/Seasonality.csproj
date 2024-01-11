@@ -148,7 +148,7 @@
         <EmbeddedResource Include="..\..\..\Textures\MistlandsVegetation_d.png">
           <Link>assets\MistlandsVegetation_d.png</Link>
         </EmbeddedResource>
-        <EmbeddedResource Include="..\..\..\NewBundles\snowmaterialbundle">
+        <EmbeddedResource Include="..\..\..\evennewerbundles\snowmaterialbundle">
           <Link>assets\snowmaterialbundle</Link>
         </EmbeddedResource>
         <Content Include=".gitignore" />

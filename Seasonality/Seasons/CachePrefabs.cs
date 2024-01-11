@@ -274,7 +274,7 @@ public static class CacheResources
         }
         catch (Exception)
         {
-            SeasonalityLogger.LogWarning("Failed to get texture for " + type);
+            // SeasonalityLogger.LogWarning("Failed to get texture for " + type);
             return null;
         }
     }
