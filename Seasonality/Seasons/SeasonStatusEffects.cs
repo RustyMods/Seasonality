@@ -408,6 +408,8 @@ public class SeasonEffect : StatusEffect
         int hour = span.Hours;
         int minutes = span.Minutes;
         int seconds = span.Seconds;
+
+        if (days <= 0 && hour <= 0 && minutes <= 0 && seconds <= 0) return _SleepTimeText.Value;
         
         return days > 0 ? $"{days}:{hour:D2}:{minutes:D2}:{seconds:D2}" : hour > 0 ? $"{hour}:{minutes:D2}:{seconds:D2}" : minutes > 0 ? $"{minutes}:{seconds:D2}" : $"{seconds}";
     }

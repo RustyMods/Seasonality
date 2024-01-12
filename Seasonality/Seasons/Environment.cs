@@ -565,7 +565,10 @@ public static class Environment
             m_start_msg = "The weather is changing to " + GetEnvironmentDisplayName(env),
             m_tooltip = GetEnvironmentTooltip(env)
         };
-        Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
+        if (Player.m_localPlayer.GetSEMan().HaveStatusEffect("WeatherMan_SE".GetStableHashCode()))
+        {
+            Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
+        }
         StatusEffect WeatherEffect = EnvData.InitEnvEffect();
         Player.m_localPlayer.GetSEMan().AddStatusEffect(WeatherEffect);
     }
@@ -625,7 +628,7 @@ public static class Environment
             {
                 SetWeatherMan(__instance.m_currentEnv.m_name);
             }
-            
+
             Heightmap.Biome currentBiome = Heightmap.FindBiome(Player.m_localPlayer.transform.position);
             if (currentBiome == Heightmap.Biome.None) return false;
 
@@ -1180,7 +1183,14 @@ public static class Environment
 
             if (configs.TrueForAll(x => x is Environments.None) && _YamlConfigurations.Value is Toggle.Off)
             {
-                return SetDefaultEnvironment(__instance, currentBiome);
+                if (__instance.m_currentEnv.m_name != currentEnv)
+                {
+                    Debug.LogWarning("setting weather man");
+                    SetWeatherMan(__instance.m_currentEnv.m_name);
+                    currentEnv = __instance.m_currentEnv.m_name;
+                }
+                // return SetDefaultEnvironment(__instance, currentBiome);
+                return true;
             }
 
             switch (_YamlConfigurations.Value)
@@ -1189,7 +1199,14 @@ public static class Environment
                     AddToEntries(configs, entries);
                     break;
                 case Toggle.On when entries.Count == 0:
-                    return SetDefaultEnvironment(__instance, currentBiome);
+                    if (__instance.m_currentEnv.m_name != currentEnv)
+                    {
+                        Debug.LogWarning("setting weather man");
+                        SetWeatherMan(__instance.m_currentEnv.m_name);
+                        currentEnv = __instance.m_currentEnv.m_name;
+                    }
+                    // return SetDefaultEnvironment(__instance, currentBiome);
+                    return true;
             }
 
             // If client is server
@@ -1221,6 +1238,7 @@ public static class Environment
         }
         private static bool SetDefaultEnvironment(EnvMan __instance, Heightmap.Biome biome)
         {
+            // Not working
             if (currentEnv != __instance.m_currentEnv.m_name)
             {
                 SetWeatherMan(__instance.m_currentEnv.m_name);

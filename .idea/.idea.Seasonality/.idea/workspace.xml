@@ -4,14 +4,9 @@
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/CachePrefabs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/CachePrefabs.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/CustomTextures.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/CustomTextures.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/SeasonStatusEffects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/SeasonStatusEffects.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/SeasonalEffects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/SeasonalEffects.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/WaterMaterial.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/WaterMaterial.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/YamlConfigurations.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/YamlConfigurations.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -244,6 +239,7 @@
       <workItem from="1704911586724" duration="1098000" />
       <workItem from="1704926624007" duration="5244000" />
       <workItem from="1704958090166" duration="2271000" />
+      <workItem from="1705011423574" duration="6085000" />
     </task>
     <servers />
   </component>

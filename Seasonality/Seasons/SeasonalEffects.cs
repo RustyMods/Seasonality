@@ -17,33 +17,47 @@ public static class SeasonalEffects
     private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
     private static DateTime LastSeasonChange = DateTime.UtcNow;
     private static readonly CustomSyncedValue<string> SyncedSeasons = new(SeasonalityPlugin.ConfigSync, "SyncedSeason", "");
-    public static void UpdateSeasons()
+
+    private static readonly CustomSyncedValue<bool> SyncedReadyToChange = new(SeasonalityPlugin.ConfigSync, "SyncedSleepTime", false);
+
+    [HarmonyPatch(typeof(Game), nameof(Game.SleepStop))]
+    private static class GameSleepStartPatch
+    {
+        private static void Postfix(Game __instance)
+        {
+            if (!__instance) return;
+            if (_ModEnabled.Value is Toggle.Off) return;
+            if (_SleepSeasons.Value is Toggle.Off) return;
+            if (_SeasonControl.Value is Toggle.On) return;
+            if (SyncedReadyToChange.Value is false) return;
+            UpdateSeasonIndex();
+            SyncedReadyToChange.Value = false;
+        }
+    }
+
+    public static void CheckSeasonTimer()
     {
         if (_ModEnabled.Value is Toggle.Off) return;
         if (_SeasonControl.Value is Toggle.On) return;
         if (_SeasonDurationDays.Value == 0 && _SeasonDurationHours.Value == 0 && _SeasonDurationMinutes.Value == 0) return;
-        // To throttle seasonal changes to a minimum of 1 minute
+        // To throttle seasonal changes to a minimum of 30 seconds
         if (LastSeasonChange > DateTime.UtcNow + TimeSpan.FromSeconds(30)) return;
         
-        if (workingAsType is WorkingAs.Server)
+        if (workingAsType is WorkingAs.Server or WorkingAs.Both)
         {
             if (SyncedSeasons.Value != "true") SyncedSeasons.Value = "true";
             TimeSpan TimeDifference = GetTimeDifference(); 
         
             if (TimeDifference <= TimeSpan.Zero + TimeSpan.FromSeconds(3))
             {
-                if (_Season.Value == (Season)SeasonIndex)
+                if (_SleepSeasons.Value is Toggle.On)
                 {
-                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-                    _Season.Value = (Season)SeasonIndex;
+                    SyncedReadyToChange.Value = true;
                 }
                 else
                 {
-                    _Season.Value = (Season)SeasonIndex;
-                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+                    UpdateSeasonIndex();
                 }
-                _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
-                LastSeasonChange = DateTime.UtcNow;
             }
             else if (_Season.Value != (Season)SeasonIndex)
             {
@@ -66,18 +80,14 @@ public static class SeasonalEffects
 
             if (GetTimeDifference() <= TimeSpan.Zero)
             {
-                if (_Season.Value == (Season)SeasonIndex)
+                if (_SleepSeasons.Value is Toggle.On)
                 {
-                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-                    _Season.Value = (Season)SeasonIndex;
+                    SyncedReadyToChange.Value = true;
                 }
                 else
                 {
-                    _Season.Value = (Season)SeasonIndex;
-                    SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+                    UpdateSeasonIndex();
                 }
-                _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
-                LastSeasonChange = DateTime.UtcNow;
             }
             else if (_Season.Value != (Season)SeasonIndex)
             {
@@ -86,6 +96,21 @@ public static class SeasonalEffects
                 LastSeasonChange = DateTime.UtcNow;
             }
         }
+    }
+    private static void UpdateSeasonIndex()
+    {
+        if (_Season.Value == (Season)SeasonIndex)
+        {
+            SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+            _Season.Value = (Season)SeasonIndex;
+        }
+        else
+        {
+            _Season.Value = (Season)SeasonIndex;
+            SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+        }
+        _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
+        LastSeasonChange = DateTime.UtcNow;
     }
     private static void OldTimer(TMP_Text timer)
     {
@@ -142,56 +167,6 @@ public static class SeasonalEffects
     }
 
     private static Toggle lastToggled = _ModEnabled.Value;
-    // [HarmonyPatch(typeof(Player), nameof(Player.Update))]
-    // static class PlayerUpdatePatch
-    // {
-    //     private static void Postfix(Player __instance)
-    //     {
-    //         if (!__instance.IsPlayer() || !__instance) return;
-    //         if (__instance != Player.m_localPlayer) return;
-    //         if (_ModEnabled.Value is Toggle.Off)
-    //         {
-    //             // Make sure this code is only called once and stops updating until mod is re-enabled
-    //             if (lastToggled is Toggle.Off) return;
-    //             SEMan? SEMan = __instance.GetSEMan();
-    //             if (SEMan == null) return;
-    //             // Make sure to remove status effect when user disables mod
-    //             StatusEffect? currentEffect = SEMan.GetStatusEffects().Find(effect => effect is SeasonEffect);
-    //             if (currentEffect) SEMan.RemoveStatusEffect(currentEffect);
-    //             TerrainPatch.UpdateTerrain();
-    //             // Set season to summer as it uses mostly default values
-    //             _SeasonControl.Value = Toggle.On;
-    //             _Season.Value = Season.Summer;
-    //             MaterialReplacer.ModifyCachedMaterials();
-    //             WaterMaterial.ReplaceWaterLoD();
-    //             WaterMaterial.ReplaceZoneWater();
-    //             lastToggled = Toggle.Off;
-    //             return;
-    //         }
-    //         if (_WinterAlwaysCold.Value is Toggle.On) UpdateAlwaysColdEffect(__instance);
-    //         if (_ModEnabled.Value is Toggle.On && lastToggled is Toggle.Off)
-    //         {
-    //             // Make sure when mod is re-enabled, that the seasonal effects are re-applied
-    //             ApplySeasonalEffects(__instance);
-    //             SetSeasonalKey();
-    //             TerrainPatch.UpdateTerrain();
-    //             MaterialReplacer.ModifyCachedMaterials();
-    //             WaterMaterial.ReplaceWaterLoD();
-    //             WaterMaterial.ReplaceZoneWater();
-    //             lastToggled = Toggle.On;
-    //         }
-    //         if (currentSeason == _Season.Value) return;
-    //         // If season has changed, apply new seasonal effect
-    //         TerrainPatch.UpdateTerrain();
-    //         ApplySeasonalEffects(__instance);
-    //         SetSeasonalKey();
-    //         MaterialReplacer.ModifyCachedMaterials();
-    //         WaterMaterial.ReplaceWaterLoD();
-    //         WaterMaterial.ReplaceZoneWater();
-    //     }
-    //
-    // }
-    
     public static void UpdateSeasonEffects()
     {
         if (!Player.m_localPlayer) return;
