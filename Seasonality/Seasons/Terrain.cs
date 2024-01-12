@@ -34,10 +34,6 @@ public static class TerrainPatch
 
             Material mat = instanceRenderer.m_material;
             mat.color = Color.white;
-            // string[] props = mat.GetTexturePropertyNames();
-            // if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
-            // if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
-
             Texture? texture = GetDefaultTexture(type);
             
             Texture? grassTerrainColor = clutterTexMap["grass_terrain_color"];
@@ -111,7 +107,7 @@ public static class TerrainPatch
                     switch (_Season.Value)
                     {
                         case Season.Fall:
-                            AssignColors(obj, new List<Color>(){_FallColor1.Value, _FallColor2.Value, _FallColor3.Value, _FallColor4.Value});
+                            AssignColors(obj, SeasonColors.FallColors);
                             break;
                     }
                     continue;

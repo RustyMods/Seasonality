@@ -214,18 +214,7 @@ public static class SeasonalEffects
         {
             // Make sure this code is only called once and stops updating until mod is re-enabled
             if (lastToggled is Toggle.Off) return;
-            SEMan? SEMan = Player.m_localPlayer.GetSEMan();
-            if (SEMan == null) return;
-            // Make sure to remove status effect when user disables mod
-            StatusEffect? currentEffect = SEMan.GetStatusEffects().Find(effect => effect is SeasonEffect);
-            if (currentEffect) SEMan.RemoveStatusEffect(currentEffect);
-            TerrainPatch.UpdateTerrain();
-            // Set season to summer as it uses mostly default values
-            _SeasonControl.Value = Toggle.On;
-            _Season.Value = Season.Summer;
-            MaterialReplacer.ModifyCachedMaterials();
-            WaterMaterial.ReplaceWaterLoD();
-            WaterMaterial.ReplaceZoneWater();
+            DisableSeasonEffects();
             lastToggled = Toggle.Off;
             return;
         }
@@ -239,6 +228,22 @@ public static class SeasonalEffects
         if (currentSeason == _Season.Value) return;
         // If season has changed, apply new seasonal effect
         ApplySeasons();
+    }
+
+    private static void DisableSeasonEffects()
+    {
+        SEMan? SEMan = Player.m_localPlayer.GetSEMan();
+        if (SEMan == null) return;
+        // Make sure to remove status effect when user disables mod
+        StatusEffect? currentEffect = SEMan.GetStatusEffects().Find(effect => effect is SeasonEffect);
+        if (currentEffect) SEMan.RemoveStatusEffect(currentEffect);
+        TerrainPatch.UpdateTerrain();
+        // Set season to summer as it uses mostly default values
+        _SeasonControl.Value = Toggle.On;
+        _Season.Value = Season.Summer;
+        MaterialReplacer.ModifyCachedMaterials();
+        WaterMaterial.ReplaceWaterLoD();
+        WaterMaterial.ReplaceZoneWater();
     }
     private static void ApplySeasons()
     {
@@ -322,7 +327,6 @@ public static class SeasonalEffects
     }
     private static void ApplySeasonalEffects(Player __instance)
     {
-        Toggle toggle = _SeasonalEffectsEnabled.Value;
         SEMan? SEMan = __instance.GetSEMan();
         if (SEMan == null) return;
         // Remove all seasonal effects
@@ -334,7 +338,24 @@ public static class SeasonalEffects
         }
         ObjectDB.instance.m_StatusEffects.RemoveAll(effect => effect is SeasonEffect);
         // Apply new seasonal effect
-        StatusEffect? SeasonEffect = null!;
+        StatusEffect? SeasonEffect = _YamlConfigurations.Value is Toggle.On ? GetYMLSeasonEffect() : GetConfigSeasonEffect();
+
+        if (_Season.Value is Season.Winter && _WinterAlwaysCold.Value is Toggle.On)
+        {
+            StatusEffect? AlwaysCold = InitWinterAlwaysColdEffect();
+            if (AlwaysCold) SEMan.AddStatusEffect(AlwaysCold);
+        }
+
+        if (SeasonEffect != null)
+        {
+            SeasonalCompendium.customTooltip = $"<color=orange>{SeasonEffect.m_name}</color>\n{SeasonEffect.m_tooltip}";
+            SEMan.AddStatusEffect(SeasonEffect);
+        }
+        
+        currentSeason = _Season.Value;
+    }
+    private static StatusEffect? GetConfigSeasonEffect()
+    {
         switch (_Season.Value)
         {
             case Season.Fall:
@@ -347,11 +368,76 @@ public static class SeasonalEffects
                     stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_FallStopEffects.Value) },
                     startMsg = _FallStartMsg.Value,
                     effectTooltip = _FallTooltip.Value,
-                    damageMod = toggle is Toggle.On ? $"{_FallResistanceElement.Value}={_FallResistanceMod.Value}" : "",
-                    Modifier = toggle is Toggle.On ? _FallModifier.Value : Modifier.None,
+                    damageMod = _SeasonalEffectsEnabled.Value is Toggle.On ? $"{_FallResistanceElement.Value}={_FallResistanceMod.Value}" : "",
+                    Modifier = _SeasonalEffectsEnabled.Value is Toggle.On ? _FallModifier.Value : Modifier.None,
                     m_newValue = _FallValue.Value
                 };
-                // Yaml
+                StatusEffect? FallEffect = FallSeasonEffect.Init();
+                if (FallEffect) return FallEffect;
+                break;
+            case Season.Spring:
+                SeasonalEffect SpringSeasonEffect = new SeasonalEffect
+                {
+                    effectName = "spring_season",
+                    displayName = _SpringName.Value,
+                    sprite = ValknutIcon,
+                    startEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SpringStartEffects.Value) },
+                    stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SpringStopEffects.Value) },
+                    startMsg = _SpringStartMsg.Value,
+                    effectTooltip = _SpringTooltip.Value,
+                    damageMod = _SeasonalEffectsEnabled.Value is Toggle.On
+                        ? $"{_SpringResistanceElement.Value}={_SpringResistanceMod.Value}"
+                        : "",
+                    Modifier = _SeasonalEffectsEnabled.Value is Toggle.On ? _SpringModifier.Value : Modifier.None,
+                    m_newValue = _SeasonalEffectsEnabled.Value is Toggle.On ? _SpringValue.Value : 0
+                };
+                StatusEffect? SpringEffect = SpringSeasonEffect.Init();
+                if (SpringEffect) return SpringEffect;
+                break;
+            case Season.Winter:
+                SeasonalEffect WinterSeasonEffect = new SeasonalEffect
+                {
+                    effectName = "winter_season",
+                    displayName = _WinterName.Value,
+                    sprite = ValknutIcon,
+                    startEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_WinterStartEffects.Value) },
+                    stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_WinterStopEffects.Value) },
+                    startMsg = _WinterStartMsg.Value,
+                    effectTooltip = _WinterTooltip.Value,
+                    damageMod = _SeasonalEffectsEnabled.Value is Toggle.On ? $"{_WinterResistanceElement.Value}={_WinterResistantMod.Value}" : "",
+                    Modifier = _SeasonalEffectsEnabled.Value is Toggle.On ? _WinterModifier.Value : Modifier.None,
+                    m_newValue = _WinterValue.Value
+                };
+
+                StatusEffect? WinterEffect =  WinterSeasonEffect.Init();
+                if (WinterEffect) return WinterEffect;
+                break;
+            case Season.Summer:
+                SeasonalEffect SummerSeasonEffect = new SeasonalEffect
+                {
+                    effectName = "summer_season",
+                    displayName = _SummerName.Value,
+                    sprite = ValknutIcon,
+                    startEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SummerStartEffects.Value) },
+                    stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SummerStopEffects.Value) },
+                    startMsg = _SummerStartMsg.Value,
+                    effectTooltip = _SummerTooltip.Value,
+                    Modifier = _SeasonalEffectsEnabled.Value is Toggle.On ? _SummerModifier.Value : Modifier.None,
+                    m_newValue = _SummerValue.Value,
+                    damageMod = _SeasonalEffectsEnabled.Value is Toggle.On ? $"{ _SummerResistanceElement.Value}={_SummerResistanceMod.Value}" : ""
+                };
+
+                StatusEffect? SummerEffect = SummerSeasonEffect.Init();
+                if (SummerEffect) return SummerEffect;
+                break;
+        }
+        return null;
+    }
+    private static StatusEffect? GetYMLSeasonEffect()
+    {
+        switch (_Season.Value)
+        {
+            case Season.Fall:
                 SeasonalEffect YmlFallSeasonEffect = new SeasonalEffect
                 {
                     effectName = "fall_season",
@@ -373,29 +459,13 @@ public static class SeasonalEffects
                 }
 
                 YmlFallSeasonEffect.Modifiers = fallData.modifiers;
-                YmlFallSeasonEffect.useModifiers = toggle is Toggle.On;
-                YmlFallSeasonEffect.damageMod = toggle is Toggle.On ? formattedFallResistances : "";
+                YmlFallSeasonEffect.useModifiers = _SeasonalEffectsEnabled.Value is Toggle.On;
+                YmlFallSeasonEffect.damageMod = _SeasonalEffectsEnabled.Value is Toggle.On ? formattedFallResistances : "";
                 
-                StatusEffect? FallEffect = _YamlConfigurations.Value is Toggle.On ? YmlFallSeasonEffect.Init() : FallSeasonEffect.Init();
-                if (FallEffect) SeasonEffect = FallEffect;
+                StatusEffect? FallEffect = YmlFallSeasonEffect.Init();
+                if (FallEffect) return FallEffect;
                 break;
             case Season.Spring:
-                SeasonalEffect SpringSeasonEffect = new SeasonalEffect
-                {
-                    effectName = "spring_season",
-                    displayName = _SpringName.Value,
-                    sprite = ValknutIcon,
-                    startEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SpringStartEffects.Value) },
-                    stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SpringStopEffects.Value) },
-                    startMsg = _SpringStartMsg.Value,
-                    effectTooltip = _SpringTooltip.Value,
-                    damageMod = toggle is Toggle.On
-                        ? $"{_SpringResistanceElement.Value}={_SpringResistanceMod.Value}"
-                        : "",
-                    Modifier = toggle is Toggle.On ? _SpringModifier.Value : Modifier.None,
-                    m_newValue = toggle is Toggle.On ? _SpringValue.Value : 0
-                };
-                // Yaml
                 SeasonalEffect YmlSpringSeasonEffect = new SeasonalEffect
                 {
                     effectName = "spring_season",
@@ -417,32 +487,13 @@ public static class SeasonalEffects
                 }
 
                 YmlSpringSeasonEffect.Modifiers = springData.modifiers;
-                YmlSpringSeasonEffect.useModifiers = toggle is Toggle.On;
-                YmlSpringSeasonEffect.damageMod = toggle is Toggle.On ? formattedSpringResistances : "";
+                YmlSpringSeasonEffect.useModifiers = _SeasonalEffectsEnabled.Value is Toggle.On;
+                YmlSpringSeasonEffect.damageMod = _SeasonalEffectsEnabled.Value is Toggle.On ? formattedSpringResistances : "";
                 
-                StatusEffect? SpringEffect = _YamlConfigurations.Value is Toggle.On ? YmlSpringSeasonEffect.Init() : SpringSeasonEffect.Init();
-                if (SpringEffect) SeasonEffect = SpringEffect;
+                StatusEffect? SpringEffect = YmlSpringSeasonEffect.Init();
+                if (SpringEffect) return SpringEffect;
                 break;
             case Season.Winter:
-                if (_WinterAlwaysCold.Value is Toggle.On)
-                {
-                    StatusEffect? AlwaysCold = InitWinterAlwaysColdEffect();
-                    if (AlwaysCold) SEMan.AddStatusEffect(AlwaysCold);
-                }
-                SeasonalEffect WinterSeasonEffect = new SeasonalEffect
-                {
-                    effectName = "winter_season",
-                    displayName = _WinterName.Value,
-                    sprite = ValknutIcon,
-                    startEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_WinterStartEffects.Value) },
-                    stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_WinterStopEffects.Value) },
-                    startMsg = _WinterStartMsg.Value,
-                    effectTooltip = _WinterTooltip.Value,
-                    damageMod = toggle is Toggle.On ? $"{_WinterResistanceElement.Value}={_WinterResistantMod.Value}" : "",
-                    Modifier = toggle is Toggle.On ? _WinterModifier.Value : Modifier.None,
-                    m_newValue = _WinterValue.Value
-                };
-                // Yaml
                 SeasonalEffect YmlWinterSeasonEffect = new SeasonalEffect
                 {
                     effectName = "winter_season",
@@ -464,27 +515,13 @@ public static class SeasonalEffects
                 }
 
                 YmlWinterSeasonEffect.Modifiers = winterData.modifiers;
-                YmlWinterSeasonEffect.useModifiers = toggle is Toggle.On;
-                YmlWinterSeasonEffect.damageMod = toggle is Toggle.On ? formattedWinterResistances : "";
+                YmlWinterSeasonEffect.useModifiers = _SeasonalEffectsEnabled.Value is Toggle.On;
+                YmlWinterSeasonEffect.damageMod = _SeasonalEffectsEnabled.Value is Toggle.On ? formattedWinterResistances : "";
 
-                StatusEffect? WinterEffect = _YamlConfigurations.Value is Toggle.On ? YmlWinterSeasonEffect.Init() : WinterSeasonEffect.Init();
-                if (WinterEffect) SeasonEffect = WinterEffect;
+                StatusEffect? WinterEffect = YmlWinterSeasonEffect.Init();
+                if (WinterEffect) return WinterEffect;
                 break;
             case Season.Summer:
-                SeasonalEffect SummerSeasonEffect = new SeasonalEffect
-                {
-                    effectName = "summer_season",
-                    displayName = _SummerName.Value,
-                    sprite = ValknutIcon,
-                    startEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SummerStartEffects.Value) },
-                    stopEffectNames = new[] { SpecialEffects.GetEffectPrefabName(_SummerStopEffects.Value) },
-                    startMsg = _SummerStartMsg.Value,
-                    effectTooltip = _SummerTooltip.Value,
-                    Modifier = toggle is Toggle.On ? _SummerModifier.Value : Modifier.None,
-                    m_newValue = _SummerValue.Value,
-                    damageMod = toggle is Toggle.On ? $"{ _SummerResistanceElement.Value}={_SummerResistanceMod.Value}" : ""
-                };
-                // Yaml
                 SeasonalEffect YmlSummerSeasonEffect = new SeasonalEffect
                 {
                     effectName = "summer_season",
@@ -506,21 +543,14 @@ public static class SeasonalEffects
                 }
 
                 YmlSummerSeasonEffect.Modifiers = summerData.modifiers;
-                YmlSummerSeasonEffect.useModifiers = toggle is Toggle.On;
-                YmlSummerSeasonEffect.damageMod = toggle is Toggle.On ? formattedSummerResistances : "";
+                YmlSummerSeasonEffect.useModifiers = _SeasonalEffectsEnabled.Value is Toggle.On;
+                YmlSummerSeasonEffect.damageMod = _SeasonalEffectsEnabled.Value is Toggle.On ? formattedSummerResistances : "";
                 
-                StatusEffect? SummerEffect = _YamlConfigurations.Value is Toggle.On ? YmlSummerSeasonEffect.Init() : SummerSeasonEffect.Init();
-                if (SummerEffect) SeasonEffect = SummerEffect;
+                StatusEffect? SummerEffect = YmlSummerSeasonEffect.Init();
+                if (SummerEffect) return SummerEffect;
                 break;
         }
-
-        if (SeasonEffect != null)
-        {
-            SeasonalCompendium.customTooltip = $"<color=orange>{SeasonEffect.m_name}</color>\n{SeasonEffect.m_tooltip}";
-            SEMan.AddStatusEffect(SeasonEffect);
-        }
-        
-        currentSeason = _Season.Value;
+        return null;
     }
     private static StatusEffect? InitWinterAlwaysColdEffect()
     {

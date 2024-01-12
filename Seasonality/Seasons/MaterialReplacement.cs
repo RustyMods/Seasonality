@@ -158,7 +158,6 @@ public static class MaterialReplacer
         ModifyNormals();
         if (_ReplaceArmorTextures.Value is Toggle.On) ModifyArmorMaterials();
     }
-
     private static void ModifyArmorMaterials()
     {
         Dictionary<string, ArmorDirectories> ChestReplacementMap = new()
@@ -581,7 +580,16 @@ public static class MaterialReplacer
             { "gjall_mat", CreatureDirectories.Gjall },
             { "Skeleton", CreatureDirectories.Skeleton },
             { "WolfSkinGrey", CreatureDirectories.Wolf },
-            { "WolfSkinGreycub", CreatureDirectories.WolfCub }
+            { "WolfSkinGreycub", CreatureDirectories.WolfCub },
+            { "Deer2", CreatureDirectories.Deer },
+            { "BoarSkinValheimpiggy", CreatureDirectories.Piggy },
+            { "BoarSkinValheim", CreatureDirectories.Boar },
+            { "GoblinShaman_mat", CreatureDirectories.GoblinShaman },
+            { "GoblinBrute_mat",CreatureDirectories.GoblinBrute },
+            { "goblin",CreatureDirectories.Goblin },
+            { "seeker_Brute_mat",CreatureDirectories.SeekerSoldier },
+            { "babyseeker",CreatureDirectories.SeekerBrood },
+            { "seeker",CreatureDirectories.Seeker }
 
         };
         foreach (KeyValuePair<string, CreatureDirectories> kvp in CreatureReplacementMap)
