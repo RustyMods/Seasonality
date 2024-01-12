@@ -15,15 +15,15 @@ public static class SeasonalEffects
 {
     private static Season currentSeason = _Season.Value;
     private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
-    private static DateTime LastSeasonChange = DateTime.UtcNow;
+    // private static DateTime LastSeasonChange = DateTime.UtcNow;
     private static readonly CustomSyncedValue<string> SyncedSeasons = new(SeasonalityPlugin.ConfigSync, "SyncedSeason", "");
 
     private static readonly CustomSyncedValue<bool> SyncedReadyToChange = new(SeasonalityPlugin.ConfigSync, "SyncedSleepTime", false);
-
+    
     [HarmonyPatch(typeof(Game), nameof(Game.SleepStop))]
     private static class GameSleepStartPatch
     {
-        private static void Postfix(Game __instance)
+        private static void Prefix(Game __instance)
         {
             if (!__instance) return;
             if (_ModEnabled.Value is Toggle.Off) return;
@@ -35,35 +35,132 @@ public static class SeasonalEffects
         }
     }
 
-    public static void CheckSeasonTimer()
+    [HarmonyPatch(typeof(Player), nameof(Player.Message))]
+    private static class PlayerMessagePatch
+    {
+        private static void Prefix(Player __instance, ref string msg)
+        {
+            if (!__instance) return;
+            if (msg != "$msg_goodmorning") return;
+            string seasonMessage = "";
+            switch (_Season.Value)
+            {
+                case Season.Fall:
+                    seasonMessage = _FallStartMsg.Value;
+                    break;
+                case Season.Spring:
+                    seasonMessage = _SpringStartMsg.Value;
+                    break;
+                case Season.Summer:
+                    seasonMessage = _SummerStartMsg.Value;
+                    break;
+                case Season.Winter:
+                    seasonMessage = _WinterStartMsg.Value;
+                    break;
+            }
+
+            msg += "\n\n" + seasonMessage;
+        }
+    }
+    // public static void CheckRealTimeTimer()
+    // {
+    //     if (_ModEnabled.Value is Toggle.Off) return;
+    //     if (_SeasonControl.Value is Toggle.On) return;
+    //     if (_SeasonDurationDays.Value == 0 && _SeasonDurationHours.Value == 0 && _SeasonDurationMinutes.Value == 0) return;
+    //     // To throttle seasonal changes to a minimum of 30 seconds
+    //     if (LastSeasonChange > DateTime.UtcNow + TimeSpan.FromSeconds(30)) return;
+    //     
+    //     if (workingAsType is WorkingAs.Server or WorkingAs.Both)
+    //     {
+    //         if (SyncedSeasons.Value != "true") SyncedSeasons.Value = "true";
+    //         TimeSpan TimeDifference = GetTimeDifference(); 
+    //     
+    //         if (TimeDifference <= TimeSpan.Zero + TimeSpan.FromSeconds(3))
+    //         {
+    //             if (_SleepSeasons.Value is Toggle.On)
+    //             {
+    //                 SyncedReadyToChange.Value = true;
+    //             }
+    //             else
+    //             {
+    //                 UpdateSeasonIndex();
+    //             }
+    //         }
+    //         else if (_Season.Value != (Season)SeasonIndex)
+    //         {
+    //             // To switch it back to timer settings if configs changed
+    //             _Season.Value = (Season)SeasonIndex;
+    //             LastSeasonChange = DateTime.UtcNow;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if (!Player.m_localPlayer) return;
+    //         if (Player.m_localPlayer.IsDead()) return;
+    //         
+    //         if (workingAsType is WorkingAs.Client && SyncedSeasons.Value != "")
+    //         {
+    //             // If user is a client connected to a server, then do not set seasons
+    //             // Wait for server to change config value
+    //             return;
+    //         }
+    //
+    //         if (GetTimeDifference() <= TimeSpan.Zero)
+    //         {
+    //             if (_SleepSeasons.Value is Toggle.On)
+    //             {
+    //                 SyncedReadyToChange.Value = true;
+    //             }
+    //             else
+    //             {
+    //                 UpdateSeasonIndex();
+    //             }
+    //         }
+    //         else if (_Season.Value != (Season)SeasonIndex)
+    //         {
+    //             // To switch it back to timer settings if configs changed
+    //             _Season.Value = (Season)SeasonIndex;
+    //             LastSeasonChange = DateTime.UtcNow;
+    //         }
+    //     }
+    // }
+    private static void UpdateSeasonIndex()
+    {
+        if (_Season.Value == (Season)SeasonIndex)
+        {
+            SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+            _Season.Value = (Season)SeasonIndex;
+        }
+        else
+        {
+            _Season.Value = (Season)SeasonIndex;
+            SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+        }
+        
+        // _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
+        // LastSeasonChange = DateTime.UtcNow;
+
+        _LastInGameSavedSeasonChange.Value = EnvMan.instance.m_totalSeconds;
+    }
+    public static void CheckInGameTimer()
     {
         if (_ModEnabled.Value is Toggle.Off) return;
         if (_SeasonControl.Value is Toggle.On) return;
         if (_SeasonDurationDays.Value == 0 && _SeasonDurationHours.Value == 0 && _SeasonDurationMinutes.Value == 0) return;
-        // To throttle seasonal changes to a minimum of 30 seconds
-        if (LastSeasonChange > DateTime.UtcNow + TimeSpan.FromSeconds(30)) return;
         
+        if (!EnvMan.instance) return;
+
         if (workingAsType is WorkingAs.Server or WorkingAs.Both)
         {
-            if (SyncedSeasons.Value != "true") SyncedSeasons.Value = "true";
-            TimeSpan TimeDifference = GetTimeDifference(); 
-        
-            if (TimeDifference <= TimeSpan.Zero + TimeSpan.FromSeconds(3))
+            if (!(GetInGameTimeDifference() <= 3)) return;
+            
+            if (_SleepSeasons.Value is Toggle.On)
             {
-                if (_SleepSeasons.Value is Toggle.On)
-                {
-                    SyncedReadyToChange.Value = true;
-                }
-                else
-                {
-                    UpdateSeasonIndex();
-                }
+                if (SyncedReadyToChange.Value != true) SyncedReadyToChange.Value = true;
             }
-            else if (_Season.Value != (Season)SeasonIndex)
+            else
             {
-                // To switch it back to timer settings if configs changed
-                _Season.Value = (Season)SeasonIndex;
-                LastSeasonChange = DateTime.UtcNow;
+                UpdateSeasonIndex();
             }
         }
         else
@@ -78,93 +175,36 @@ public static class SeasonalEffects
                 return;
             }
 
-            if (GetTimeDifference() <= TimeSpan.Zero)
+            if (!(GetInGameTimeDifference() <= 0)) return;
+            
+            if (_SleepSeasons.Value is Toggle.On)
             {
-                if (_SleepSeasons.Value is Toggle.On)
-                {
-                    SyncedReadyToChange.Value = true;
-                }
-                else
-                {
-                    UpdateSeasonIndex();
-                }
-            }
-            else if (_Season.Value != (Season)SeasonIndex)
-            {
-                // To switch it back to timer settings if configs changed
-                _Season.Value = (Season)SeasonIndex;
-                LastSeasonChange = DateTime.UtcNow;
-            }
-        }
-    }
-    private static void UpdateSeasonIndex()
-    {
-        if (_Season.Value == (Season)SeasonIndex)
-        {
-            SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-            _Season.Value = (Season)SeasonIndex;
-        }
-        else
-        {
-            _Season.Value = (Season)SeasonIndex;
-            SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-        }
-        _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
-        LastSeasonChange = DateTime.UtcNow;
-    }
-    private static void OldTimer(TMP_Text timer)
-    {
-        // Valheim days are 30min long 
-        
-        int duration = (_SeasonDurationDays.Value * 24 * 60) + (_SeasonDurationHours.Value * 60) + (_SeasonDurationMinutes.Value);
-        int remainingDays = duration - (EnvMan.instance.GetCurrentDay() % duration) + 1;
-        float fraction = EnvMan.instance.GetDayFraction(); // value between 0 - 1 - time of day
-        float remainder = remainingDays - fraction;
-
-        // Convert to in-game time
-        int totalSeconds = (int)(remainder * EnvMan.instance.m_dayLengthSec);
-
-        string time = $"{totalSeconds}";
-        
-        timer.gameObject.SetActive(_CounterVisible.Value is SeasonalityPlugin.Toggle.On);
-        timer.text = time;
-        
-        if (workingAsType is WorkingAs.Client)
-        {
-            // If user is a client connected to a server, then do not set seasons
-            // Wait for server to change config value
-
-            return;
-        }
-
-        if (totalSeconds < 3)
-        {
-            if (_Season.Value == (Season)SeasonIndex)
-            {
-                SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-                _Season.Value = (Season)SeasonIndex;
+                if (SyncedReadyToChange.Value != true) SyncedReadyToChange.Value = true;
             }
             else
             {
-                _Season.Value = (Season)SeasonIndex;
-                SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+                UpdateSeasonIndex();
             }
-            _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
-        }
-        else if (_Season.Value != (Season)SeasonIndex)
-        {
-            // To switch it back to timer settings if configs changed
-            _Season.Value = (Season)SeasonIndex;
         }
     }
-    public static TimeSpan GetTimeDifference()
+
+    public static double GetInGameTimeDifference()
     {
-        return DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal)
-                                      + TimeSpan.FromDays(_SeasonDurationDays.Value)
-                                      + TimeSpan.FromHours(_SeasonDurationHours.Value)
-                                      + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value)
-                                      - DateTime.UtcNow;
+        double daysInSeconds = _SeasonDurationDays.Value * 86400;
+        double hoursInSeconds = _SeasonDurationHours.Value * 3600;
+        double minutesInSeconds = _SeasonDurationMinutes.Value * 60;
+        double TotalSeconds = daysInSeconds + hoursInSeconds + minutesInSeconds;
+
+        return (_LastInGameSavedSeasonChange.Value + TotalSeconds) - EnvMan.instance.m_totalSeconds;
     }
+    // public static TimeSpan GetTimeDifference()
+    // {
+    //     return DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal)
+    //                                   + TimeSpan.FromDays(_SeasonDurationDays.Value)
+    //                                   + TimeSpan.FromHours(_SeasonDurationHours.Value)
+    //                                   + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value)
+    //                                   - DateTime.UtcNow;
+    // }
 
     private static Toggle lastToggled = _ModEnabled.Value;
     public static void UpdateSeasonEffects()
@@ -200,7 +240,6 @@ public static class SeasonalEffects
         // If season has changed, apply new seasonal effect
         ApplySeasons();
     }
-
     private static void ApplySeasons()
     {
         TerrainPatch.UpdateTerrain();

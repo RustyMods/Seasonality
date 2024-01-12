@@ -571,6 +571,7 @@ public static class Environment
         }
         StatusEffect WeatherEffect = EnvData.InitEnvEffect();
         Player.m_localPlayer.GetSEMan().AddStatusEffect(WeatherEffect);
+        currentEnv = env;
     }
 
     private static Heightmap.Biome lastBiome = Heightmap.Biome.None;
@@ -596,6 +597,7 @@ public static class Environment
             if (_ModEnabled.Value is Toggle.Off || _WeatherControl.Value is Toggle.Off)
             {
                 if (!Player.m_localPlayer) return true;
+                if (!Player.m_localPlayer.GetSEMan().HaveStatusEffect("WeatherMan_SE".GetStableHashCode())) return true;
                 Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
                 return true;
             }
@@ -628,16 +630,21 @@ public static class Environment
             {
                 SetWeatherMan(__instance.m_currentEnv.m_name);
             }
+            
+            if (__instance.m_currentEnv.m_name != currentEnv)
+            {
+                SetWeatherMan(__instance.m_currentEnv.m_name);
+                currentEnv = __instance.m_currentEnv.m_name;
+            }
 
-            Heightmap.Biome currentBiome = Heightmap.FindBiome(Player.m_localPlayer.transform.position);
-            if (currentBiome == Heightmap.Biome.None) return false;
+            if (biome == Heightmap.Biome.None) return true;
 
             List<EnvEntry> entries = new();
             List<Environments> configs = new();
 
             if (_YamlConfigurations.Value is Toggle.On)
             {
-                switch (currentBiome)
+                switch (biome)
                 {
                     case Heightmap.Biome.Meadows:
                         switch(_Season.Value)
@@ -915,7 +922,7 @@ public static class Environment
             }
             else
             {
-                switch (currentBiome)
+                switch (biome)
                 {
                     case Heightmap.Biome.Meadows:
                         switch (_Season.Value)
@@ -1183,13 +1190,8 @@ public static class Environment
 
             if (configs.TrueForAll(x => x is Environments.None) && _YamlConfigurations.Value is Toggle.Off)
             {
-                if (__instance.m_currentEnv.m_name != currentEnv)
-                {
-                    Debug.LogWarning("setting weather man");
-                    SetWeatherMan(__instance.m_currentEnv.m_name);
-                    currentEnv = __instance.m_currentEnv.m_name;
-                }
-                // return SetDefaultEnvironment(__instance, currentBiome);
+                CheckVanillaLocaleChange(__instance, biome);
+                WeatherTweaked = false;
                 return true;
             }
 
@@ -1199,66 +1201,62 @@ public static class Environment
                     AddToEntries(configs, entries);
                     break;
                 case Toggle.On when entries.Count == 0:
-                    if (__instance.m_currentEnv.m_name != currentEnv)
-                    {
-                        Debug.LogWarning("setting weather man");
-                        SetWeatherMan(__instance.m_currentEnv.m_name);
-                        currentEnv = __instance.m_currentEnv.m_name;
-                    }
-                    // return SetDefaultEnvironment(__instance, currentBiome);
+                    CheckVanillaLocaleChange(__instance, biome);
+                    WeatherTweaked = false;
                     return true;
             }
 
             // If client is server
-            if (ZNet.instance.IsServer()) return LocalWeatherMan(__instance, sec, entries, currentBiome);
+            if (ZNet.instance.IsServer()) return LocalWeatherMan(__instance, sec, entries, biome);
             
             // If client is connected to server, then use server index
-            if (lastBiome != currentBiome || lastSeason != _Season.Value)
+            if (lastBiome != biome)
             {
-                if (SyncedWeatherData.Value == "") return LocalWeatherMan(__instance, sec, entries, currentBiome);
-                ServerSyncedChangeWeather(currentBiome, __instance, entries, sec, false);
-                lastBiome = currentBiome;
-                lastSeason = _Season.Value;
+                if (SyncedWeatherData.Value == "") return LocalWeatherMan(__instance, sec, entries, biome);
+                ServerSyncedChangeWeather(biome, __instance, entries, sec, false);
+                lastBiome = biome;
+                return false;
             }
-            
+
+            if (lastSeason != _Season.Value)
+            {
+                if (SyncedWeatherData.Value == "") return LocalWeatherMan(__instance, sec, entries, biome);
+                ServerSyncedChangeWeather(biome, __instance, entries, sec, false);
+                lastSeason = _Season.Value;
+                return false;
+            }
+
             long duration = _WeatherDuration.Value * 60; // Total seconds
 
             if (duration == 0)
             {
                 // Throttle weather change to a minimum of 1 minute
                 if ((lastEnvironmentChange + 60) - EnvMan.instance.m_totalSeconds > 0) return false;
-                ServerSyncedChangeWeather(currentBiome, __instance, entries, sec);
+                ServerSyncedChangeWeather(biome, __instance, entries, sec);
             }
-            else
-            {
-                if ((lastEnvironmentChange + _WeatherDuration.Value * 60) - EnvMan.instance.m_totalSeconds > 0) return false;
-                ServerSyncedChangeWeather(currentBiome, __instance, entries, sec);
-            }
+
+            if ((lastEnvironmentChange + duration) - EnvMan.instance.m_totalSeconds > 0) return false;
+            ServerSyncedChangeWeather(biome, __instance, entries, sec);
             return false;
         }
-        private static bool SetDefaultEnvironment(EnvMan __instance, Heightmap.Biome biome)
+
+        private static void CheckVanillaLocaleChange(EnvMan instance, Heightmap.Biome currentBiome)
         {
-            // Not working
-            if (currentEnv != __instance.m_currentEnv.m_name)
+            if (instance.m_currentEnv.m_name != currentEnv)
             {
-                SetWeatherMan(__instance.m_currentEnv.m_name);
-                currentEnv = __instance.m_currentEnv.m_name;
+                SetWeatherMan(instance.m_currentEnv.m_name);
+                currentEnv = instance.m_currentEnv.m_name;
             }
-            if (lastSeason == _Season.Value && lastBiome == biome) return true;
-            List<EnvEntry> availableEnvironments = __instance.GetAvailableEnvironments(biome);
-            EnvSetup selectedEnvironment = __instance.SelectWeightedEnvironment(availableEnvironments);
-            if (availableEnvironments != null && availableEnvironments.Count > 0)
+            if (lastBiome != currentBiome)
             {
-                __instance.QueueEnvironment(selectedEnvironment);
-                if (selectedEnvironment.m_name == currentEnv) return true;
-                SetWeatherMan(selectedEnvironment.m_name);
-                currentEnv = selectedEnvironment.m_name;
-                WeatherTweaked = false;
+                instance.m_environmentPeriod = instance.m_environmentDuration + 1;
+                lastBiome = currentBiome;
+            }
+            if (lastSeason != _Season.Value)
+            {
+                instance.m_environmentPeriod = instance.m_environmentDuration + 1;
                 lastSeason = _Season.Value;
-                lastBiome = biome;
-                return false;
             }
-            return true;
         }
         private static void ServerSyncedWeatherMan(EnvMan __instance)
         {
@@ -1897,7 +1895,6 @@ public static class Environment
             }
             catch (Exception)
             {
-                SeasonalityLogger.LogDebug("Failed to use server synced weather, using local data");
                 LocalWeatherMan(__instance, sec, entries, currentBiome);
             }
         }
@@ -1921,12 +1918,18 @@ public static class Environment
         }
         private static bool LocalWeatherMan(EnvMan __instance, long sec, List<EnvEntry> environments, Heightmap.Biome biome)
         {
-            // If client changes biome before timer runs out
-            if (lastBiome != biome || lastSeason != _Season.Value)
+            if (lastBiome != biome)
             {
                 ChangeWeather(__instance, environments, sec);
                 lastBiome = biome;
+                return false;
+            }
+
+            if (lastSeason != _Season.Value)
+            {
+                ChangeWeather(__instance, environments, sec);
                 lastSeason = _Season.Value;
+                return false;
             }
             
             long duration = _WeatherDuration.Value * 60; // Total seconds
@@ -1935,17 +1938,15 @@ public static class Environment
             {
                 if ((lastEnvironmentChange + 60) - EnvMan.instance.m_totalSeconds > 0) return false;
                 ChangeWeather(__instance, environments, sec);
+                return false;
             }
-            else
-            {
-                if ((lastEnvironmentChange + _WeatherDuration.Value * 60) - EnvMan.instance.m_totalSeconds > 0) return false;
-                ChangeWeather(__instance, environments, sec);
-            }
-
+            if ((lastEnvironmentChange + duration) - EnvMan.instance.m_totalSeconds > 0) return false;
+            ChangeWeather(__instance, environments, sec);
             return false;
         }
         private static void ChangeWeather(EnvMan __instance, List<EnvEntry> environments, long sec)
         {
+            if (environments.Count <= 0) return;
             environmentIndex = (environmentIndex + 1) % (environments.Count);
             __instance.QueueEnvironment(environments[environmentIndex].m_environment);
             SetWeatherMan(environments[environmentIndex].m_environment);

@@ -56,9 +56,10 @@ namespace Seasonality
             SetupWatcher();
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
-            SeasonalEffects.CheckSeasonTimer();
+            // SeasonalEffects.CheckSeasonTimer();
+            SeasonalEffects.CheckInGameTimer();
             SeasonalEffects.UpdateSeasonEffects();
         }
 
@@ -362,21 +363,22 @@ namespace Seasonality
 
         public static ConfigEntry<Toggle> _ReplaceArmorTextures = null!;
         
-        public static ConfigEntry<string> _LastSavedSeasonChange = null!;
+        // public static ConfigEntry<string> _LastSavedSeasonChange = null!;
+        public static ConfigEntry<double> _LastInGameSavedSeasonChange = null!;
 
         #endregion
         private void InitConfigs()
         {
-            _LastSavedSeasonChange = config("8 - Data", "Last Season Change DateTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture), "Do not touch, unless you want to manipulate last season change");
+            // _LastSavedSeasonChange = config("8 - Data", "Last Season Change DateTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture), "Do not touch, unless you want to manipulate last season change");
+            _LastInGameSavedSeasonChange = config("8 - Data", "Last Season Change In-Game", 0.0, "Do not touch, unless you want to manipulate last season change");
             
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
             _SeasonControl = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
             _Season = config("1 - General", "4 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
 
-            _YamlConfigurations = config("1 - General", "5 - Use YML Configurations", Toggle.Off,
-                "If on, plugin uses YML configuration files");
+            _YamlConfigurations = config("1 - General", "5 - Use YML Configurations", Toggle.Off, "If on, plugin uses YML configuration files");
             
-            _ReplaceArmorTextures = config("1 - General", "6 - Replace Armor Textures", Toggle.On, "If on, plugin modifies armor textures", false);
+            _ReplaceArmorTextures = config("1 - General", "6 - Replace Armor Textures", Toggle.On, "If on, plugin modifies armor textures");
 
             _WinterFreezesWater = config("1 - General", "7 - Winter Freezes Water", Toggle.Off,
                 "If on, plugin freezes water during winter");
@@ -385,12 +387,10 @@ namespace Seasonality
             _SeasonDurationDays = config("1 - Seasons", "1 - Days", 0, new ConfigDescription("Real-time days between season", new AcceptableValueRange<int>(0, 365)));
             _SeasonDurationHours = config("1 - Seasons", "2 - Hours", 1, new ConfigDescription("Real time hours between seasons", new AcceptableValueRange<int>(0, 24)));
             _SeasonDurationMinutes = config("1 - Seasons", "3 - Minutes", 0, new ConfigDescription("Real-time minutes between seasons", new AcceptableValueRange<int>(0, 60)));
-            _StatusEffectVisible = config("1 - Seasons", "4 - Season Icon Visible", Toggle.On, "If on, season icon is visible", false);
-            _CounterVisible = config("1 - Seasons", "5 - Timer Visible", Toggle.On, "If on, timer under season is visible", false);
-            _SleepSeasons = config("1 - Seasons", "6 - Sleep Override", Toggle.Off,
-                "If on, seasons only change once game goes to sleep");
-            _SleepTimeText = config("1 - Seasons", "7 - Sleep Time Text", "Bed Time",
-                "Set the text to display when season are ready to change");
+            _StatusEffectVisible = config("1 - Seasons", "4 - Season Icon Visible", Toggle.On, "If on, season icon is visible");
+            _CounterVisible = config("1 - Seasons", "5 - Timer Visible", Toggle.On, "If on, timer under season is visible");
+            _SleepSeasons = config("1 - Seasons", "6 - Sleep Override", Toggle.Off, "If on, seasons only change once game goes to sleep");
+            _SleepTimeText = config("1 - Seasons", "7 - Sleep Time Text", "Bed Time", "Set the text to display when season are ready to change");
             #endregion
             
             _SeasonalEffectsEnabled = config("2 - Utilities", "1 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");

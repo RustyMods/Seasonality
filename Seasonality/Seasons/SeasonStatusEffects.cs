@@ -296,8 +296,8 @@ public class SeasonalEffect
         seasonEffect.m_tooltip = appendedTooltip;
         seasonEffect.m_startMessageType = MessageHud.MessageType.TopLeft;
         seasonEffect.m_stopMessageType = MessageHud.MessageType.TopLeft;
-        seasonEffect.m_startMessage = startMsg;
-        seasonEffect.m_stopMessage = stopMsg;
+        seasonEffect.m_startMessage = _SleepSeasons.Value is Toggle.On ? "" : startMsg;
+        seasonEffect.m_stopMessage = _SleepSeasons.Value is Toggle.On ? "" : stopMsg;
         seasonEffect.m_activationAnimation = activationAnimation;
         if (startEffectNames is not null)
         {
@@ -403,7 +403,11 @@ public class SeasonEffect : StatusEffect
             || _SeasonControl.Value is Toggle.On 
             || _CounterVisible.Value is Toggle.Off) return "";
         if (data.effectName == "AlwaysCold") return "";
-        TimeSpan span = SeasonalEffects.GetTimeDifference();
+        // TimeSpan span = SeasonalEffects.GetTimeDifference();
+
+        double remainder = SeasonalEffects.GetInGameTimeDifference();
+        TimeSpan span = TimeSpan.FromSeconds(remainder);
+        
         int days = span.Days;
         int hour = span.Hours;
         int minutes = span.Minutes;
