@@ -9,6 +9,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using JetBrains.Annotations;
+using Seasonality.Managers;
 using Seasonality.Seasons;
 using ServerSync;
 using UnityEngine;
@@ -22,7 +23,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.1.3";
+        internal const string ModVersion = "3.1.4";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -51,6 +52,9 @@ namespace Seasonality
             WaterMaterial.InitSnowBundle();
 
             InitConfigs();
+            
+            Localizer.Load();
+            
             Assembly assembly = Assembly.GetExecutingAssembly(); 
             _harmony.PatchAll(assembly);
             SetupWatcher();
@@ -103,7 +107,12 @@ namespace Seasonality
         public static ConfigEntry<int> _SeasonDurationDays = null!;
         public static ConfigEntry<int> _SeasonDurationHours = null!;
         public static ConfigEntry<int> _SeasonDurationMinutes = null!;
-        
+
+        public static ConfigEntry<int> _FallDurationTweak = null!;
+        public static ConfigEntry<int> _WinterDurationTweak = null!;
+        public static ConfigEntry<int> _SpringDurationTweak = null!;
+        public static ConfigEntry<int> _SummerDurationTweak = null!;
+
         public static ConfigEntry<int> _WeatherDuration = null!;
         public static ConfigEntry<Toggle> _WeatherIconEnabled = null!;
         public static ConfigEntry<Toggle> _WeatherTimerEnabled = null!;
@@ -342,7 +351,8 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _WinterAlwaysCold = null!;
 
         public static ConfigEntry<Toggle> _ReplaceArmorTextures = null!;
-        
+        public static ConfigEntry<Toggle> _ReplaceCreatureTextures = null!;
+
         // public static ConfigEntry<string> _LastSavedSeasonChange = null!;
         public static ConfigEntry<double> _LastInGameSavedSeasonChange = null!;
 
@@ -363,6 +373,9 @@ namespace Seasonality
             _WinterFreezesWater = config("1 - General", "7 - Winter Freezes Water", Toggle.Off,
                 "If on, plugin freezes water during winter");
 
+            _ReplaceCreatureTextures = config("1 - General", "8 - Replace Creature Textures", Toggle.On,
+                "If on, creature skins change with the seasons");
+
             #region Season Timer
             _SeasonDurationDays = config("1 - Seasons", "1 - Days", 0, new ConfigDescription("Real-time days between season", new AcceptableValueRange<int>(0, 365)));
             _SeasonDurationHours = config("1 - Seasons", "2 - Hours", 1, new ConfigDescription("Real time hours between seasons", new AcceptableValueRange<int>(0, 24)));
@@ -371,6 +384,15 @@ namespace Seasonality
             _CounterVisible = config("1 - Seasons", "5 - Timer Visible", Toggle.On, "If on, timer under season is visible");
             _SleepSeasons = config("1 - Seasons", "6 - Sleep Override", Toggle.Off, "If on, seasons only change once game goes to sleep");
             _SleepTimeText = config("1 - Seasons", "7 - Sleep Time Text", "Bed Time", "Set the text to display when season are ready to change");
+
+            _SummerDurationTweak = config("1 - Seasons", "8 - Summer Tweak", 0,
+                "Add or subtract time from the total duration");
+            _SpringDurationTweak = config("1 - Seasons", "8 - Spring Tweak", 0,
+                "Add or subtract time from the total duration");
+            _FallDurationTweak = config("1 - Seasons", "8 - Fall Tweak", 0,
+                "Add or subtract time from the total duration");
+            _WinterDurationTweak = config("1 - Seasons", "8 - Winter Tweak", 0,
+                "Add or subtract time from the total duration");
             #endregion
             
             _SeasonalEffectsEnabled = config("2 - Utilities", "1 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");

@@ -21,9 +21,9 @@ public static class MaterialReplacer
     private static readonly int LegsTex = Shader.PropertyToID("_LegsTex");
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
     private static readonly int MossTex = Shader.PropertyToID("_MossTex");
+    private static readonly int MossColorProp = Shader.PropertyToID("_MossColor");
     private static readonly int ColorProp = Shader.PropertyToID("_Color");
     private static readonly int BumpMap = Shader.PropertyToID("_BumpMap");
-
 
     [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.Start))]
     static class ZoneSystemPatch
@@ -42,15 +42,36 @@ public static class MaterialReplacer
         {
             if (!item) continue;
             string normalizedName = item.name.Replace("(Instance)", "").Replace(" ", "");
-            if (DefaultColorChange.Contains(normalizedName))
-            {
-                if (!HDPackLoaded && _ReplaceArmorTextures.Value is Toggle.On)
-                {
-                    item.SetColor(ColorProp, Color.white);
-                }
-            }
             CachedMaterials[normalizedName] = item;
         }
+    }
+
+    private static void SetArmorColors()
+    {
+        if (CachedMaterials.TryGetValue("CapeDeerHide", out Material capeDeerMat))
+        {
+            capeDeerMat.SetColor(ColorProp,
+                GetCustomTexture(ArmorDirectories.Leather, "CapeDeerHide", isCape: true)
+                    ? new Color32(255, 255, 255, 255)
+                    : new Color32(182, 125, 102, 255));
+        }
+
+        if (CachedMaterials.TryGetValue("CapeTrollHide", out Material capeTrollMat))
+        {
+            capeTrollMat.SetColor(ColorProp, 
+                GetCustomTexture(ArmorDirectories.Troll, "CapeTrollHide", isCape: true) 
+                    ? new Color32(255, 255, 255, 255) 
+                    : new Color32(102, 149, 182, 255));
+        }
+        
+        if (CachedMaterials.TryGetValue("helmet_trollleather", out Material helmTrollMat))
+        {
+            helmTrollMat.SetColor(ColorProp, 
+                GetCustomTexture(ArmorDirectories.Troll, "helmet_trollleather", isHelmet: true) 
+                    ? new Color32(255, 255, 255, 255) 
+                    : new Color32(88, 123, 151, 255));
+        }
+        
     }
     private static void GetAllTextures()
     {
@@ -110,10 +131,10 @@ public static class MaterialReplacer
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
         material.SetTexture(MainTex, tex);
     }
-    private static void SetColor(string materialName, Color32 color)
+    private static void SetMossColor(string materialName, Color32 color)
     {
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
-        material.SetColor(ColorProp, color);
+        material.SetColor(MossColorProp, color);
     }
     private static void SetChestTexture(string materialName, Texture? tex)
     {
@@ -128,7 +149,7 @@ public static class MaterialReplacer
     private static void SetNormalTexture(string materialName, Texture? normal)
     {
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
-        if (normal == null) return;
+        if (!normal) return;
         material.SetTexture(BumpMap, normal);
     }
     private static void SetCustomMainTexture(string materialName, Texture? tex, int index = 0)
@@ -149,14 +170,69 @@ public static class MaterialReplacer
     public static void ModifyCachedMaterials()
     {
         ModifyMossMaterials();
-        ModifyCreatures();
+        if(_ReplaceCreatureTextures.Value is Toggle.On) ModifyCreatures();
         ModifyVegetation(); 
         ModifyCustomMaterials();
         ModifyPieceMaterials();
         ModifyBarkMaterials();
         ModifyPickableMaterials();
-        ModifyNormals();
-        if (_ReplaceArmorTextures.Value is Toggle.On) ModifyArmorMaterials();
+        // ModifyNormals();
+        if (_ReplaceArmorTextures.Value is Toggle.On)
+        {
+            SetArmorColors();
+            ModifyArmorMaterials();
+        }
+        ModifyMistLandRocks();
+    }
+
+    private static bool MistLandRocksTurnedWhite = false;
+    private static void ModifyMistLandRocks()
+    {
+        if (_Season.Value is Season.Winter)
+        {
+            SetMistLandRocksWhite();
+            MistLandRocksTurnedWhite = true;
+        }
+        else
+        {
+            if (!MistLandRocksTurnedWhite) return;
+            SetMistLandRocksDefault();
+            MistLandRocksTurnedWhite = false;
+        }
+    }
+
+    private static void SetMistLandRocksDefault()
+    {
+        Color32 MossColor = new Color32(202, 255, 121, 255);
+        
+        List<string> MaterialToReplace = new()
+        {
+            "rock_mistlands",
+            "mistlands_cliff",
+            "mistlands_cliff_internal",
+            "mistlands_cliff_dungeon"
+        };
+
+        foreach (string material in MaterialToReplace)
+        {
+            SetMossColor(material, MossColor);
+        }
+    }
+
+    private static void SetMistLandRocksWhite()
+    {
+        List<string> MaterialToReplace = new()
+        {
+            "rock_mistlands",
+            "mistlands_cliff",
+            "mistlands_cliff_internal",
+            "mistlands_cliff_dungeon"
+        };
+
+        foreach (string material in MaterialToReplace)
+        {
+            SetMossColor(material, Color.white);
+        }
     }
     private static void ModifyArmorMaterials()
     {
@@ -589,8 +665,10 @@ public static class MaterialReplacer
             { "goblin",CreatureDirectories.Goblin },
             { "seeker_Brute_mat",CreatureDirectories.SeekerSoldier },
             { "babyseeker",CreatureDirectories.SeekerBrood },
-            { "seeker",CreatureDirectories.Seeker }
-
+            { "seeker",CreatureDirectories.Seeker },
+            { "greydwarf", CreatureDirectories.Greydwarf },
+            { "greydwarf_shaman", CreatureDirectories.GreydwarfShaman },
+            { "greydwarf_elite", CreatureDirectories.Greydwarf }
         };
         foreach (KeyValuePair<string, CreatureDirectories> kvp in CreatureReplacementMap)
         {

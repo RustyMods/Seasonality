@@ -118,6 +118,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Managers\LocalizationManager.cs" />
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Seasons\HDConfigurations.cs" />
@@ -158,6 +159,7 @@
         <Content Include="Libs\ServerSync.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <EmbeddedResource Include="translations\English.yml" />
         <Content Include="UpdateManifest.ps1" />
     </ItemGroup>
     <ItemGroup>

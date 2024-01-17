@@ -172,6 +172,8 @@ public static class CustomTextures
         Boar,
         Piggy,
         Neck,
+        Greydwarf,
+        GreydwarfShaman,
         Troll,
         Skeleton,
         Leech,

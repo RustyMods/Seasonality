@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Text.RegularExpressions;
 using BepInEx;
 using HarmonyLib;
@@ -486,38 +485,38 @@ public static class Environment
         {
             return (environment) switch
             {
-                "Clear" => "The weather is clear and peaceful",
-                "Misty" => "The gods do not engage with visionaries",
-                "Darklands_dark" => "A true warrior is never afraid of the dark",
-                "Heath clear" => "The weather is clear yet dangerous",
-                "DeepForest Mist" => "Be careful of the deep forest mist",
-                "GDKing" => "The energy of the forest swells into the sky",
-                "Rain" => "A great day to stay indoors",
-                "LightRain" => "Time to hunt the necks",
-                "ThunderStorm" => "The gods are enraged",
-                "Eikthyr" => "The might of Eikthyr thunders through the air",
-                "GoblinKing" => "The air is charged with the king's energy",
-                "nofogts" => "The rain hits different these days",
-                "SwampRain" => "There is a hint of acidity to these rain drops",
-                "Bonemass" => "The gaseous might of the swamps is palpable",
-                "Snow" => "The air is cold and frigid",
-                "Twilight_Clear" => "The calm before the storm",
-                "Twilight_Snow" => "Beautiful comes in a multitude of shapes",
-                "Twilight_SnowStorm" => "The frozen sky is cold and terrifying",
-                "SnowStorm" => "A true viking knows how to navigate through the harshest of weathers",
-                "Moder" => "Something powerful is soaring through the frigid skies",
-                "AshRain" => "Not even Hela can withstand the burning temperature",
-                "Crypt" => "Eerie times calls for tempered measures",
-                "SunkenCrypts" => "The sound of gutters radiate through the land",
-                "Caves" => "The shallow bowels of the mountains calls for you",
-                "Mistlands_clear" => "The weather clears, yet the dread increases",
-                "Mistlands_rain" => "The gods cry upon your arrival",
-                "Mistlands_thunder" => "The sky breaks open to reveal magical moments",
-                "InfectedMine" => "The time to fret was long ago",
-                "Queen" => "This is when you display your bravery",
-                "WarmSnow" => "Bright and warm, the air still showers you with snow",
-                "ClearWarmSnow" => "A moment of peaceful tranquility is all one needs",
-                "NightFrost" => "The nights are frozen with trepidation",
+                "Clear" => "$weather_clear_tooltip",
+                "Misty" => "$weather_misty_tooltip",
+                "Darklands_dark" => "$weather_darkland_dark_tooltip",
+                "Heath clear" => "$weather_heath_clear_tooltip",
+                "DeepForest Mist" => "$weather_deep_forest_mist_tooltip",
+                "GDKing" => "$weather_gd_king_tooltip",
+                "Rain" => "$weather_rain_tooltip",
+                "LightRain" => "$weather_light_rain_tooltip",
+                "ThunderStorm" => "$weather_thunderstorm_tooltip",
+                "Eikthyr" => "$weather_eikthyr_tooltip",
+                "GoblinKing" => "$weather_goblin_king_tooltip",
+                "nofogts" => "$weather_no_fog_thunderstorm_tooltip",
+                "SwampRain" => "$weather_swamp_rain_tooltip",
+                "Bonemass" => "$weather_bonemass_tooltip",
+                "Snow" => "$weather_snow_tooltip",
+                "Twilight_Clear" => "$weather_twilight_clear_tooltip",
+                "Twilight_Snow" => "$weather_twilight_snow_tooltip",
+                "Twilight_SnowStorm" => "$weather_twilight_snowstorm_tooltip",
+                "SnowStorm" => "$weather_snowstorm_tooltip",
+                "Moder" => "$weather_moder_tooltip",
+                "AshRain" => "$weather_ash_rain_tooltip",
+                "Crypt" => "$weather_crypt_tooltip",
+                "SunkenCrypts" => "$weather_sunken_crypt_tooltip",
+                "Caves" => "$weather_caves_tooltip",
+                "Mistlands_clear" => "$weather_mistland_clear_tooltip",
+                "Mistlands_rain" => "$weather_mistland_rain_tooltip",
+                "Mistlands_thunder" => "$weather_mistland_thunder_tooltip",
+                "InfectedMine" => "$weather_infected_mine_tooltip",
+                "Queen" => "$weather_queen_tooltip",
+                "WarmSnow" => "$weather_warm_snow_tooltip",
+                "ClearWarmSnow" => "$weather_clear_warm_snow_tooltip",
+                "NightFrost" => "$weather_night_frost_tooltip",
                 _ => ""
             };
         }
@@ -525,31 +524,35 @@ public static class Environment
     {
         return (environment) switch
         {
-            "Darklands_dark" => "Darklands Dark",
-            "Heath clear" => "Heath Clear",
-            "GDKing" => "Forest King",
-            "LightRain" => "Light Rain",
-            "ThunderStorm" => "Thunder Storm",
-            "GoblinKing" => "Goblin King",
-            "nofogts" => "Clear Thunder Storm",
-            "SwampRain" => "Swamp Rain",
-            "Bonemass" => "Swamp King",
-            "Twilight_Clear" => "Twilight Clear",
-            "Twilight_Snow" => "Twilight Snow",
-            "Twilight_SnowStorm" => "Twilight Snow Storm",
-            "SnowStorm" => "Snow Storm",
-            "Moder" => "Dragon Queen",
-            "AshRain" => "Ash Rain",
-            "SunkenCrypts" => "Sunken Crypt",
-            "Mistlands_clear" => "Mistland Clear",
-            "Mistlands_rain" => "Mistland Rain",
-            "Mistlands_thunder" => "Mistland Thunder",
-            "InfectedMine" => "Infected Mine",
-            "Queen" => "Seeker Queen",
-            "WarmSnow" => "Fog Snow",
-            "ClearWarmSnow" => "Clear Snow",
-            "NightFrost" => "Night Frost",
-            "WinterClear" => "Winter Clear",
+            "Darklands_dark" => "$weather_darklands_dark",
+            "Heath clear" => "$weather_heath_clear",
+            "GDKing" => "$weather_gd_king",
+            "LightRain" => "$weather_light_rain",
+            "ThunderStorm" => "$weather_thunderstorm",
+            "GoblinKing" => "$weather_goblin_king",
+            "nofogts" => "$weather_no_fog_thunderstorm",
+            "SwampRain" => "$weather_swamp_rain",
+            "Bonemass" => "$weather_bonemass",
+            "Twilight_Clear" => "$weather_twilight_clear",
+            "Twilight_Snow" => "$weather_twilight_snow",
+            "Twilight_SnowStorm" => "$weather_twilight_snowstorm",
+            "SnowStorm" => "$weather_snowstorm",
+            "Moder" => "$weather_moder",
+            "AshRain" => "$weather_ash_rain",
+            "SunkenCrypts" => "$weather_sunken_crypts",
+            "Mistlands_clear" => "$weather_mistland_clear",
+            "Mistlands_rain" => "$weather_mistland_rain",
+            "Mistlands_thunder" => "$weather_mistland_thunder",
+            "InfectedMine" => "$weather_infected_mine",
+            "Queen" => "$weather_seeker_queen",
+            "WarmSnow" => "$weather_warm_snow",
+            "ClearWarmSnow" => "$weather_clear_warm_snow",
+            "NightFrost" => "$weather_night_frost",
+            "WinterClear" => "$weather_winter_clear",
+            "DeepForest Mist" => "$weather_deep_forest_mist",
+            "Eikthyr" => "$enemy_eikthyr",
+            "Crypt" => "$weather_crypt",
+            "Caves" => "$weather_caves",
             _ => environment
         };
     }
@@ -560,10 +563,10 @@ public static class Environment
         EnvironmentEffectData EnvData = new EnvironmentEffectData()
         {
             name = "WeatherMan_SE",
-            m_name = GetEnvironmentDisplayName(env),
+            m_name = Localization.instance.Localize(GetEnvironmentDisplayName(env)),
             m_sprite = CustomTextures.ValknutIcon,
-            m_start_msg = "The weather is changing to " + GetEnvironmentDisplayName(env),
-            m_tooltip = GetEnvironmentTooltip(env)
+            m_start_msg = Localization.instance.Localize("$weather_changing_to" + GetEnvironmentDisplayName(env)),
+            m_tooltip = Localization.instance.Localize(GetEnvironmentTooltip(env)) 
         };
         if (Player.m_localPlayer.GetSEMan().HaveStatusEffect("WeatherMan_SE".GetStableHashCode()))
         {
@@ -601,7 +604,7 @@ public static class Environment
                 Player.m_localPlayer.GetSEMan().RemoveStatusEffect("WeatherMan_SE".GetStableHashCode());
                 return true;
             }
-
+            
             if (workingAsType is WorkingAs.Server)
             {
                 ServerSyncedWeatherMan(__instance);
@@ -1235,7 +1238,11 @@ public static class Environment
                 ServerSyncedChangeWeather(biome, __instance, entries, sec);
             }
 
-            if ((lastEnvironmentChange + duration) - EnvMan.instance.m_totalSeconds > 0) return false;
+            if ((lastEnvironmentChange + duration) - EnvMan.instance.m_totalSeconds > 0)
+            {
+                if (!WeatherTweaked) ServerSyncedChangeWeather(biome, __instance, entries, sec, false);
+                return false;
+            }
             ServerSyncedChangeWeather(biome, __instance, entries, sec);
             return false;
         }
@@ -1940,18 +1947,23 @@ public static class Environment
                 ChangeWeather(__instance, environments, sec);
                 return false;
             }
-            if ((lastEnvironmentChange + duration) - EnvMan.instance.m_totalSeconds > 0) return false;
+
+            if ((lastEnvironmentChange + duration) - EnvMan.instance.m_totalSeconds > 0)
+            {
+                if (!WeatherTweaked) ChangeWeather(__instance, environments, sec, false);
+                return false;
+            }
             ChangeWeather(__instance, environments, sec);
             return false;
         }
-        private static void ChangeWeather(EnvMan __instance, List<EnvEntry> environments, long sec)
+        private static void ChangeWeather(EnvMan __instance, List<EnvEntry> environments, long sec, bool resetTimer = true)
         {
             if (environments.Count <= 0) return;
             environmentIndex = (environmentIndex + 1) % (environments.Count);
             __instance.QueueEnvironment(environments[environmentIndex].m_environment);
             SetWeatherMan(environments[environmentIndex].m_environment);
             currentEnv = environments[environmentIndex].m_environment;
-            lastEnvironmentChange = sec;
+            if (resetTimer) lastEnvironmentChange = sec;
             WeatherTweaked = true;
         }
     }

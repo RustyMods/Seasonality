@@ -6,7 +6,6 @@ using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
-
 public static class WaterMaterial
 {
     private static AssetBundle _snowBundle = null!;
@@ -17,13 +16,15 @@ public static class WaterMaterial
 
     private static MeshRenderer WaterLoDRenderer = null!;
     private static MeshRenderer WaterSurfaceRenderer = null!;
-
+    
     private static Transform WaterLoD = null!;
     private static Vector3 OriginalWaterLevel;
 
     private static Transform ZoneWaterVolume = null!;
     private static MeshCollider ZoneWaterCollider = null!;
     
+    private static readonly int WaveVel = Shader.PropertyToID("_WaveVel");
+
     public static void InitSnowBundle()
     {
         _snowBundle = GetAssetBundle("snowmaterialbundle");
@@ -36,32 +37,12 @@ public static class WaterMaterial
         Transform WaterPlane = global::Utils.FindChild(_GameMain.transform, "WaterPlane");
         if (!WaterPlane) return;
         Transform waterSurface = WaterPlane.GetChild(0);
+        
         WaterLoD = waterSurface;
         OriginalWaterLevel = waterSurface.position;
         if (!waterSurface.TryGetComponent(out MeshRenderer meshRenderer)) return;
         WaterLoDRenderer = meshRenderer;
         OriginalWaterLoDMaterial = meshRenderer.material;
-
-    }
-    public static void ReplaceWaterLoD()
-    {
-        if (_WinterFreezesWater.Value is Toggle.Off) return;
-        WaterLoDRenderer.material = _Season.Value is Season.Winter ? SnowMaterial : OriginalWaterLoDMaterial;
-        WaterLoD.position = _Season.Value is Season.Winter
-            ? OriginalWaterLevel + new Vector3(0f, -0.2f, 0f)
-            : OriginalWaterLevel;
-    }
-
-    [HarmonyPatch(typeof(Game), nameof(Game.Start))]
-    static class GameStartPatch
-    {
-        private static void Postfix(Game __instance) => CacheWaterLoD(__instance);
-    }
-
-    [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.Start))]
-    static class SpawnZonePatch
-    {
-        private static void Postfix(ZoneSystem __instance) => CacheZoneWater(__instance);
     }
     private static void CacheZoneWater(ZoneSystem instance)
     {
@@ -70,7 +51,7 @@ public static class WaterMaterial
         if (!Water) return;
         Transform WaterSurface = global::Utils.FindChild(Water.transform, "WaterSurface");
         if (!WaterSurface) return;
-        
+        WaterSurface.gameObject.layer = 21;
         if (WaterSurface.TryGetComponent(out MeshFilter meshFilter))
         {
             MeshCollider collider = WaterSurface.gameObject.AddComponent<MeshCollider>();
@@ -78,6 +59,7 @@ public static class WaterMaterial
             collider.enabled = false;
             ZoneWaterCollider = collider;
         }
+
         if (!WaterSurface.TryGetComponent(out MeshRenderer meshRenderer)) return;
         OriginalWaterMaterial = meshRenderer.material;
         WaterSurfaceRenderer = meshRenderer;
@@ -85,13 +67,36 @@ public static class WaterMaterial
         if (!WaterVolume) return;
         ZoneWaterVolume = WaterVolume;
         
+        // Make sure water is frozen if user logs near water zone during winter
+        if (_WinterFreezesWater.Value is Toggle.On) ModifyWater();
     }
-    public static void ReplaceZoneWater()
+    private static void ReplaceWaterLoD()
+    {
+        if (_WinterFreezesWater.Value is Toggle.Off) return;
+        WaterLoDRenderer.material = _Season.Value is Season.Winter ? SnowMaterial : OriginalWaterLoDMaterial;
+        WaterLoD.position = _Season.Value is Season.Winter
+            ? OriginalWaterLevel + new Vector3(0f, -0.2f, 0f)
+            : OriginalWaterLevel;
+    }
+    
+    private static void ReplaceZoneWater()
     {
         if (_WinterFreezesWater.Value is Toggle.Off) return;
         WaterSurfaceRenderer.material = _Season.Value is Season.Winter ? SnowMaterial : OriginalWaterMaterial;
         ZoneWaterCollider.enabled = _Season.Value is Season.Winter;
-        ZoneWaterVolume.gameObject.SetActive(_Season.Value is not Season.Winter);
+        
+        if (!MaterialReplacer.CachedMaterials.TryGetValue("water", out Material water)) return;
+        water.SetFloat(WaveVel, _Season.Value is Season.Winter ? 0.0f : 1.0f);
+        if (ZoneWaterVolume.TryGetComponent(out WaterVolume waterVolume))
+        {
+            waterVolume.m_useGlobalWind = _Season.Value is not Season.Winter;
+        }
+    }
+
+    public static void ModifyWater()
+    {
+        ReplaceZoneWater();
+        ReplaceWaterLoD();
     }
 
     [HarmonyPatch(typeof(AudioMan), nameof(AudioMan.FixedUpdate))]
@@ -103,6 +108,19 @@ public static class WaterMaterial
             __instance.m_haveOcean = _Season.Value is not Season.Winter;
         }
     }
+    
+    [HarmonyPatch(typeof(Game), nameof(Game.Start))]
+    static class GameStartPatch
+    {
+        private static void Postfix(Game __instance) => CacheWaterLoD(__instance);
+    }
+
+    [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.Start))]
+    static class SpawnZonePatch
+    {
+        private static void Postfix(ZoneSystem __instance) => CacheZoneWater(__instance);
+    }
+    
     private static AssetBundle GetAssetBundle(string fileName)
     {
         Assembly execAssembly = Assembly.GetExecutingAssembly();

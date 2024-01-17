@@ -87,7 +87,7 @@ public static class TerrainPatch
             Material mat = instanceRenderer.m_material;
             string[] props = mat.GetTexturePropertyNames();
 
-            if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
+            // if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
             if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
             
             // Set texture to default value
@@ -99,7 +99,7 @@ public static class TerrainPatch
             switch (type)
             {
                 case GrassTypes.GreenGrass or GrassTypes.GreenGrassShort or GrassTypes.MistlandGrassShort:
-                    mat.SetTexture(terrainProp, null);
+                    mat.SetTexture(TerrainColorTex, null);
                     Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
                     break;
                 case GrassTypes.ClutterShrubs or GrassTypes.Ormbunke or GrassTypes.OrmBunkeSwamp:

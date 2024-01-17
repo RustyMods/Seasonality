@@ -31,16 +31,20 @@ public static class SeasonalEffects
             if (_SeasonControl.Value is Toggle.On) return;
             if (SyncedReadyToChange.Value is false) return;
             UpdateSeasonIndex();
+            WakeUpMessageRan = false;
             SyncedReadyToChange.Value = false;
         }
     }
 
+    private static bool WakeUpMessageRan = false;
+    
     [HarmonyPatch(typeof(Player), nameof(Player.Message))]
     private static class PlayerMessagePatch
     {
         private static void Prefix(Player __instance, ref string msg)
         {
             if (!__instance) return;
+            if (WakeUpMessageRan) return;
             if (msg != "$msg_goodmorning") return;
             string seasonMessage = "";
             switch (_Season.Value)
@@ -60,6 +64,7 @@ public static class SeasonalEffects
             }
 
             msg += "\n\n" + seasonMessage;
+            WakeUpMessageRan = true;
         }
     }
     // public static void CheckRealTimeTimer()
@@ -195,6 +200,22 @@ public static class SeasonalEffects
         double minutesInSeconds = _SeasonDurationMinutes.Value * 60;
         double TotalSeconds = daysInSeconds + hoursInSeconds + minutesInSeconds;
 
+        switch (_Season.Value)
+        {
+            case Season.Spring:
+                TotalSeconds += _SpringDurationTweak.Value;
+                break;
+            case Season.Summer:
+                TotalSeconds += _SummerDurationTweak.Value;
+                break;
+            case Season.Fall:
+                TotalSeconds += _FallDurationTweak.Value;
+                break;
+            case Season.Winter:
+                TotalSeconds += _WinterDurationTweak.Value;
+                break;
+        }
+
         return (_LastInGameSavedSeasonChange.Value + TotalSeconds) - EnvMan.instance.m_totalSeconds;
     }
     // public static TimeSpan GetTimeDifference()
@@ -242,8 +263,7 @@ public static class SeasonalEffects
         _SeasonControl.Value = Toggle.On;
         _Season.Value = Season.Summer;
         MaterialReplacer.ModifyCachedMaterials();
-        WaterMaterial.ReplaceWaterLoD();
-        WaterMaterial.ReplaceZoneWater();
+        WaterMaterial.ModifyWater();
     }
     private static void ApplySeasons()
     {
@@ -251,8 +271,8 @@ public static class SeasonalEffects
         ApplySeasonalEffects(Player.m_localPlayer);
         SetSeasonalKey();
         MaterialReplacer.ModifyCachedMaterials();
-        WaterMaterial.ReplaceWaterLoD();
-        WaterMaterial.ReplaceZoneWater();
+        if (_WinterFreezesWater.Value is Toggle.On) WaterMaterial.ModifyWater();
+        currentSeason = _Season.Value;
     }
 
     private static void UpdateAlwaysColdEffect(Player instance)
@@ -275,12 +295,14 @@ public static class SeasonalEffects
         }
     }
 
+    private static bool SeasonsLoaded = false;
     [HarmonyPatch(typeof(Player), nameof(Player.Awake))]
     static class PlayerAwakePatch
     {
         private static void Postfix(Player __instance)
         {
             if (!__instance) return;
+            if (SeasonsLoaded) return;
             if (!__instance.IsPlayer()) return;
             if (!ZNetScene.instance) return;
             if (workingAsType is WorkingAs.Client)
@@ -294,9 +316,10 @@ public static class SeasonalEffects
             SetSeasonalKey();
             TerrainPatch.UpdateTerrain();
             MaterialReplacer.ModifyCachedMaterials();
-            WaterMaterial.ReplaceWaterLoD();
-            WaterMaterial.ReplaceZoneWater();
+            if (_WinterFreezesWater.Value is Toggle.On) WaterMaterial.ModifyWater();
             SetServerSyncedYmlData();
+
+            SeasonsLoaded = true;
             
             if (!EnvMan.instance) return;
             Environment.RegisterServerEnvironments(EnvMan.instance);

@@ -50,18 +50,18 @@ public class SeasonalEffect
 {
     public string effectName = null!;
     public string displayName = "";
-    public int duration = 0;
+    public readonly int duration = 0;
     public Sprite? sprite;
     public string? spriteName;
     public string[]? startEffectNames;
     public string[]? stopEffectNames;
     public string? startMsg = "";
-    public string? stopMsg = "";
+    public readonly string? stopMsg = "";
     public string? effectTooltip = "";
     public string? damageMod;
     public Modifier Modifier = Modifier.None;
     public float m_newValue = 0f;
-    public string? activationAnimation = "gpower";
+    public readonly string? activationAnimation = "gpower";
     public Dictionary<Modifier, float> Modifiers = new()
     {
         { Modifier.Attack, 1f },
@@ -78,7 +78,7 @@ public class SeasonalEffect
         { Modifier.EitrRegen , 1f }
     };
 
-    private Dictionary<Modifier, float> defaultModifiers = new()
+    private readonly Dictionary<Modifier, float> defaultModifiers = new()
     {
         { Modifier.Attack, 1f },
         { Modifier.HealthRegen , 1f },
@@ -278,7 +278,7 @@ public class SeasonalEffect
                 GameObject item = ZNetScene.instance.GetPrefab(spriteName);
                 if (!item)
                 {
-                    SeasonalityLogger.LogWarning($"[{effectName}] : Failed to get prefab: {spriteName}");
+                    SeasonalityLogger.LogInfo($"[{effectName}] : Failed to get prefab: {spriteName}");
                     return null;
                 }
 
