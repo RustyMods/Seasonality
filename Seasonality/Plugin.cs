@@ -23,7 +23,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.1.4";
+        internal const string ModVersion = "3.1.6";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -62,7 +62,6 @@ namespace Seasonality
 
         private void FixedUpdate()
         {
-            // SeasonalEffects.CheckSeasonTimer();
             SeasonalEffects.CheckInGameTimer();
             SeasonalEffects.UpdateSeasonEffects();
         }

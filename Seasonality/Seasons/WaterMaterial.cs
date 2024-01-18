@@ -51,7 +51,6 @@ public static class WaterMaterial
         if (!Water) return;
         Transform WaterSurface = global::Utils.FindChild(Water.transform, "WaterSurface");
         if (!WaterSurface) return;
-        WaterSurface.gameObject.layer = 21;
         if (WaterSurface.TryGetComponent(out MeshFilter meshFilter))
         {
             MeshCollider collider = WaterSurface.gameObject.AddComponent<MeshCollider>();
@@ -128,4 +127,5 @@ public static class WaterMaterial
         using Stream? stream = execAssembly.GetManifestResourceStream(resourceName);
         return AssetBundle.LoadFromStream(stream);
     }
+    
 }

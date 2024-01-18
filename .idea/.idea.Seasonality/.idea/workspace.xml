@@ -2,17 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/LocalizationManager.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/translations/English.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/CustomTextures.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/CustomTextures.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/SeasonStatusEffects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/SeasonStatusEffects.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/SeasonalEffects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/SeasonalEffects.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/Terrain.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/Terrain.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/WaterMaterial.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/WaterMaterial.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -48,6 +41,9 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/b0/8a7a2053/Heightmap.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/b3/d6adf5f6/EnvMan.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/b4/d7b665fb/EnvSetup.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/bc/4a906cd3/PieceTable.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/c1/af83a21c/MapTable.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/c7/0dd991a3/Ship.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/e1/f14429fe/SEMan.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/e2/a0d9db3d/EventZone.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/f4/6c7cdf92/Game.cs" root0="SKIP_HIGHLIGHTING" />
@@ -124,6 +120,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/e1/e9820e17/Mesh.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/e2/09627aac/NoAllocHelpers.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/ef/0aa07049/Material.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9ce17bd73eb34c8c8462832ce2833d1816400/54/346498a3/Vector2i.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ebb45651d76c45f5bdf00e15634224e516200/b9/9afc5b8d/Utils.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Seasons/ConfigManagerPatch.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Seasons/SeasonStatusEffects.cs" root0="FORCE_HIGHLIGHTING" />
@@ -138,23 +135,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;FileTemplatesSettingsId&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "configurable.group.editor",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\peima\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\peima\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\peima\\AppData\\Local\\Symbols\\src&quot;
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\peima\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\DecompilerCache",
+      "C:\\Users\\peima\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\SourcesCache",
+      "C:\\Users\\peima\\AppData\\Local\\Symbols\\src"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
@@ -263,7 +260,9 @@
       <workItem from="1705336686973" duration="10287000" />
       <workItem from="1705424618783" duration="736000" />
       <workItem from="1705425581385" duration="424000" />
-      <workItem from="1705442437860" duration="6661000" />
+      <workItem from="1705442437860" duration="7490000" />
+      <workItem from="1705466588277" duration="292000" />
+      <workItem from="1705507133685" duration="10063000" />
     </task>
     <servers />
   </component>
@@ -284,5 +283,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

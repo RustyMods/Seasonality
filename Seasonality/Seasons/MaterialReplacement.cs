@@ -11,12 +11,6 @@ public static class MaterialReplacer
     public static readonly Dictionary<string, Texture> CachedTextures = new();
     public static readonly Dictionary<string, Material> CachedMaterials = new();
     public static readonly Dictionary<string, Material> CustomMaterials = new();
-    private static readonly List<string> DefaultColorChange = new()
-    {
-        "CapeDeerHide",
-        "CapeTrollHide",
-        "helmet_trollleather"
-    };
     private static readonly int ChestTex = Shader.PropertyToID("_ChestTex");
     private static readonly int LegsTex = Shader.PropertyToID("_LegsTex");
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
@@ -109,6 +103,7 @@ public static class MaterialReplacer
     private static void SetCustomMossTexture(string materialName, Texture originalTex)
     {
         if (!CachedTextures.TryGetValue("Pillar_snow_mat_moss", out Texture SnowMoss)) return;
+        
         if (!CachedTextures.TryGetValue("rock_heath_moss", out Texture HeathMoss)) return;
 
         if (!CustomMaterials.TryGetValue(materialName, out Material material)) return;
@@ -200,7 +195,6 @@ public static class MaterialReplacer
             MistLandRocksTurnedWhite = false;
         }
     }
-
     private static void SetMistLandRocksDefault()
     {
         Color32 MossColor = new Color32(202, 255, 121, 255);
@@ -218,7 +212,6 @@ public static class MaterialReplacer
             SetMossColor(material, MossColor);
         }
     }
-
     private static void SetMistLandRocksWhite()
     {
         List<string> MaterialToReplace = new()
@@ -710,21 +703,49 @@ public static class MaterialReplacer
             // { "Bush01_raspberry", VegDirectories.Bushes },
             // { "Bush02_en" , VegDirectories.PlainsBush },
             { "Cloudberrybush", VegDirectories.CloudberryBush },
-            { "Vines_Mat", VegDirectories.Vines },
-            { "VinesBranch_mat", VegDirectories.Vines },
             // { "shrub", VegDirectories.Shrub },
             // { "shrub_heath", VegDirectories.Shrub },
             { "shrub2_leafparticle", VegDirectories.ShrubParticles },
             { "shrub2_leafparticle_heath", VegDirectories.ShrubParticles },
         };
-        
+        Dictionary<string, VegDirectories> VinesMap = new()
+        {
+            { "Vines_Mat", VegDirectories.Vines },
+            { "VinesBranch_mat", VegDirectories.Vines },
+        };
         foreach (KeyValuePair<string, VegDirectories> kvp in VegetationReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key);
-            if (!texture) continue;
-            
+            if (!texture) {continue;}
             SetMainTexture(kvp.Key, texture);
         }
+
+        foreach (KeyValuePair<string, VegDirectories> kvp in VinesMap)
+        {
+            bool flag = GetCustomTexture(kvp.Value, kvp.Key, out Texture? texture);
+            if (!flag)
+            {
+                SetVineColorDefault(kvp.Key);
+                SetMainTexture(kvp.Key, texture);
+            }
+            else
+            {
+                ModifyVinesColor(kvp.Key);
+                SetMainTexture(kvp.Key, texture);
+            }
+        }
+    }
+
+    private static void ModifyVinesColor(string materialName)
+    {
+        if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
+        material.SetColor(ColorProp, new Color32(255, 255, 255, 255));
+    }
+
+    private static void SetVineColorDefault(string materialName)
+    {
+        if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
+        material.SetColor(ColorProp, new Color32(186, 255, 134, 255));
     }
     private static void ModifyNormals()
     {
@@ -862,6 +883,17 @@ public static class MaterialReplacer
         Texture? customTexture = Utils.GetCustomTexture(directory,  isBark ? _Season.Value + "_bark" : _Season.Value.ToString());
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
+    }
+
+    private static bool GetCustomTexture(VegDirectories directory, string originalMaterialName, out Texture? texture, bool isBark = false)
+    {
+        texture = null;
+        Texture? customTexture = Utils.GetCustomTexture(directory,  isBark ? _Season.Value + "_bark" : _Season.Value.ToString());
+        CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
+
+        texture = customTexture ? customTexture : originalTexture ? originalTexture : null;
+        
+        return customTexture;
     }
     private static Texture? GetCustomNormals(VegDirectories directory, string originalMaterialName)
     {

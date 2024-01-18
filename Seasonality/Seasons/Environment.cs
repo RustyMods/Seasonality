@@ -524,6 +524,8 @@ public static class Environment
     {
         return (environment) switch
         {
+            "Clear" => "$weather_clear",
+            "Misty" => "$weather_misty",
             "Darklands_dark" => "$weather_darklands_dark",
             "Heath clear" => "$weather_heath_clear",
             "GDKing" => "$weather_gd_king",
@@ -565,7 +567,7 @@ public static class Environment
             name = "WeatherMan_SE",
             m_name = Localization.instance.Localize(GetEnvironmentDisplayName(env)),
             m_sprite = CustomTextures.ValknutIcon,
-            m_start_msg = Localization.instance.Localize("$weather_changing_to" + GetEnvironmentDisplayName(env)),
+            m_start_msg = Localization.instance.Localize("$weather_changing_to") + Localization.instance.Localize(GetEnvironmentDisplayName(env)),
             m_tooltip = Localization.instance.Localize(GetEnvironmentTooltip(env)) 
         };
         if (Player.m_localPlayer.GetSEMan().HaveStatusEffect("WeatherMan_SE".GetStableHashCode()))
@@ -1927,14 +1929,14 @@ public static class Environment
         {
             if (lastBiome != biome)
             {
-                ChangeWeather(__instance, environments, sec);
+                ChangeWeather(__instance, environments, sec, false);
                 lastBiome = biome;
                 return false;
             }
 
             if (lastSeason != _Season.Value)
             {
-                ChangeWeather(__instance, environments, sec);
+                ChangeWeather(__instance, environments, sec, false);
                 lastSeason = _Season.Value;
                 return false;
             }
