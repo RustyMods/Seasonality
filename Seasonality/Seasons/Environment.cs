@@ -577,6 +577,7 @@ public static class Environment
         StatusEffect WeatherEffect = EnvData.InitEnvEffect();
         Player.m_localPlayer.GetSEMan().AddStatusEffect(WeatherEffect);
         currentEnv = env;
+        SeasonalityLogger.LogDebug("Weatherman: setting new weather to " + env);
     }
 
     private static Heightmap.Biome lastBiome = Heightmap.Biome.None;
@@ -1901,6 +1902,7 @@ public static class Environment
                 currentEnv = entries[serverIndex].m_environment;
                 if (resetTimer) lastEnvironmentChange = sec;
                 WeatherTweaked = true;
+                SeasonalityLogger.LogDebug("Server: Updating synced weather");
             }
             catch (Exception)
             {
@@ -1967,6 +1969,7 @@ public static class Environment
             currentEnv = environments[environmentIndex].m_environment;
             if (resetTimer) lastEnvironmentChange = sec;
             WeatherTweaked = true;
+            SeasonalityLogger.LogDebug("Client: Changing weather using local settings");
         }
     }
     public class EnvironmentEffectData

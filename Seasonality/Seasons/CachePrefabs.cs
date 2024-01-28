@@ -189,10 +189,12 @@ public static class CacheResources
     private static void SetMaterials(List<Material[]> materials, GameObject prefab)
     {
         if (materials.Count != 4) return;
+        SeasonalityLogger.LogDebug("Applying color materials to " + prefab.name);
         Random random = new Random();
         int randomIndex = random.Next(materials.Count);
 
         VegetationType type = Utils.GetVegetationType(prefab.name);
+        
         for (int i = 0; i < prefab.transform.childCount; ++i)
         {
             Transform? child = prefab.transform.GetChild(i);

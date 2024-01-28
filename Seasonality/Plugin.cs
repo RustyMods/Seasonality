@@ -23,7 +23,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.1.6";
+        internal const string ModVersion = "3.1.7";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -63,6 +63,10 @@ namespace Seasonality
         private void FixedUpdate()
         {
             SeasonalEffects.CheckInGameTimer();
+        }
+
+        private void OnSeasonValueChange(object sender, EventArgs e)
+        {
             SeasonalEffects.UpdateSeasonEffects();
         }
 
@@ -364,7 +368,8 @@ namespace Seasonality
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
             _SeasonControl = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
             _Season = config("1 - General", "4 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
-
+            _Season.SettingChanged += OnSeasonValueChange;
+            
             _YamlConfigurations = config("1 - General", "5 - Use YML Configurations", Toggle.Off, "If on, plugin uses YML configuration files");
             
             _ReplaceArmorTextures = config("1 - General", "6 - Replace Armor Textures", Toggle.On, "If on, plugin modifies armor textures");

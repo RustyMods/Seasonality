@@ -4,9 +4,9 @@
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/CachePrefabs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/CachePrefabs.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/WaterMaterial.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/WaterMaterial.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/SeasonalEffects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/SeasonalEffects.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,6 +123,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9ce17bd73eb34c8c8462832ce2833d1816400/54/346498a3/Vector2i.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ebb45651d76c45f5bdf00e15634224e516200/b9/9afc5b8d/Utils.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Seasons/ConfigManagerPatch.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Seasonality/Seasons/Environment.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Seasons/SeasonStatusEffects.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Seasons/SeasonalEffects.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Seasons/WaterMaterial.cs" root0="FORCE_HIGHLIGHTING" />
@@ -135,23 +136,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "configurable.group.editor",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.editor&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\peima\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\DecompilerCache",
-      "C:\\Users\\peima\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\SourcesCache",
-      "C:\\Users\\peima\\AppData\\Local\\Symbols\\src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\peima\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\peima\\AppData\\Roaming\\JetBrains\\Rider2022.3\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\peima\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
@@ -262,7 +263,21 @@
       <workItem from="1705425581385" duration="424000" />
       <workItem from="1705442437860" duration="7490000" />
       <workItem from="1705466588277" duration="292000" />
-      <workItem from="1705507133685" duration="10063000" />
+      <workItem from="1705507133685" duration="10462000" />
+      <workItem from="1705550679690" duration="2168000" />
+      <workItem from="1705564341734" duration="641000" />
+      <workItem from="1705631345719" duration="943000" />
+      <workItem from="1705770794755" duration="618000" />
+      <workItem from="1705852043183" duration="532000" />
+      <workItem from="1705857646312" duration="209000" />
+      <workItem from="1705858225376" duration="524000" />
+      <workItem from="1705874645124" duration="954000" />
+      <workItem from="1705882652937" duration="72000" />
+      <workItem from="1705972591054" duration="933000" />
+      <workItem from="1705983238145" duration="776000" />
+      <workItem from="1706036434152" duration="8000" />
+      <workItem from="1706371881816" duration="6039000" />
+      <workItem from="1706429285664" duration="879000" />
     </task>
     <servers />
   </component>

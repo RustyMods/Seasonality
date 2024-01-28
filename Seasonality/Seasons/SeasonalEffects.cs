@@ -14,7 +14,7 @@ namespace Seasonality.Seasons;
 public static class SeasonalEffects
 {
     private static Season currentSeason = _Season.Value;
-    private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
+    // private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
     // private static DateTime LastSeasonChange = DateTime.UtcNow;
     private static readonly CustomSyncedValue<string> SyncedSeasons = new(SeasonalityPlugin.ConfigSync, "SyncedSeason", "");
 
@@ -131,17 +131,32 @@ public static class SeasonalEffects
     // }
     private static void UpdateSeasonIndex()
     {
-        if (_Season.Value == (Season)SeasonIndex)
+        switch (_Season.Value)
         {
-            SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-            _Season.Value = (Season)SeasonIndex;
+            case Season.Spring:
+                _Season.Value = Season.Summer;
+                break;
+            case Season.Summer:
+                _Season.Value = Season.Fall;
+                break;
+            case Season.Fall:
+                _Season.Value = Season.Winter;
+                break;
+            case Season.Winter:
+                _Season.Value = Season.Spring;
+                break;
         }
-        else
-        {
-            _Season.Value = (Season)SeasonIndex;
-            SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-        }
-        
+        // if (_Season.Value == (Season)SeasonIndex)
+        // {
+        //     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+        //     _Season.Value = (Season)SeasonIndex;
+        // }
+        // else
+        // {
+        //     _Season.Value = (Season)SeasonIndex;
+        //     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
+        // }
+        //
         // _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
         // LastSeasonChange = DateTime.UtcNow;
 
@@ -249,10 +264,12 @@ public static class SeasonalEffects
         if (currentSeason == _Season.Value) return;
         // If season has changed, apply new seasonal effect
         ApplySeasons();
+        SeasonalityLogger.LogDebug("Season changed to " + _Season.Value);
     }
 
     private static void DisableSeasonEffects()
     {
+        SeasonalityLogger.LogDebug("Disabling seasonal effects");
         SEMan? SEMan = Player.m_localPlayer.GetSEMan();
         if (SEMan == null) return;
         // Make sure to remove status effect when user disables mod
@@ -267,6 +284,7 @@ public static class SeasonalEffects
     }
     private static void ApplySeasons()
     {
+        SeasonalityLogger.LogDebug("Applying seasons");
         TerrainPatch.UpdateTerrain();
         ApplySeasonalEffects(Player.m_localPlayer);
         SetSeasonalKey();
@@ -296,38 +314,41 @@ public static class SeasonalEffects
     }
 
     private static bool SeasonsLoaded = false;
-    [HarmonyPatch(typeof(Player), nameof(Player.Awake))]
-    static class PlayerAwakePatch
-    {
-        private static void Postfix(Player __instance)
-        {
-            if (!__instance) return;
-            if (SeasonsLoaded) return;
-            if (!__instance.IsPlayer()) return;
-            if (!ZNetScene.instance) return;
-            if (workingAsType is WorkingAs.Client)
-            {
-                // Check if client is also a server
-                if (ZNet.instance.IsServer()) workingAsType = WorkingAs.Both;
-            }
-            if (_ModEnabled.Value is Toggle.Off) return;
-            // Apply seasons
-            ApplySeasonalEffects(__instance);
-            SetSeasonalKey();
-            TerrainPatch.UpdateTerrain();
-            MaterialReplacer.ModifyCachedMaterials();
-            if (_WinterFreezesWater.Value is Toggle.On) WaterMaterial.ModifyWater();
-            SetServerSyncedYmlData();
 
-            SeasonsLoaded = true;
-            
-            if (!EnvMan.instance) return;
-            Environment.RegisterServerEnvironments(EnvMan.instance);
+    [HarmonyPatch(typeof(Player),nameof(Player.Start))]
+    private static class InitSeasonalEffects
+    {
+        private static void Postfix() => ApplyInitialSeasons();
+    }
+    private static void ApplyInitialSeasons()
+    {
+        if (!Player.m_localPlayer) return;
+        if (SeasonsLoaded) return;
+        if (!ZNetScene.instance) return;
+        if (workingAsType is WorkingAs.Client)
+        {
+            // Check if client is also a server
+            if (ZNet.instance.IsServer()) workingAsType = WorkingAs.Both;
         }
+        if (_ModEnabled.Value is Toggle.Off) return;
+        // Apply seasons
+        SeasonalityLogger.LogDebug("Applying initial seasons");
+        ApplySeasonalEffects(Player.m_localPlayer);
+        SetSeasonalKey();
+        TerrainPatch.UpdateTerrain();
+        MaterialReplacer.ModifyCachedMaterials();
+        if (_WinterFreezesWater.Value is Toggle.On) WaterMaterial.ModifyWater();
+        SetServerSyncedYmlData();
+
+        SeasonsLoaded = true;
+            
+        if (!EnvMan.instance) return;
+        Environment.RegisterServerEnvironments(EnvMan.instance);
     }
     private static void SetSeasonalKey()
     {
         if (!ZoneSystem.instance) return;
+        SeasonalityLogger.LogDebug("Setting global keys");
         List<string>? currentKeys = ZoneSystem.instance.GetGlobalKeys();
         List<string> SeasonalKeys = new() { "season_summer", "season_fall", "season_winter", "season_spring" };
         // Remove all seasonal keys
@@ -352,6 +373,7 @@ public static class SeasonalEffects
     {
         SEMan? SEMan = __instance.GetSEMan();
         if (SEMan == null) return;
+        SeasonalityLogger.LogDebug("Applying seasonal effects");
         // Remove all seasonal effects
         List<StatusEffect> activeEffects = SEMan.GetStatusEffects();
         List<StatusEffect> statusEffects = activeEffects.FindAll(effect => effect is SeasonEffect);
@@ -369,7 +391,7 @@ public static class SeasonalEffects
             if (AlwaysCold) SEMan.AddStatusEffect(AlwaysCold);
         }
 
-        if (SeasonEffect != null)
+        if (SeasonEffect)
         {
             SeasonalCompendium.customTooltip = $"<color=orange>{SeasonEffect.m_name}</color>\n{SeasonEffect.m_tooltip}";
             SEMan.AddStatusEffect(SeasonEffect);
