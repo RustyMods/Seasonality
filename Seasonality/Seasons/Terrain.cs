@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using BepInEx;
 using HarmonyLib;
+using Seasonality.DataTypes;
+using Seasonality.Textures;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
-using static Seasonality.Seasons.CustomTextures;
+using static Seasonality.Textures.TextureManager;
 
 namespace Seasonality.Seasons;
 public static class TerrainPatch
@@ -29,7 +30,7 @@ public static class TerrainPatch
         foreach (ClutterSystem.Clutter? clutter in ClutterSystem.instance.m_clutter)
         {
             GameObject obj = clutter.m_prefab;
-            GrassTypes type = Utils.GetGrassType(obj.name);
+            GrassTypes type = SeasonUtility.Utils.GetGrassType(obj.name);
             if (!obj.TryGetComponent(out InstanceRenderer instanceRenderer)) continue;
 
             Material mat = instanceRenderer.m_material;
@@ -80,15 +81,14 @@ public static class TerrainPatch
         foreach (ClutterSystem.Clutter? clutter in ClutterSystem.instance.m_clutter)
         {
             GameObject obj = clutter.m_prefab;
-            GrassTypes type = Utils.GetGrassType(obj.name);
+            GrassTypes type = SeasonUtility.Utils.GetGrassType(obj.name);
             if (!obj.TryGetComponent(out InstanceRenderer instanceRenderer)) continue;
 
-            VegDirectories directory = Utils.VegToDirectory(type);
+            Directories.VegDirectories directory = SeasonUtility.Utils.VegToDirectory(type);
             Material mat = instanceRenderer.m_material;
             string[] props = mat.GetTexturePropertyNames();
 
-            // if (!Utils.FindTexturePropName(props, "terrain", out string terrainProp)) continue;
-            if (!Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
+            if (!SeasonUtility.Utils.FindTexturePropName(props, "main", out string mainProp)) continue;
             
             // Set texture to default value
             Texture? tex = GetDefaultTexture(type);
@@ -100,10 +100,10 @@ public static class TerrainPatch
             {
                 case GrassTypes.GreenGrass or GrassTypes.GreenGrassShort or GrassTypes.MistlandGrassShort:
                     mat.SetTexture(TerrainColorTex, null);
-                    Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
+                    SeasonUtility.Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
                     break;
                 case GrassTypes.ClutterShrubs or GrassTypes.Ormbunke or GrassTypes.OrmBunkeSwamp:
-                    Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
+                    SeasonUtility.Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
                     switch (_Season.Value)
                     {
                         case Season.Fall:
@@ -112,10 +112,10 @@ public static class TerrainPatch
                     }
                     continue;
                 case GrassTypes.GroundCover:
-                    Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
+                    SeasonUtility.Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
                     continue;
                 default:
-                    Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
+                    SeasonUtility.Utils.ApplyBasedOnAvailable(directory, _Season.Value, mat, mainProp);
                     break;
             }
         }
@@ -124,7 +124,7 @@ public static class TerrainPatch
     {
         List<Action> actions = new();
         foreach (Color color in colors) actions.Add(ApplyColor(obj, color));
-        Utils.ApplyRandomly(actions);
+        SeasonUtility.Utils.ApplyRandomly(actions);
     }
     private static Action ApplyColor(GameObject obj, Color color) { return () => ApplyColorToObj(obj, color); }
     private static void ApplyColorToObj(GameObject obj, Color color)

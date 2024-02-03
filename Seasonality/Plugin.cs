@@ -1,21 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using JetBrains.Annotations;
+using Seasonality.Configurations;
 using Seasonality.Managers;
 using Seasonality.Seasons;
+using Seasonality.SeasonStatusEffect;
+using Seasonality.SeasonUtility;
+using Seasonality.Textures;
 using ServerSync;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static Seasonality.Seasons.Environment;
-using Environment = Seasonality.Seasons.Environment;
+using static Seasonality.Weather.Utils;
 
 namespace Seasonality
 {
@@ -23,7 +23,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.1.7";
+        internal const string ModVersion = "3.2.0";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -45,7 +45,7 @@ namespace Seasonality
                 ? WorkingAs.Server
                 : WorkingAs.Client;
 
-            CustomTextures.ReadCustomTextures();
+            TextureManager.ReadCustomTextures();
             
             YamlConfigurations.InitYamlConfigurations();
             
@@ -63,8 +63,14 @@ namespace Seasonality
         private void FixedUpdate()
         {
             SeasonalEffects.CheckInGameTimer();
+            if (_WinterAlwaysCold.Value is Toggle.On && Player.m_localPlayer) SeasonalEffects.UpdateAlwaysColdEffect(Player.m_localPlayer);
         }
 
+        // private void LateUpdate()
+        // {
+        //     SeasonalEffects.UpdateSeasonFade(Time.deltaTime);
+        // }
+        
         private void OnSeasonValueChange(object sender, EventArgs e)
         {
             SeasonalEffects.UpdateSeasonEffects();
@@ -99,6 +105,9 @@ namespace Seasonality
         }
         #region CustomConfigs
         public static ConfigEntry<Season> _Season = null!;
+
+        // public static ConfigEntry<Toggle> _UseFadeScreen = null!;
+        // public static ConfigEntry<float> _FadeScreenDuration = null!;
 
         public static ConfigEntry<Toggle> _SleepSeasons = null!;
         public static ConfigEntry<string> _SleepTimeText = null!;
@@ -389,14 +398,19 @@ namespace Seasonality
             _SleepSeasons = config("1 - Seasons", "6 - Sleep Override", Toggle.Off, "If on, seasons only change once game goes to sleep");
             _SleepTimeText = config("1 - Seasons", "7 - Sleep Time Text", "Bed Time", "Set the text to display when season are ready to change");
 
+            // _UseFadeScreen = config("1 - Seasons", "8 - Fade Seasons", Toggle.On,
+            //     "If sleep override is off and fade seasons is on, screen will load loading screen during season change");
+            // _FadeScreenDuration = config("1 - Seasons", "9 - Fade Time Delta", 0.1f,
+            //     new ConfigDescription("Set max speed of fade increment", new AcceptableValueRange<float>(0.1f, 10f)));
+
             _SummerDurationTweak = config("1 - Seasons", "8 - Summer Tweak", 0,
-                "Add or subtract time from the total duration");
+                "Add or subtract time from the total duration, in minutes");
             _SpringDurationTweak = config("1 - Seasons", "8 - Spring Tweak", 0,
-                "Add or subtract time from the total duration");
+                "Add or subtract time from the total duration, in minutes");
             _FallDurationTweak = config("1 - Seasons", "8 - Fall Tweak", 0,
-                "Add or subtract time from the total duration");
+                "Add or subtract time from the total duration, in minutes");
             _WinterDurationTweak = config("1 - Seasons", "8 - Winter Tweak", 0,
-                "Add or subtract time from the total duration");
+                "Add or subtract time from the total duration, in minutes");
             #endregion
             
             _SeasonalEffectsEnabled = config("2 - Utilities", "1 - Player Modifiers Enabled", Toggle.Off, "If on, season effects are enabled");

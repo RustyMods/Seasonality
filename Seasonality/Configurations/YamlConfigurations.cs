@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using BepInEx;
 using JetBrains.Annotations;
+using Seasonality.SeasonStatusEffect;
 using ServerSync;
 using YamlDotNet.Serialization;
+using static Seasonality.Weather.Utils;
 
-namespace Seasonality.Seasons;
+namespace Seasonality.Configurations;
 
 public static class YamlConfigurations
 {
@@ -214,7 +216,7 @@ public static class YamlConfigurations
             "## ENVIRONMENTS",
             "```yml"
         };
-        foreach (Environment.Environments value in Enum.GetValues(typeof(Environment.Environments)))
+        foreach (Environments value in Enum.GetValues(typeof(Environments)))
         {
             string env = value.ToString();
             tutorial.Add($"- {env}");

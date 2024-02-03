@@ -1,4 +1,4 @@
-﻿namespace Seasonality.Seasons;
+﻿namespace Seasonality.SeasonUtility;
 
 public static class SpecialEffects
 {

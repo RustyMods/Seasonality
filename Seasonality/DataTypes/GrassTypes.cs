@@ -1,4 +1,4 @@
-﻿namespace Seasonality.Seasons;
+﻿namespace Seasonality.DataTypes;
 
 public enum GrassTypes
 {

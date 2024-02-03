@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using HarmonyLib;
+using Seasonality.Textures;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
-using static Seasonality.Seasons.CustomTextures;
 
 namespace Seasonality.Seasons;
 
@@ -45,7 +45,7 @@ public static class MaterialReplacer
         if (CachedMaterials.TryGetValue("CapeDeerHide", out Material capeDeerMat))
         {
             capeDeerMat.SetColor(ColorProp,
-                GetCustomTexture(ArmorDirectories.Leather, "CapeDeerHide", isCape: true)
+                GetCustomTexture(Directories.ArmorDirectories.Leather, "CapeDeerHide", isCape: true)
                     ? new Color32(255, 255, 255, 255)
                     : new Color32(182, 125, 102, 255));
         }
@@ -53,7 +53,7 @@ public static class MaterialReplacer
         if (CachedMaterials.TryGetValue("CapeTrollHide", out Material capeTrollMat))
         {
             capeTrollMat.SetColor(ColorProp, 
-                GetCustomTexture(ArmorDirectories.Troll, "CapeTrollHide", isCape: true) 
+                GetCustomTexture(Directories.ArmorDirectories.Troll, "CapeTrollHide", isCape: true) 
                     ? new Color32(255, 255, 255, 255) 
                     : new Color32(102, 149, 182, 255));
         }
@@ -61,7 +61,7 @@ public static class MaterialReplacer
         if (CachedMaterials.TryGetValue("helmet_trollleather", out Material helmTrollMat))
         {
             helmTrollMat.SetColor(ColorProp, 
-                GetCustomTexture(ArmorDirectories.Troll, "helmet_trollleather", isHelmet: true) 
+                GetCustomTexture(Directories.ArmorDirectories.Troll, "helmet_trollleather", isHelmet: true) 
                     ? new Color32(255, 255, 255, 255) 
                     : new Color32(88, 123, 151, 255));
         }
@@ -229,48 +229,48 @@ public static class MaterialReplacer
     }
     private static void ModifyArmorMaterials()
     {
-        Dictionary<string, ArmorDirectories> ChestReplacementMap = new()
+        Dictionary<string, Directories.ArmorDirectories> ChestReplacementMap = new()
         {
-            {"RagsChest",ArmorDirectories.Rags},
-            {"LeatherChest",ArmorDirectories.Leather},
-            {"TrollLeatherChest",ArmorDirectories.Troll},
+            {"RagsChest",Directories.ArmorDirectories.Rags},
+            {"LeatherChest",Directories.ArmorDirectories.Leather},
+            {"TrollLeatherChest",Directories.ArmorDirectories.Troll},
         };
-        Dictionary<string, ArmorDirectories> LegsReplacementMap = new()
+        Dictionary<string, Directories.ArmorDirectories> LegsReplacementMap = new()
         {
-            {"RagsLegs",ArmorDirectories.Rags},
-            {"LeatherPants",ArmorDirectories.Leather},
-            {"TrollLeatherPants",ArmorDirectories.Troll}
+            {"RagsLegs",Directories.ArmorDirectories.Rags},
+            {"LeatherPants",Directories.ArmorDirectories.Leather},
+            {"TrollLeatherPants",Directories.ArmorDirectories.Troll}
         };
-        Dictionary<string, ArmorDirectories> CapeReplacementMap = new()
+        Dictionary<string, Directories.ArmorDirectories> CapeReplacementMap = new()
         {
-            {"CapeDeerHide", ArmorDirectories.Leather},
-            {"CapeTrollHide",ArmorDirectories.Troll},
-            {"WolfCape",ArmorDirectories.Wolf},
-            {"LoxCape_Mat",ArmorDirectories.Padded},
-            {"feathercape_mat",ArmorDirectories.Mage}
+            {"CapeDeerHide", Directories.ArmorDirectories.Leather},
+            {"CapeTrollHide",Directories.ArmorDirectories.Troll},
+            {"WolfCape",Directories.ArmorDirectories.Wolf},
+            {"LoxCape_Mat",Directories.ArmorDirectories.Padded},
+            {"feathercape_mat",Directories.ArmorDirectories.Mage}
         };
-        Dictionary<string, ArmorDirectories> HelmetReplacementMap = new()
+        Dictionary<string, Directories.ArmorDirectories> HelmetReplacementMap = new()
         {
-            {"helmet_leather_mat", ArmorDirectories.Leather},
-            {"helmet_trollleather",ArmorDirectories.Troll},
-            {"helmet_bronze_mat",ArmorDirectories.Bronze},
-            {"helmet_iron_mat",ArmorDirectories.Iron},
+            {"helmet_leather_mat", Directories.ArmorDirectories.Leather},
+            {"helmet_trollleather",Directories.ArmorDirectories.Troll},
+            {"helmet_bronze_mat",Directories.ArmorDirectories.Bronze},
+            {"helmet_iron_mat",Directories.ArmorDirectories.Iron},
         };
-        Dictionary<string, ArmorDirectories> ArmorReplacementMap = new()
+        Dictionary<string, Directories.ArmorDirectories> ArmorReplacementMap = new()
         {
-            {"BronzeArmorMesh_Mat",ArmorDirectories.Bronze},
-            {"IronArmorChest_mat",ArmorDirectories.Iron},
-            {"SilverArmourChest_mat", ArmorDirectories.Wolf},
-            {"DragonVisor_Mat",ArmorDirectories.Wolf},
-            {"Padded_mat",ArmorDirectories.Padded},
-            {"carapacearmor_mat",ArmorDirectories.Carapace},
-            {"MageArmor_mat",ArmorDirectories.Mage}
+            {"BronzeArmorMesh_Mat",Directories.ArmorDirectories.Bronze},
+            {"IronArmorChest_mat",Directories.ArmorDirectories.Iron},
+            {"SilverArmourChest_mat", Directories.ArmorDirectories.Wolf},
+            {"DragonVisor_Mat",Directories.ArmorDirectories.Wolf},
+            {"Padded_mat",Directories.ArmorDirectories.Padded},
+            {"carapacearmor_mat",Directories.ArmorDirectories.Carapace},
+            {"MageArmor_mat",Directories.ArmorDirectories.Mage}
         };
-        Dictionary<string, ArmorDirectories> ArmorLegsReplacementMap = new()
+        Dictionary<string, Directories.ArmorDirectories> ArmorLegsReplacementMap = new()
         {
-            {"IronArmorLegs_mat",ArmorDirectories.Iron}
+            {"IronArmorLegs_mat",Directories.ArmorDirectories.Iron}
         };
-        foreach (KeyValuePair<string, ArmorDirectories> kvp in ChestReplacementMap)
+        foreach (KeyValuePair<string, Directories.ArmorDirectories> kvp in ChestReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key);
             if (!texture)
@@ -282,7 +282,7 @@ public static class MaterialReplacer
             SetChestTexture(kvp.Key, texture);
         }
 
-        foreach (KeyValuePair<string, ArmorDirectories> kvp in LegsReplacementMap)
+        foreach (KeyValuePair<string, Directories.ArmorDirectories> kvp in LegsReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key,  true);
             if (!texture)
@@ -294,7 +294,7 @@ public static class MaterialReplacer
             SetLegsTexture(kvp.Key, texture);
         }
 
-        foreach (KeyValuePair<string, ArmorDirectories> kvp in CapeReplacementMap)
+        foreach (KeyValuePair<string, Directories.ArmorDirectories> kvp in CapeReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, isCape: true);
             if (!texture)
@@ -306,7 +306,7 @@ public static class MaterialReplacer
             SetMainTexture(kvp.Key, texture);
         }
 
-        foreach (KeyValuePair<string, ArmorDirectories> kvp in HelmetReplacementMap)
+        foreach (KeyValuePair<string, Directories.ArmorDirectories> kvp in HelmetReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, isHelmet: true);
             if (!texture)
@@ -318,7 +318,7 @@ public static class MaterialReplacer
             SetMainTexture(kvp.Key, texture);
         }
 
-        foreach (KeyValuePair<string, ArmorDirectories> kvp in ArmorReplacementMap)
+        foreach (KeyValuePair<string, Directories.ArmorDirectories> kvp in ArmorReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key);
             if (!texture)
@@ -329,7 +329,7 @@ public static class MaterialReplacer
             }
             SetMainTexture(kvp.Key, texture);
         }
-        foreach (KeyValuePair<string, ArmorDirectories> kvp in ArmorLegsReplacementMap)
+        foreach (KeyValuePair<string, Directories.ArmorDirectories> kvp in ArmorLegsReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, isLegs: true);
             if (!texture)
@@ -343,51 +343,51 @@ public static class MaterialReplacer
     }
     private static void ModifyPieceMaterials()
     {
-        Dictionary<string, PieceDirectories> PiecesReplacementMap = new()
+        Dictionary<string, Directories.PieceDirectories> PiecesReplacementMap = new()
         {
-            { "straw_roof", PieceDirectories.Straw },
-            { "straw_roof_alpha", PieceDirectories.Straw },
-            { "RoofShingles", PieceDirectories.DarkWood },
-            { "GoblinVillage_Cloth", PieceDirectories.GoblinVillage },
-            { "GoblinVillage", PieceDirectories.GoblinVillage },
+            { "straw_roof", Directories.PieceDirectories.Straw },
+            { "straw_roof_alpha", Directories.PieceDirectories.Straw },
+            { "RoofShingles", Directories.PieceDirectories.DarkWood },
+            { "GoblinVillage_Cloth", Directories.PieceDirectories.GoblinVillage },
+            { "GoblinVillage", Directories.PieceDirectories.GoblinVillage },
         };
-        Dictionary<string, PieceDirectories> PiecesWornReplacementMap = new()
+        Dictionary<string, Directories.PieceDirectories> PiecesWornReplacementMap = new()
         {
-            { "straw_roof_worn", PieceDirectories.Straw },
-            { "straw_roof_worn_alpha", PieceDirectories.Straw },
-            { "RoofShingles_worn" , PieceDirectories.DarkWood },
-            { "GoblinVillage", PieceDirectories.GoblinVillage }
+            { "straw_roof_worn", Directories.PieceDirectories.Straw },
+            { "straw_roof_worn_alpha", Directories.PieceDirectories.Straw },
+            { "RoofShingles_worn" , Directories.PieceDirectories.DarkWood },
+            { "GoblinVillage", Directories.PieceDirectories.GoblinVillage }
         };
-        Dictionary<string, PieceDirectories> PieceCornerReplacementMap = new()
+        Dictionary<string, Directories.PieceDirectories> PieceCornerReplacementMap = new()
         {
-            { "straw_roof_corner_alpha", PieceDirectories.Straw },
+            { "straw_roof_corner_alpha", Directories.PieceDirectories.Straw },
         };
-        Dictionary<string, PieceDirectories> PieceCornerWornReplacementMap = new()
+        Dictionary<string, Directories.PieceDirectories> PieceCornerWornReplacementMap = new()
         {
-            { "straw_roof_corner_worn_alpha", PieceDirectories.Straw }
+            { "straw_roof_corner_worn_alpha", Directories.PieceDirectories.Straw }
         };
-        foreach (KeyValuePair<string, PieceDirectories> kvp in PiecesReplacementMap)
+        foreach (KeyValuePair<string, Directories.PieceDirectories> kvp in PiecesReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key);
             if (!texture) continue;
             
             SetMainTexture(kvp.Key, texture);
         }
-        foreach (KeyValuePair<string, PieceDirectories> kvp in PiecesWornReplacementMap)
+        foreach (KeyValuePair<string, Directories.PieceDirectories> kvp in PiecesWornReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, true);
             if (!texture) continue;
             
             SetMainTexture(kvp.Key, texture);
         }
-        foreach (KeyValuePair<string, PieceDirectories> kvp in PieceCornerReplacementMap)
+        foreach (KeyValuePair<string, Directories.PieceDirectories> kvp in PieceCornerReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, isCorner: true);
             if (!texture) continue;
             
             SetMainTexture(kvp.Key, texture);
         }
-        foreach (KeyValuePair<string, PieceDirectories> kvp in PieceCornerWornReplacementMap)
+        foreach (KeyValuePair<string, Directories.PieceDirectories> kvp in PieceCornerWornReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, true, true);
             if (!texture) continue;
@@ -397,34 +397,34 @@ public static class MaterialReplacer
     }
     private static void ModifyPickableMaterials()
     {
-        Dictionary<string, PickableDirectories> PickableReplacementMap = new()
+        Dictionary<string, Directories.PickableDirectories> PickableReplacementMap = new()
         {
-            {"Boletus_edulis", PickableDirectories.Mushroom},
-            {"Boletus_Yellow", PickableDirectories.MushroomYellow},
-            {"Boletus_blue", PickableDirectories.MushroomBlue},
-            {"MistlandsMushrooms_balls",PickableDirectories.JotunPuff},
-            {"MistlandsMushrooms_magecap", PickableDirectories.Magecap},
-            {"raspberry", PickableDirectories.Raspberry},
-            {"blueberry",PickableDirectories.Blueberry},
-            {"Dandelion", PickableDirectories.Dandelion},
-            {"barley_ripe",PickableDirectories.Barley},
-            {"flax_ripe", PickableDirectories.Flax},
-            {"flax_item", PickableDirectories.Flax},
-            {"carrot",PickableDirectories.Carrot},
-            {"turnip_0",PickableDirectories.Turnip},
-            {"onion_ripe",PickableDirectories.Onion},
-            {"carrot_flower",PickableDirectories.CarrotSeed},
-            {"turnip_flower",PickableDirectories.TurnipSeed},
-            {"onion_seedling_ripe",PickableDirectories.OnionSeed},
-            {"branch",PickableDirectories.Branches},
-            {"flint",PickableDirectories.Flint},
-            {"stone",PickableDirectories.Rock},
-            {"fi_village_catacombs",PickableDirectories.BoneRemains},
-            {"surtlingcore",PickableDirectories.SurtlingCore},
-            {"BlackCore_mat",PickableDirectories.BlackCore},
-            {"swampplant2",PickableDirectories.Thistle}
+            {"Boletus_edulis", Directories.PickableDirectories.Mushroom},
+            {"Boletus_Yellow", Directories.PickableDirectories.MushroomYellow},
+            {"Boletus_blue", Directories.PickableDirectories.MushroomBlue},
+            {"MistlandsMushrooms_balls",Directories.PickableDirectories.JotunPuff},
+            {"MistlandsMushrooms_magecap", Directories.PickableDirectories.Magecap},
+            {"raspberry", Directories.PickableDirectories.Raspberry},
+            {"blueberry",Directories.PickableDirectories.Blueberry},
+            {"Dandelion", Directories.PickableDirectories.Dandelion},
+            {"barley_ripe",Directories.PickableDirectories.Barley},
+            {"flax_ripe", Directories.PickableDirectories.Flax},
+            {"flax_item", Directories.PickableDirectories.Flax},
+            {"carrot",Directories.PickableDirectories.Carrot},
+            {"turnip_0",Directories.PickableDirectories.Turnip},
+            {"onion_ripe",Directories.PickableDirectories.Onion},
+            {"carrot_flower",Directories.PickableDirectories.CarrotSeed},
+            {"turnip_flower",Directories.PickableDirectories.TurnipSeed},
+            {"onion_seedling_ripe",Directories.PickableDirectories.OnionSeed},
+            {"branch",Directories.PickableDirectories.Branches},
+            {"flint",Directories.PickableDirectories.Flint},
+            {"stone",Directories.PickableDirectories.Rock},
+            {"fi_village_catacombs",Directories.PickableDirectories.BoneRemains},
+            {"surtlingcore",Directories.PickableDirectories.SurtlingCore},
+            {"BlackCore_mat",Directories.PickableDirectories.BlackCore},
+            {"swampplant2",Directories.PickableDirectories.Thistle}
         };
-        foreach (KeyValuePair<string, PickableDirectories> kvp in PickableReplacementMap)
+        foreach (KeyValuePair<string, Directories.PickableDirectories> kvp in PickableReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key);
             if (!texture) continue;
@@ -434,49 +434,49 @@ public static class MaterialReplacer
     }
     private static void ModifyBarkMaterials()
     {
-        Dictionary<string, VegDirectories> BarkReplacementMap = new()
+        Dictionary<string, Directories.VegDirectories> BarkReplacementMap = new()
         {
-            {"olive_treebark2_darkland", VegDirectories.SwampTrees},
-            {"swamptree1_bark", VegDirectories.SwampTrees},
-            {"swamptree2_bark", VegDirectories.SwampTrees},
+            {"olive_treebark2_darkland", Directories.VegDirectories.SwampTrees},
+            {"swamptree1_bark", Directories.VegDirectories.SwampTrees},
+            {"swamptree2_bark", Directories.VegDirectories.SwampTrees},
         };
 
-        Dictionary<string, VegDirectories> CustomBarkReplacementMap = new()
+        Dictionary<string, Directories.VegDirectories> CustomBarkReplacementMap = new()
         {
-            {"custom_beech_bark_0", VegDirectories.Beech},
-            {"custom_beech_bark_1", VegDirectories.Beech},
-            {"custom_beech_bark_2", VegDirectories.Beech},
-            {"custom_beech_bark_3", VegDirectories.Beech},
+            {"custom_beech_bark_0", Directories.VegDirectories.Beech},
+            {"custom_beech_bark_1", Directories.VegDirectories.Beech},
+            {"custom_beech_bark_2", Directories.VegDirectories.Beech},
+            {"custom_beech_bark_3", Directories.VegDirectories.Beech},
             
-            {"custom_beech_bark_small_0", VegDirectories.BeechSmall},
-            {"custom_beech_bark_small_1", VegDirectories.BeechSmall},
-            {"custom_beech_bark_small_2", VegDirectories.BeechSmall},
-            {"custom_beech_bark_small_3", VegDirectories.BeechSmall},
+            {"custom_beech_bark_small_0", Directories.VegDirectories.BeechSmall},
+            {"custom_beech_bark_small_1", Directories.VegDirectories.BeechSmall},
+            {"custom_beech_bark_small_2", Directories.VegDirectories.BeechSmall},
+            {"custom_beech_bark_small_3", Directories.VegDirectories.BeechSmall},
             
-            {"custom_birch_bark_0", VegDirectories.Birch},
-            {"custom_birch_bark_1", VegDirectories.Birch},
-            {"custom_birch_bark_2", VegDirectories.Birch},
-            {"custom_birch_bark_3", VegDirectories.Birch},
+            {"custom_birch_bark_0", Directories.VegDirectories.Birch},
+            {"custom_birch_bark_1", Directories.VegDirectories.Birch},
+            {"custom_birch_bark_2", Directories.VegDirectories.Birch},
+            {"custom_birch_bark_3", Directories.VegDirectories.Birch},
             
-            {"custom_oak_bark_0", VegDirectories.Oak},
-            {"custom_oak_bark_1", VegDirectories.Oak},
-            {"custom_oak_bark_2", VegDirectories.Oak},
-            {"custom_oak_bark_3", VegDirectories.Oak},
+            {"custom_oak_bark_0", Directories.VegDirectories.Oak},
+            {"custom_oak_bark_1", Directories.VegDirectories.Oak},
+            {"custom_oak_bark_2", Directories.VegDirectories.Oak},
+            {"custom_oak_bark_3", Directories.VegDirectories.Oak},
             
-            {"custom_Shoot_Trunk_mat_0", VegDirectories.YggaShoot},
-            {"custom_Shoot_Trunk_mat_1", VegDirectories.YggaShoot},
-            {"custom_Shoot_Trunk_mat_2", VegDirectories.YggaShoot},
-            {"custom_Shoot_Trunk_mat_3", VegDirectories.YggaShoot},
+            {"custom_Shoot_Trunk_mat_0", Directories.VegDirectories.YggaShoot},
+            {"custom_Shoot_Trunk_mat_1", Directories.VegDirectories.YggaShoot},
+            {"custom_Shoot_Trunk_mat_2", Directories.VegDirectories.YggaShoot},
+            {"custom_Shoot_Trunk_mat_3", Directories.VegDirectories.YggaShoot},
         };
 
-        foreach (KeyValuePair<string, VegDirectories> kvp in BarkReplacementMap)
+        foreach (KeyValuePair<string, Directories.VegDirectories> kvp in BarkReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key, true);
             if (!texture) continue;
             SetBarkMaterial(kvp.Key, texture);
         }
         
-        foreach (KeyValuePair<string, VegDirectories> kvp in CustomBarkReplacementMap)
+        foreach (KeyValuePair<string, Directories.VegDirectories> kvp in CustomBarkReplacementMap)
         {
             string normalizedName = kvp.Key
                 .Replace("custom_", "")
@@ -630,40 +630,40 @@ public static class MaterialReplacer
     }
     private static void ModifyCreatures()
     {
-        Dictionary<string, CreatureDirectories> CreatureReplacementMap = new()
+        Dictionary<string, Directories.CreatureDirectories> CreatureReplacementMap = new()
         {
-            { "lox", CreatureDirectories.Lox },
-            { "HildirsLox", CreatureDirectories.Lox },
-            { "lox_calf", CreatureDirectories.LoxCalf },
-            { "troll", CreatureDirectories.Troll },
-            { "Hare_mat", CreatureDirectories.Hare },
-            { "Feasting_mat", CreatureDirectories.Tick },
-            { "SeaSerpent_mat", CreatureDirectories.Serpent },
-            { "swampfish", CreatureDirectories.Leech },
-            { "Deathsquito_mat", CreatureDirectories.Deathsquito },
-            { "seagal", CreatureDirectories.Gull },
-            { "neck", CreatureDirectories.Neck },
-            { "wraith", CreatureDirectories.Wraith },
-            { "blob", CreatureDirectories.Blob },
-            { "blob_elite", CreatureDirectories.Oozer },
-            { "gjall_mat", CreatureDirectories.Gjall },
-            { "Skeleton", CreatureDirectories.Skeleton },
-            { "WolfSkinGrey", CreatureDirectories.Wolf },
-            { "WolfSkinGreycub", CreatureDirectories.WolfCub },
-            { "Deer2", CreatureDirectories.Deer },
-            { "BoarSkinValheimpiggy", CreatureDirectories.Piggy },
-            { "BoarSkinValheim", CreatureDirectories.Boar },
-            { "GoblinShaman_mat", CreatureDirectories.GoblinShaman },
-            { "GoblinBrute_mat",CreatureDirectories.GoblinBrute },
-            { "goblin",CreatureDirectories.Goblin },
-            { "seeker_Brute_mat",CreatureDirectories.SeekerSoldier },
-            { "babyseeker",CreatureDirectories.SeekerBrood },
-            { "seeker",CreatureDirectories.Seeker },
-            { "greydwarf", CreatureDirectories.Greydwarf },
-            { "greydwarf_shaman", CreatureDirectories.GreydwarfShaman },
-            { "greydwarf_elite", CreatureDirectories.Greydwarf }
+            { "lox", Directories.CreatureDirectories.Lox },
+            { "HildirsLox", Directories.CreatureDirectories.Lox },
+            { "lox_calf", Directories.CreatureDirectories.LoxCalf },
+            { "troll", Directories.CreatureDirectories.Troll },
+            { "Hare_mat", Directories.CreatureDirectories.Hare },
+            { "Feasting_mat", Directories.CreatureDirectories.Tick },
+            { "SeaSerpent_mat", Directories.CreatureDirectories.Serpent },
+            { "swampfish", Directories.CreatureDirectories.Leech },
+            { "Deathsquito_mat", Directories.CreatureDirectories.Deathsquito },
+            { "seagal", Directories.CreatureDirectories.Gull },
+            { "neck", Directories.CreatureDirectories.Neck },
+            { "wraith", Directories.CreatureDirectories.Wraith },
+            { "blob", Directories.CreatureDirectories.Blob },
+            { "blob_elite", Directories.CreatureDirectories.Oozer },
+            { "gjall_mat", Directories.CreatureDirectories.Gjall },
+            { "Skeleton", Directories.CreatureDirectories.Skeleton },
+            { "WolfSkinGrey", Directories.CreatureDirectories.Wolf },
+            { "WolfSkinGreycub", Directories.CreatureDirectories.WolfCub },
+            { "Deer2", Directories.CreatureDirectories.Deer },
+            { "BoarSkinValheimpiggy", Directories.CreatureDirectories.Piggy },
+            { "BoarSkinValheim", Directories.CreatureDirectories.Boar },
+            { "GoblinShaman_mat", Directories.CreatureDirectories.GoblinShaman },
+            { "GoblinBrute_mat",Directories.CreatureDirectories.GoblinBrute },
+            { "goblin",Directories.CreatureDirectories.Goblin },
+            { "seeker_Brute_mat",Directories.CreatureDirectories.SeekerSoldier },
+            { "babyseeker",Directories.CreatureDirectories.SeekerBrood },
+            { "seeker",Directories.CreatureDirectories.Seeker },
+            { "greydwarf", Directories.CreatureDirectories.Greydwarf },
+            { "greydwarf_shaman", Directories.CreatureDirectories.GreydwarfShaman },
+            { "greydwarf_elite", Directories.CreatureDirectories.Greydwarf }
         };
-        foreach (KeyValuePair<string, CreatureDirectories> kvp in CreatureReplacementMap)
+        foreach (KeyValuePair<string, Directories.CreatureDirectories> kvp in CreatureReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key);
             if (!texture) continue;
@@ -672,7 +672,7 @@ public static class MaterialReplacer
     }
     private static void ModifyVegetation()
     {
-        Dictionary<string, VegDirectories> VegetationReplacementMap = new()
+        Dictionary<string, Directories.VegDirectories> VegetationReplacementMap = new()
         {
             // { "beech_leaf", VegDirectories.Beech },
             // { "beech_leaf_sapling", VegDirectories.BeechSmall },
@@ -680,47 +680,47 @@ public static class MaterialReplacer
             // { "beech_particle", VegDirectories.Beech },
             // { "birch_leaf" , VegDirectories.Birch },
             // { "birch_leaf_aut", VegDirectories.Birch },
-            { "birch_particle", VegDirectories.Birch },
-            { "birch_seeds_leaf", VegDirectories.Birch },
+            { "birch_particle", Directories.VegDirectories.Birch },
+            { "birch_seeds_leaf", Directories.VegDirectories.Birch },
             // { "oak_leaf", VegDirectories.Oak },
-            { "oak_particle", VegDirectories.Oak },
-            { "Pine_tree_small", VegDirectories.FirSmall },
-            { "Pine_tree", VegDirectories.Fir },
-            { "Pine_tree_small_dead", VegDirectories.FirDead },
-            { "branch_dead_particle", VegDirectories.FirDeadParticles },
-            { "Pine_tree_xmas", VegDirectories.FirSmall },
-            { "branch_particle", VegDirectories.FirParticles },
-            { "PineTree_01", VegDirectories.Pine },
-            { "PineCone", VegDirectories.PineParticles },
-            { "yggdrasil_branch_leafs", VegDirectories.YggdrasilSkyTree },
+            { "oak_particle", Directories.VegDirectories.Oak },
+            { "Pine_tree_small", Directories.VegDirectories.FirSmall },
+            { "Pine_tree", Directories.VegDirectories.Fir },
+            { "Pine_tree_small_dead", Directories.VegDirectories.FirDead },
+            { "branch_dead_particle", Directories.VegDirectories.FirDeadParticles },
+            { "Pine_tree_xmas", Directories.VegDirectories.FirSmall },
+            { "branch_particle", Directories.VegDirectories.FirParticles },
+            { "PineTree_01", Directories.VegDirectories.Pine },
+            { "PineCone", Directories.VegDirectories.PineParticles },
+            { "yggdrasil_branch_leafs", Directories.VegDirectories.YggdrasilSkyTree },
             // { "Shoot_Leaf_mat", VegDirectories.YggaShoot },
             // { "shoot_leaf_particle", VegDirectories.YggaShoot },
-            { "swamptree1_branch", VegDirectories.SwampTrees },
-            { "swamptree2_branch", VegDirectories.SwampTrees },
+            { "swamptree1_branch", Directories.VegDirectories.SwampTrees },
+            { "swamptree2_branch", Directories.VegDirectories.SwampTrees },
             // { "Bush01", VegDirectories.Bushes },
             // { "Bush01_blueberry", VegDirectories.Bushes },
             // { "Bush01_heath", VegDirectories.Bushes },
             // { "Bush01_raspberry", VegDirectories.Bushes },
             // { "Bush02_en" , VegDirectories.PlainsBush },
-            { "Cloudberrybush", VegDirectories.CloudberryBush },
+            { "Cloudberrybush", Directories.VegDirectories.CloudberryBush },
             // { "shrub", VegDirectories.Shrub },
             // { "shrub_heath", VegDirectories.Shrub },
-            { "shrub2_leafparticle", VegDirectories.ShrubParticles },
-            { "shrub2_leafparticle_heath", VegDirectories.ShrubParticles },
+            { "shrub2_leafparticle", Directories.VegDirectories.ShrubParticles },
+            { "shrub2_leafparticle_heath", Directories.VegDirectories.ShrubParticles },
         };
-        Dictionary<string, VegDirectories> VinesMap = new()
+        Dictionary<string, Directories.VegDirectories> VinesMap = new()
         {
-            { "Vines_Mat", VegDirectories.Vines },
-            { "VinesBranch_mat", VegDirectories.Vines },
+            { "Vines_Mat", Directories.VegDirectories.Vines },
+            { "VinesBranch_mat", Directories.VegDirectories.Vines },
         };
-        foreach (KeyValuePair<string, VegDirectories> kvp in VegetationReplacementMap)
+        foreach (KeyValuePair<string, Directories.VegDirectories> kvp in VegetationReplacementMap)
         {
             Texture? texture = GetCustomTexture(kvp.Value, kvp.Key);
             if (!texture) {continue;}
             SetMainTexture(kvp.Key, texture);
         }
 
-        foreach (KeyValuePair<string, VegDirectories> kvp in VinesMap)
+        foreach (KeyValuePair<string, Directories.VegDirectories> kvp in VinesMap)
         {
             bool flag = GetCustomTexture(kvp.Value, kvp.Key, out Texture? texture);
             if (!flag)
@@ -749,19 +749,19 @@ public static class MaterialReplacer
     }
     private static void ModifyNormals()
     {
-        Dictionary<string, VegDirectories> NormalReplacementMap = new()
+        Dictionary<string, Directories.VegDirectories> NormalReplacementMap = new()
         {
-            {"beech_bark", VegDirectories.Beech},
-            {"oak_bark", VegDirectories.Oak},
-            {"birch_bark",VegDirectories.Birch},
-            {"beech_bark_small",VegDirectories.BeechSmall},
-            {"birch_bark_quarter", VegDirectories.Birch},
-            {"olive_treebark2_darkland",VegDirectories.SwampTrees},
-            {"swamptree1_bark",VegDirectories.SwampTrees},
-            {"swamptree2_bark",VegDirectories.SwampTrees},
-            {"oak_bark_quarter",VegDirectories.Oak}
+            {"beech_bark", Directories.VegDirectories.Beech},
+            {"oak_bark", Directories.VegDirectories.Oak},
+            {"birch_bark",Directories.VegDirectories.Birch},
+            {"beech_bark_small",Directories.VegDirectories.BeechSmall},
+            {"birch_bark_quarter", Directories.VegDirectories.Birch},
+            {"olive_treebark2_darkland",Directories.VegDirectories.SwampTrees},
+            {"swamptree1_bark",Directories.VegDirectories.SwampTrees},
+            {"swamptree2_bark",Directories.VegDirectories.SwampTrees},
+            {"oak_bark_quarter",Directories.VegDirectories.Oak}
         };
-        foreach (KeyValuePair<string, VegDirectories> kvp in NormalReplacementMap)
+        foreach (KeyValuePair<string, Directories.VegDirectories> kvp in NormalReplacementMap)
         {
             Texture? normal = GetCustomNormals(kvp.Value, kvp.Key);
             if (!normal) continue;
@@ -770,80 +770,80 @@ public static class MaterialReplacer
     }
     private static void ModifyCustomMaterials()
     {
-        Dictionary<string, VegDirectories> CustomReplacementMap = new()
+        Dictionary<string, Directories.VegDirectories> CustomReplacementMap = new()
         {
-            { "custom_beech_leaf_small_0", VegDirectories.BeechSmall },
-            { "custom_beech_leaf_small_1", VegDirectories.BeechSmall },
-            { "custom_beech_leaf_small_2", VegDirectories.BeechSmall },
-            { "custom_beech_leaf_small_3", VegDirectories.BeechSmall },
+            { "custom_beech_leaf_small_0", Directories.VegDirectories.BeechSmall },
+            { "custom_beech_leaf_small_1", Directories.VegDirectories.BeechSmall },
+            { "custom_beech_leaf_small_2", Directories.VegDirectories.BeechSmall },
+            { "custom_beech_leaf_small_3", Directories.VegDirectories.BeechSmall },
             
-            { "custom_beech_leaf_0", VegDirectories.Beech },
-            { "custom_beech_leaf_1", VegDirectories.Beech },
-            { "custom_beech_leaf_2", VegDirectories.Beech },
-            { "custom_beech_leaf_3", VegDirectories.Beech },
+            { "custom_beech_leaf_0", Directories.VegDirectories.Beech },
+            { "custom_beech_leaf_1", Directories.VegDirectories.Beech },
+            { "custom_beech_leaf_2", Directories.VegDirectories.Beech },
+            { "custom_beech_leaf_3", Directories.VegDirectories.Beech },
             
-            { "custom_birch_leaf_0", VegDirectories.Birch },
-            { "custom_birch_leaf_1", VegDirectories.Birch },
-            { "custom_birch_leaf_2", VegDirectories.Birch },
-            { "custom_birch_leaf_3", VegDirectories.Birch },
+            { "custom_birch_leaf_0", Directories.VegDirectories.Birch },
+            { "custom_birch_leaf_1", Directories.VegDirectories.Birch },
+            { "custom_birch_leaf_2", Directories.VegDirectories.Birch },
+            { "custom_birch_leaf_3", Directories.VegDirectories.Birch },
             
-            { "custom_birch_leaf_aut_0", VegDirectories.Birch },
-            { "custom_birch_leaf_aut_1", VegDirectories.Birch },
-            { "custom_birch_leaf_aut_2", VegDirectories.Birch },
-            { "custom_birch_leaf_aut_3", VegDirectories.Birch },
+            { "custom_birch_leaf_aut_0", Directories.VegDirectories.Birch },
+            { "custom_birch_leaf_aut_1", Directories.VegDirectories.Birch },
+            { "custom_birch_leaf_aut_2", Directories.VegDirectories.Birch },
+            { "custom_birch_leaf_aut_3", Directories.VegDirectories.Birch },
             
-            { "custom_Bush01_blueberry_0", VegDirectories.Bushes },
-            { "custom_Bush01_blueberry_1", VegDirectories.Bushes },
-            { "custom_Bush01_blueberry_2", VegDirectories.Bushes },
-            { "custom_Bush01_blueberry_3", VegDirectories.Bushes },
+            { "custom_Bush01_blueberry_0", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_blueberry_1", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_blueberry_2", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_blueberry_3", Directories.VegDirectories.Bushes },
             
-            { "custom_Bush01_0", VegDirectories.Bushes },
-            { "custom_Bush01_1", VegDirectories.Bushes },
-            { "custom_Bush01_2", VegDirectories.Bushes },
-            { "custom_Bush01_3", VegDirectories.Bushes },
+            { "custom_Bush01_0", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_1", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_2", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_3", Directories.VegDirectories.Bushes },
             
-            { "custom_Bush01_heath_0", VegDirectories.Bushes },
-            { "custom_Bush01_heath_1", VegDirectories.Bushes },
-            { "custom_Bush01_heath_2", VegDirectories.Bushes },
-            { "custom_Bush01_heath_3", VegDirectories.Bushes },
+            { "custom_Bush01_heath_0", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_heath_1", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_heath_2", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_heath_3", Directories.VegDirectories.Bushes },
 
-            { "custom_Bush02_en_0", VegDirectories.PlainsBush },
-            { "custom_Bush02_en_1", VegDirectories.PlainsBush },
-            { "custom_Bush02_en_2", VegDirectories.PlainsBush },
-            { "custom_Bush02_en_3", VegDirectories.PlainsBush },
+            { "custom_Bush02_en_0", Directories.VegDirectories.PlainsBush },
+            { "custom_Bush02_en_1", Directories.VegDirectories.PlainsBush },
+            { "custom_Bush02_en_2", Directories.VegDirectories.PlainsBush },
+            { "custom_Bush02_en_3", Directories.VegDirectories.PlainsBush },
             
-            { "custom_oak_leaf_0", VegDirectories.Oak },
-            { "custom_oak_leaf_1", VegDirectories.Oak },
-            { "custom_oak_leaf_2", VegDirectories.Oak },
-            { "custom_oak_leaf_3", VegDirectories.Oak },
+            { "custom_oak_leaf_0", Directories.VegDirectories.Oak },
+            { "custom_oak_leaf_1", Directories.VegDirectories.Oak },
+            { "custom_oak_leaf_2", Directories.VegDirectories.Oak },
+            { "custom_oak_leaf_3", Directories.VegDirectories.Oak },
             
-            { "custom_Bush01_raspberry_0", VegDirectories.Bushes },
-            { "custom_Bush01_raspberry_1", VegDirectories.Bushes },
-            { "custom_Bush01_raspberry_2", VegDirectories.Bushes },
-            { "custom_Bush01_raspberry_3", VegDirectories.Bushes },
+            { "custom_Bush01_raspberry_0", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_raspberry_1", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_raspberry_2", Directories.VegDirectories.Bushes },
+            { "custom_Bush01_raspberry_3", Directories.VegDirectories.Bushes },
             
-            { "custom_shrub_0", VegDirectories.Shrub },
-            { "custom_shrub_1", VegDirectories.Shrub },
-            { "custom_shrub_2", VegDirectories.Shrub },
-            { "custom_shrub_3", VegDirectories.Shrub },
+            { "custom_shrub_0", Directories.VegDirectories.Shrub },
+            { "custom_shrub_1", Directories.VegDirectories.Shrub },
+            { "custom_shrub_2", Directories.VegDirectories.Shrub },
+            { "custom_shrub_3", Directories.VegDirectories.Shrub },
             
-            { "custom_shrub_heath_0", VegDirectories.Shrub },
-            { "custom_shrub_heath_1", VegDirectories.Shrub },
-            { "custom_shrub_heath_2", VegDirectories.Shrub },
-            { "custom_shrub_heath_3", VegDirectories.Shrub },
+            { "custom_shrub_heath_0", Directories.VegDirectories.Shrub },
+            { "custom_shrub_heath_1", Directories.VegDirectories.Shrub },
+            { "custom_shrub_heath_2", Directories.VegDirectories.Shrub },
+            { "custom_shrub_heath_3", Directories.VegDirectories.Shrub },
             
             // { "custom_Vines_Mat_0", VegDirectories.Vines },
             // { "custom_Vines_Mat_1", VegDirectories.Vines },
             // { "custom_Vines_Mat_2", VegDirectories.Vines },
             // { "custom_Vines_Mat_3", VegDirectories.Vines },
             
-            { "custom_Shoot_Leaf_mat_0", VegDirectories.YggaShoot },
-            { "custom_Shoot_Leaf_mat_1", VegDirectories.YggaShoot },
-            { "custom_Shoot_Leaf_mat_2", VegDirectories.YggaShoot },
-            { "custom_Shoot_Leaf_mat_3", VegDirectories.YggaShoot },
+            { "custom_Shoot_Leaf_mat_0", Directories.VegDirectories.YggaShoot },
+            { "custom_Shoot_Leaf_mat_1", Directories.VegDirectories.YggaShoot },
+            { "custom_Shoot_Leaf_mat_2", Directories.VegDirectories.YggaShoot },
+            { "custom_Shoot_Leaf_mat_3", Directories.VegDirectories.YggaShoot },
         };
 
-        foreach (KeyValuePair<string, VegDirectories> kvp in CustomReplacementMap)
+        foreach (KeyValuePair<string, Directories.VegDirectories> kvp in CustomReplacementMap)
         {
             string normalizedName = kvp.Key
                 .Replace("custom_", "")
@@ -858,13 +858,13 @@ public static class MaterialReplacer
         
         ModifyCustomMossMaterials();
     }
-    private static Texture? GetCustomTexture(CreatureDirectories directory, string originalMaterialName)
+    private static Texture? GetCustomTexture(Directories.CreatureDirectories directory, string originalMaterialName)
     {
-        Texture? customTexture = Utils.GetCustomTexture(directory, _Season.Value);
+        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory, _Season.Value);
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
-    private static Texture? GetCustomTexture(PieceDirectories directory, string originalMaterialName, bool isWorn = false, bool isCorner = false)
+    private static Texture? GetCustomTexture(Directories.PieceDirectories directory, string originalMaterialName, bool isWorn = false, bool isCorner = false)
     {
         string filePath = _Season.Value.ToString();
         string wornFilePath = _Season.Value + "_worn";
@@ -874,42 +874,42 @@ public static class MaterialReplacer
         string path = isWorn ? wornFilePath : filePath;
         if (isCorner) path = isWorn ? cornerWornFilePath : cornerFilePath;
         
-        Texture? customTexture = Utils.GetCustomTexture(directory, path);
+        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory, path);
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
-    private static Texture? GetCustomTexture(VegDirectories directory, string originalMaterialName, bool isBark = false)
+    private static Texture? GetCustomTexture(Directories.VegDirectories directory, string originalMaterialName, bool isBark = false)
     {
-        Texture? customTexture = Utils.GetCustomTexture(directory,  isBark ? _Season.Value + "_bark" : _Season.Value.ToString());
+        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory,  isBark ? _Season.Value + "_bark" : _Season.Value.ToString());
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
 
-    private static bool GetCustomTexture(VegDirectories directory, string originalMaterialName, out Texture? texture, bool isBark = false)
+    private static bool GetCustomTexture(Directories.VegDirectories directory, string originalMaterialName, out Texture? texture, bool isBark = false)
     {
         texture = null;
-        Texture? customTexture = Utils.GetCustomTexture(directory,  isBark ? _Season.Value + "_bark" : _Season.Value.ToString());
+        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory,  isBark ? _Season.Value + "_bark" : _Season.Value.ToString());
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
 
         texture = customTexture ? customTexture : originalTexture ? originalTexture : null;
         
         return customTexture;
     }
-    private static Texture? GetCustomNormals(VegDirectories directory, string originalMaterialName)
+    private static Texture? GetCustomNormals(Directories.VegDirectories directory, string originalMaterialName)
     {
-        Texture? customTexture = Utils.GetCustomTexture(directory,  _Season.Value + "_normal");
+        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory,  _Season.Value + "_normal");
         CachedTextures.TryGetValue(originalMaterialName + "_normal", out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
-    private static Texture? GetCustomTexture(PickableDirectories directory, string originalMaterialName)
+    private static Texture? GetCustomTexture(Directories.PickableDirectories directory, string originalMaterialName)
     {
-        Texture? customTexture = Utils.GetCustomTexture(directory, _Season.Value.ToString());
+        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory, _Season.Value.ToString());
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
-    private static Texture? GetCustomTexture(ArmorDirectories directory, string originalMaterialName, bool isLegs = false, bool isCape = false, bool isHelmet = false)
+    private static Texture? GetCustomTexture(Directories.ArmorDirectories directory, string originalMaterialName, bool isLegs = false, bool isCape = false, bool isHelmet = false)
     {
-        Texture? customTexture = isHelmet ? Utils.GetCustomTexture(directory, _Season.Value +  "_helmet") : Utils.GetCustomTexture(directory, _Season.Value + (isCape ? "_cape" : isLegs ? "_legs" : "_chest"));
+        Texture? customTexture = isHelmet ? SeasonUtility.Utils.GetCustomTexture(directory, _Season.Value +  "_helmet") : SeasonUtility.Utils.GetCustomTexture(directory, _Season.Value + (isCape ? "_cape" : isLegs ? "_legs" : "_chest"));
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }

@@ -1,20 +1,21 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using BepInEx;
 using UnityEngine;
+using static Seasonality.SeasonalityPaths.SeasonPaths;
 using static Seasonality.SeasonalityPlugin;
-using static Seasonality.Seasons.HDConfigurations;
+using static Seasonality.Textures.HDConfigurations;
+using static Seasonality.Textures.Directories;
 
-namespace Seasonality.Seasons;
+namespace Seasonality.Textures;
 
-public static class CustomTextures
+public static class TextureManager
 {
-    public static readonly Sprite? ValknutIcon = RegisterSprite("valknutIcon.png");
+    public static bool HDPackLoaded;
+
     public static readonly Texture? MistLands_Moss = RegisterTexture("mistlands_moss.png");
     public static readonly Texture? Mistlands_Rock_Plant = RegisterTexture("MistlandsVegetation_d.png");
-
     public static readonly Dictionary<VegDirectories, Dictionary<string, Texture?>> CustomRegisteredTextures = new();
     public static readonly Dictionary<CreatureDirectories, Dictionary<string, Texture?>> CustomRegisteredCreatureTex = new();
     public static readonly Dictionary<PieceDirectories, Dictionary<string, Texture?>> CustomRegisteredPieceTextures = new();
@@ -34,21 +35,7 @@ public static class CustomTextures
 
         return texture.LoadImage(buffer) ? texture : null;
     }
-    private static Sprite? RegisterSprite(string fileName, string folderName = "icons")
-    {
-        Assembly assembly = Assembly.GetExecutingAssembly();
-
-        string path = $"{ModName}.{folderName}.{fileName}";
-        using var stream = assembly.GetManifestResourceStream(path);
-        if (stream == null) return null;
-        byte[] buffer = new byte[stream.Length];
-        stream.Read(buffer, 0, buffer.Length);
-        Texture2D texture = new Texture2D(2, 2);
-        
-        Sprite? sprite = texture.LoadImage(buffer) ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero) : null;
-        if (sprite != null) sprite.name = fileName;
-        return sprite;
-    }
+    
     private static Texture? RegisterCustomTexture(string filePath, TextureFormat format, FilterMode filter, int aniso = 1, int mipMapBias = 0, TextureWrapMode wrap = TextureWrapMode.Repeat, bool isBark = false)
     {
         if (!File.Exists(filePath)) return null;
@@ -67,149 +54,12 @@ public static class CustomTextures
 
         if (texture.LoadImage(fileData))
         {
-            // if (isBark)
-            // {
-            //     texture.name = filePath;
-            //     SeasonalityLogger.LogInfo("*** name : " + texture.name);
-            //     SeasonalityLogger.LogInfo("format : " + texture.format);
-            //     SeasonalityLogger.LogInfo("mip map bias : " + texture.mipMapBias);
-            //     SeasonalityLogger.LogInfo("mip map count : " + texture.mipmapCount);
-            //     SeasonalityLogger.LogInfo("aniso level : " +  texture.anisoLevel);
-            //     SeasonalityLogger.LogInfo("texel size : " + texture.texelSize);
-            //     SeasonalityLogger.LogInfo("filter mode : " + texture.filterMode);
-            // }
             texture.name = filePath;
             return texture;
         }
         return null;
     }
     
-    private static readonly string folderPath = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality";
-    private static readonly string VegTexturePath = folderPath + Path.DirectorySeparatorChar + "Textures";
-    private static readonly string creatureTexPath = folderPath + Path.DirectorySeparatorChar + "Creatures";
-    private static readonly string PieceTexPath = folderPath + Path.DirectorySeparatorChar + "Pieces";
-    private static readonly string PickableTexturePath = folderPath + Path.DirectorySeparatorChar + "Pickables";
-    private static readonly string ArmorTexPath = folderPath + Path.DirectorySeparatorChar + "Armors";
-
-    public enum PickableDirectories
-    {
-        None,
-        Mushroom,
-        MushroomYellow,
-        MushroomBlue,
-        JotunPuff,
-        Magecap,
-        Raspberry,
-        Blueberry,
-        Dandelion,
-        Barley,
-        Flax,
-        Carrot,
-        Turnip,
-        Onion,
-        CarrotSeed,
-        TurnipSeed,
-        OnionSeed,
-        Branches,
-        Flint,
-        Rock,
-        BoneRemains,
-        SurtlingCore,
-        BlackCore,
-        Thistle
-    }
-    public enum VegDirectories
-    {
-        Beech,
-        BeechSmall,
-        Birch,
-        Bushes,
-        Oak,
-        Pine,
-        PineParticles,
-        FirSmall,
-        FirDead,
-        FirDeadParticles,
-        Fir,
-        FirParticles,
-        YggaShoot,
-        SwampTrees,
-        PlainsBush,
-        Shrub,
-        ShrubParticles,
-        Rock,
-        MeadowGrass,
-        MeadowGrassShort,
-        PlainsGrass,
-        BlackForestGrass,
-        BlackForestGrassAlt,
-        SwampGrass,
-        MistlandsGrass,
-        PlainsFlowers,
-        Ormbunke,
-        Vass,
-        Vines,
-        WaterLilies,
-        RockPlant,
-        Clutter,
-        CloudberryBush,
-        YggdrasilSkyTree,
-        None
-    }
-    public enum PieceDirectories
-    {
-        None,
-        Straw,
-        DarkWood,
-        GoblinVillage
-    }
-    public enum CreatureDirectories
-    {
-        None,
-        Gull,
-        Serpent,
-        Deer,
-        Boar,
-        Piggy,
-        Neck,
-        Greydwarf,
-        GreydwarfShaman,
-        Troll,
-        Skeleton,
-        Leech,
-        Wraith,
-        Blob,
-        Oozer,
-        Wolf,
-        WolfCub,
-        Lox,
-        LoxCalf,
-        Deathsquito,
-        Goblin,
-        GoblinBrute,
-        GoblinShaman,
-        Hare,
-        Seeker,
-        SeekerSoldier,
-        SeekerBrood,
-        Gjall,
-        Tick,
-    }
-    public enum ArmorDirectories
-    {
-        None,
-        Rags,
-        Leather,
-        Troll,
-        Bronze,
-        Iron,
-        Wolf,
-        Padded,
-        Carapace,
-        Mage
-    }
-
-    public static bool HDPackLoaded;
     private static void ReadVegDirectories()
     {
         foreach (VegDirectories directory in Enum.GetValues(typeof(VegDirectories)))
@@ -224,7 +74,7 @@ public static class CustomTextures
             switch (directory)
             {
                 case VegDirectories.PlainsGrass or VegDirectories.SwampGrass or VegDirectories.BlackForestGrass or VegDirectories.BlackForestGrassAlt:
-                    Dictionary<string, Texture?> compressedMap = RegisterCustomTextures(type, VegTexturePath, 
+                    Dictionary<string, Texture?> compressedMap = GetCustomTextures(type, VegTexturePath, 
                         HDPackLoaded ? HdConfigurations.GrassSettings.TextureFormat : TextureFormat.DXT1, 
                         HDPackLoaded ? HdConfigurations.GrassSettings.TextureFilter : FilterMode.Point);
                     if (compressedMap.Count == 0) continue;
@@ -232,8 +82,8 @@ public static class CustomTextures
                     break;
                 default:
                     Dictionary<string, Texture?> map = HDPackLoaded 
-                        ? RegisterCustomTextures(type, VegTexturePath, HdConfigurations.defaultSettings.TextureFormat, HdConfigurations.defaultSettings.TextureFilter) 
-                        : RegisterCustomTextures(type, VegTexturePath);
+                        ? GetCustomTextures(type, VegTexturePath, HdConfigurations.defaultSettings.TextureFormat, HdConfigurations.defaultSettings.TextureFilter) 
+                        : GetCustomTextures(type, VegTexturePath);
                     if (map.Count == 0) continue;
                     CustomRegisteredTextures.Add(directory, map);
                     break;
@@ -252,8 +102,8 @@ public static class CustomTextures
             }
 
             Dictionary<string, Texture?> map = HDPackLoaded 
-                ? RegisterCustomTextures(type, creatureTexPath, HdConfigurations.CreatureSettings.TextureFormat, HdConfigurations.CreatureSettings.TextureFilter) 
-                : RegisterCustomTextures(type, creatureTexPath, TextureFormat.BC7, FilterMode.Point);
+                ? GetCustomTextures(type, creatureTexPath, HdConfigurations.CreatureSettings.TextureFormat, HdConfigurations.CreatureSettings.TextureFilter) 
+                : GetCustomTextures(type, creatureTexPath, TextureFormat.BC7, FilterMode.Point);
             if (map.Count == 0) continue;
             CustomRegisteredCreatureTex.Add(creatureDir, map);
         }
@@ -270,8 +120,8 @@ public static class CustomTextures
             }
 
             Dictionary<string, Texture?> map = HDPackLoaded 
-                ? RegisterCustomTextures(type, PieceTexPath, HdConfigurations.PieceSettings.TextureFormat, HdConfigurations.PieceSettings.TextureFilter) 
-                : RegisterCustomTextures(type, PieceTexPath, TextureFormat.BC7, FilterMode.Point);
+                ? GetCustomTextures(type, PieceTexPath, HdConfigurations.PieceSettings.TextureFormat, HdConfigurations.PieceSettings.TextureFilter) 
+                : GetCustomTextures(type, PieceTexPath, TextureFormat.BC7, FilterMode.Point);
             if (map.Count == 0) continue;
             CustomRegisteredPieceTextures.Add(pieceDir, map);
         }
@@ -288,8 +138,8 @@ public static class CustomTextures
             }
 
             Dictionary<string, Texture?> map = HDPackLoaded 
-                ? RegisterCustomTextures(type, PickableTexturePath, HdConfigurations.PickableSettings.TextureFormat, HdConfigurations.PickableSettings.TextureFilter) :
-                RegisterCustomTextures(type, PickableTexturePath, TextureFormat.BC7, FilterMode.Point);
+                ? GetCustomTextures(type, PickableTexturePath, HdConfigurations.PickableSettings.TextureFormat, HdConfigurations.PickableSettings.TextureFilter) :
+                GetCustomTextures(type, PickableTexturePath, TextureFormat.BC7, FilterMode.Point);
             if (map.Count == 0) continue;
             CustomRegisteredPickableTex.Add(pickableDir, map);
         }
@@ -305,8 +155,8 @@ public static class CustomTextures
                 Directory.CreateDirectory(ArmorTexPath + Path.DirectorySeparatorChar + type);
             }
             Dictionary<string, Texture?> map = HDPackLoaded 
-                ? RegisterCustomTextures(type, ArmorTexPath, HdConfigurations.ArmorSettings.TextureFormat, HdConfigurations.ArmorSettings.TextureFilter) 
-                : RegisterCustomTextures(type, ArmorTexPath, TextureFormat.BC7, FilterMode.Point);
+                ? GetCustomTextures(type, ArmorTexPath, HdConfigurations.ArmorSettings.TextureFormat, HdConfigurations.ArmorSettings.TextureFilter) 
+                : GetCustomTextures(type, ArmorTexPath, TextureFormat.BC7, FilterMode.Point);
             if (map.Count == 0) continue;
             CustomRegisteredArmorTex.Add(armorDir, map);
         }
@@ -495,7 +345,7 @@ public static class CustomTextures
             SeasonalityLogger.LogDebug($"Registered: {HelmetMessage}");
         }
     }
-    private static Dictionary<string, Texture?> RegisterCustomTextures(string type, string path, TextureFormat textureFormat = TextureFormat.DXT5, FilterMode filterMode = FilterMode.Trilinear)
+    private static Dictionary<string, Texture?> GetCustomTextures(string type, string path, TextureFormat textureFormat = TextureFormat.DXT5, FilterMode filterMode = FilterMode.Trilinear)
     {
         Dictionary<string, Texture?> textureMap = new();
 

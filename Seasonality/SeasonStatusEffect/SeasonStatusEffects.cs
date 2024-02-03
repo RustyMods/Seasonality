@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using BepInEx;
 using HarmonyLib;
+using Seasonality.Seasons;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
-namespace Seasonality.Seasons;
+namespace Seasonality.SeasonStatusEffect;
 
 static class SeasonalCompendium
 {
@@ -97,7 +96,7 @@ public class SeasonalEffect
 
     public readonly List<HitData.DamageModPair> damageMods = new();
 
-    public StatusEffect? Init()
+    public global::StatusEffect? Init()
     {
         ObjectDB obd = ObjectDB.instance;
 

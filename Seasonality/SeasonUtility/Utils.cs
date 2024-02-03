@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using HarmonyLib;
+using Seasonality.DataTypes;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
-using static Seasonality.Seasons.CustomTextures;
+using static Seasonality.Textures.Directories;
+using static Seasonality.Textures.TextureManager;
 using Random = System.Random;
 
-namespace Seasonality.Seasons;
+namespace Seasonality.SeasonUtility;
 
 public static class Utils
 {

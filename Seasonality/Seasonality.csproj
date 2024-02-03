@@ -116,28 +116,37 @@
         <Reference Include="Unity.TextMeshPro">
             <HintPath>$(GamePath)\valheim_Data\Managed\Unity.TextMeshPro.dll</HintPath>
         </Reference>
+        <Reference Include="UnityEngine.UIModule">
+          <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+        </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Configurations\YamlConfigurations.cs" />
+        <Compile Include="DataTypes\GrassTypes.cs" />
+        <Compile Include="DataTypes\VegetationType.cs" />
         <Compile Include="Managers\LocalizationManager.cs" />
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Seasons\HDConfigurations.cs" />
+        <Compile Include="SeasonalityPaths\SeasonPaths.cs" />
         <Compile Include="Seasons\MaterialReplacement.cs" />
-        <Compile Include="Seasons\ConsoleCommands.cs" />
-        <Compile Include="Seasons\CustomTextures.cs" />
-        <Compile Include="Seasons\Environment.cs" />
-        <Compile Include="Seasons\GrassTypes.cs" />
-        <Compile Include="Seasons\SeasonalEffects.cs" />
+        <Compile Include="Seasons\SeasonManager.cs" />
         <Compile Include="Seasons\SeasonColors.cs" />
-        <Compile Include="Seasons\SeasonStatusEffects.cs" />
-        <Compile Include="Seasons\SpecialEffects.cs" />
         <Compile Include="Seasons\Terrain.cs" />
         <Compile Include="Seasons\CachePrefabs.cs" />
-        <Compile Include="Seasons\VegetationType.cs" />
-        <Compile Include="Seasons\Utils.cs" />
-        <Compile Include="Seasons\WaterMaterial.cs" />
-        <Compile Include="Seasons\YamlConfigurations.cs" />
+        <Compile Include="SeasonUtility\ConsoleCommands.cs" />
+        <Compile Include="SeasonUtility\SpecialEffects.cs" />
+        <Compile Include="SeasonUtility\Utils.cs" />
+        <Compile Include="SeasonStatusEffect\SeasonStatusEffects.cs" />
+        <Compile Include="Textures\Directories.cs" />
+        <Compile Include="Textures\HDConfigurations.cs" />
+        <Compile Include="Textures\SpriteManager.cs" />
+        <Compile Include="Textures\TextureManager.cs" />
+        <Compile Include="Textures\WaterMaterial.cs" />
         <Compile Include="VersionHandshake.cs" />
+        <Compile Include="Weather\Environment.cs" />
+        <Compile Include="Weather\EnvironmentEffect.cs" />
+        <Compile Include="Weather\Utils.cs" />
+        <Compile Include="Weather\WeatherManager.cs" />
     </ItemGroup>
     <ItemGroup>
         <None Include="App.config" />

@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using BepInEx;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
-namespace Seasonality.Seasons;
+namespace Seasonality.Textures;
 
 public static class HDConfigurations
 {

@@ -2,10 +2,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
+using Seasonality.Seasons;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
-namespace Seasonality.Seasons;
+namespace Seasonality.Textures;
 public static class WaterMaterial
 {
     private static AssetBundle _snowBundle = null!;

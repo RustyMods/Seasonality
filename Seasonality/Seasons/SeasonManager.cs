@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using HarmonyLib;
+using Seasonality.SeasonStatusEffect;
+using Seasonality.SeasonUtility;
+using Seasonality.Textures;
+using Seasonality.Weather;
 using ServerSync;
-using TMPro;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
-using static Seasonality.Seasons.CustomTextures;
-using static Seasonality.Seasons.YamlConfigurations;
+using static Seasonality.Configurations.YamlConfigurations;
+using static Seasonality.Textures.SpriteManager;
 
 namespace Seasonality.Seasons;
 
@@ -146,19 +147,6 @@ public static class SeasonalEffects
                 _Season.Value = Season.Spring;
                 break;
         }
-        // if (_Season.Value == (Season)SeasonIndex)
-        // {
-        //     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-        //     _Season.Value = (Season)SeasonIndex;
-        // }
-        // else
-        // {
-        //     _Season.Value = (Season)SeasonIndex;
-        //     SeasonIndex = (SeasonIndex + 1) % Enum.GetValues(typeof(Season)).Length;
-        // }
-        //
-        // _LastSavedSeasonChange.Value = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
-        // LastSeasonChange = DateTime.UtcNow;
 
         _LastInGameSavedSeasonChange.Value = EnvMan.instance.m_totalSeconds;
     }
@@ -218,16 +206,16 @@ public static class SeasonalEffects
         switch (_Season.Value)
         {
             case Season.Spring:
-                TotalSeconds += _SpringDurationTweak.Value;
+                TotalSeconds += _SpringDurationTweak.Value * 60;
                 break;
             case Season.Summer:
-                TotalSeconds += _SummerDurationTweak.Value;
+                TotalSeconds += _SummerDurationTweak.Value * 60;
                 break;
             case Season.Fall:
-                TotalSeconds += _FallDurationTweak.Value;
+                TotalSeconds += _FallDurationTweak.Value * 60;
                 break;
             case Season.Winter:
-                TotalSeconds += _WinterDurationTweak.Value;
+                TotalSeconds += _WinterDurationTweak.Value * 60;
                 break;
         }
 
@@ -254,7 +242,6 @@ public static class SeasonalEffects
             lastToggled = Toggle.Off;
             return;
         }
-        if (_WinterAlwaysCold.Value is Toggle.On) UpdateAlwaysColdEffect(Player.m_localPlayer);
         if (_ModEnabled.Value is Toggle.On && lastToggled is Toggle.Off)
         {
             // Make sure when mod is re-enabled, that the seasonal effects are re-applied
@@ -282,9 +269,20 @@ public static class SeasonalEffects
         MaterialReplacer.ModifyCachedMaterials();
         WaterMaterial.ModifyWater();
     }
+
+    // private static bool SeasonChanging;
+    // private static bool SeasonChanged;
     private static void ApplySeasons()
     {
         SeasonalityLogger.LogDebug("Applying seasons");
+        // if (!Player.m_localPlayer) return;
+        // Player player = Player.m_localPlayer;
+        // if (!player.IsDead() && !player.IsTeleporting() && !player.IsSleeping() && !Game.instance.IsShuttingDown())
+        // {
+        //     SeasonChanging = true;
+        //     SeasonChanged = false;
+        // }
+        
         TerrainPatch.UpdateTerrain();
         ApplySeasonalEffects(Player.m_localPlayer);
         SetSeasonalKey();
@@ -293,8 +291,32 @@ public static class SeasonalEffects
         currentSeason = _Season.Value;
     }
 
-    private static void UpdateAlwaysColdEffect(Player instance)
+    // public static void UpdateSeasonFade(float dt)
+    // {
+    //     if (_SleepSeasons.Value is Toggle.On || _UseFadeScreen.Value is Toggle.Off) return;
+    //     if (!Game.instance || !Hud.instance) return;
+    //     Hud HUD = Hud.instance;
+    //     if (SeasonChanging && !SeasonChanged)
+    //     {
+    //         HUD.m_loadingScreen.gameObject.SetActive(true);
+    //         float num = Mathf.MoveTowards(0.0f, 1.0f, dt /_FadeScreenDuration.Value);
+    //         HUD.m_loadingScreen.alpha = num;
+    //         if (num < 1.0) return;
+    //         SeasonChanging = false;
+    //     }
+    //     else if (!SeasonChanged)
+    //     {
+    //         float num = Mathf.MoveTowards(1f, 0.0f, dt /_FadeScreenDuration.Value);
+    //         HUD.m_loadingScreen.alpha = num;
+    //         if (num > 0.0) return;
+    //         HUD.m_loadingScreen.gameObject.SetActive(false);
+    //         SeasonChanged = true;
+    //     }
+    // }
+
+    public static void UpdateAlwaysColdEffect(Player instance)
     {
+        
         SEMan SEMan = instance.GetSEMan();
         bool isColdPlus = SEMan.HaveStatusEffect("AlwaysCold");
         bool isBurning = SEMan.HaveStatusEffect("Burning");
@@ -313,17 +335,18 @@ public static class SeasonalEffects
         }
     }
 
-    private static bool SeasonsLoaded = false;
+    // private static bool SeasonsLoaded = false;
 
-    [HarmonyPatch(typeof(Player),nameof(Player.Start))]
+    [HarmonyPatch(typeof(Player),nameof(Player.OnSpawned))]
     private static class InitSeasonalEffects
     {
         private static void Postfix() => ApplyInitialSeasons();
     }
+    
     private static void ApplyInitialSeasons()
     {
         if (!Player.m_localPlayer) return;
-        if (SeasonsLoaded) return;
+        // if (SeasonsLoaded) return;
         if (!ZNetScene.instance) return;
         if (workingAsType is WorkingAs.Client)
         {
@@ -340,7 +363,7 @@ public static class SeasonalEffects
         if (_WinterFreezesWater.Value is Toggle.On) WaterMaterial.ModifyWater();
         SetServerSyncedYmlData();
 
-        SeasonsLoaded = true;
+        // SeasonsLoaded = true;
             
         if (!EnvMan.instance) return;
         Environment.RegisterServerEnvironments(EnvMan.instance);
@@ -630,6 +653,33 @@ public static class SeasonalEffects
         
         ObjectDB.instance.m_StatusEffects.Add(clonedColdEffect);
         return clonedColdEffect;
+    }
+
+    private static bool PlayerDied;
+    
+    [HarmonyPatch(typeof(Player), nameof(Player.SetLocalPlayer))]
+    private static class OnRespawnPatch
+    {
+        private static void Postfix(Player __instance)
+        {
+            if (!__instance) return;
+            if (!PlayerDied) return;
+            SeasonalityLogger.LogDebug("Player respawning, applying seasonal effects");
+            ApplySeasonalEffects(__instance);
+            // Environment.SetWeatherMan(Environment.currentEnv);
+            PlayerDied = false;
+        }
+    }
+
+    [HarmonyPatch(typeof(Player), nameof(Player.OnDeath))]
+    private static class OnDestroyPatch
+    {
+        private static void Postfix(Player __instance)
+        {
+            if (!__instance) return;
+            if (!__instance.m_nview.IsOwner()) return;
+            PlayerDied = true;
+        } 
     }
 
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.IsCold))]
