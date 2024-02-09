@@ -74,6 +74,7 @@ namespace Seasonality
         private void OnSeasonValueChange(object sender, EventArgs e)
         {
             SeasonalEffects.UpdateSeasonEffects();
+            --EnvMan.instance.m_environmentPeriod;
         }
 
         public enum Season
@@ -419,7 +420,7 @@ namespace Seasonality
            
             #region Weather Man
             _WeatherControl = config("1 - Weather", "1 - Weather Enabled", Toggle.On, "If on, seasons can control the weather");
-            _WeatherDuration = config("1 - Weather", "2 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(0, 200)));
+            _WeatherDuration = config("1 - Weather", "2 - Weather Duration (Minutes)", 20, new ConfigDescription("In-game minutes between weather change, if season applies weather", new AcceptableValueRange<int>(1, 200)));
             _WeatherIconEnabled = config("1 - Weather", "3 - Icon Visible", Toggle.On, "If on, HUD displays weather information");
             _WeatherTimerEnabled = config("1 - Weather", "4 - Timer Visible", Toggle.On, "If on, weather icon displays timer");
             _WeatherStartMessage = config("1 - Weather", "5 - Start Message", Toggle.Off, "If on, weather notifications appear");

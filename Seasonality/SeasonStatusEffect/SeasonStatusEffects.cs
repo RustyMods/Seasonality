@@ -391,7 +391,7 @@ public class SeasonEffect : StatusEffect
     public override void ModifyFallDamage(float baseDamage, ref float damage)
     {
         if (m_character.m_seman.m_statusEffects.Exists(x => x.m_name == "$se_slowfall_name")) return;
-        damage = baseDamage * data.Modifiers[Modifier.FallDamage];
+        damage *= data.Modifiers[Modifier.FallDamage];
         if (damage >= 0.0) return;
         damage = 0.0f;
     }
@@ -402,7 +402,6 @@ public class SeasonEffect : StatusEffect
             || _SeasonControl.Value is Toggle.On 
             || _CounterVisible.Value is Toggle.Off) return "";
         if (data.effectName == "AlwaysCold") return "";
-        // TimeSpan span = SeasonalEffects.GetTimeDifference();
 
         double remainder = SeasonalEffects.GetInGameTimeDifference();
         TimeSpan span = TimeSpan.FromSeconds(remainder);
