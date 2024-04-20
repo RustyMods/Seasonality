@@ -13,8 +13,7 @@ namespace Seasonality.Weather;
 
 public static class Environment
 {
-    private static readonly CustomSyncedValue<List<string>> SyncedCustomEnvironments = 
-        new(SeasonalityPlugin.ConfigSync, "ServerEnvironments", new());
+    private static readonly CustomSyncedValue<List<string>> SyncedCustomEnvironments = new(SeasonalityPlugin.ConfigSync, "ServerEnvironments", new());
     [Serializable]
     public class WeatherSetup
     {

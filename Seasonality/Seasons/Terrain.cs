@@ -24,7 +24,7 @@ public static class TerrainPatch
         foreach (Heightmap? map in Heightmap.Instances) map.m_doLateUpdate = true;
         Heightmap.ForceGenerateAll();
     }
-    private static void SetDefaultTerrainSettings()
+    public static void SetDefaultTerrainSettings()
     {
         if (!ClutterSystem.instance) return;
         foreach (ClutterSystem.Clutter? clutter in ClutterSystem.instance.m_clutter)
@@ -228,59 +228,6 @@ public static class TerrainPatch
     }
 
 }
-
-
-// For some reason, texture.name comes up as an empty string sometimes. 
-// HarmonyPriority Last seemingly resolved issue
-            
-// grass_meadows: 14682
-// grass_terrain_color: 13692
-// clutter_shrub: 12738
-// clutter_shrub_n: 12480
-// forest_groundcover_brown: 14370
-// forest_groundcover 1: 14676
-// forest_groundcover: 12850
-// forest_groundcover 1: 14676
-// grass_toon1_yellow: 12378
-// grass_heath: 12502
-// grass_meadows_short: 12062
-// grass_terrain_color: 13692
-// grass_heath_redflower: 13400
-// rock_low: 14330
-// rock_normal_low: 14602
-// autumn_ormbunke_swamp: 13838
-// autumn_ormbunke_green_n: 13928
-// autumn_ormbunke_green: 12840
-// autumn_ormbunke_green_n: 13928
-// autumn_ormbunke_green: 12840
-// autumn_ormbunke_green_n: 13928
-// vass_texture01: 12696
-// waterlilies: 13890
-// waterlilies_n: 13160
-            
-// -308 
-// -354
-// clutter_shrub_n: 12480
-// forest_groundcover_brown: 14370
-// forest_groundcover 1: 14676
-// -324
-// forest_groundcover 1: 14676
-// grass_toon1_yellow: 12378
-// grass_heath: 12502
-// -316
-// grass_heath_redflower: 13400
-// rock_low: 14330
-// rock_normal_low: 14602
-// autumn_ormbunke_swamp: 13838
-// autumn_ormbunke_green_n: 13928
-// autumn_ormbunke_green: 12840
-// autumn_ormbunke_green_n: 13928
-// autumn_ormbunke_green: 12840
-// autumn_ormbunke_green_n: 13928
-// vass_texture01: 12696
-// -346
-// waterlilies_n: 13160
-
 
 // private static void RegisterCustomClutter(ClutterSystem __instance)
 // {

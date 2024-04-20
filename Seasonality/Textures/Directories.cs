@@ -1,6 +1,6 @@
 namespace Seasonality.Textures;
 
-public class Directories
+public static class Directories
 {
     public enum PickableDirectories
     {

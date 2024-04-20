@@ -138,6 +138,7 @@
         <Compile Include="SeasonUtility\Utils.cs" />
         <Compile Include="SeasonStatusEffect\SeasonStatusEffects.cs" />
         <Compile Include="Textures\Directories.cs" />
+        <Compile Include="Textures\FreezeWater.cs" />
         <Compile Include="Textures\HDConfigurations.cs" />
         <Compile Include="Textures\SpriteManager.cs" />
         <Compile Include="Textures\TextureManager.cs" />

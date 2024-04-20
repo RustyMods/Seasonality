@@ -21,7 +21,6 @@ public static class CacheResources
     private static List<Material[]> BushMaterials = new();
     private static List<Material[]> PlainsBushMaterials = new();
     private static List<Material[]> ShrubMaterials = new();
-    // private static List<Material[]> VinesMaterials = new();
     private static List<Material[]> RaspberryMaterials = new();
     private static List<Material[]> BlueberryMaterials = new();
     private static readonly int ColorProp = Shader.PropertyToID("_Color");
@@ -122,9 +121,6 @@ public static class CacheResources
                 case VegetationType.Shrub:
                     ShrubMaterials = CreateBaseMaterials(prefab, "shrub");
                     break;
-                // case VegetationType.Vines:
-                //     VinesMaterials = CreateBaseMaterials(prefab, "vinesbranch", false);
-                //     break;
                 case VegetationType.RaspberryBush:
                     RaspberryMaterials = CreateBaseMaterials(prefab, "wood", false);
                     break;
@@ -176,9 +172,6 @@ public static class CacheResources
             case VegetationType.Shrub:
                 SetMaterials(ShrubMaterials, prefab);
                 break;
-            // case VegetationType.Vines:
-            //     SetMaterials(VinesMaterials, prefab);
-            //     break;
             case VegetationType.RaspberryBush:
                 SetMaterials(RaspberryMaterials, prefab);
                 break;

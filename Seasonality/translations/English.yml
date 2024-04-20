@@ -29,6 +29,8 @@ weather_winter_clear: "Winter Clear"
 weather_deep_forest_mist: "Forest Mist"
 weather_crypt: "Crypt"
 weather_caves: "Caves"
+weather_snow: "Snow"
+weather_rain: "Rain"
 ## Weather Tooltip
 weather_clear_tooltip: "The weather is clear and peaceful"
 weather_misty_tooltip: "The gods do not engage with visionaries"

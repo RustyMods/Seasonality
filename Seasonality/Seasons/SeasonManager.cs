@@ -15,8 +15,7 @@ namespace Seasonality.Seasons;
 public static class SeasonalEffects
 {
     private static Season currentSeason = _Season.Value;
-    // private static int SeasonIndex = (int)_Season.Value; // Get index from config saved value
-    // private static DateTime LastSeasonChange = DateTime.UtcNow;
+
     private static readonly CustomSyncedValue<string> SyncedSeasons = new(SeasonalityPlugin.ConfigSync, "SyncedSeason", "");
 
     private static readonly CustomSyncedValue<bool> SyncedReadyToChange = new(SeasonalityPlugin.ConfigSync, "SyncedSleepTime", false);
@@ -38,7 +37,7 @@ public static class SeasonalEffects
     }
 
     private static bool WakeUpMessageRan = false;
-    
+
     [HarmonyPatch(typeof(Player), nameof(Player.Message))]
     private static class PlayerMessagePatch
     {
@@ -68,68 +67,7 @@ public static class SeasonalEffects
             WakeUpMessageRan = true;
         }
     }
-    // public static void CheckRealTimeTimer()
-    // {
-    //     if (_ModEnabled.Value is Toggle.Off) return;
-    //     if (_SeasonControl.Value is Toggle.On) return;
-    //     if (_SeasonDurationDays.Value == 0 && _SeasonDurationHours.Value == 0 && _SeasonDurationMinutes.Value == 0) return;
-    //     // To throttle seasonal changes to a minimum of 30 seconds
-    //     if (LastSeasonChange > DateTime.UtcNow + TimeSpan.FromSeconds(30)) return;
-    //     
-    //     if (workingAsType is WorkingAs.Server or WorkingAs.Both)
-    //     {
-    //         if (SyncedSeasons.Value != "true") SyncedSeasons.Value = "true";
-    //         TimeSpan TimeDifference = GetTimeDifference(); 
-    //     
-    //         if (TimeDifference <= TimeSpan.Zero + TimeSpan.FromSeconds(3))
-    //         {
-    //             if (_SleepSeasons.Value is Toggle.On)
-    //             {
-    //                 SyncedReadyToChange.Value = true;
-    //             }
-    //             else
-    //             {
-    //                 UpdateSeasonIndex();
-    //             }
-    //         }
-    //         else if (_Season.Value != (Season)SeasonIndex)
-    //         {
-    //             // To switch it back to timer settings if configs changed
-    //             _Season.Value = (Season)SeasonIndex;
-    //             LastSeasonChange = DateTime.UtcNow;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         if (!Player.m_localPlayer) return;
-    //         if (Player.m_localPlayer.IsDead()) return;
-    //         
-    //         if (workingAsType is WorkingAs.Client && SyncedSeasons.Value != "")
-    //         {
-    //             // If user is a client connected to a server, then do not set seasons
-    //             // Wait for server to change config value
-    //             return;
-    //         }
-    //
-    //         if (GetTimeDifference() <= TimeSpan.Zero)
-    //         {
-    //             if (_SleepSeasons.Value is Toggle.On)
-    //             {
-    //                 SyncedReadyToChange.Value = true;
-    //             }
-    //             else
-    //             {
-    //                 UpdateSeasonIndex();
-    //             }
-    //         }
-    //         else if (_Season.Value != (Season)SeasonIndex)
-    //         {
-    //             // To switch it back to timer settings if configs changed
-    //             _Season.Value = (Season)SeasonIndex;
-    //             LastSeasonChange = DateTime.UtcNow;
-    //         }
-    //     }
-    // }
+
     private static void UpdateSeasonIndex()
     {
         switch (_Season.Value)
@@ -221,14 +159,6 @@ public static class SeasonalEffects
 
         return (_LastInGameSavedSeasonChange.Value + TotalSeconds) - EnvMan.instance.m_totalSeconds;
     }
-    // public static TimeSpan GetTimeDifference()
-    // {
-    //     return DateTime.Parse(_LastSavedSeasonChange.Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal)
-    //                                   + TimeSpan.FromDays(_SeasonDurationDays.Value)
-    //                                   + TimeSpan.FromHours(_SeasonDurationHours.Value)
-    //                                   + TimeSpan.FromMinutes(_SeasonDurationMinutes.Value)
-    //                                   - DateTime.UtcNow;
-    // }
 
     private static Toggle lastToggled = _ModEnabled.Value;
     public static void UpdateSeasonEffects()
@@ -266,54 +196,46 @@ public static class SeasonalEffects
         // Set season to summer as it uses mostly default values
         _SeasonControl.Value = Toggle.On;
         _Season.Value = Season.Summer;
-        MaterialReplacer.ModifyCachedMaterials();
-        WaterMaterial.ModifyWater();
+        MaterialReplacer.ModifyCachedMaterials(_Season.Value);
+        WaterMaterial.ModifyWater(_Season.Value);
     }
 
-    // private static bool SeasonChanging;
-    // private static bool SeasonChanged;
+    private static bool enteredCustomBiome;
+    public static void CheckBiomeSeason()
+    {
+        if (_CheckCustomBiomes.Value is Toggle.Off) return;
+        if (!Player.m_localPlayer) return;
+        Heightmap.Biome biome = Player.m_localPlayer.GetCurrentBiome();
+        if (isBiomeDefined(biome))
+        {
+            if (!enteredCustomBiome) return;
+            ApplySeasons();
+            enteredCustomBiome = false;
+            return;
+        }
+        if (enteredCustomBiome) return;
+        if (_Season.Value is Season.Summer) return;
+        SeasonalityLogger.LogDebug("Biome is not defined, setting season to summer");
+        TerrainPatch.SetDefaultTerrainSettings();
+        MaterialReplacer.ModifyCachedMaterials(Season.Summer);
+        WaterMaterial.ModifyWater(Season.Summer);
+        enteredCustomBiome = true;
+    }
+
+    private static bool isBiomeDefined(Heightmap.Biome biome)
+    {
+        return _AffectedBiomes.Value.HasFlagFast(biome);
+    }
     private static void ApplySeasons()
     {
         SeasonalityLogger.LogDebug("Applying seasons");
-        // if (!Player.m_localPlayer) return;
-        // Player player = Player.m_localPlayer;
-        // if (!player.IsDead() && !player.IsTeleporting() && !player.IsSleeping() && !Game.instance.IsShuttingDown())
-        // {
-        //     SeasonChanging = true;
-        //     SeasonChanged = false;
-        // }
-        
         TerrainPatch.UpdateTerrain();
         ApplySeasonalEffects(Player.m_localPlayer);
         SetSeasonalKey();
-        MaterialReplacer.ModifyCachedMaterials();
-        if (_WinterFreezesWater.Value is Toggle.On) WaterMaterial.ModifyWater();
+        MaterialReplacer.ModifyCachedMaterials(_Season.Value);
+        if (_WinterFreezesWater.Value is Toggle.On) WaterMaterial.ModifyWater(_Season.Value);
         currentSeason = _Season.Value;
     }
-
-    // public static void UpdateSeasonFade(float dt)
-    // {
-    //     if (_SleepSeasons.Value is Toggle.On || _UseFadeScreen.Value is Toggle.Off) return;
-    //     if (!Game.instance || !Hud.instance) return;
-    //     Hud HUD = Hud.instance;
-    //     if (SeasonChanging && !SeasonChanged)
-    //     {
-    //         HUD.m_loadingScreen.gameObject.SetActive(true);
-    //         float num = Mathf.MoveTowards(0.0f, 1.0f, dt /_FadeScreenDuration.Value);
-    //         HUD.m_loadingScreen.alpha = num;
-    //         if (num < 1.0) return;
-    //         SeasonChanging = false;
-    //     }
-    //     else if (!SeasonChanged)
-    //     {
-    //         float num = Mathf.MoveTowards(1f, 0.0f, dt /_FadeScreenDuration.Value);
-    //         HUD.m_loadingScreen.alpha = num;
-    //         if (num > 0.0) return;
-    //         HUD.m_loadingScreen.gameObject.SetActive(false);
-    //         SeasonChanged = true;
-    //     }
-    // }
-
     public static void UpdateAlwaysColdEffect(Player instance)
     {
         
@@ -340,7 +262,12 @@ public static class SeasonalEffects
     [HarmonyPatch(typeof(Player),nameof(Player.OnSpawned))]
     private static class InitSeasonalEffects
     {
-        private static void Postfix() => ApplyInitialSeasons();
+        private static void Postfix(Player __instance)
+        {
+            if (!__instance) return;
+            if (__instance != Player.m_localPlayer) return;
+            ApplyInitialSeasons();
+        }
     }
     
     private static void ApplyInitialSeasons()
@@ -359,12 +286,9 @@ public static class SeasonalEffects
         ApplySeasonalEffects(Player.m_localPlayer);
         SetSeasonalKey();
         TerrainPatch.UpdateTerrain();
-        MaterialReplacer.ModifyCachedMaterials();
-        if (_WinterFreezesWater.Value is Toggle.On) WaterMaterial.ModifyWater();
+        MaterialReplacer.ModifyCachedMaterials(_Season.Value);
+        if (_WinterFreezesWater.Value is Toggle.On) WaterMaterial.ModifyWater(_Season.Value);
         SetServerSyncedYmlData();
-
-        // SeasonsLoaded = true;
-            
         if (!EnvMan.instance) return;
         Environment.RegisterServerEnvironments(EnvMan.instance);
     }
@@ -666,7 +590,6 @@ public static class SeasonalEffects
             if (!PlayerDied) return;
             SeasonalityLogger.LogDebug("Player respawning, applying seasonal effects");
             ApplySeasonalEffects(__instance);
-            // Environment.SetWeatherMan(Environment.currentEnv);
             PlayerDied = false;
         }
     }

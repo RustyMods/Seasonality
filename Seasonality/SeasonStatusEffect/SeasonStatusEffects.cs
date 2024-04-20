@@ -49,18 +49,14 @@ public class SeasonalEffect
 {
     public string effectName = null!;
     public string displayName = "";
-    public readonly int duration = 0;
     public Sprite? sprite;
-    public string? spriteName;
     public string[]? startEffectNames;
     public string[]? stopEffectNames;
     public string? startMsg = "";
-    public readonly string? stopMsg = "";
     public string? effectTooltip = "";
     public string? damageMod;
     public Modifier Modifier = Modifier.None;
     public float m_newValue = 0f;
-    public readonly string? activationAnimation = "gpower";
     public Dictionary<Modifier, float> Modifiers = new()
     {
         { Modifier.Attack, 1f },
@@ -268,36 +264,16 @@ public class SeasonalEffect
                 appendedTooltip += modString;
             }
         }
-
-        Sprite? icon = sprite;
-        if (!icon)
-        {
-            if (!string.IsNullOrWhiteSpace(spriteName))
-            {
-                GameObject item = ZNetScene.instance.GetPrefab(spriteName);
-                if (!item)
-                {
-                    SeasonalityLogger.LogInfo($"[{effectName}] : Failed to get prefab: {spriteName}");
-                    return null;
-                }
-
-                if (item.TryGetComponent(out ItemDrop itemDrop)) icon = itemDrop.m_itemData.GetIcon();
-                if (!icon) return null;
-            }
-        }
+        
         SeasonEffect seasonEffect = ScriptableObject.CreateInstance<SeasonEffect>();
         seasonEffect.name = effectName;
         seasonEffect.data = this;
-        seasonEffect.m_icon = _StatusEffectVisible.Value is Toggle.On ? icon : null;
+        seasonEffect.m_icon = _StatusEffectVisible.Value is Toggle.On ? sprite : null;
         seasonEffect.m_name = displayName;
-        seasonEffect.m_cooldown = duration; // guardian power cool down
-        seasonEffect.m_ttl = duration; // status effect cool down
         seasonEffect.m_tooltip = appendedTooltip;
         seasonEffect.m_startMessageType = MessageHud.MessageType.TopLeft;
         seasonEffect.m_stopMessageType = MessageHud.MessageType.TopLeft;
         seasonEffect.m_startMessage = _SleepSeasons.Value is Toggle.On ? "" : startMsg;
-        seasonEffect.m_stopMessage = _SleepSeasons.Value is Toggle.On ? "" : stopMsg;
-        seasonEffect.m_activationAnimation = activationAnimation;
         if (startEffectNames is not null)
         {
             seasonEffect.m_startEffects = CreateEffectList(ZNetScene.instance, startEffectNames.ToList(), effectName);

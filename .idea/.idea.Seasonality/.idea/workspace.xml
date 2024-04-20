@@ -2,10 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Seasonality/Textures/FreezeWater.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/SeasonStatusEffect/SeasonStatusEffects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/SeasonStatusEffect/SeasonStatusEffects.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/CachePrefabs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/CachePrefabs.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/SeasonManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/SeasonManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/Terrain.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/Terrain.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/Directories.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/Directories.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/WaterMaterial.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/WaterMaterial.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Weather/Environment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Weather/Environment.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Weather/Utils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Weather/Utils.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Weather/WeatherManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Weather/WeatherManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/translations/English.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/translations/English.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -296,6 +307,30 @@
       <workItem from="1707265272426" duration="12000" />
       <workItem from="1707425392248" duration="2096000" />
       <workItem from="1707504688268" duration="9798000" />
+      <workItem from="1707532031443" duration="1216000" />
+      <workItem from="1707608838617" duration="2642000" />
+      <workItem from="1707652060722" duration="612000" />
+      <workItem from="1707683237004" duration="5405000" />
+      <workItem from="1707706807235" duration="161000" />
+      <workItem from="1707761909969" duration="1144000" />
+      <workItem from="1707763076486" duration="2527000" />
+      <workItem from="1708010504219" duration="711000" />
+      <workItem from="1708220248878" duration="603000" />
+      <workItem from="1708222541090" duration="48000" />
+      <workItem from="1708373659951" duration="85000" />
+      <workItem from="1708383886950" duration="742000" />
+      <workItem from="1708487420482" duration="742000" />
+      <workItem from="1708658526649" duration="841000" />
+      <workItem from="1708705010336" duration="837000" />
+      <workItem from="1709184244573" duration="471000" />
+      <workItem from="1709691196571" duration="34000" />
+      <workItem from="1710016377697" duration="612000" />
+      <workItem from="1710018508728" duration="24000" />
+      <workItem from="1711387903343" duration="121000" />
+      <workItem from="1711579048789" duration="875000" />
+      <workItem from="1712785846257" duration="749000" />
+      <workItem from="1713132084980" duration="675000" />
+      <workItem from="1713579580547" duration="595000" />
     </task>
     <servers />
   </component>
@@ -332,6 +367,19 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Seasonality/Seasons/SeasonManager.cs</url>
+          <line>338</line>
+          <properties documentPath="C:\Users\peima\Desktop\VALHEIM MODDING\projects\Seasonality\Seasonality\Seasons\SeasonManager.cs" initialLine="331" containingFunctionPresentation="method 'ApplySeasonalEffects'">
+            <startOffsets>
+              <option value="12585" />
+            </startOffsets>
+            <endOffsets>
+              <option value="12586" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

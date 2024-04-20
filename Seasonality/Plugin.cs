@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
@@ -23,7 +24,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.2.0";
+        internal const string ModVersion = "3.2.4";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -62,15 +63,10 @@ namespace Seasonality
 
         private void FixedUpdate()
         {
+            SeasonalEffects.CheckBiomeSeason();
             SeasonalEffects.CheckInGameTimer();
             if (_WinterAlwaysCold.Value is Toggle.On && Player.m_localPlayer) SeasonalEffects.UpdateAlwaysColdEffect(Player.m_localPlayer);
         }
-
-        // private void LateUpdate()
-        // {
-        //     SeasonalEffects.UpdateSeasonFade(Time.deltaTime);
-        // }
-        
         private void OnSeasonValueChange(object sender, EventArgs e)
         {
             SeasonalEffects.UpdateSeasonEffects();
@@ -106,16 +102,14 @@ namespace Seasonality
         }
         #region CustomConfigs
         public static ConfigEntry<Season> _Season = null!;
-
-        // public static ConfigEntry<Toggle> _UseFadeScreen = null!;
-        // public static ConfigEntry<float> _FadeScreenDuration = null!;
-
         public static ConfigEntry<Toggle> _SleepSeasons = null!;
         public static ConfigEntry<string> _SleepTimeText = null!;
-
         public static ConfigEntry<Toggle> _WinterFreezesWater = null!;
 
         public static ConfigEntry<Toggle> _YamlConfigurations = null!;
+
+        public static ConfigEntry<Toggle> _CheckCustomBiomes = null!;
+        public static ConfigEntry<Heightmap.Biome> _AffectedBiomes = null!;
 
         public static ConfigEntry<int> _SeasonDurationDays = null!;
         public static ConfigEntry<int> _SeasonDurationHours = null!;
@@ -366,19 +360,24 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _ReplaceArmorTextures = null!;
         public static ConfigEntry<Toggle> _ReplaceCreatureTextures = null!;
 
-        // public static ConfigEntry<string> _LastSavedSeasonChange = null!;
         public static ConfigEntry<double> _LastInGameSavedSeasonChange = null!;
 
         #endregion
         private void InitConfigs()
         {
-            // _LastSavedSeasonChange = config("8 - Data", "Last Season Change DateTime", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture), "Do not touch, unless you want to manipulate last season change");
             _LastInGameSavedSeasonChange = config("8 - Data", "Last Season Change In-Game", 0.0, "Do not touch, unless you want to manipulate last season change");
             
             _ModEnabled = config("1 - General", "2 - Plugin Enabled", Toggle.On, "If on, mod is enabled");
             _SeasonControl = config("1 - General", "3 - Control", Toggle.Off, "If on, season duration is disabled, and user can change season at will");
             _Season = config("1 - General", "4 - Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
             _Season.SettingChanged += OnSeasonValueChange;
+
+            _CheckCustomBiomes = config("1 - General", "9 - Check Custom Biomes", Toggle.Off,
+                "If on, plugin checks if player is in a custom biome, if so, then all settings will be set to default");
+            _AffectedBiomes = config("2 - Utilities", "4 - Affected Biomes", 
+                (Heightmap.Biome)Enum.GetValues(typeof(Heightmap.Biome)).Cast<int>().Sum() 
+                & ~(Heightmap.Biome.Meadows & Heightmap.Biome.BlackForest & Heightmap.Biome.Swamp & Heightmap.Biome.Mountain & Heightmap.Biome.Plains & Heightmap.Biome.Mistlands), 
+                "Set affected biomes");
             
             _YamlConfigurations = config("1 - General", "5 - Use YML Configurations", Toggle.Off, "If on, plugin uses YML configuration files");
             
@@ -398,12 +397,6 @@ namespace Seasonality
             _CounterVisible = config("1 - Seasons", "5 - Timer Visible", Toggle.On, "If on, timer under season is visible");
             _SleepSeasons = config("1 - Seasons", "6 - Sleep Override", Toggle.Off, "If on, seasons only change once game goes to sleep");
             _SleepTimeText = config("1 - Seasons", "7 - Sleep Time Text", "Bed Time", "Set the text to display when season are ready to change");
-
-            // _UseFadeScreen = config("1 - Seasons", "8 - Fade Seasons", Toggle.On,
-            //     "If sleep override is off and fade seasons is on, screen will load loading screen during season change");
-            // _FadeScreenDuration = config("1 - Seasons", "9 - Fade Time Delta", 0.1f,
-            //     new ConfigDescription("Set max speed of fade increment", new AcceptableValueRange<float>(0.1f, 10f)));
-
             _SummerDurationTweak = config("1 - Seasons", "8 - Summer Tweak", 0,
                 "Add or subtract time from the total duration, in minutes");
             _SpringDurationTweak = config("1 - Seasons", "8 - Spring Tweak", 0,
@@ -739,5 +732,13 @@ namespace Seasonality
         // }
 
         #endregion
+    }
+
+    public static class BiomeFlags
+    {
+        public static bool HasFlagFast(this Heightmap.Biome value, Heightmap.Biome flag)
+        {
+            return (value & flag) != 0;
+        }
     }
 }
