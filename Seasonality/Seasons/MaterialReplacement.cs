@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using Seasonality.Textures;
 using UnityEngine;
@@ -11,6 +12,11 @@ public static class MaterialReplacer
     public static readonly Dictionary<string, Texture> CachedTextures = new();
     public static readonly Dictionary<string, Material> CachedMaterials = new();
     public static readonly Dictionary<string, Material> CustomMaterials = new();
+
+    public static readonly Dictionary<Material, Texture> m_mossMaterials = new();
+    public static readonly Dictionary<Material, Color> m_mossColors = new();
+    public static readonly Dictionary<Material, Texture> m_customMossMaterials = new();
+
     private static readonly int ChestTex = Shader.PropertyToID("_ChestTex");
     private static readonly int LegsTex = Shader.PropertyToID("_LegsTex");
     private static readonly int MainTex = Shader.PropertyToID("_MainTex");
@@ -73,53 +79,22 @@ public static class MaterialReplacer
             if (!material) continue;
             string normalizedName = material.name.Replace("(Instance)", "").Replace(" ", "");
             if (material.HasProperty(MainTex)) CachedTextures[normalizedName] = material.GetTexture(MainTex);
-            if (material.HasProperty(MossTex)) CachedTextures[normalizedName + "_moss"] = material.GetTexture(MossTex);
+            if (material.HasProperty(MossTex))
+            {
+                CachedTextures[normalizedName + "_moss"] = material.GetTexture(MossTex);
+                m_mossMaterials[material] = material.GetTexture(MossTex);
+            }
+
+            if (material.HasProperty("_MossColor"))
+            {
+                m_mossColors[material] = material.GetColor(MossColorProp);
+            }
             if (material.HasProperty(BumpMap)) CachedTextures[normalizedName + "_normal"] = material.GetTexture(BumpMap);
             if (material.HasProperty(ChestTex)) CachedTextures[normalizedName + "_chest"] = material.GetTexture(ChestTex);
             if (material.HasProperty(LegsTex)) CachedTextures[normalizedName + "_legs"] = material.GetTexture(LegsTex);
         }
     }
-    private static void SetMossTexture(string materialName, Texture originalTex, Season season)
-    {
-        if (!CachedTextures.TryGetValue("Pillar_snow_mat_moss", out Texture SnowMoss)) return;
-        if (!CachedTextures.TryGetValue("rock_heath_moss", out Texture HeathMoss)) return;
-
-        if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
-        
-        switch (season)
-        {
-            case Season.Winter:
-                material.SetTexture(MossTex, SnowMoss);
-                break;
-            case Season.Fall:
-                material.SetTexture(MossTex, HeathMoss);
-                break;
-            default:
-                material.SetTexture(MossTex, originalTex);
-                break;
-        }
-    }
-    private static void SetCustomMossTexture(string materialName, Texture originalTex)
-    {
-        if (!CachedTextures.TryGetValue("Pillar_snow_mat_moss", out Texture SnowMoss)) return;
-        
-        if (!CachedTextures.TryGetValue("rock_heath_moss", out Texture HeathMoss)) return;
-
-        if (!CustomMaterials.TryGetValue(materialName, out Material material)) return;
-        
-        switch (_Season.Value)
-        {
-            case Season.Winter:
-                material.SetTexture(MossTex, SnowMoss);
-                break;
-            case Season.Fall:
-                material.SetTexture(MossTex, HeathMoss);
-                break;
-            default:
-                material.SetTexture(MossTex, originalTex);
-                break;
-        }
-    }
+    
     private static void SetMainTexture(string materialName, Texture? tex)
     {
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
@@ -175,55 +150,6 @@ public static class MaterialReplacer
         {
             SetArmorColors(season);
             ModifyArmorMaterials(season);
-        }
-        ModifyMistLandRocks(season);
-    }
-
-    private static bool MistLandRocksTurnedWhite = false;
-    private static void ModifyMistLandRocks(Season season)
-    {
-        if (season is Season.Winter)
-        {
-            SetMistLandRocksWhite();
-            MistLandRocksTurnedWhite = true;
-        }
-        else
-        {
-            if (!MistLandRocksTurnedWhite) return;
-            SetMistLandRocksDefault();
-            MistLandRocksTurnedWhite = false;
-        }
-    }
-    private static void SetMistLandRocksDefault()
-    {
-        Color32 MossColor = new Color32(202, 255, 121, 255);
-        
-        List<string> MaterialToReplace = new()
-        {
-            "rock_mistlands",
-            "mistlands_cliff",
-            "mistlands_cliff_internal",
-            "mistlands_cliff_dungeon"
-        };
-
-        foreach (string material in MaterialToReplace)
-        {
-            SetMossColor(material, MossColor);
-        }
-    }
-    private static void SetMistLandRocksWhite()
-    {
-        List<string> MaterialToReplace = new()
-        {
-            "rock_mistlands",
-            "mistlands_cliff",
-            "mistlands_cliff_internal",
-            "mistlands_cliff_dungeon"
-        };
-
-        foreach (string material in MaterialToReplace)
-        {
-            SetMossColor(material, Color.white);
         }
     }
     private static void ModifyArmorMaterials(Season season)
@@ -501,131 +427,82 @@ public static class MaterialReplacer
     }
     private static void ModifyMossMaterials(Season season)
     {
-        if (!CachedTextures.TryGetValue("rock_heath_moss", out Texture HeathMoss)) return;
-        if (!CachedTextures.TryGetValue("swamptree_log_moss", out Texture StoneMossSwamp)) return;
-        if (!CachedTextures.TryGetValue("runetablet_moss", out Texture StoneMoss)) return;
-        if (!CachedTextures.TryGetValue("finewood_log_worn_moss", out Texture StoneKitMoss)) return;
-        if (!CachedTextures.TryGetValue("dvergr_oak_worn_creep_mat_moss", out Texture MistLandMoss)) return;
-        if (!CachedTextures.TryGetValue("rock1_copper_moss", out Texture ForestMoss)) return;
-        if (!CachedTextures.TryGetValue("yggdrasil_branch_moss", out Texture YggMoss)) return;
-
-        Dictionary<string, Texture> MossReplacementMap = new()
+        try
         {
-            { "Altar_mat", HeathMoss },
-            { "barnacle", StoneMossSwamp },
-            { "beech_bark", StoneMoss },
-            { "beech_bark_small", StoneMoss },
-            { "bossstone_eikthyr", StoneMoss },
-            { "bossstone_theelder", StoneMoss },
-            { "bossstone_bonemass", StoneMoss },
-            { "bossstone_dragonqueen_mat", StoneMoss },
-            { "bossstone_yagluth_mat" , StoneMoss },
-            { "bossstone_seekerqueen_mat", StoneMoss },
-            { "corgihare", StoneMoss },
-            { "Dirtwall", StoneMoss },
-            { "dvergr_oak_worn_creep_mat", MistLandMoss },
-            { "dvergrrunestone_mat", MistLandMoss },
-            { "DvergrTownPiecesWornCreep_Mat", MistLandMoss },
-            { "FingerRock", HeathMoss },
-            { "finewood_log_worn", StoneKitMoss },
-            { "finewood_log_destruction", StoneKitMoss },
-            { "finewood_log_broken" , StoneKitMoss },
-            { "Firetree_oldlog", StoneMoss },
-            { "heathrock", HeathMoss },
-            { "hugeskull", StoneMossSwamp },
-            { "leviathan", StoneMossSwamp },
-            { "leviathan_rock_4", StoneMossSwamp },
-            { "NestRock", StoneKitMoss },
-            { "oak_bark", StoneKitMoss },
-            { "oak_bark_quarter", StoneKitMoss },
-            { "ObsidianRock_mat", StoneMoss },
-            { "rock1", ForestMoss },
-            { "rock1_copper", ForestMoss },
-            { "rock1_mountain", StoneMoss },
-            { "rock3_silver", ForestMoss },
-            { "rock4_coast", StoneMoss },
-            { "rock_heath", HeathMoss },
-            { "Rocks_3_roughness", ForestMoss },
-            { "Rocks_4_roughness", StoneMoss },
-            { "Rocks_4_roughness_interior", StoneMoss },
-            { "Rocks_4_roughness_plains", HeathMoss },
-            { "roundlog", StoneKitMoss },
-            { "runestone", StoneMoss },
-            { "runetablet", StoneMoss },
-            { "runetablet_plains", HeathMoss },
-            { "runetablet_vegvisir", StoneMoss },
-            { "Shoot_Stump_mat", StoneKitMoss },
-            { "Shoot_Trunk_mat", StoneKitMoss },
-            { "Stalagtite_mat", StoneMoss },
-            { "startplatform", StoneMoss },
-            { "statue1", StoneMossSwamp },
-            { "stone_huge", StoneMoss },
-            { "stone_large", StoneKitMoss },
-            { "stone_large_interior", StoneKitMoss },
-            { "stoneblock", StoneMoss },
-            { "stonechest", StoneKitMoss },
-            { "stonechest_plains", HeathMoss },
-            { "stonechest_sunkencrypt", HeathMoss },
-            { "stonekit_floor_interior", StoneMoss },
-            { "stonekit_stone_mat", StoneKitMoss },
-            { "stonepillar", StoneMoss },
-            { "stoneslab", StoneKitMoss },
-            { "stonewall", StoneMoss },
-            { "stonewall_1", StoneMoss },
-            { "stump", StoneMoss },
-            { "sunkenkit_stone_mat_interior1", StoneMoss },
-            { "sunkenkit_stone_mat_interior3", StoneMoss },
-            { "sunkenkit_stone_mat_interior4", StoneMoss },
-            { "sunkenkit_stone_mat_interior5", StoneMoss },
-            { "sunkenkit_stone_mat_interior_triplanar", StoneMoss },
-            { "swamptree1_bark", StoneMossSwamp },
-            { "swamptree2_bark", StoneMossSwamp },
-            { "swamptree2_barkInfested", StoneMossSwamp },
-            { "swamptree2_log", StoneMossSwamp },
-            { "swamptree_log", StoneMossSwamp },
-            { "swamptree_stump", StoneMossSwamp },
-            { "Tradaerrune_Mat", StoneMoss },
-            { "wood_pile_Broken", StoneKitMoss },
-            { "wood_pile_Worn", StoneKitMoss },
-            { "yggdrasil_branch", YggMoss },
+            switch (season)
+            {
+                case Season.Spring or Season.Summer:
+                    ResetMossTextures();
+                    break;
+                case Season.Fall:
+                    if (!CachedTextures.TryGetValue("rock_heath_moss", out Texture HeathMoss)) return;
+                    SetMossTextures(HeathMoss, Color.white);
+                    break;
+                case Season.Winter:
+                    SetMossTextures(TextureManager.Pillar_Snow, Color.white);
+                    break;
+            }
+        }
+        catch
+        {
+            SeasonalityLogger.LogDebug("Failed to modify moss materials");
+        }
+    }
 
-        };
-        foreach(KeyValuePair<string, Texture> kvp in MossReplacementMap) SetMossTexture(kvp.Key, kvp.Value, season);
+    private static void SetMossTextures(Texture texture, Color color)
+    {
+        foreach (KeyValuePair<Material, Texture> kvp in m_mossMaterials)
+        {
+            if (kvp.Key == null) continue;
+            kvp.Key.SetTexture(MossTex, texture);
+        }
+
+        foreach (KeyValuePair<Material, Color> kvp in m_mossColors)
+        {
+            if (kvp.Key == null) continue;
+            kvp.Key.SetColor(MossColorProp, color);
+        }
+    }
+
+    private static void ResetMossTextures()
+    {
+        foreach (var kvp in m_mossMaterials.Where(kvp => kvp.Key != null))
+        {
+            kvp.Key.SetTexture(MossTex, kvp.Value);
+        }
+
+        foreach (var kvp in m_mossColors.Where(kvp => kvp.Key != null))
+        {
+            kvp.Key.SetColor(MossColorProp, kvp.Value);
+        }
     }
     private static void ModifyCustomMossMaterials()
     {
-        if (!CachedTextures.TryGetValue("runetablet_moss", out Texture StoneMoss)) return;
-        if (!CachedTextures.TryGetValue("yggdrasil_branch_moss", out Texture YggMoss)) return;
-
-        Dictionary<string, Texture> CustomMossMap = new()
+        switch (_Season.Value)
         {
-            { "custom_beech_bark_small_0", StoneMoss },
-            { "custom_beech_bark_small_1", StoneMoss },
-            { "custom_beech_bark_small_2", StoneMoss },
-            { "custom_beech_bark_small_3", StoneMoss },
-            
-            { "custom_beech_bark_0", StoneMoss },
-            { "custom_beech_bark_1", StoneMoss },
-            { "custom_beech_bark_2", StoneMoss },
-            { "custom_beech_bark_3", StoneMoss },
-            
-            { "custom_birch_bark_0", StoneMoss },
-            { "custom_birch_bark_1", StoneMoss },
-            { "custom_birch_bark_2", StoneMoss },
-            { "custom_birch_bark_3", StoneMoss },
-            
-            { "custom_oak_bark_0", StoneMoss },
-            { "custom_oak_bark_1", StoneMoss },
-            { "custom_oak_bark_2", StoneMoss },
-            { "custom_oak_bark_3", StoneMoss },
-            
-            { "custom_Shoot_Trunk_mat_0", YggMoss },
-            { "custom_Shoot_Trunk_mat_1", YggMoss },
-            { "custom_Shoot_Trunk_mat_2", YggMoss },
-            { "custom_Shoot_Trunk_mat_3", YggMoss },
-        };
-        
-        foreach(KeyValuePair<string, Texture> kvp in CustomMossMap) SetCustomMossTexture(kvp.Key, kvp.Value);
+            case Season.Spring or Season.Summer:
+                foreach (KeyValuePair<Material, Texture> kvp in m_customMossMaterials)
+                {
+                    if (kvp.Key == null) continue;
+                    kvp.Key.SetTexture(MossTex, kvp.Value);
+                }
+                break;
+            case Season.Fall:
+                if (!CachedTextures.TryGetValue("rock_heath_moss", out Texture HeathMoss)) return;
+                foreach (KeyValuePair<Material, Texture> kvp in m_customMossMaterials)
+                {
+                    if (kvp.Key == null) continue;
+                    kvp.Key.SetTexture(MossTex, HeathMoss);
+                }
+                break;
+            case Season.Winter:
+                foreach (KeyValuePair<Material, Texture> kvp in m_customMossMaterials)
+                {
+                    if (kvp.Key == null) continue;
+                    kvp.Key.SetTexture(MossTex, TextureManager.Pillar_Snow);
+                }
+                break;
+        }
     }
     private static void ModifyCreatures(Season season)
     {

@@ -24,7 +24,8 @@ public static class CacheResources
     private static List<Material[]> RaspberryMaterials = new();
     private static List<Material[]> BlueberryMaterials = new();
     private static readonly int ColorProp = Shader.PropertyToID("_Color");
-    
+    private static readonly int MossTex = Shader.PropertyToID("_MossTex");
+
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     [HarmonyPriority(Priority.Last)]
     static class ZNetSceneVegetationPatch
@@ -60,11 +61,13 @@ public static class CacheResources
             {
                 for (int i = 0; i < newMaterialArray[index].Length; ++i)
                 {
-                    newMaterialArray[index][i] =
-                        new Material(materials[i]); // Give new material array same values as original
-                    CustomMaterials[
-                            "custom_" + materials[i].name.Replace("(Instance)", "").Replace(" ", "") + "_" + index] =
-                        newMaterialArray[index][i];
+                    newMaterialArray[index][i] = new Material(materials[i]); // Give new material array same values as original
+                    CustomMaterials["custom_" + materials[i].name.Replace("(Instance)", "").Replace(" ", "") + "_" + index] = newMaterialArray[index][i];
+                    if (newMaterialArray[index][i].HasProperty("_MossTex"))
+                    {
+                        m_customMossMaterials[newMaterialArray[index][i]] =
+                            newMaterialArray[index][i].GetTexture(MossTex);
+                    }
                 }
 
                 // Add color tint to specified material
@@ -136,7 +139,6 @@ public static class CacheResources
         private static void Postfix(ZNetScene __instance, ref GameObject __result)
         {
             if (!__instance) return;
-            if (_ModEnabled.Value is Toggle.Off) return;
             ApplyColorMaterials(__result);
         }
     }

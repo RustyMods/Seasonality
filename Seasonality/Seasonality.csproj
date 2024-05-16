@@ -67,6 +67,9 @@
         <Reference Include="assembly_guiutils">
             <HintPath>$(PublicizedAssembliesPath)\assembly_guiutils_publicized.dll</HintPath>
         </Reference>
+        <Reference Include="assembly_postprocessing">
+          <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_postprocessing_publicized.dll</HintPath>
+        </Reference>
         <Reference Include="assembly_utils">
             <HintPath>$(PublicizedAssembliesPath)\assembly_utils_publicized.dll</HintPath>
         </Reference>
@@ -121,48 +124,47 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Configurations\YamlConfigurations.cs" />
         <Compile Include="DataTypes\GrassTypes.cs" />
         <Compile Include="DataTypes\VegetationType.cs" />
+        <Compile Include="Managers\ClutterManager.cs" />
+        <Compile Include="Managers\GameManager.cs" />
+        <Compile Include="Managers\GlobalKeyManager.cs" />
+        <Compile Include="Managers\HudManager.cs" />
         <Compile Include="Managers\LocalizationManager.cs" />
+        <Compile Include="Managers\PlayerManager.cs" />
+        <Compile Include="Managers\SeasonManager.cs" />
+        <Compile Include="Managers\TerrainManager.cs" />
+        <Compile Include="Managers\WeatherManager.cs" />
+        <Compile Include="Managers\ZoneManager.cs" />
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="SeasonalityPaths\SeasonPaths.cs" />
         <Compile Include="Seasons\MaterialReplacement.cs" />
-        <Compile Include="Seasons\SeasonManager.cs" />
         <Compile Include="Seasons\SeasonColors.cs" />
-        <Compile Include="Seasons\Terrain.cs" />
         <Compile Include="Seasons\CachePrefabs.cs" />
         <Compile Include="SeasonUtility\ConsoleCommands.cs" />
-        <Compile Include="SeasonUtility\SpecialEffects.cs" />
         <Compile Include="SeasonUtility\Utils.cs" />
-        <Compile Include="SeasonStatusEffect\SeasonStatusEffects.cs" />
         <Compile Include="Textures\Directories.cs" />
-        <Compile Include="Textures\FreezeWater.cs" />
         <Compile Include="Textures\HDConfigurations.cs" />
         <Compile Include="Textures\SpriteManager.cs" />
         <Compile Include="Textures\TextureManager.cs" />
-        <Compile Include="Textures\WaterMaterial.cs" />
         <Compile Include="VersionHandshake.cs" />
-        <Compile Include="Weather\Environment.cs" />
-        <Compile Include="Weather\EnvironmentEffect.cs" />
-        <Compile Include="Weather\Utils.cs" />
-        <Compile Include="Weather\WeatherManager.cs" />
     </ItemGroup>
     <ItemGroup>
         <None Include="App.config" />
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Include="..\..\..\Textures\mistlands_moss.png">
+        <Content Include="..\..\..\Textures\mistlands_moss.png">
           <Link>assets\mistlands_moss.png</Link>
-        </EmbeddedResource>
-        <EmbeddedResource Include="..\..\..\Textures\MistlandsVegetation_d.png">
+        </Content>
+        <Content Include="..\..\..\Textures\MistlandsVegetation_d.png">
           <Link>assets\MistlandsVegetation_d.png</Link>
-        </EmbeddedResource>
+        </Content>
         <EmbeddedResource Include="..\..\..\evennewerbundles\snowmaterialbundle">
           <Link>assets\snowmaterialbundle</Link>
         </EmbeddedResource>
         <Content Include=".gitignore" />
+        <EmbeddedResource Include="assets\pillar_snow_d2.png" />
         <Content Include="environment.props" />
         <EmbeddedResource Include="icons\valknutIcon.png" />
         <Content Include="ILRepack.targets" />

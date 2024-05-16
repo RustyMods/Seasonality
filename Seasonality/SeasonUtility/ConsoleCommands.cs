@@ -14,8 +14,7 @@ public static class ConsoleCommands
     {
         private static void Postfix() 
         {
-            Terminal.ConsoleCommand Help = new Terminal.ConsoleCommand(
-                "seasonality", "Shows a list of console commands for seasonality", (Terminal.ConsoleEventFailable) (args =>
+            Terminal.ConsoleCommand Help = new Terminal.ConsoleCommand("seasonality", "Shows a list of console commands for seasonality", (Terminal.ConsoleEventFailable) (args =>
                     {
                         if (args.Length < 2) return false;
                         
@@ -48,7 +47,6 @@ public static class ConsoleCommands
                 {
 
                     if (args.Length < 2) return false;
-                    _SeasonControl.Value = Toggle.On;
                     switch (args[1])
                     {
                         case "summer": _Season.Value = Season.Summer; break;
@@ -66,41 +64,6 @@ public static class ConsoleCommands
                     return seasons;
                 })), onlyAdmin: true);
             if (!SeasonCommands.ContainsKey("season change")) SeasonCommands.Add("season change", SeasonChange);
-
-            Terminal.ConsoleCommand SeasonControl = new("season_control",
-                "[toggle] Enable/Disable automatic seasonal change", (Terminal.ConsoleEventFailable)(
-                    args =>
-                    {
-                        if (args.Length < 2) return false;
-                        switch (args[1])
-                        {
-                            case "on": _SeasonControl.Value = Toggle.On;
-                                break;
-                            case "off": _SeasonControl.Value = Toggle.Off;
-                                break;
-                        }
-                        return true;
-                    }), false, optionsFetcher: ((Terminal.ConsoleOptionsFetcher) (() => new List<string>() { "on", "off" })), onlyAdmin: true);
-            
-            if (!SeasonCommands.ContainsKey("season control")) SeasonCommands.Add("season control", SeasonControl);
-
-            Terminal.ConsoleCommand SeasonTimer = new("season_duration",
-                "[days] [hours] [minutes] Sets the duration between seasons", (Terminal.ConsoleEventFailable)(
-                    args =>
-                    {
-                        if (args.Length == 4 &&
-                            int.TryParse(args[1], out int days) &&
-                            int.TryParse(args[2], out int hours) &&
-                            int.TryParse(args[3], out int minutes))
-                        {
-                            _SeasonDurationDays.Value = days;
-                            _SeasonDurationHours.Value = hours;
-                            _SeasonDurationMinutes.Value = minutes;
-                            return true;
-                        }
-                        return false;
-                    }), false){OnlyAdmin = true};
-            if (!SeasonCommands.ContainsKey("season duration")) SeasonCommands.Add("season duration", SeasonTimer);
 
             Terminal.ConsoleCommand LogCacheTextures = new("seasonality_textures", "", args =>
             {

@@ -14,8 +14,9 @@ public static class TextureManager
 {
     public static bool HDPackLoaded;
 
-    public static readonly Texture? MistLands_Moss = RegisterTexture("mistlands_moss.png");
-    public static readonly Texture? Mistlands_Rock_Plant = RegisterTexture("MistlandsVegetation_d.png");
+    // public static readonly Texture? MistLands_Moss = RegisterTexture("mistlands_moss.png");
+    // public static readonly Texture? Mistlands_Rock_Plant = RegisterTexture("MistlandsVegetation_d.png");
+    public static readonly Texture? Pillar_Snow = RegisterTexture("pillar_snow_d2.png");
     public static readonly Dictionary<VegDirectories, Dictionary<string, Texture?>> CustomRegisteredTextures = new();
     public static readonly Dictionary<CreatureDirectories, Dictionary<string, Texture?>> CustomRegisteredCreatureTex = new();
     public static readonly Dictionary<PieceDirectories, Dictionary<string, Texture?>> CustomRegisteredPieceTextures = new();
