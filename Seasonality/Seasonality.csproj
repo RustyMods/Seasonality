@@ -166,11 +166,15 @@
         <Content Include=".gitignore" />
         <EmbeddedResource Include="assets\pillar_snow_d2.png" />
         <Content Include="environment.props" />
+        <EmbeddedResource Include="icons\fall_icon.png" />
+        <EmbeddedResource Include="icons\spring_icon.png" />
+        <EmbeddedResource Include="icons\summer_icon.png" />
         <EmbeddedResource Include="icons\valknutIcon.png" />
         <Content Include="ILRepack.targets" />
         <Content Include="Libs\ServerSync.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <EmbeddedResource Include="icons\winter_icon.png" />
         <EmbeddedResource Include="translations\English.yml" />
         <Content Include="UpdateManifest.ps1" />
     </ItemGroup>

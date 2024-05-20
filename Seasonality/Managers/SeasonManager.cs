@@ -13,6 +13,7 @@ namespace Seasonality.Managers;
 public static class SeasonManager
 {
     public static bool m_fading;
+    public static int se_seasons = "SE_Seasons".GetStableHashCode();
     private static IEnumerator TriggerSeasonChange()
     {
         float duration = 0f;
@@ -30,7 +31,7 @@ public static class SeasonManager
 
         Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"$msg_{GetNextSeason().ToString().ToLower()}");
         yield return new WaitForSeconds(1);
-        if (ZNet.instance.IsServer())
+        if (ZNet.instance && ZNet.instance.IsServer())
         {
             SeasonalityPlugin._Season.Value = GetNextSeason();
         }
@@ -49,15 +50,14 @@ public static class SeasonManager
     {
         if (!Player.m_localPlayer) return;
         var man = Player.m_localPlayer.GetSEMan();
+        if (!man.HaveStatusEffect(se_seasons))
+        {
+            man.AddStatusEffect(se_seasons);
+        }
         if (!man.HaveStatusEffect("SE_Weatherman".GetStableHashCode()))
         {
             if (SeasonalityPlugin._EnableWeather.Value is SeasonalityPlugin.Toggle.Off) return;
             man.AddStatusEffect("SE_Weatherman".GetStableHashCode());
-        }
-
-        if (!man.HaveStatusEffect("SE_Seasons".GetStableHashCode()))
-        {
-            man.AddStatusEffect("SE_Seasons".GetStableHashCode());
         }
     }
     
@@ -102,13 +102,12 @@ public static class SeasonManager
                 if (timer < 0.01)
                 {
                     SeasonalityPlugin._Season.Value = GetNextSeason();
-                    
                 }
             }
             else
             {
                 if (timer > SeasonalityPlugin._FadeLength.Value) return;
-                if (!m_fading) SeasonalityPlugin._plugin.StartCoroutine(TriggerSeasonChange());
+                if (!m_fading && Player.m_localPlayer) SeasonalityPlugin._plugin.StartCoroutine(TriggerSeasonChange());
             }
         }
         else
@@ -120,12 +119,23 @@ public static class SeasonManager
             }
         }
     }
-    
 
     [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]
     private static class ObjectDB_Awake_Patch
     {
         private static void Postfix() => RegisterSeasonSE();
+    }
+    
+    private static Sprite? GetIcon()
+    {
+        return SeasonalityPlugin._Season.Value switch
+        {
+            SeasonalityPlugin.Season.Spring => SpriteManager.SpringIcon,
+            SeasonalityPlugin.Season.Summer => SpriteManager.SummerIcon,
+            SeasonalityPlugin.Season.Fall => SpriteManager.FallIcon,
+            SeasonalityPlugin.Season.Winter => SpriteManager.WinterIcon,
+            _ => SpriteManager.ValknutIcon
+        };
     }
 
     private static void RegisterSeasonSE()
@@ -134,7 +144,7 @@ public static class SeasonManager
         SE_Season effect = ScriptableObject.CreateInstance<SE_Season>();
         effect.name = "SE_Seasons";
         effect.m_name = "Seasonality";
-        effect.m_icon = SpriteManager.ValknutIcon;
+        effect.m_icon = GetIcon();
         if (ObjectDB.instance.m_StatusEffects.Contains(effect)) return;
         ObjectDB.instance.m_StatusEffects.Add(effect);
     }
@@ -155,8 +165,8 @@ public static class SeasonManager
     {
         if (sender is not ConfigEntry<SeasonalityPlugin.Toggle> config) return;
         if (config.Value is SeasonalityPlugin.Toggle.Off) return;
-        Player.m_localPlayer.GetSEMan().RemoveStatusEffect("SE_Seasons".GetStableHashCode());
-        Player.m_localPlayer.GetSEMan().AddStatusEffect("SE_Season".GetStableHashCode());
+        Player.m_localPlayer.GetSEMan().RemoveStatusEffect(se_seasons);
+        Player.m_localPlayer.GetSEMan().AddStatusEffect(se_seasons);
     }
     
     private static string GetSeasonTime()
@@ -188,10 +198,9 @@ public static class SeasonManager
             if (!EnvMan.instance) return "";
             m_name = Localization.instance.Localize($"$season_{SeasonalityPlugin._Season.Value.ToString().ToLower()}");
             m_icon = SeasonalityPlugin._DisplaySeason.Value is SeasonalityPlugin.Toggle.On
-                ? SpriteManager.ValknutIcon
+                ? GetIcon()
                 : null;
-            if (SeasonalityPlugin._DisplaySeasonTimer.Value is SeasonalityPlugin.Toggle.Off) return "";
-            return GetSeasonTime();
+            return SeasonalityPlugin._DisplaySeasonTimer.Value is SeasonalityPlugin.Toggle.Off ? "" : GetSeasonTime();
         }
     }
 }

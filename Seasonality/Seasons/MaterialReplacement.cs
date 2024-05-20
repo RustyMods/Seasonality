@@ -3,6 +3,7 @@ using System.Linq;
 using HarmonyLib;
 using Seasonality.Textures;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static Seasonality.SeasonalityPlugin;
 
 namespace Seasonality.Seasons;
@@ -138,6 +139,7 @@ public static class MaterialReplacer
     }
     public static void ModifyCachedMaterials(Season season)
     {
+        if (SystemInfo.graphicsDeviceType is GraphicsDeviceType.Null) return;
         ModifyMossMaterials(season);
         if(_ReplaceCreatureTextures.Value is Toggle.On) ModifyCreatures(season);
         ModifyVegetation(season); 

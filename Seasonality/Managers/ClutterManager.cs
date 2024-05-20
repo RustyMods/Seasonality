@@ -3,6 +3,7 @@ using HarmonyLib;
 using Seasonality.DataTypes;
 using Seasonality.Textures;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Seasonality.Managers;
 
@@ -61,7 +62,7 @@ public static class ClutterManager
 
     public static void UpdateClutter()
     {
-        if (!ClutterSystem.instance) return;
+        if (!ClutterSystem.instance || SystemInfo.graphicsDeviceType is GraphicsDeviceType.Null) return;
         SetClutter();
     }
 

@@ -6,6 +6,10 @@ namespace Seasonality.Textures;
 public static class SpriteManager
 {
     public static readonly Sprite? ValknutIcon = RegisterSprite("valknutIcon.png");
+    public static readonly Sprite? SpringIcon = RegisterSprite("spring_icon.png");
+    public static readonly Sprite? SummerIcon = RegisterSprite("summer_icon.png");
+    public static readonly Sprite? FallIcon = RegisterSprite("fall_icon.png");
+    public static readonly Sprite? WinterIcon = RegisterSprite("winter_icon.png");
     
     private static Sprite? RegisterSprite(string fileName, string folderName = "icons")
     {

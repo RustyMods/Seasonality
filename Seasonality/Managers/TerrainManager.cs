@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Seasonality.Managers;
 
@@ -8,6 +9,7 @@ public static class TerrainManager
 {
     public static void UpdateTerrain()
     {
+        if (SystemInfo.graphicsDeviceType is GraphicsDeviceType.Null) return;
         foreach (IMonoUpdater? monoUpdater in Heightmap.Instances)
         {
             Heightmap? map = (Heightmap)monoUpdater;

@@ -57,6 +57,8 @@ public class FrozenZones : MonoBehaviour
     public MeshRenderer m_surfaceRenderer = null!;
     public WaterVolume m_waterVolume = null!;
     public Material m_originalMaterial = null!;
+
+    public bool m_frozen;
     public void Awake()
     {
         Transform water = transform.Find("Water");
@@ -69,8 +71,24 @@ public class FrozenZones : MonoBehaviour
         m_surfaceCollider = surface.gameObject.AddComponent<MeshCollider>();
         m_originalMaterial = m_surfaceRenderer.material;
         m_surfaceCollider.sharedMesh = filter.sharedMesh;
+    }
 
-        m_surfaceCollider.enabled = SeasonalityPlugin._Season.Value is SeasonalityPlugin.Season.Winter;
+    public void Start()
+    {
+        if (SeasonalityPlugin._Season.Value is SeasonalityPlugin.Season.Winter)
+        {
+            m_surfaceRenderer.material = ZoneManager.SnowMaterial;
+            m_surfaceCollider.enabled = true;
+            m_waterVolume.m_useGlobalWind = false;
+            m_frozen = true;
+        }
+        else
+        {
+            m_surfaceRenderer.material = m_originalMaterial;
+            m_surfaceCollider.enabled = false;
+            m_waterVolume.m_useGlobalWind = true;
+            m_frozen = false;
+        }
     }
 
     public void Update()
@@ -100,16 +118,20 @@ public class FrozenZones : MonoBehaviour
 
     public void FreezeWater()
     {
+        if (m_frozen) return;
         m_surfaceRenderer.material = ZoneManager.SnowMaterial;
         m_surfaceCollider.enabled = true;
         m_waterVolume.m_useGlobalWind = false;
+        m_frozen = true;
     }
 
     public void ThawWater()
     {
+        if (!m_frozen) return;
         m_surfaceRenderer.material = m_originalMaterial;
         m_surfaceCollider.enabled = false;
         m_waterVolume.m_useGlobalWind = true;
+        m_frozen = false;
     }
 }
 

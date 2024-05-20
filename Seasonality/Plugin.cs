@@ -18,7 +18,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.2.8";
+        internal const string ModVersion = "3.3.1";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -129,7 +129,7 @@ namespace Seasonality
                 Dictionary<Heightmap.Biome, ConfigEntry<string>> configs = new();
                 foreach (Heightmap.Biome biome in Enum.GetValues(typeof(Heightmap.Biome)))
                 {
-                    if (biome is Heightmap.Biome.None or Heightmap.Biome.AshLands) continue;
+                    if (biome is Heightmap.Biome.None or Heightmap.Biome.AshLands or Heightmap.Biome.All) continue;
                     int index = BiomeIndex(biome);
                     if (season is Season.Winter)
                     {
