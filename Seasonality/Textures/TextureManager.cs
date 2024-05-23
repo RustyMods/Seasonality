@@ -33,6 +33,7 @@ public static class TextureManager
         byte[] buffer = new byte[stream.Length];
         stream.Read(buffer, 0, buffer.Length);
         Texture2D texture = new Texture2D(2, 2);
+        texture.name = fileName.Replace(".png", string.Empty);
 
         return texture.LoadImage(buffer) ? texture : null;
     }

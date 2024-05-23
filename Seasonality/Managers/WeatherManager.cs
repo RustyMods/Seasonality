@@ -128,7 +128,7 @@ public static class WeatherManager
     {
         public override string GetTooltipString()
         {
-            return m_tooltip + Localization.instance.Localize($"$weather_{EnvMan.instance.m_currentEnv.m_name.ToLower()}_tooltip");
+            return m_tooltip + Localization.instance.Localize($"$weather_{EnvMan.instance.m_currentEnv.m_name.ToLower().Replace(" ", "_")}_tooltip");
         }
 
         public override string GetIconText() => GetEnvironmentCountDown();
@@ -137,7 +137,7 @@ public static class WeatherManager
         {
             if (EnvMan.instance == null) return "";
 
-            m_name = Localization.instance.Localize($"$weather_{EnvMan.instance.m_currentEnv.m_name.ToLower()}");
+            m_name = Localization.instance.Localize($"$weather_{EnvMan.instance.m_currentEnv.m_name.ToLower().Replace(" ", "_")}");
             m_icon = SeasonalityPlugin._DisplayWeather.Value is SeasonalityPlugin.Toggle.On && SeasonalityPlugin._EnableWeather.Value is SeasonalityPlugin.Toggle.On
                 ? SpriteManager.ValknutIcon
                 : null;

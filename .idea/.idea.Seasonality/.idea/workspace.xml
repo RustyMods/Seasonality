@@ -2,20 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Seasonality/icons/fall_icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/icons/spring_icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/icons/summer_icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/icons/winter_icon.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/ClutterManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/ClutterManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Managers/SeasonManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/SeasonManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/TerrainManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/TerrainManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/WeatherManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/WeatherManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Managers/ZoneManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/ZoneManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/VersionHandshake.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/VersionHandshake.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/icons/fall_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/icons/fall_icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/icons/spring_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/icons/spring_icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/icons/summer_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/icons/summer_icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/icons/winter_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/icons/winter_icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/translations/English.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/translations/English.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,9 +118,12 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/30/920b683d/Hud.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/45/dca8562a/SEMan.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/7c/4de4374d/Player.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/98/e2ef0244/ZoneSystem.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/a3/f91a6b88/StatusEffect.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/a9/89954a30/Character.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/aa/aabc4d73/EnvMan.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/b2/7c88dd9a/BossStone.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/cf/fb21ddb6/LocationProxy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/e9/09d6ad8c/Heightmap.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6d4914810c2c4362a44dc254ead86b1811418/2a/8223afff/AudioClip.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6d4914810c2c4362a44dc254ead86b1811418/42/bff9454d/AudioSource.cs" root0="SKIP_HIGHLIGHTING" />
@@ -176,6 +178,7 @@
     <setting file="file://$PROJECT_DIR$/Seasonality/Managers/SeasonManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Plugin.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Seasons/ConfigManagerPatch.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -388,7 +391,10 @@
       <workItem from="1715867716623" duration="1440000" />
       <workItem from="1715882905537" duration="882000" />
       <workItem from="1716128701927" duration="3194000" />
-      <workItem from="1716173893851" duration="500000" />
+      <workItem from="1716173893851" duration="7518000" />
+      <workItem from="1716215749295" duration="3000" />
+      <workItem from="1716296394901" duration="571000" />
+      <workItem from="1716381039094" duration="970000" />
     </task>
     <task id="LOCAL-00001" summary="update for latest patch">
       <created>1713580281581</created>
@@ -404,7 +410,14 @@
       <option name="project" value="LOCAL" />
       <updated>1715865973306</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="added new icons and removed all from biomes weather configs">
+      <created>1716174414655</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1716174414655</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -427,7 +440,8 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="update for latest patch" />
     <MESSAGE value="ashland update" />
-    <option name="LAST_COMMIT_MESSAGE" value="ashland update" />
+    <MESSAGE value="added new icons and removed all from biomes weather configs" />
+    <option name="LAST_COMMIT_MESSAGE" value="added new icons and removed all from biomes weather configs" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

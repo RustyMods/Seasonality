@@ -14,7 +14,7 @@ public static class SeasonManager
 {
     public static bool m_fading;
     public static int se_seasons = "SE_Seasons".GetStableHashCode();
-    private static IEnumerator TriggerSeasonChange()
+    private static IEnumerator TriggerFade()
     {
         float duration = 0f;
         float length = SeasonalityPlugin._FadeLength.Value * 50f;
@@ -31,10 +31,6 @@ public static class SeasonManager
 
         Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"$msg_{GetNextSeason().ToString().ToLower()}");
         yield return new WaitForSeconds(1);
-        if (ZNet.instance && ZNet.instance.IsServer())
-        {
-            SeasonalityPlugin._Season.Value = GetNextSeason();
-        }
         while (duration > 0)
         {
             alpha -= 1f / length;
@@ -97,26 +93,13 @@ public static class SeasonManager
         double timer = GetSeasonFraction();
         if (SeasonalityPlugin._SeasonFades.Value is SeasonalityPlugin.Toggle.On)
         {
-            if (SystemInfo.graphicsDeviceType is GraphicsDeviceType.Null)
-            {
-                if (timer < 0.01)
-                {
-                    SeasonalityPlugin._Season.Value = GetNextSeason();
-                }
-            }
-            else
-            {
-                if (timer > SeasonalityPlugin._FadeLength.Value) return;
-                if (!m_fading && Player.m_localPlayer) SeasonalityPlugin._plugin.StartCoroutine(TriggerSeasonChange());
-            }
+            if (timer > SeasonalityPlugin._FadeLength.Value) return;
+            if (!m_fading && Player.m_localPlayer) SeasonalityPlugin._plugin.StartCoroutine(TriggerFade());
         }
-        else
+        if (!ZNet.instance.IsServer()) return;
+        if (timer < 0.01)
         {
-            if (!ZNet.instance.IsServer()) return;
-            if (timer < 0.01)
-            {
-                SeasonalityPlugin._Season.Value = GetNextSeason();
-            }
+            SeasonalityPlugin._Season.Value = GetNextSeason();
         }
     }
 

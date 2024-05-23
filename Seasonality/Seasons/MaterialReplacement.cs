@@ -552,6 +552,7 @@ public static class MaterialReplacer
     {
         Dictionary<string, Directories.VegDirectories> VegetationReplacementMap = new()
         {
+            { "beech_particle", Directories.VegDirectories.Beech },
             { "birch_particle", Directories.VegDirectories.Birch },
             { "birch_seeds_leaf", Directories.VegDirectories.Birch },
             { "oak_particle", Directories.VegDirectories.Oak },
@@ -578,7 +579,7 @@ public static class MaterialReplacer
         foreach (KeyValuePair<string, Directories.VegDirectories> kvp in VegetationReplacementMap)
         {
             Texture? texture = GetCustomTexture(season, kvp.Value, kvp.Key);
-            if (!texture) {continue;}
+            if (!texture) continue;
             SetMainTexture(kvp.Key, texture);
         }
 
@@ -742,6 +743,7 @@ public static class MaterialReplacer
     {
         Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory,  isBark ? season + "_bark" : season.ToString());
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
+        if (originalMaterialName == "beech_particle" && season is Season.Fall) return originalTexture;
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
 

@@ -49,6 +49,17 @@ public static class ZoneManager
             __result.AddComponent<SeasonalLocation>();
         }
     }
+
+    [HarmonyPatch(typeof(BossStone), nameof(BossStone.Start))]
+    private static class BossStone_Start_Patch
+    {
+        private static void Postfix(BossStone __instance)
+        {
+            if (!__instance) return;
+            __instance.gameObject.AddComponent<SeasonalBossStone>();
+        }
+    }
+    
 }
 
 public class FrozenZones : MonoBehaviour
@@ -135,10 +146,9 @@ public class FrozenZones : MonoBehaviour
     }
 }
 
-public class SeasonalLocation : MonoBehaviour
+public class SeasonalBossStone : MonoBehaviour
 {
     public Renderer[] m_renderers = null!;
-    public List<Material> m_materials = new();
     private readonly Dictionary<Material, Texture> m_textureMap = new();
     private static readonly int MossTex = Shader.PropertyToID("_MossTex");
 
@@ -151,22 +161,99 @@ public class SeasonalLocation : MonoBehaviour
         {
             foreach (var material in renderer.materials)
             {
-                m_materials.Add(material);
+                if (material.HasProperty("_MossTex"))
+                {
+                    m_textureMap[material] = material.GetTexture(MossTex);
+                }
             }
         }
+    }
 
-        foreach (var material in m_materials)
-        {
-            if (material.HasProperty("_MossTex"))
-            {
-                m_textureMap[material] = material.GetTexture(MossTex);
-            }
-        }
+    public void Start()
+    {
+        SetLocationMoss();
     }
 
     public void Update()
     {
         if (m_lastSeason == SeasonalityPlugin._Season.Value) return;
+        SetLocationMoss();
+    }
+
+    public void SetLocationMoss()
+    {
+        switch (SeasonalityPlugin._Season.Value)
+        {
+            case SeasonalityPlugin.Season.Spring or SeasonalityPlugin.Season.Summer:
+                if (!MaterialReplacer.CachedTextures.TryGetValue("Firetree_oldlog_moss", out Texture StoneMoss)) return;
+                ModifyMoss(StoneMoss);
+                break;
+            case SeasonalityPlugin.Season.Fall:
+                if (!MaterialReplacer.CachedTextures.TryGetValue("rock_heath_moss", out Texture HeathMoss)) return;
+                ModifyMoss(HeathMoss);
+                break;
+            case SeasonalityPlugin.Season.Winter:
+                if (TextureManager.Pillar_Snow == null) return;
+                ModifyMoss(TextureManager.Pillar_Snow);
+                break;
+        }
+        m_lastSeason = SeasonalityPlugin._Season.Value;
+
+    }
+
+    public void ResetMossTexture()
+    {
+        foreach (var kvp in m_textureMap)
+        {
+            kvp.Key.SetTexture(MossTex, kvp.Value);
+        }
+    }
+
+    public void ModifyMoss(Texture texture)
+    {
+        foreach (var kvp in m_textureMap)
+        {
+            kvp.Key.SetTexture(MossTex, texture);
+        }
+    }
+}
+
+public class SeasonalLocation : MonoBehaviour
+{
+    public Renderer[] m_renderers = null!;
+    private readonly Dictionary<Material, Texture> m_textureMap = new();
+    private static readonly int MossTex = Shader.PropertyToID("_MossTex");
+
+    private SeasonalityPlugin.Season m_lastSeason;
+
+    public void Awake()
+    {
+        m_renderers = gameObject.GetComponentsInChildren<Renderer>();
+        foreach (var renderer in m_renderers)
+        {
+            foreach (var material in renderer.materials)
+            {
+                if (material.HasProperty("_MossTex"))
+                {
+                    m_textureMap[material] = material.GetTexture(MossTex);
+                }
+            }
+        }
+    }
+
+    public void Start()
+    {
+        SetLocationMoss();
+    }
+
+    public void Update()
+    {
+        if (m_lastSeason == SeasonalityPlugin._Season.Value) return;
+        SetLocationMoss();
+    }
+
+    public void SetLocationMoss()
+    {
         switch (SeasonalityPlugin._Season.Value)
         {
             case SeasonalityPlugin.Season.Spring:
