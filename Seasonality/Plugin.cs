@@ -10,6 +10,7 @@ using JetBrains.Annotations;
 using Seasonality.Managers;
 using Seasonality.Textures;
 using ServerSync;
+using UnityEngine;
 
 
 namespace Seasonality
@@ -18,7 +19,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.3.2";
+        internal const string ModVersion = "3.3.3";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -46,8 +47,9 @@ namespace Seasonality
 
         public void Update()
         {
-            SeasonManager.UpdateSeason();
-            SeasonManager.UpdateSeasonEffects();
+            float dt = Time.deltaTime;
+            SeasonManager.UpdateSeason(dt);
+            SeasonManager.UpdateSeasonEffects(dt);
             GameManager.UpdateWaterLOD();
 
         }
@@ -71,6 +73,7 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _ReplaceArmorTextures = null!;
         public static ConfigEntry<Toggle> _ReplaceCreatureTextures = null!;
         public static ConfigEntry<Toggle> _SeasonFades = null!;
+        public static ConfigEntry<Toggle> _SleepOverride = null!;
         public static ConfigEntry<float> _FadeLength = null!;
         public static ConfigEntry<Toggle> _WinterFreezes = null!;
         public static ConfigEntry<Toggle> _WeatherFreezes = null!;
@@ -98,6 +101,8 @@ namespace Seasonality
             _ReplaceArmorTextures = config("2 - Settings", "Replace Armor Textures", Toggle.On, "If on, plugin modifies armor textures");
             _ReplaceCreatureTextures = config("2 - Settings", "Replace Creature Textures", Toggle.On, "If on, creature skins change with the seasons");
             _SeasonFades = config("2 - Settings", "Fade to Black", Toggle.On, "If on, plugin fades to black before season change");
+            _SleepOverride = config("2 - Settings", "Sleep Season Change", Toggle.Off,
+                "If on, seasons can only change if everyone is asleep");
             _FadeLength = config("2 - Settings", "Fade Length (seconds)", 3f, new ConfigDescription("Set the length of fade to black", new AcceptableValueRange<float>(1f, 101f)));
             _DisplaySeason = config("2 - Settings", "Display Season", Toggle.On, "If on, season will be displayed alongside HUD Status Effects");
             _DisplaySeason.SettingChanged += SeasonManager.OnSeasonDisplayConfigChange;
@@ -156,12 +161,12 @@ namespace Seasonality
                 {
                     if (type is DurationType.Hours)
                     {
-                        configs[type] = _plugin.config($"Duration - {season}", $"In-game {type}", 1,
+                        configs[type] = _plugin.config($"Duration - {season}", $"Real-Time {type}", 1,
                             new ConfigDescription($"Set the length of {season}", new AcceptableValueRange<int>(0, 1000)));
                     }
                     else
                     {
-                        configs[type] = _plugin.config($"Duration - {season}", $"In-game {type}", 0,
+                        configs[type] = _plugin.config($"Duration - {season}", $"Real-Time {type}", 0,
                             new ConfigDescription($"Set the length of {season}", new AcceptableValueRange<int>(0, 1000)));
                     }
                 }

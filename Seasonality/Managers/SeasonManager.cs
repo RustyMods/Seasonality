@@ -6,14 +6,13 @@ using HarmonyLib;
 using Seasonality.Seasons;
 using Seasonality.Textures;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Seasonality.Managers;
 
 public static class SeasonManager
 {
     public static bool m_fading;
-    public static int se_seasons = "SE_Seasons".GetStableHashCode();
+    private static readonly int se_seasons = "SE_Seasons".GetStableHashCode();
     private static IEnumerator TriggerFade()
     {
         float duration = 0f;
@@ -40,11 +39,18 @@ public static class SeasonManager
         }
 
         m_fading = false;
-        yield return null;
     }
-    public static void UpdateSeasonEffects()
+
+    private static float m_seasonEffectTimer;
+    
+    public static void UpdateSeasonEffects(float dt)
     {
         if (!Player.m_localPlayer) return;
+
+        m_seasonEffectTimer += dt;
+        if (m_seasonEffectTimer < 1f) return;
+        m_seasonEffectTimer = 0.0f;
+        
         var man = Player.m_localPlayer.GetSEMan();
         if (!man.HaveStatusEffect(se_seasons))
         {
@@ -76,6 +82,13 @@ public static class SeasonManager
 
     private static SeasonalityPlugin.Season GetNextSeason()
     {
+        // int currentSeason = (int)SeasonalityPlugin._Season.Value;
+        // if (Enum.IsDefined(typeof(SeasonalityPlugin.Season), currentSeason + 1))
+        // {
+        //     return (SeasonalityPlugin.Season)currentSeason + 1;
+        // }
+        // return 0;
+        
         return SeasonalityPlugin._Season.Value switch
         {
             SeasonalityPlugin.Season.Spring => SeasonalityPlugin.Season.Summer,
@@ -86,20 +99,53 @@ public static class SeasonManager
         };
     }
 
-    public static void UpdateSeason()
+    private static float m_seasonTimer;
+    private static readonly float m_threshold = 0.5f;
+    private static bool m_sleepOverride;
+    public static void UpdateSeason(float dt)
     {
         if (!ZNet.instance || !EnvMan.instance) return;
         if (!ShouldCount()) return;
+
+        m_seasonTimer += dt;
+        if (m_seasonTimer < m_threshold) return;
+        m_seasonTimer = 0.0f;
         double timer = GetSeasonFraction();
-        if (SeasonalityPlugin._SeasonFades.Value is SeasonalityPlugin.Toggle.On)
+
+        if (SeasonalityPlugin._SleepOverride.Value is SeasonalityPlugin.Toggle.On)
         {
-            if (timer > SeasonalityPlugin._FadeLength.Value) return;
-            if (!m_fading && Player.m_localPlayer) SeasonalityPlugin._plugin.StartCoroutine(TriggerFade());
+            if (timer > m_threshold) return;
+            if (!m_sleepOverride) m_sleepOverride = true;
+            return;
         }
-        if (!ZNet.instance.IsServer()) return;
-        if (timer < 0.01)
+        
+        CheckSeasonFade(timer);
+        ChangeSeason(timer);
+    }
+
+    private static void ChangeSeason(double timer)
+    {
+        if (timer > m_threshold || !ZNet.instance.IsServer()) return;
+        SeasonalityPlugin._Season.Value = GetNextSeason();
+    }
+
+    private static void CheckSeasonFade(double timer)
+    {
+        if (SeasonalityPlugin._SeasonFades.Value is SeasonalityPlugin.Toggle.Off) return;
+        if (timer - m_threshold > SeasonalityPlugin._FadeLength.Value) return;
+        if (!m_fading && Player.m_localPlayer) SeasonalityPlugin._plugin.StartCoroutine(TriggerFade());
+    }
+
+    [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.SkipToMorning))]
+    private static class SleepOverride_SeasonChange
+    {
+        private static void Postfix()
         {
-            SeasonalityPlugin._Season.Value = GetNextSeason();
+            if (m_sleepOverride && ZNet.instance.IsServer())
+            {
+                SeasonalityPlugin._Season.Value = GetNextSeason();
+                m_sleepOverride = false;
+            }
         }
     }
 
@@ -160,6 +206,8 @@ public static class SeasonManager
         int hour = span.Hours;
         int minutes = span.Minutes;
         int seconds = span.Seconds;
+
+        if (m_sleepOverride) return Localization.instance.Localize("$msg_ready");
             
         return days > 0 ? $"{days}:{hour:D2}:{minutes:D2}:{seconds:D2}" : hour > 0 ? $"{hour}:{minutes:D2}:{seconds:D2}" : minutes > 0 ? $"{minutes}:{seconds:D2}" : $"{seconds}";
     }

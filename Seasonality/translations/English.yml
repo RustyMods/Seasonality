@@ -13,6 +13,8 @@ msg_summer: "In summer's heat, the longships glide,\nO'er sparkling waves, with 
 msg_fall: "As leaves descend, in hues so bright,\nA tapestry of autumn's flight.\nThrough misty morns and harvest cheer,\nThe viking heart holds ever near."
 msg_winter: "In frosty realms where icy winds wail,\nThe viking's fire, it shall not fail.\nAmidst the snow, a warrior's plight,\nIn winter's grip, they stand and fight."
 
+msg_ready: "Ready"
+
 ## Weather Names
 weather_clear: "Clear"
 weather_misty: "Misty"
