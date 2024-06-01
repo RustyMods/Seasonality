@@ -184,6 +184,16 @@ public static class ConsoleCommands
                 
                 return true;
             }),isSecret:true);
+
+
+            Terminal.ConsoleCommand ListWeathers = new("list_weathers", "Lists all available weathers", args =>
+            {
+                if (!EnvMan.instance) return;
+                foreach (var env in EnvMan.instance.m_environments)
+                {
+                    SeasonalityPlugin.SeasonalityLogger.LogInfo(env.m_name);
+                }
+            });
         }
     }
 }

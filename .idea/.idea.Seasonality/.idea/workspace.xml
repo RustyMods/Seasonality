@@ -4,7 +4,10 @@
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Managers/SeasonManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/SeasonManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/WeatherManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/WeatherManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/ZoneManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/ZoneManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/SeasonUtility/ConsoleCommands.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/SeasonUtility/ConsoleCommands.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/translations/English.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/translations/English.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -53,6 +56,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/105da1159ec9496ab9310694c7b11dd2532bb0/2c/ca63fda7/Object.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/105da1159ec9496ab9310694c7b11dd2532bb0/6c/fc25fff5/Enum.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/105da1159ec9496ab9310694c7b11dd2532bb0/c8/0237e93f/Action.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/234138314e1f45acbffc268fb8d6995a26400/58/109010ae/Utils.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4dc9e5b312774ed097f459680404b14c198a00/01/d0297916/StatusEffect.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4dc9e5b312774ed097f459680404b14c198a00/07/1c5731c2/Game.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4dc9e5b312774ed097f459680404b14c198a00/14/84d29206/VisEquipment.cs" root0="SKIP_HIGHLIGHTING" />
@@ -109,12 +113,15 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/30/920b683d/Hud.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/3a/3d462345/Game.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/45/dca8562a/SEMan.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/7c/4de4374d/Player.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/7c/4de4374d/Player.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/98/e2ef0244/ZoneSystem.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/99/38b401a4/WorldGenerator.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/a3/f91a6b88/StatusEffect.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/a9/89954a30/Character.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/aa/aabc4d73/EnvMan.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/ad/52422c76/SE_Stats.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/b2/7c88dd9a/BossStone.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/b5/78628489/WearNTear.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/cf/fb21ddb6/LocationProxy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/e9/09d6ad8c/Heightmap.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6d4914810c2c4362a44dc254ead86b1811418/2a/8223afff/AudioClip.cs" root0="SKIP_HIGHLIGHTING" />
@@ -142,6 +149,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/ff/04642070/RenderSettings.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/898aeb3e1b1847049f5d773be8071d0426400/62/e4987ce8/Utils.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9ce17bd73eb34c8c8462832ce2833d1816400/54/346498a3/Vector2i.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b7513305042d41128726d7378f1f9ba4531030/c4/358c6f50/StringBuilder.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ebb45651d76c45f5bdf00e15634224e516200/b9/9afc5b8d/Utils.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f4231356d7084225a1943554bcef12b31c9200/01/2e580dd7/SEMan.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f4231356d7084225a1943554bcef12b31c9200/02/b36ab55b/EnvSetup.cs" root0="SKIP_HIGHLIGHTING" />
@@ -168,6 +176,7 @@
     <setting file="file://$PROJECT_DIR$/../Seasonality - Copy/Seasonality/Weather/Utils.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../Seasonality - Copy/Seasonality/Weather/WeatherManager.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Managers/SeasonManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Seasonality/Managers/WeatherManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Plugin.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/SeasonUtility/ConsoleCommands.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Seasons/ConfigManagerPatch.cs" root0="SKIP_HIGHLIGHTING" />
@@ -388,7 +397,14 @@
       <workItem from="1716215749295" duration="3000" />
       <workItem from="1716296394901" duration="571000" />
       <workItem from="1716381039094" duration="6404000" />
-      <workItem from="1716655515650" duration="1979000" />
+      <workItem from="1716655515650" duration="2772000" />
+      <workItem from="1716681582910" duration="5576000" />
+      <workItem from="1716758587593" duration="416000" />
+      <workItem from="1716769631934" duration="77000" />
+      <workItem from="1716780220237" duration="2063000" />
+      <workItem from="1716841941318" duration="5174000" />
+      <workItem from="1717117058838" duration="572000" />
+      <workItem from="1717204729207" duration="5342000" />
     </task>
     <task id="LOCAL-00001" summary="update for latest patch">
       <created>1713580281581</created>
@@ -418,7 +434,14 @@
       <option name="project" value="LOCAL" />
       <updated>1716428082905</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="sleep season is back and fixed season change hopefully">
+      <created>1716657718297</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1716657718297</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -443,7 +466,8 @@
     <MESSAGE value="ashland update" />
     <MESSAGE value="added new icons and removed all from biomes weather configs" />
     <MESSAGE value="fixed season not changing" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed season not changing" />
+    <MESSAGE value="sleep season is back and fixed season change hopefully" />
+    <option name="LAST_COMMIT_MESSAGE" value="sleep season is back and fixed season change hopefully" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

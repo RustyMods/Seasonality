@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using BepInEx.Configuration;
 using HarmonyLib;
 using Seasonality.Seasons;
@@ -214,24 +215,112 @@ public static class SeasonManager
 
     public class SE_Season : StatusEffect
     {
-        public override void OnDamaged(HitData hit, Character attacker)
+        public float m_updateTimer;
+        public override void UpdateStatusEffect(float dt)
         {
-            if (m_fading) hit.ApplyModifier(0f);
-        }
-
-        public override string GetTooltipString()
-        {
-            return m_tooltip + Localization.instance.Localize($"$season_{SeasonalityPlugin._Season.Value.ToString().ToLower()}_tooltip");
-        }
-
-        public override string GetIconText()
-        {
-            if (!EnvMan.instance) return "";
-            m_name = Localization.instance.Localize($"$season_{SeasonalityPlugin._Season.Value.ToString().ToLower()}");
+            base.UpdateStatusEffect(dt);
+            m_updateTimer += dt;
+            if (m_updateTimer < 0.5f) return;
+            m_updateTimer = 0.0f;
+            m_name = SeasonalityPlugin._DisplayType.Value is SeasonalityPlugin.DisplayType.Above 
+                ? GetSeasonName() 
+                : "";
             m_icon = SeasonalityPlugin._DisplaySeason.Value is SeasonalityPlugin.Toggle.On
                 ? GetIcon()
                 : null;
-            return SeasonalityPlugin._DisplaySeasonTimer.Value is SeasonalityPlugin.Toggle.Off ? "" : GetSeasonTime();
+        }
+        
+        public override string GetTooltipString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append($"$season_{SeasonalityPlugin._Season.Value.ToString().ToLower()}_tooltip\n");
+            builder.Append(GetToolTip("Carry Weight", "$se_max_carryweight"));
+            builder.Append(GetToolTip("Health Regeneration", "$se_healthregen"));
+            builder.Append(GetToolTip("Damage", "$se_damage"));
+            builder.Append(GetToolTip("Speed", "$se_item_movement_modifier"));
+            builder.Append(GetToolTip("Eitr Regeneration", "$se_eitrregen"));
+            builder.Append(GetToolTip("Raise Skill", "$se_skill_modifier"));
+            builder.Append(GetToolTip("Stamina Regeneration", "$se_staminaregen"));
+
+            return Localization.instance.Localize(builder.ToString());
+        }
+
+        private string GetToolTip(string key, string token)
+        {
+            return !GetEffectConfig(key, out ConfigEntry<float>? config) ? "" : FormatTooltip(token, config, key == "Carry Weight");
+        }
+
+        private string FormatTooltip(string token, ConfigEntry<float>? config, bool integer)
+        {
+            var amount = integer ? config?.Value ?? 0f : config?.Value ?? 1f;
+            bool increase = integer ? amount > 0f : amount > 1f;
+            string symbol = increase ? "+" : "";
+            string percentage = integer ? "" : "%";
+            float value = integer ? amount : amount * 100 - 100;
+            return value != 0f ? $"{token}: <color=orange>{symbol}{Math.Round(value, 1)}{percentage}</color>\n" : "";
+        }
+        public override string GetIconText()
+        {
+            if (!EnvMan.instance) return "";
+            return SeasonalityPlugin._DisplaySeasonTimer.Value is SeasonalityPlugin.Toggle.Off 
+                ? SeasonalityPlugin._DisplayType.Value is SeasonalityPlugin.DisplayType.Above  
+                    ? "" 
+                    : GetSeasonName()  
+                : SeasonalityPlugin._DisplayType.Value is SeasonalityPlugin.DisplayType.Above 
+                    ? GetSeasonTime() 
+                    : GetSeasonName() + "\n" + GetSeasonTime();
+        }
+
+        private string GetSeasonName() => Localization.instance.Localize($"$season_{SeasonalityPlugin._Season.Value.ToString().ToLower()}");
+        
+        private bool GetEffectConfig(string key, out ConfigEntry<float>? output)
+        {
+            output = SeasonalityPlugin.effectConfigs.TryGetValue(SeasonalityPlugin._Season.Value,
+                out Dictionary<string, ConfigEntry<float>> configs)
+                ? configs.TryGetValue(key, out ConfigEntry<float> config) ? config : null
+                : null;
+            return output != null && SeasonalityPlugin._EnableModifiers.Value is SeasonalityPlugin.Toggle.On;
+        }
+        public override void ModifyStaminaRegen(ref float staminaRegen)
+        {
+            if (GetEffectConfig("Stamina Regeneration", out ConfigEntry<float>? config))
+                staminaRegen *= config?.Value ?? 1f;
+        }
+
+        public override void ModifyMaxCarryWeight(float baseLimit, ref float limit)
+        {
+            if (GetEffectConfig("Carry Weight", out ConfigEntry<float>? config)) limit += config?.Value ?? 0f;
+        }
+
+        public override void ModifyRaiseSkill(Skills.SkillType skill, ref float value)
+        {
+            if (GetEffectConfig("Raise Skill", out ConfigEntry<float>? config)) value *= config?.Value ?? 1f;
+        }
+
+        public override void ModifyEitrRegen(ref float eitrRegen)
+        {
+            if (GetEffectConfig("Eitr Regeneration", out ConfigEntry<float>? config)) eitrRegen *= config?.Value ?? 1f;
+        }
+
+        public override void ModifyHealthRegen(ref float regenMultiplier)
+        {
+            if (GetEffectConfig("Health Regeneration", out ConfigEntry<float>? config))
+                regenMultiplier *= config?.Value ?? 1f;
+        }
+
+        public override void ModifyAttack(Skills.SkillType skill, ref HitData hitData)
+        {
+            if (GetEffectConfig("Damage", out ConfigEntry<float>? config)) hitData.ApplyModifier(config?.Value ?? 1f);
+        }
+
+        public override void ModifySpeed(float baseSpeed, ref float speed, Character character, Vector3 dir)
+        {
+            if (GetEffectConfig("Speed", out ConfigEntry<float>? config)) speed *= config?.Value ?? 1f;
+        }
+        
+        public override void OnDamaged(HitData hit, Character attacker)
+        {
+            if (m_fading) hit.ApplyModifier(0f);
         }
     }
 }

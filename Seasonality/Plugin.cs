@@ -19,11 +19,11 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.3.3";
+        internal const string ModVersion = "3.3.4";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
-        private static string ConfigFileName = ModGUID + ".cfg";
-        private static string ConfigFileFullPath = Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
+        private static readonly string ConfigFileName = ModGUID + ".cfg";
+        private static readonly string ConfigFileFullPath = Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
         internal static string ConnectionError = "";
         private readonly Harmony _harmony = new(ModGUID);
         public static readonly ManualLogSource SeasonalityLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
@@ -67,6 +67,11 @@ namespace Seasonality
             Day, Hours, Minutes
         }
         
+        public enum DisplayType
+        {
+            Above, Below
+        }
+        
         #region CustomConfigs
         public static ConfigEntry<Season> _Season = null!;
 
@@ -80,15 +85,22 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _WinterAlwaysCold = null!;
         public static ConfigEntry<Toggle> _DisplaySeason = null!;
         public static ConfigEntry<Toggle> _DisplaySeasonTimer = null!;
+        public static ConfigEntry<DisplayType> _DisplayType = null!;
 
         public static ConfigEntry<int> _WeatherDuration = null!;
         public static ConfigEntry<Toggle> _DisplayWeather = null!;
         public static ConfigEntry<Toggle> _EnableWeather = null!;
         public static ConfigEntry<Toggle> _DisplayWeatherTimer = null!;
+        public static ConfigEntry<Toggle> _EnableModifiers = null!;
 
         public static readonly Dictionary<Season, Dictionary<DurationType, ConfigEntry<int>>> _Durations = new();
 
         public static readonly Dictionary<Season, Dictionary<Heightmap.Biome, ConfigEntry<string>>> _WeatherConfigs = new();
+        
+        public static readonly Dictionary<Season, Dictionary<string, ConfigEntry<float>>> effectConfigs = new();
+
+        public static readonly Dictionary<Season, Dictionary<string, ConfigEntry<HitData.DamageModifier>>>
+            resistanceConfigs = new();
 
         #endregion
         private void InitConfigs()
@@ -107,6 +119,10 @@ namespace Seasonality
             _DisplaySeason = config("2 - Settings", "Display Season", Toggle.On, "If on, season will be displayed alongside HUD Status Effects");
             _DisplaySeason.SettingChanged += SeasonManager.OnSeasonDisplayConfigChange;
             _DisplaySeasonTimer = config("2 - Settings", "Display Season Timer", Toggle.On, "If on, season timer will be displayed");
+            _EnableModifiers = config("2 - Settings", "Modifiers", Toggle.Off,
+                "If on, modifiers, as in health regeneration, carry weight etc... are enabled");
+            _DisplayType = config("2 - Settings", "Name Display", DisplayType.Above,
+                "Set if name of season should be displayed above or below icon");
             
             _WinterFreezes = config("4 - Winter Settings", "Frozen Water", Toggle.On, "If on, winter freezes water");
             _WeatherFreezes = config("4 - Winter Settings", "Weather Freezes", Toggle.Off, "If off, plugin protects player from freezing except in the mountains");
@@ -125,6 +141,50 @@ namespace Seasonality
             InitDurationConfigs();
             
             InitWeatherConfigs();
+            
+            InitSeasonEffectConfigs();
+        }
+        
+        private static readonly Dictionary<List<string>, float> intConfigs = new()
+        {
+            { new() { "Carry Weight", "Increase or decrease max carry weight" }, 0f },
+        };
+        
+        private static readonly Dictionary<List<string>, float> floatConfigs = new()
+        {
+            {new(){"Health Regeneration", "Multiply the amount of health regeneration from food"}, 1f},
+            {new(){"Damage", "Multiply the amount of damage inflicted on enemies"}, 1f},
+            {new(){"Speed", "Multiply the speed"}, 1f},
+            {new(){"Eitr Regeneration", "Multiply the amount of eitr regeneration from food"}, 1f},
+            {new(){"Raise Skill", "Multiply the amount experience gained for skills"}, 1f},
+            {new(){"Stamina Regeneration", "Define the rate of stamina regeneration"}, 1f}
+        };
+        private static void InitSeasonEffectConfigs()
+        {
+            foreach (Season season in Enum.GetValues(typeof(Season)))
+            {
+                Dictionary<string, ConfigEntry<float>> configs = new Dictionary<string, ConfigEntry<float>>();
+                foreach (KeyValuePair<List<string>, float> kvp in floatConfigs)
+                {
+                    string section = kvp.Key[0];
+                    string description = kvp.Key[1];
+                    float value = kvp.Value;
+                    
+                    ConfigEntry<float> config = _plugin.config($"{season} Modifiers", section, value, new ConfigDescription($"{description}", new AcceptableValueRange<float>(0f, 2f)));
+                    configs[section] = config;
+                }
+                foreach (KeyValuePair<List<string>, float> kvp in intConfigs)
+                {
+                    var section = kvp.Key[0];
+                    var description = kvp.Key[1];
+                    float value = kvp.Value;
+                    
+                    var config = _plugin.config($"{season} Modifiers", section, value, new ConfigDescription($"{description}", new AcceptableValueRange<float>(-300f, 300f)));
+                    configs[section] = config;
+                }
+                
+                effectConfigs[season] = configs;
+            }
         }
 
         private void InitWeatherConfigs()
@@ -227,7 +287,7 @@ namespace Seasonality
 
         private static ConfigEntry<Toggle> _serverConfigLocked = null!;
 
-        private ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description,
+        public ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description,
             bool synchronizedSetting = true)
         {
             ConfigDescription extendedDescription =
@@ -257,20 +317,6 @@ namespace Seasonality
             [UsedImplicitly] public string? Category = null!;
             [UsedImplicitly] public Action<ConfigEntryBase>? CustomDrawer = null!;
         }
-        
-        //
-        // class AcceptableShortcuts : AcceptableValueBase
-        // {
-        //     public AcceptableShortcuts() : base(typeof(KeyboardShortcut))
-        //     {
-        //     }
-        //
-        //     public override object Clamp(object value) => value;
-        //     public override bool IsValid(object value) => true;
-        //
-        //     public override string ToDescriptionString() =>
-        //         "# Acceptable values: " + string.Join(", ", UnityInput.Current.SupportedKeyCodes);
-        // }
 
         #endregion
     }

@@ -130,6 +130,7 @@ public class FrozenZones : MonoBehaviour
     public void FreezeWater()
     {
         if (m_frozen) return;
+
         m_surfaceRenderer.material = ZoneManager.SnowMaterial;
         m_surfaceCollider.enabled = true;
         m_waterVolume.m_useGlobalWind = false;

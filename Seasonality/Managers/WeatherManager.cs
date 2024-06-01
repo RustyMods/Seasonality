@@ -50,13 +50,27 @@ public static class WeatherManager
     {
         private static void Postfix(ref bool __result)
         {
+            if (SeasonManager.m_fading) __result = false;
             if (SeasonalityPlugin._WeatherFreezes.Value is SeasonalityPlugin.Toggle.On) return;
-            if (SeasonalityPlugin._Season.Value is not SeasonalityPlugin.Season.Winter && !SeasonManager.m_fading) return;
+            if (SeasonalityPlugin._Season.Value is not SeasonalityPlugin.Season.Winter) return;
             if (Player.m_localPlayer.GetCurrentBiome() is Heightmap.Biome.Mountain) return;
             __result = false;
         }
     }
 
+    [HarmonyPatch(typeof(SEMan), nameof(SEMan.AddStatusEffect), typeof(int), typeof(bool), typeof(int), typeof(float))]
+    private static class SEMan_PreventFreezing_Patch
+    {
+        private static bool Prefix(SEMan __instance, int nameHash)
+        {
+            if (SeasonalityPlugin._WeatherFreezes.Value is SeasonalityPlugin.Toggle.On) return true;
+            if (__instance.m_character != Player.m_localPlayer) return true;
+            if (nameHash != Character.s_statusEffectFrost) return true;
+            if (SeasonalityPlugin._Season.Value is not SeasonalityPlugin.Season.Winter) return true;
+            if (Player.m_localPlayer.GetCurrentBiome() is Heightmap.Biome.Mountain) return true;
+            return false;
+        }
+    }
     private static void UpdateRenderSettings()
     {
         RenderSettings.fog = false;
