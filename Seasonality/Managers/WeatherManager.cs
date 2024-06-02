@@ -29,9 +29,39 @@ public static class WeatherManager
         private static void Postfix(EnvMan __instance)
         {
             if (!__instance) return;
+
+            RegisterEnvironments(__instance);
+            
             if (SeasonalityPlugin._EnableWeather.Value is SeasonalityPlugin.Toggle.Off) return;
             __instance.m_environmentDuration = SeasonalityPlugin._WeatherDuration.Value * 60;
         }
+    }
+
+    private static void RegisterEnvironments(EnvMan __instance)
+    {
+        var snow = __instance.m_environments.Find(x => x.m_name == "Snow");
+        var snowStorm = __instance.m_environments.Find(x => x.m_name == "SnowStorm");
+
+        var warmSnow = snow.Clone();
+        warmSnow.m_isFreezing = false;
+        warmSnow.m_isFreezingAtNight = false;
+        warmSnow.m_name = "WarmSnow";
+
+        var warmSnowStorm = snowStorm.Clone();
+        warmSnowStorm.m_isFreezing = false;
+        warmSnowStorm.m_isFreezingAtNight = false;
+        warmSnowStorm.m_name = "WarmSnowStorm";
+
+        var nightFrost = snow.Clone();
+        nightFrost.m_isFreezing = false;
+        nightFrost.m_name = "NightFrost";
+        
+        if (!__instance.m_environments.Contains(warmSnow))
+            __instance.m_environments.Add(warmSnow);
+        if (!__instance.m_environments.Contains(warmSnowStorm))
+            __instance.m_environments.Add(warmSnowStorm);
+        if (!__instance.m_environments.Contains(nightFrost))
+            __instance.m_environments.Add(nightFrost);
     }
 
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.IsCold))]
@@ -45,39 +75,32 @@ public static class WeatherManager
         }
     }
 
-    [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.IsFreezing))]
-    private static class EnvMan_IsFreezing_Patch
-    {
-        private static void Postfix(ref bool __result)
-        {
-            if (SeasonManager.m_fading) __result = false;
-            if (SeasonalityPlugin._WeatherFreezes.Value is SeasonalityPlugin.Toggle.On) return;
-            if (SeasonalityPlugin._Season.Value is not SeasonalityPlugin.Season.Winter) return;
-            if (Player.m_localPlayer.GetCurrentBiome() is Heightmap.Biome.Mountain) return;
-            __result = false;
-        }
-    }
+    // [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.IsFreezing))]
+    // private static class EnvMan_IsFreezing_Patch
+    // {
+    //     private static void Postfix(ref bool __result)
+    //     {
+    //         if (SeasonManager.m_fading) __result = false;
+    //         if (SeasonalityPlugin._WeatherFreezes.Value is SeasonalityPlugin.Toggle.On) return;
+    //         if (SeasonalityPlugin._Season.Value is not SeasonalityPlugin.Season.Winter) return;
+    //         if (Player.m_localPlayer.GetCurrentBiome() is Heightmap.Biome.Mountain) return;
+    //         __result = false;
+    //     }
+    // }
 
-    [HarmonyPatch(typeof(SEMan), nameof(SEMan.AddStatusEffect), typeof(int), typeof(bool), typeof(int), typeof(float))]
-    private static class SEMan_PreventFreezing_Patch
-    {
-        private static bool Prefix(SEMan __instance, int nameHash)
-        {
-            if (SeasonalityPlugin._WeatherFreezes.Value is SeasonalityPlugin.Toggle.On) return true;
-            if (__instance.m_character != Player.m_localPlayer) return true;
-            if (nameHash != Character.s_statusEffectFrost) return true;
-            if (SeasonalityPlugin._Season.Value is not SeasonalityPlugin.Season.Winter) return true;
-            if (Player.m_localPlayer.GetCurrentBiome() is Heightmap.Biome.Mountain) return true;
-            return false;
-        }
-    }
-    private static void UpdateRenderSettings()
-    {
-        RenderSettings.fog = false;
-        RenderSettings.ambientIntensity = 0f;
-        RenderSettings.fogDensity = 0f;
-    }
-
+    // [HarmonyPatch(typeof(SEMan), nameof(SEMan.AddStatusEffect), typeof(int), typeof(bool), typeof(int), typeof(float))]
+    // private static class SEMan_PreventFreezing_Patch
+    // {
+    //     private static bool Prefix(SEMan __instance, int nameHash)
+    //     {
+    //         if (SeasonalityPlugin._WeatherFreezes.Value is SeasonalityPlugin.Toggle.On) return true;
+    //         if (__instance.m_character != Player.m_localPlayer) return true;
+    //         if (nameHash != Character.s_statusEffectFrost) return true;
+    //         if (SeasonalityPlugin._Season.Value is not SeasonalityPlugin.Season.Winter) return true;
+    //         if (Player.m_localPlayer.GetCurrentBiome() is Heightmap.Biome.Mountain) return true;
+    //         return false;
+    //     }
+    // }
     public static void OnWeatherDurationChange(object sender, EventArgs e)
     {
         if (sender is not ConfigEntry<int> config) return;

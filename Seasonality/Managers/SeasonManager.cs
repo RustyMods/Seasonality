@@ -272,7 +272,7 @@ public static class SeasonManager
         }
 
         private string GetSeasonName() => Localization.instance.Localize($"$season_{SeasonalityPlugin._Season.Value.ToString().ToLower()}");
-        
+
         private bool GetEffectConfig(string key, out ConfigEntry<float>? output)
         {
             output = SeasonalityPlugin.effectConfigs.TryGetValue(SeasonalityPlugin._Season.Value,
@@ -281,6 +281,7 @@ public static class SeasonManager
                 : null;
             return output != null && SeasonalityPlugin._EnableModifiers.Value is SeasonalityPlugin.Toggle.On;
         }
+
         public override void ModifyStaminaRegen(ref float staminaRegen)
         {
             if (GetEffectConfig("Stamina Regeneration", out ConfigEntry<float>? config))

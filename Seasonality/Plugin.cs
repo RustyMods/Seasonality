@@ -19,7 +19,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.3.4";
+        internal const string ModVersion = "3.3.5";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
@@ -50,8 +50,6 @@ namespace Seasonality
             float dt = Time.deltaTime;
             SeasonManager.UpdateSeason(dt);
             SeasonManager.UpdateSeasonEffects(dt);
-            GameManager.UpdateWaterLOD();
-
         }
 
         public enum Season
@@ -81,7 +79,6 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _SleepOverride = null!;
         public static ConfigEntry<float> _FadeLength = null!;
         public static ConfigEntry<Toggle> _WinterFreezes = null!;
-        public static ConfigEntry<Toggle> _WeatherFreezes = null!;
         public static ConfigEntry<Toggle> _WinterAlwaysCold = null!;
         public static ConfigEntry<Toggle> _DisplaySeason = null!;
         public static ConfigEntry<Toggle> _DisplaySeasonTimer = null!;
@@ -98,9 +95,6 @@ namespace Seasonality
         public static readonly Dictionary<Season, Dictionary<Heightmap.Biome, ConfigEntry<string>>> _WeatherConfigs = new();
         
         public static readonly Dictionary<Season, Dictionary<string, ConfigEntry<float>>> effectConfigs = new();
-
-        public static readonly Dictionary<Season, Dictionary<string, ConfigEntry<HitData.DamageModifier>>>
-            resistanceConfigs = new();
 
         #endregion
         private void InitConfigs()
@@ -125,7 +119,6 @@ namespace Seasonality
                 "Set if name of season should be displayed above or below icon");
             
             _WinterFreezes = config("4 - Winter Settings", "Frozen Water", Toggle.On, "If on, winter freezes water");
-            _WeatherFreezes = config("4 - Winter Settings", "Weather Freezes", Toggle.Off, "If off, plugin protects player from freezing except in the mountains");
             _WinterAlwaysCold = config("4 - Winter Settings", "Always Cold", Toggle.On, "If on, winter will always make player cold");
             
             _Season.SettingChanged += SeasonManager.OnSeasonConfigChange;
@@ -184,6 +177,8 @@ namespace Seasonality
                 }
                 
                 effectConfigs[season] = configs;
+                
+                
             }
         }
 
@@ -198,7 +193,7 @@ namespace Seasonality
                     int index = BiomeIndex(biome);
                     if (season is Season.Winter)
                     {
-                        configs[biome] = _plugin.config($"{season} Weather Options", $"{index} - {biome}", "Snow:1,Twilight_Snow:0.5,SnowStorm:0.1",
+                        configs[biome] = _plugin.config($"{season} Weather Options", $"{index} - {biome}", "WarmSnow:1,Twilight_Snow:0.5,WarmSnowStorm:0.1",
                             "Set weather options, [name]:[weight]");
                     }
                     else

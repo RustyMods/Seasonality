@@ -86,7 +86,8 @@ public class FrozenZones : MonoBehaviour
 
     public void Start()
     {
-        if (SeasonalityPlugin._Season.Value is SeasonalityPlugin.Season.Winter)
+        if (SeasonalityPlugin._Season.Value is SeasonalityPlugin.Season.Winter 
+            && SeasonalityPlugin._WinterFreezes.Value is SeasonalityPlugin.Toggle.On)
         {
             m_surfaceRenderer.material = ZoneManager.SnowMaterial;
             m_surfaceCollider.enabled = true;
@@ -140,6 +141,7 @@ public class FrozenZones : MonoBehaviour
     public void ThawWater()
     {
         if (!m_frozen) return;
+        
         m_surfaceRenderer.material = m_originalMaterial;
         m_surfaceCollider.enabled = false;
         m_waterVolume.m_useGlobalWind = true;
