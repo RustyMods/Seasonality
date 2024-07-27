@@ -7,7 +7,9 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using JetBrains.Annotations;
+using Seasonality.Behaviors;
 using Seasonality.Managers;
+using Seasonality.Seasons;
 using Seasonality.Textures;
 using ServerSync;
 using UnityEngine;
@@ -19,7 +21,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.3.5";
+        internal const string ModVersion = "3.3.8";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
@@ -50,6 +52,7 @@ namespace Seasonality
             float dt = Time.deltaTime;
             SeasonManager.UpdateSeason(dt);
             SeasonManager.UpdateSeasonEffects(dt);
+            MaterialReplacer.UpdateInAshlands(dt);
         }
 
         public enum Season
@@ -90,6 +93,8 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _DisplayWeatherTimer = null!;
         public static ConfigEntry<Toggle> _EnableModifiers = null!;
 
+        public static ConfigEntry<double> _LastSeasonChange = null!;
+
         public static readonly Dictionary<Season, Dictionary<DurationType, ConfigEntry<int>>> _Durations = new();
 
         public static readonly Dictionary<Season, Dictionary<Heightmap.Biome, ConfigEntry<string>>> _WeatherConfigs = new();
@@ -107,18 +112,20 @@ namespace Seasonality
             _ReplaceArmorTextures = config("2 - Settings", "Replace Armor Textures", Toggle.On, "If on, plugin modifies armor textures");
             _ReplaceCreatureTextures = config("2 - Settings", "Replace Creature Textures", Toggle.On, "If on, creature skins change with the seasons");
             _SeasonFades = config("2 - Settings", "Fade to Black", Toggle.On, "If on, plugin fades to black before season change");
-            _SleepOverride = config("2 - Settings", "Sleep Season Change", Toggle.Off,
-                "If on, seasons can only change if everyone is asleep");
+            _SleepOverride = config("2 - Settings", "Sleep Season Change", Toggle.Off, "If on, seasons can only change if everyone is asleep");
             _FadeLength = config("2 - Settings", "Fade Length (seconds)", 3f, new ConfigDescription("Set the length of fade to black", new AcceptableValueRange<float>(1f, 101f)));
             _DisplaySeason = config("2 - Settings", "Display Season", Toggle.On, "If on, season will be displayed alongside HUD Status Effects");
             _DisplaySeason.SettingChanged += SeasonManager.OnSeasonDisplayConfigChange;
             _DisplaySeasonTimer = config("2 - Settings", "Display Season Timer", Toggle.On, "If on, season timer will be displayed");
-            _EnableModifiers = config("2 - Settings", "Modifiers", Toggle.Off,
-                "If on, modifiers, as in health regeneration, carry weight etc... are enabled");
-            _DisplayType = config("2 - Settings", "Name Display", DisplayType.Above,
-                "Set if name of season should be displayed above or below icon");
+            _EnableModifiers = config("2 - Settings", "Modifiers", Toggle.Off, "If on, modifiers, as in health regeneration, carry weight etc... are enabled");
+            _DisplayType = config("2 - Settings", "Name Display", DisplayType.Above, "Set if name of season should be displayed above or below icon");
             
             _WinterFreezes = config("4 - Winter Settings", "Frozen Water", Toggle.On, "If on, winter freezes water");
+            _WinterFreezes.SettingChanged += (sender, args) =>
+            {
+                FrozenWaterLOD.UpdateInstances();
+                FrozenZones.UpdateInstances();
+            };
             _WinterAlwaysCold = config("4 - Winter Settings", "Always Cold", Toggle.On, "If on, winter will always make player cold");
             
             _Season.SettingChanged += SeasonManager.OnSeasonConfigChange;
@@ -136,6 +143,8 @@ namespace Seasonality
             InitWeatherConfigs();
             
             InitSeasonEffectConfigs();
+
+            _LastSeasonChange = config("1 - General", "Last Season Change", 0.0, "Recorded last season change, do not touch unless you want to reset timer");
         }
         
         private static readonly Dictionary<List<string>, float> intConfigs = new()
@@ -191,7 +200,7 @@ namespace Seasonality
                 {
                     if (biome is Heightmap.Biome.None or Heightmap.Biome.AshLands or Heightmap.Biome.All) continue;
                     int index = BiomeIndex(biome);
-                    if (season is Season.Winter)
+                    if (season is Season.Winter && biome != Heightmap.Biome.Mountain)
                     {
                         configs[biome] = _plugin.config($"{season} Weather Options", $"{index} - {biome}", "WarmSnow:1,Twilight_Snow:0.5,WarmSnowStorm:0.1",
                             "Set weather options, [name]:[weight]");

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using HarmonyLib;
+using Seasonality.SeasonalityPaths;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
@@ -8,6 +10,7 @@ namespace Seasonality.Seasons;
 public static class ConsoleCommands
 {
     private static readonly Dictionary<string, Terminal.ConsoleCommand> SeasonCommands = new();
+    private static readonly int MainTex = Shader.PropertyToID("_MainTex");
 
     [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
     static class TerminalInitPatch
@@ -34,13 +37,62 @@ public static class ConsoleCommands
                     }
                 ), isCheat: false, optionsFetcher: ((Terminal.ConsoleOptionsFetcher) (() => new List<string>(){"help"})));
             
+            SeasonCommands.Clear();
             ConfigCommands();
             SearchCommands();
+            // SaveCommands();
+        }
+
+        private static void SaveCommands()
+        {
+            Terminal.ConsoleCommand save = new Terminal.ConsoleCommand("seasonality_save",
+                "[prefabName] - Attempts to save texture to file", (Terminal.ConsoleEventFailable)(
+                    args =>
+                    {
+                        if (args.Length < 2) return false;
+
+                        if (!ZNetScene.instance) return false;
+
+                        GameObject prefab = ZNetScene.instance.GetPrefab(args[1]);
+                        if (!prefab) return false;
+
+                        foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
+                        {
+                            foreach (var material in renderer.materials)
+                            {
+                                if (!material.HasProperty("_MainTex")) continue;
+                                Texture texture = material.GetTexture(MainTex);
+                                if (texture == null) continue;
+                                if (texture is Texture2D tex)
+                                {
+                                    try
+                                    {
+                                        var encode = tex.EncodeToPNG();
+                                        if (!Directory.Exists(SeasonalityPaths.SeasonPaths.CustomSavePath))
+                                            Directory.CreateDirectory(SeasonPaths.CustomSavePath);
+                                        string path = SeasonPaths.CustomSavePath + Path.DirectorySeparatorChar +
+                                                      material.name.Replace("(Instance)", string.Empty) + "." +
+                                                      texture.name + ".png";
+                                        File.WriteAllBytes(path, encode);
+                                        SeasonalityLogger.LogInfo("Saved texture to disk: " + path);
+                                    }
+                                    catch
+                                    {
+                                        SeasonalityLogger.LogInfo("Failed to save texture: " + texture.name);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        return true;
+                    }));
+
+            if (SeasonCommands.ContainsKey("seasonality_save")) return;
+            SeasonCommands.Add("seasonality_save", save);
         }
 
         private static void ConfigCommands()
         {
-            SeasonCommands.Clear();
             Terminal.ConsoleCommand SeasonChange = new Terminal.ConsoleCommand("season",
                 "[season name] changes season (ex: summer, fall, winter, spring)",
                 (Terminal.ConsoleEventFailable) (args =>

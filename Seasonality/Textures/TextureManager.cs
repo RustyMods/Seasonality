@@ -22,6 +22,9 @@ public static class TextureManager
     public static readonly Dictionary<PieceDirectories, Dictionary<string, Texture?>> CustomRegisteredPieceTextures = new();
     public static readonly Dictionary<PickableDirectories, Dictionary<string, Texture?>> CustomRegisteredPickableTex = new();
     public static readonly Dictionary<ArmorDirectories, Dictionary<string, Texture?>> CustomRegisteredArmorTex = new();
+
+    public static readonly Dictionary<string, Dictionary<string, Dictionary<string, Texture?>>> RegisteredCustomTextures = new();
+
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -181,6 +184,46 @@ public static class TextureManager
         ReadPieceDirectories();
         ReadPickableDirectories();
         ReadArmorDirectories();
+        ReadCustoms();
+    }
+
+    private static void ReadCustoms()
+    {
+        if (!Directory.Exists(CustomTexPath)) Directory.CreateDirectory(CustomTexPath);
+        string[] directories = Directory.GetDirectories(CustomTexPath);
+        foreach (string dir in directories)
+        {
+            string? dirName = Path.GetFileName(dir);
+            string[] files = Directory.GetFiles(dir, "*.png");
+            if (files.Length <= 0) continue;
+            Dictionary<string, Dictionary<string, Texture?>> data = new();
+            foreach (string file in files)
+            {
+                string name = Path.GetFileName(file).Replace(".png", string.Empty);
+                string[] info = name.Split('@');
+                if (info.Length != 2) continue;
+                string material = info[0];
+                string season = info[1];
+                
+                Texture? texture = RegisterCustomTexture(file, TextureFormat.DXT1, FilterMode.Point);
+                if (texture == null) continue;
+                texture.name = name;
+
+                if (data.ContainsKey(material))
+                {
+                    data[material][season] = texture;
+                }
+                else
+                {
+                    data[material] = new Dictionary<string, Texture?>()
+                    {
+                        [season] = texture
+                    };
+                }
+                SeasonalityLogger.LogDebug($"Registered: {dirName}/{name}.png");
+            }
+            RegisteredCustomTextures[dirName] = data;
+        }
     }
     private static void GetTexture(Dictionary<string, Texture?> textureMap, Season season, string path, string type, TextureFormat textureFormat, FilterMode filterMode)
     {

@@ -69,10 +69,10 @@ public static class ClutterManager
     private static void ResetClutter()
     {
         if (!ClutterSystem.instance) return;
-        foreach (var clutter in ClutterSystem.instance.m_clutter)
+        foreach (ClutterSystem.Clutter? clutter in ClutterSystem.instance.m_clutter)
         {
             if (!clutter.m_prefab.TryGetComponent(out InstanceRenderer renderer)) continue;
-            var material = renderer.m_material;
+            Material? material = renderer.m_material;
             SetDefaultMaterial(material);
         }
         UpdateClutterSystem();
@@ -91,11 +91,11 @@ public static class ClutterManager
     private static void SetClutter()
     {
         if (!ClutterSystem.instance) return;
-        foreach (var clutter in ClutterSystem.instance.m_clutter)
+        foreach (ClutterSystem.Clutter? clutter in ClutterSystem.instance.m_clutter)
         {
-            var type = GetGrassType(clutter.m_prefab.name);
+            GrassTypes type = GetGrassType(clutter.m_prefab.name);
             if (!clutter.m_prefab.TryGetComponent(out InstanceRenderer renderer)) continue;
-            var directory = SeasonUtility.Utils.VegToDirectory(type);
+            Directories.VegDirectories directory = SeasonUtility.Utils.VegToDirectory(type);
             Material material = renderer.m_material;
             SetDefaultMaterial(material);
             if (SeasonUtility.Utils.ApplyBasedOnAvailable(directory, SeasonalityPlugin._Season.Value, material, "_MainTex"))
@@ -117,7 +117,7 @@ public static class ClutterManager
                                 break;
                         }
                         break;
-
+                    
                 }
                 
             }

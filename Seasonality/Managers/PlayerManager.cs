@@ -11,7 +11,7 @@ public static class PlayerManager
         {
             if (!__instance) return;
             if (__instance != Player.m_localPlayer) return;
-            SeasonManager.ChangeSeason();
+            SeasonManager.OnSeasonChange();
         }
     }
 }

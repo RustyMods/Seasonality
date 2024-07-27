@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using Seasonality.Behaviors;
 using Seasonality.Textures;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -25,6 +26,8 @@ public static class MaterialReplacer
     private static readonly int MossColorProp = Shader.PropertyToID("_MossColor");
     private static readonly int ColorProp = Shader.PropertyToID("_Color");
     private static readonly int BumpMap = Shader.PropertyToID("_BumpMap");
+
+    private static bool m_inAshlands;
 
     [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.Start))]
     static class ZoneSystemPatch
@@ -95,7 +98,6 @@ public static class MaterialReplacer
             if (material.HasProperty(LegsTex)) CachedTextures[normalizedName + "_legs"] = material.GetTexture(LegsTex);
         }
     }
-    
     private static void SetMainTexture(string materialName, Texture? tex)
     {
         if (!CachedMaterials.TryGetValue(materialName, out Material material)) return;
@@ -431,24 +433,60 @@ public static class MaterialReplacer
     {
         try
         {
-            switch (season)
+            if (WorldGenerator.IsAshlands(Player.m_localPlayer.transform.position.x,
+                    Player.m_localPlayer.transform.position.z))
             {
-                case Season.Spring or Season.Summer:
-                    ResetMossTextures();
-                    break;
-                case Season.Fall:
-                    if (!CachedTextures.TryGetValue("rock_heath_moss", out Texture HeathMoss)) return;
-                    SetMossTextures(HeathMoss, Color.white);
-                    break;
-                case Season.Winter:
-                    SetMossTextures(TextureManager.Pillar_Snow, Color.white);
-                    break;
+                ResetMossTextures();
+                m_inAshlands = true;
+            }
+            else
+            {
+                switch (season)
+                {
+                    case Season.Spring or Season.Summer:
+                        ResetMossTextures();
+                        break;
+                    case Season.Fall:
+                        if (!CachedTextures.TryGetValue("rock_heath_moss", out Texture HeathMoss)) return;
+                        SetMossTextures(HeathMoss, Color.white);
+                        break;
+                    case Season.Winter:
+                        if (TextureManager.Pillar_Snow == null) break;
+                        SetMossTextures(TextureManager.Pillar_Snow, Color.white);
+                        break;
+                }
             }
         }
         catch
         {
             SeasonalityLogger.LogDebug("Failed to modify moss materials");
         }
+    }
+
+    private static bool m_firstCheck = true;
+    private static float m_ashlandTimer;
+    public static void UpdateInAshlands(float dt)
+    {
+        if (!Player.m_localPlayer) return;
+        m_ashlandTimer += dt;
+        if (m_ashlandTimer < 5f) return;
+        m_ashlandTimer = 0.0f;
+
+        Vector3 position = Player.m_localPlayer.transform.position;
+        bool inAshlands = WorldGenerator.IsAshlands(position.x, position.z);
+        if (m_inAshlands == inAshlands && !m_firstCheck) return;
+        m_inAshlands = inAshlands;
+        if (m_firstCheck) m_firstCheck = false;
+        if (m_inAshlands)
+        {
+            ResetMossTextures();
+        }
+        else
+        {
+            ModifyMossMaterials(_Season.Value);
+        }
+        FrozenZones.UpdateInstances();
+        FrozenWaterLOD.UpdateInstances();
     }
 
     private static void SetMossTextures(Texture texture, Color color)

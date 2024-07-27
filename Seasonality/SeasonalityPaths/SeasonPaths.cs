@@ -11,4 +11,6 @@ public static class SeasonPaths
     public static readonly string PieceTexPath = folderPath + Path.DirectorySeparatorChar + "Pieces";
     public static readonly string PickableTexturePath = folderPath + Path.DirectorySeparatorChar + "Pickables";
     public static readonly string ArmorTexPath = folderPath + Path.DirectorySeparatorChar + "Armors";
+    public static readonly string CustomTexPath = folderPath + Path.DirectorySeparatorChar + "Customs";
+    public static readonly string CustomSavePath = folderPath + Path.DirectorySeparatorChar + "Data";
 }

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using Seasonality.Behaviors;
 using Seasonality.DataTypes;
+using Seasonality.Textures;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Seasons.MaterialReplacer;
@@ -33,14 +35,13 @@ public static class CacheResources
         private static void Postfix(ZNetScene __instance)
         {
             if (!__instance) return;
-            List<GameObject>? prefabs = __instance.m_prefabs;
-            foreach (GameObject? prefab in prefabs)
+            foreach (GameObject? prefab in __instance.m_prefabs)
             {
                 VegetationType type = SeasonUtility.Utils.GetVegetationType(prefab.name);
                 if (type is VegetationType.None) continue;
                 CacheBaseMaterials(prefab);
             }
-            
+            RegisterCustomSeasonalPrefabs(__instance);
         }
         private static List<Material[]> CreateBaseMaterials(GameObject prefab, string specifier, bool contains = true)
         {
@@ -133,6 +134,17 @@ public static class CacheResources
             }
         }
     }
+
+    public static void RegisterCustomSeasonalPrefabs(ZNetScene __instance)
+    {
+        foreach (var kvp in TextureManager.RegisteredCustomTextures)
+        {
+            GameObject prefab = __instance.GetPrefab(kvp.Key);
+            if (!prefab) continue;
+            prefab.AddComponent<CustomSeason>();
+        }
+    }
+    
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.CreateObject))]
     static class GetPrefabPatch
     {

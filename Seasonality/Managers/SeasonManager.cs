@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using BepInEx.Configuration;
 using HarmonyLib;
+using Seasonality.Behaviors;
 using Seasonality.Seasons;
 using Seasonality.Textures;
 using UnityEngine;
@@ -12,8 +13,14 @@ namespace Seasonality.Managers;
 
 public static class SeasonManager
 {
-    public static bool m_fading;
+    private static bool m_fading;
     private static readonly int se_seasons = "SE_Seasons".GetStableHashCode();
+    private static SeasonalityPlugin.Season m_lastSeason;
+    private static float m_seasonTimer;
+    private static readonly float m_threshold = 0.5f;
+    private static bool m_sleepOverride;
+    private static float m_seasonEffectTimer;
+
     private static IEnumerator TriggerFade()
     {
         float duration = 0f;
@@ -29,7 +36,7 @@ public static class SeasonManager
             yield return new WaitForFixedUpdate(); // 50 times per second
         }
 
-        Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"$msg_{GetNextSeason().ToString().ToLower()}");
+        Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"$msg_{GetNextSeason(SeasonalityPlugin._Season.Value).ToString().ToLower()}");
         yield return new WaitForSeconds(1);
         while (duration > 0)
         {
@@ -41,9 +48,6 @@ public static class SeasonManager
 
         m_fading = false;
     }
-
-    private static float m_seasonEffectTimer;
-    
     public static void UpdateSeasonEffects(float dt)
     {
         if (!Player.m_localPlayer) return;
@@ -52,7 +56,7 @@ public static class SeasonManager
         if (m_seasonEffectTimer < 1f) return;
         m_seasonEffectTimer = 0.0f;
         
-        var man = Player.m_localPlayer.GetSEMan();
+        SEMan? man = Player.m_localPlayer.GetSEMan();
         if (!man.HaveStatusEffect(se_seasons))
         {
             man.AddStatusEffect(se_seasons);
@@ -63,56 +67,55 @@ public static class SeasonManager
             man.AddStatusEffect("SE_Weatherman".GetStableHashCode());
         }
     }
-    
     public static void OnSeasonConfigChange(object sender, EventArgs e)
     {
         if (sender is not ConfigEntry<SeasonalityPlugin.Season> config) return;
-        ChangeSeason();
+        OnSeasonChange();
     }
-    
-    public static void ChangeSeason()
+    public static void OnSeasonChange()
     {
+        if (!EnvMan.instance || !ZNet.instance || !Player.m_localPlayer) return;
         ClutterManager.UpdateClutter();
         TerrainManager.UpdateTerrain();
         GlobalKeyManager.UpdateSeasonalKey();
         MaterialReplacer.ModifyCachedMaterials(SeasonalityPlugin._Season.Value);
+        FrozenZones.UpdateInstances();
+        FrozenWaterLOD.UpdateInstances();
+        SeasonalLocation.UpdateInstances();
+        SeasonalBossStone.UpdateInstances();
+        CustomSeason.UpdateInstances();
         --EnvMan.instance.m_environmentPeriod;
+        m_lastSeason = SeasonalityPlugin._Season.Value;
+        SetLastSeasonChange();
     }
-
     private static bool ShouldCount() => GetTotalSeconds() > 0;
-
-    private static SeasonalityPlugin.Season GetNextSeason()
+    private static SeasonalityPlugin.Season GetNextSeason(SeasonalityPlugin.Season season)
     {
-        // int currentSeason = (int)SeasonalityPlugin._Season.Value;
-        // if (Enum.IsDefined(typeof(SeasonalityPlugin.Season), currentSeason + 1))
-        // {
-        //     return (SeasonalityPlugin.Season)currentSeason + 1;
-        // }
-        // return 0;
-        
-        return SeasonalityPlugin._Season.Value switch
-        {
-            SeasonalityPlugin.Season.Spring => SeasonalityPlugin.Season.Summer,
-            SeasonalityPlugin.Season.Summer => SeasonalityPlugin.Season.Fall,
-            SeasonalityPlugin.Season.Fall => SeasonalityPlugin.Season.Winter,
-            SeasonalityPlugin.Season.Winter => SeasonalityPlugin.Season.Spring,
-            _ => SeasonalityPlugin.Season.Spring
-        };
-    }
+        int currentSeason = (int)season;
+        SeasonalityPlugin.Season nextSeason;
 
-    private static float m_seasonTimer;
-    private static readonly float m_threshold = 0.5f;
-    private static bool m_sleepOverride;
+        if (Enum.IsDefined(typeof(SeasonalityPlugin.Season), currentSeason + 1))
+            nextSeason = (SeasonalityPlugin.Season)currentSeason + 1;
+        else 
+            nextSeason = 0;
+
+        if (m_lastSeason == nextSeason)
+        {
+            nextSeason = GetNextSeason(nextSeason);
+        }
+        
+        return nextSeason;
+    }
     public static void UpdateSeason(float dt)
     {
         if (!ZNet.instance || !EnvMan.instance) return;
         if (!ShouldCount()) return;
 
         m_seasonTimer += dt;
-        if (m_seasonTimer < m_threshold) return;
+        if (m_seasonTimer < 1f) return;
         m_seasonTimer = 0.0f;
-        double timer = GetSeasonFraction();
-
+        
+        int timer = (int)GetTime();
         if (SeasonalityPlugin._SleepOverride.Value is SeasonalityPlugin.Toggle.On)
         {
             if (timer > m_threshold) return;
@@ -123,11 +126,12 @@ public static class SeasonManager
         CheckSeasonFade(timer);
         ChangeSeason(timer);
     }
-
     private static void ChangeSeason(double timer)
     {
-        if (timer > m_threshold || !ZNet.instance.IsServer()) return;
-        SeasonalityPlugin._Season.Value = GetNextSeason();
+        if (timer != 0 || !ZNet.instance.IsServer()) return;
+        SeasonalityPlugin.Season nextSeason = GetNextSeason(SeasonalityPlugin._Season.Value);
+        SeasonalityPlugin._Season.Value = nextSeason;
+        m_lastSeason = nextSeason;
     }
 
     private static void CheckSeasonFade(double timer)
@@ -135,25 +139,6 @@ public static class SeasonManager
         if (SeasonalityPlugin._SeasonFades.Value is SeasonalityPlugin.Toggle.Off) return;
         if (timer - m_threshold > SeasonalityPlugin._FadeLength.Value) return;
         if (!m_fading && Player.m_localPlayer) SeasonalityPlugin._plugin.StartCoroutine(TriggerFade());
-    }
-
-    [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.SkipToMorning))]
-    private static class SleepOverride_SeasonChange
-    {
-        private static void Postfix()
-        {
-            if (m_sleepOverride && ZNet.instance.IsServer())
-            {
-                SeasonalityPlugin._Season.Value = GetNextSeason();
-                m_sleepOverride = false;
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]
-    private static class ObjectDB_Awake_Patch
-    {
-        private static void Postfix() => RegisterSeasonSE();
     }
     
     private static Sprite? GetIcon()
@@ -167,7 +152,6 @@ public static class SeasonManager
             _ => SpriteManager.ValknutIcon
         };
     }
-
     private static void RegisterSeasonSE()
     {
         if (!ObjectDB.instance || !ZNetScene.instance) return;
@@ -178,7 +162,6 @@ public static class SeasonManager
         if (ObjectDB.instance.m_StatusEffects.Contains(effect)) return;
         ObjectDB.instance.m_StatusEffects.Add(effect);
     }
-
     private static double GetTotalSeconds()
     {
         if (!SeasonalityPlugin._Durations.TryGetValue(SeasonalityPlugin._Season.Value, out Dictionary<SeasonalityPlugin.DurationType, ConfigEntry<int>> configs)) return 0;
@@ -187,10 +170,6 @@ public static class SeasonManager
         double minutes = configs[SeasonalityPlugin.DurationType.Minutes].Value * 60;
         return days + hours + minutes;
     }
-    
-    private static double GetSeasonFraction() => GetTotalSeconds() - (EnvMan.instance.m_totalSeconds % GetTotalSeconds());
-    
-
     public static void OnSeasonDisplayConfigChange(object sender, EventArgs e)
     {
         if (sender is not ConfigEntry<SeasonalityPlugin.Toggle> config) return;
@@ -198,11 +177,38 @@ public static class SeasonManager
         Player.m_localPlayer.GetSEMan().RemoveStatusEffect(se_seasons);
         Player.m_localPlayer.GetSEMan().AddStatusEffect(se_seasons);
     }
+    private static double GetTime()
+    {
+        TimeSpan span = TimeSpan.FromSeconds(GetTimeDifference());
+        return span.TotalSeconds;
+    }
+
+    private static void SetLastSeasonChange()
+    {
+        if (!ZNet.instance || !ZNet.instance.IsServer()) return;
+        SeasonalityPlugin._LastSeasonChange.Value = ZNet.instance.GetTimeSeconds();
+    }
     
+    private static double GetTimeDifference()
+    {
+        if (!ZNet.instance) return 0.0;
+        if (ZNet.instance.IsServer())
+        {
+            if (SeasonalityPlugin._LastSeasonChange.Value > ZNet.instance.GetTimeSeconds())
+            {
+                SeasonalityPlugin._LastSeasonChange.Value = ZNet.instance.GetTimeSeconds();
+            }
+        }
+        double timeElapsed = ZNet.instance.GetTimeSeconds() - SeasonalityPlugin._LastSeasonChange.Value;
+        if (timeElapsed < 0.0) timeElapsed = 0.0;
+        double difference = GetTotalSeconds() - timeElapsed;
+        if (difference < 0.0) difference = 0.0;
+        return difference;
+    }
     private static string GetSeasonTime()
     {
         if (!ShouldCount()) return "";
-        TimeSpan span = TimeSpan.FromSeconds(GetSeasonFraction());
+        TimeSpan span = TimeSpan.FromSeconds(GetTimeDifference());
         int days = span.Days;
         int hour = span.Hours;
         int minutes = span.Minutes;
@@ -213,6 +219,30 @@ public static class SeasonManager
         return days > 0 ? $"{days}:{hour:D2}:{minutes:D2}:{seconds:D2}" : hour > 0 ? $"{hour}:{minutes:D2}:{seconds:D2}" : minutes > 0 ? $"{minutes}:{seconds:D2}" : $"{seconds}";
     }
 
+    [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.SkipToMorning))]
+    private static class SleepOverride_SeasonChange
+    {
+        private static void Postfix()
+        {
+            if (!m_sleepOverride || !ZNet.instance.IsServer()) return;
+            SeasonalityPlugin._Season.Value = GetNextSeason(SeasonalityPlugin._Season.Value);
+            m_sleepOverride = false;
+        }
+
+        private static void Prefix()
+        {
+            if (SeasonalityPlugin._SleepOverride.Value is SeasonalityPlugin.Toggle.On) return;
+            if ((int)GetTime() >= 900) return;
+            SeasonalityPlugin._Season.Value = GetNextSeason(SeasonalityPlugin._Season.Value);
+        }
+    }
+
+    [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]
+    private static class ObjectDB_Awake_Patch
+    {
+        private static void Postfix() => RegisterSeasonSE();
+    }
+    
     public class SE_Season : StatusEffect
     {
         public float m_updateTimer;
@@ -237,7 +267,7 @@ public static class SeasonManager
             builder.Append(GetToolTip("Carry Weight", "$se_max_carryweight"));
             builder.Append(GetToolTip("Health Regeneration", "$se_healthregen"));
             builder.Append(GetToolTip("Damage", "$se_damage"));
-            builder.Append(GetToolTip("Speed", "$se_item_movement_modifier"));
+            builder.Append(GetToolTip("Speed", "$item_movement_modifier"));
             builder.Append(GetToolTip("Eitr Regeneration", "$se_eitrregen"));
             builder.Append(GetToolTip("Raise Skill", "$se_skill_modifier"));
             builder.Append(GetToolTip("Stamina Regeneration", "$se_staminaregen"));

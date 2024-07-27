@@ -113,9 +113,6 @@
         <Reference Include="UnityEngine.PhysicsModule">
             <HintPath>$(CorlibPath)\UnityEngine.PhysicsModule.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.TextRenderingModule">
-            <HintPath>$(CorlibPath)\UnityEngine.TextRenderingModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.UI">
             <HintPath>$(CorlibPath)\UnityEngine.UI.dll</HintPath>
         </Reference>
@@ -127,6 +124,11 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Behaviors\CustomSeason.cs" />
+        <Compile Include="Behaviors\FrozenWaterLOD.cs" />
+        <Compile Include="Behaviors\FrozenZones.cs" />
+        <Compile Include="Behaviors\SeasonalBossStone.cs" />
+        <Compile Include="Behaviors\SeasonalLocation.cs" />
         <Compile Include="DataTypes\GrassTypes.cs" />
         <Compile Include="DataTypes\VegetationType.cs" />
         <Compile Include="Managers\ClutterManager.cs" />
