@@ -20,6 +20,7 @@ public static class ClutterManager
         {
             if (!__instance) return;
             CacheTextures(__instance);
+            // if (SeasonalityPlugin._ReplaceGrassTextures.Value is SeasonalityPlugin.Toggle.On) SetClutter();
             SetClutter();
         }
     }
@@ -63,10 +64,11 @@ public static class ClutterManager
     public static void UpdateClutter()
     {
         if (!ClutterSystem.instance || SystemInfo.graphicsDeviceType is GraphicsDeviceType.Null) return;
+        // if (SeasonalityPlugin._ReplaceGrassTextures.Value is SeasonalityPlugin.Toggle.Off) return;
         SetClutter();
     }
 
-    private static void ResetClutter()
+    public static void ResetClutter()
     {
         if (!ClutterSystem.instance) return;
         foreach (ClutterSystem.Clutter? clutter in ClutterSystem.instance.m_clutter)

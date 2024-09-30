@@ -2,10 +2,11 @@
 using System.IO;
 using HarmonyLib;
 using Seasonality.SeasonalityPaths;
+using Seasonality.Seasons;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 
-namespace Seasonality.Seasons;
+namespace Seasonality.SeasonUtility;
 
 public static class ConsoleCommands
 {
@@ -20,26 +21,46 @@ public static class ConsoleCommands
             Terminal.ConsoleCommand Help = new Terminal.ConsoleCommand("seasonality", "Shows a list of console commands for seasonality", (Terminal.ConsoleEventFailable) (args =>
                     {
                         if (args.Length < 2) return false;
+
+                        switch (args[1])
+                        {
+                            case "help":
+                                List<string> commandList = new List<string>();
+                                foreach (KeyValuePair<string, Terminal.ConsoleCommand> command in SeasonCommands)
+                                {
+                                    commandList.Add(command.Value.Command + " - " + command.Value.Description);
+                                }
+
+                                commandList.Sort();
+
+                                foreach (string command in commandList)
+                                {
+                                    SeasonalityLogger.LogInfo(command);
+                                }
+                                
+                                SeasonalityLogger.LogInfo("reload - force reload materials");
+                                SeasonalityLogger.LogInfo("list_weather - list available weather names");
+                                break;
+                            case "reload":
+                                MaterialReplacer.ModifyCachedMaterials(_Season.Value);
+                                break;
+                            case "list_weather":
+                                if (!EnvMan.instance) return false;
+                                foreach (var env in EnvMan.instance.m_environments)
+                                {
+                                    SeasonalityLogger.LogInfo(env.m_name);
+                                }
+                                break;
+                        }
                         
-                        List<string> commandList = new List<string>();
-                        foreach (KeyValuePair<string, Terminal.ConsoleCommand> command in SeasonCommands)
-                        {
-                            commandList.Add(command.Value.Command + " - " + command.Value.Description);
-                        }
 
-                        commandList.Sort();
-
-                        foreach (string command in commandList)
-                        {
-                            SeasonalityLogger.LogInfo(command);
-                        }
                         return true;
                     }
-                ), isCheat: false, optionsFetcher: ((Terminal.ConsoleOptionsFetcher) (() => new List<string>(){"help"})));
+                ), isCheat: false, optionsFetcher: ((Terminal.ConsoleOptionsFetcher) (() => new List<string>(){"help", "reload"})));
             
             SeasonCommands.Clear();
             ConfigCommands();
-            SearchCommands();
+            // SearchCommands();
             // SaveCommands();
         }
 
@@ -115,137 +136,139 @@ public static class ConsoleCommands
                     };
                     return seasons;
                 })), onlyAdmin: true);
-            if (!SeasonCommands.ContainsKey("season change")) SeasonCommands.Add("season change", SeasonChange);
+            SeasonCommands[SeasonChange.Command] = SeasonChange;
+            // if (!SeasonCommands.ContainsKey("season change")) SeasonCommands.Add("season change", SeasonChange);
 
-            Terminal.ConsoleCommand LogCacheTextures = new("seasonality_textures", "", args =>
-            {
-                SeasonalityLogger.LogInfo("All cached textures:");
-                foreach (var kvp in MaterialReplacer.CachedTextures)
-                {
-                    if (!kvp.Value)
-                    {
-                        SeasonalityLogger.LogWarning("Failed to get value of " + kvp.Key);
-                        continue;
-                    }
-                    SeasonalityLogger.LogInfo(kvp.Key + ": " + kvp.Value.name);
-                }
-            });
+            // Terminal.ConsoleCommand LogCacheTextures = new("seasonality_textures", "", args =>
+            // {
+            //     SeasonalityLogger.LogInfo("All cached textures:");
+            //     foreach (var kvp in MaterialReplacer.CachedTextures)
+            //     {
+            //         if (!kvp.Value)
+            //         {
+            //             SeasonalityLogger.LogWarning("Failed to get value of " + kvp.Key);
+            //             continue;
+            //         }
+            //         SeasonalityLogger.LogInfo(kvp.Key + ": " + kvp.Value.name);
+            //     }
+            // });
         }
 
         private static void SearchCommands()
         {
-            Terminal.ConsoleCommand SearchCachedMaterials = new("search_materials", "", (Terminal.ConsoleEventFailable)(
-                args =>
-                {
-                    if (args.Length < 2) return false;
-                    SeasonalityLogger.LogInfo("Material search results: ");
-                    foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CachedMaterials)
-                    {
-                        if (kvp.Key.Contains(args[1]) || kvp.Key.StartsWith(args[1]) || kvp.Key.EndsWith(args[1]))
-                        {
-                            SeasonalityLogger.LogInfo(kvp.Key + " = " + kvp.Value.name);
-                        }
-                    }
-                    return true;
-                }), isSecret: true);
+            // Terminal.ConsoleCommand SearchCachedMaterials = new("search_materials", "", (Terminal.ConsoleEventFailable)(
+            //     args =>
+            //     {
+            //         if (args.Length < 2) return false;
+            //         SeasonalityLogger.LogInfo("Material search results: ");
+            //         foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CachedMaterials)
+            //         {
+            //             if (kvp.Key.Contains(args[1]) || kvp.Key.StartsWith(args[1]) || kvp.Key.EndsWith(args[1]))
+            //             {
+            //                 SeasonalityLogger.LogInfo(kvp.Key + " = " + kvp.Value.name);
+            //             }
+            //         }
+            //         return true;
+            //     }), isSecret: true);
+            //
+            // Terminal.ConsoleCommand SearchCachedTextures = new("search_textures", "", (Terminal.ConsoleEventFailable)(
+            //     args =>
+            //     {
+            //         if (args.Length < 2) return false;
+            //         SeasonalityLogger.LogInfo("Texture search results: ");
+            //         foreach (KeyValuePair<string, Texture> kvp in MaterialReplacer.CachedTextures)
+            //         {
+            //             if (kvp.Key.Contains(args[1]) || kvp.Key.StartsWith(args[1]) || kvp.Key.EndsWith(args[1]))
+            //             {
+            //                 SeasonalityLogger.LogInfo($"{kvp.Key} = {kvp.Value}");
+            //             }
+            //         }
+            //         return true;
+            //     }),isSecret:true);
+            //
+            // Terminal.ConsoleCommand PrintTextureDetails = new("print_texture_details", "", (Terminal.ConsoleEventFailable)(args =>
+            // {
+            //     if (args.Length < 2) return false;
+            //     SeasonalityLogger.LogInfo("Cached texture details: ");
+            //     foreach (var kvp in MaterialReplacer.CachedTextures)
+            //     {
+            //         if (kvp.Key.Contains(args[1]))
+            //         {
+            //             SeasonalityLogger.LogInfo("****** name : " + kvp.Value.name);
+            //             SeasonalityLogger.LogInfo("filter mode :" + kvp.Value.filterMode);
+            //             SeasonalityLogger.LogInfo("aniso level : " + kvp.Value.anisoLevel);
+            //             SeasonalityLogger.LogInfo("graphic format : " + kvp.Value.graphicsFormat);
+            //             SeasonalityLogger.LogInfo("mip map count : " + kvp.Value.mipmapCount);
+            //             SeasonalityLogger.LogInfo("mip map bias : " + kvp.Value.mipMapBias);
+            //             SeasonalityLogger.LogInfo("wrap mode : " + kvp.Value.wrapMode);
+            //             SeasonalityLogger.LogInfo("dimensions : " + kvp.Value.dimension);
+            //             SeasonalityLogger.LogInfo(" ");
+            //         }
+            //     }
+            //     return true;
+            // }),isSecret:true);
+            //
+            // Terminal.ConsoleCommand SearchCustomMaterials = new("search_custom_materials", "", (Terminal.ConsoleEventFailable)(
+            //     args =>
+            //     {
+            //         if (args.Length < 2)
+            //         {
+            //             foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CustomMaterials)
+            //             {
+            //                 SeasonalityLogger.LogInfo(kvp.Key + " = " + kvp.Value);
+            //             }
+            //         }
+            //         else
+            //         {
+            //             SeasonalityLogger.LogInfo("Custom material search results:");
+            //
+            //             foreach (var kvp in MaterialReplacer.CustomMaterials)
+            //             {
+            //                 if (kvp.Key.Contains(args[1]) || kvp.Key.StartsWith(args[1]) || kvp.Key.EndsWith(args[1]))
+            //                 {
+            //                     SeasonalityLogger.LogInfo($"{kvp.Key} = {kvp.Value}");
+            //                 }
+            //             }
+            //         }
+            //         return true;
+            //     }),isSecret:true);
+            //
+            // Terminal.ConsoleCommand SearchShaders = new("search_shaders", "", (Terminal.ConsoleEventFailable)(args =>
+            // {
+            //     SeasonalityLogger.LogInfo("Shader search results: ");
+            //     if (args.Length < 2)
+            //     {
+            //         foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CachedMaterials)
+            //         {
+            //             if (!kvp.Value) continue;
+            //             SeasonalityLogger.LogInfo(kvp.Value.shader.name);
+            //         }
+            //     };
+            //     foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CachedMaterials)
+            //     {
+            //         if (!kvp.Value) continue;
+            //         Shader? shader = kvp.Value.shader;
+            //         if (!shader) continue;
+            //         if (shader.name.Contains(args[1]) || shader.name.StartsWith(args[1]) ||
+            //             shader.name.EndsWith(args[1]))
+            //         {
+            //             SeasonalityLogger.LogInfo($"{kvp.Key} = {kvp.Value} = {shader.name}");
+            //         }
+            //     }
+            //     
+            //     return true;
+            // }),isSecret:true);
 
-            Terminal.ConsoleCommand SearchCachedTextures = new("search_textures", "", (Terminal.ConsoleEventFailable)(
-                args =>
-                {
-                    if (args.Length < 2) return false;
-                    SeasonalityLogger.LogInfo("Texture search results: ");
-                    foreach (KeyValuePair<string, Texture> kvp in MaterialReplacer.CachedTextures)
-                    {
-                        if (kvp.Key.Contains(args[1]) || kvp.Key.StartsWith(args[1]) || kvp.Key.EndsWith(args[1]))
-                        {
-                            SeasonalityLogger.LogInfo($"{kvp.Key} = {kvp.Value}");
-                        }
-                    }
-                    return true;
-                }),isSecret:true);
 
-            Terminal.ConsoleCommand PrintTextureDetails = new("print_texture_details", "", (Terminal.ConsoleEventFailable)(args =>
-            {
-                if (args.Length < 2) return false;
-                SeasonalityLogger.LogInfo("Cached texture details: ");
-                foreach (var kvp in MaterialReplacer.CachedTextures)
-                {
-                    if (kvp.Key.Contains(args[1]))
-                    {
-                        SeasonalityLogger.LogInfo("****** name : " + kvp.Value.name);
-                        SeasonalityLogger.LogInfo("filter mode :" + kvp.Value.filterMode);
-                        SeasonalityLogger.LogInfo("aniso level : " + kvp.Value.anisoLevel);
-                        SeasonalityLogger.LogInfo("graphic format : " + kvp.Value.graphicsFormat);
-                        SeasonalityLogger.LogInfo("mip map count : " + kvp.Value.mipmapCount);
-                        SeasonalityLogger.LogInfo("mip map bias : " + kvp.Value.mipMapBias);
-                        SeasonalityLogger.LogInfo("wrap mode : " + kvp.Value.wrapMode);
-                        SeasonalityLogger.LogInfo("dimensions : " + kvp.Value.dimension);
-                        SeasonalityLogger.LogInfo(" ");
-                    }
-                }
-                return true;
-            }),isSecret:true);
-            
-            Terminal.ConsoleCommand SearchCustomMaterials = new("search_custom_materials", "", (Terminal.ConsoleEventFailable)(
-                args =>
-                {
-                    if (args.Length < 2)
-                    {
-                        foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CustomMaterials)
-                        {
-                            SeasonalityLogger.LogInfo(kvp.Key + " = " + kvp.Value);
-                        }
-                    }
-                    else
-                    {
-                        SeasonalityLogger.LogInfo("Custom material search results:");
-
-                        foreach (var kvp in MaterialReplacer.CustomMaterials)
-                        {
-                            if (kvp.Key.Contains(args[1]) || kvp.Key.StartsWith(args[1]) || kvp.Key.EndsWith(args[1]))
-                            {
-                                SeasonalityLogger.LogInfo($"{kvp.Key} = {kvp.Value}");
-                            }
-                        }
-                    }
-                    return true;
-                }),isSecret:true);
-
-            Terminal.ConsoleCommand SearchShaders = new("search_shaders", "", (Terminal.ConsoleEventFailable)(args =>
-            {
-                SeasonalityLogger.LogInfo("Shader search results: ");
-                if (args.Length < 2)
-                {
-                    foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CachedMaterials)
-                    {
-                        if (!kvp.Value) continue;
-                        SeasonalityLogger.LogInfo(kvp.Value.shader.name);
-                    }
-                };
-                foreach (KeyValuePair<string, Material> kvp in MaterialReplacer.CachedMaterials)
-                {
-                    if (!kvp.Value) continue;
-                    Shader? shader = kvp.Value.shader;
-                    if (!shader) continue;
-                    if (shader.name.Contains(args[1]) || shader.name.StartsWith(args[1]) ||
-                        shader.name.EndsWith(args[1]))
-                    {
-                        SeasonalityLogger.LogInfo($"{kvp.Key} = {kvp.Value} = {shader.name}");
-                    }
-                }
-                
-                return true;
-            }),isSecret:true);
-
-
-            Terminal.ConsoleCommand ListWeathers = new("list_weathers", "Lists all available weathers", args =>
-            {
-                if (!EnvMan.instance) return;
-                foreach (var env in EnvMan.instance.m_environments)
-                {
-                    SeasonalityPlugin.SeasonalityLogger.LogInfo(env.m_name);
-                }
-            });
+            // Terminal.ConsoleCommand ListWeathers = new("list_weathers", "Lists all available weathers", args =>
+            // {
+            //     if (!EnvMan.instance) return;
+            //     foreach (var env in EnvMan.instance.m_environments)
+            //     {
+            //         SeasonalityLogger.LogInfo(env.m_name);
+            //     }
+            // });
+            // SeasonCommands[ListWeathers.Command] = ListWeathers;
         }
     }
 }

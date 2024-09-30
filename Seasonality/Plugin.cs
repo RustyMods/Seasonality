@@ -21,7 +21,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.3.8";
+        internal const string ModVersion = "3.4.0";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
@@ -29,7 +29,7 @@ namespace Seasonality
         internal static string ConnectionError = "";
         private readonly Harmony _harmony = new(ModGUID);
         public static readonly ManualLogSource SeasonalityLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
-        public static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
+        private static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
         public static SeasonalityPlugin _plugin = null!;
             
         public enum Toggle { On = 1, Off = 0 }
@@ -50,7 +50,8 @@ namespace Seasonality
         public void Update()
         {
             float dt = Time.deltaTime;
-            SeasonManager.UpdateSeason(dt);
+            // SeasonManager.UpdateSeason(dt);
+            SeasonTimer.CheckSeasonTransition(dt);
             SeasonManager.UpdateSeasonEffects(dt);
             MaterialReplacer.UpdateInAshlands(dt);
         }
@@ -78,6 +79,8 @@ namespace Seasonality
 
         public static ConfigEntry<Toggle> _ReplaceArmorTextures = null!;
         public static ConfigEntry<Toggle> _ReplaceCreatureTextures = null!;
+        // public static ConfigEntry<Toggle> _ReplaceGrassTextures = null!;
+
         public static ConfigEntry<Toggle> _SeasonFades = null!;
         public static ConfigEntry<Toggle> _SleepOverride = null!;
         public static ConfigEntry<float> _FadeLength = null!;
@@ -93,7 +96,7 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _DisplayWeatherTimer = null!;
         public static ConfigEntry<Toggle> _EnableModifiers = null!;
 
-        public static ConfigEntry<double> _LastSeasonChange = null!;
+        // public static ConfigEntry<double> _LastSeasonChange = null!;
 
         public static readonly Dictionary<Season, Dictionary<DurationType, ConfigEntry<int>>> _Durations = new();
 
@@ -111,8 +114,19 @@ namespace Seasonality
             
             _ReplaceArmorTextures = config("2 - Settings", "Replace Armor Textures", Toggle.On, "If on, plugin modifies armor textures");
             _ReplaceCreatureTextures = config("2 - Settings", "Replace Creature Textures", Toggle.On, "If on, creature skins change with the seasons");
+            // _ReplaceGrassTextures = config("2 - Settings", "Replace Grass Textures", Toggle.On, "If on, grass change with the seasons");
+            // _ReplaceGrassTextures.SettingChanged += (sender, args) =>
+            // {
+            //     if (_ReplaceGrassTextures.Value is Toggle.Off) ClutterManager.ResetClutter();
+            //     else ClutterManager.UpdateClutter();
+            // };
+            //
             _SeasonFades = config("2 - Settings", "Fade to Black", Toggle.On, "If on, plugin fades to black before season change");
             _SleepOverride = config("2 - Settings", "Sleep Season Change", Toggle.Off, "If on, seasons can only change if everyone is asleep");
+            _SleepOverride.SettingChanged += (sender, args) =>
+            {
+                if (_SleepOverride.Value is Toggle.Off) SeasonTimer.m_sleepOverride = false;
+            };
             _FadeLength = config("2 - Settings", "Fade Length (seconds)", 3f, new ConfigDescription("Set the length of fade to black", new AcceptableValueRange<float>(1f, 101f)));
             _DisplaySeason = config("2 - Settings", "Display Season", Toggle.On, "If on, season will be displayed alongside HUD Status Effects");
             _DisplaySeason.SettingChanged += SeasonManager.OnSeasonDisplayConfigChange;
@@ -144,7 +158,7 @@ namespace Seasonality
             
             InitSeasonEffectConfigs();
 
-            _LastSeasonChange = config("1 - General", "Last Season Change", 0.0, "Recorded last season change, do not touch unless you want to reset timer");
+            // _LastSeasonChange = config("1 - General", "Last Season Change", 0.0, "Recorded last season change, do not touch unless you want to reset timer");
         }
         
         private static readonly Dictionary<List<string>, float> intConfigs = new()

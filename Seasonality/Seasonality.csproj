@@ -136,8 +136,8 @@
         <Compile Include="Managers\GlobalKeyManager.cs" />
         <Compile Include="Managers\HudManager.cs" />
         <Compile Include="Managers\LocalizationManager.cs" />
-        <Compile Include="Managers\PlayerManager.cs" />
         <Compile Include="Managers\SeasonManager.cs" />
+        <Compile Include="Managers\SeasonTimer.cs" />
         <Compile Include="Managers\TerrainManager.cs" />
         <Compile Include="Managers\WeatherManager.cs" />
         <Compile Include="Managers\ZoneManager.cs" />

@@ -55,6 +55,7 @@ public static class WeatherManager
         EnvSetup? nightFrost = snow.Clone();
         nightFrost.m_isFreezing = false;
         nightFrost.m_name = "NightFrost";
+        nightFrost.m_isFreezingAtNight = true;
         
         if (!__instance.m_environments.Contains(warmSnow))
             __instance.m_environments.Add(warmSnow);
