@@ -12,7 +12,8 @@ public static class SeasonTimer
 {
     private static readonly string m_filePath = SeasonalityPaths.SeasonPaths.folderPath + Path.DirectorySeparatorChar + "SeasonTimeData.yml";
     private static float m_seasonTimer;
-    private static readonly float m_threshold = 3f;
+    // private static readonly float m_threshold = 3f;
+    private static double m_lastFade;
     public static bool m_sleepOverride;
     public static bool m_fading;
     private static double m_lastSeasonChange;
@@ -137,6 +138,7 @@ public static class SeasonTimer
     
     private static IEnumerator TriggerFade()
     {
+        m_lastFade = ZNet.m_instance.GetTimeSeconds();
         float duration = 0f;
         float length = SeasonalityPlugin._FadeLength.Value * 50f;
         float alpha = 0f;
@@ -166,7 +168,8 @@ public static class SeasonTimer
     private static void CheckSeasonFade(double timer)
     {
         if (SeasonalityPlugin._SeasonFades.Value is SeasonalityPlugin.Toggle.Off) return;
-        if (timer - m_threshold > SeasonalityPlugin._FadeLength.Value / 2) return;
+        if (timer > SeasonalityPlugin._FadeLength.Value / 2) return;
+        if (ZNet.instance.GetTimeSeconds() - m_lastFade < 1) return;
         if (!m_fading && Player.m_localPlayer) SeasonalityPlugin._plugin.StartCoroutine(TriggerFade());
     }
     

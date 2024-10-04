@@ -53,6 +53,7 @@ weather_deepforest_mist: "Forest Mist"
 weather_warmsnow: "Warm Snow"
 weather_warmsnowstorm: "Warm Snow Storm"
 weather_nightfrost: "Night Frost"
+weather_swamprain: 'Acid Rain'
 ## Weather Tooltip
 weather_clear_tooltip: "The weather is clear and peaceful"
 weather_misty_tooltip: "The gods do not engage with visionaries"
@@ -91,3 +92,4 @@ weather_deepforest_mist_tooltip: ""
 weather_warmsnow_tooltip: ""
 weather_warmsnowstorm_tooltip: ""
 weather_nightfrost_tooltip: ""
+weather_swamprain_tooltip: ""

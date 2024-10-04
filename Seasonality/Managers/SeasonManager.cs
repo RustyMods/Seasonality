@@ -235,7 +235,7 @@ public static class SeasonManager
         
         public override void OnDamaged(HitData hit, Character attacker)
         {
-            if (SeasonTimer.m_fading) hit.ApplyModifier(0f);
+            if (SeasonTimer.m_fading && SeasonalityPlugin._fadeToBlackImmune.Value is SeasonalityPlugin.Toggle.On) hit.ApplyModifier(0f);
         }
     }
 }

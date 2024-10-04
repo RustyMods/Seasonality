@@ -21,7 +21,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.4.0";
+        internal const string ModVersion = "3.4.1";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
@@ -104,6 +104,8 @@ namespace Seasonality
         
         public static readonly Dictionary<Season, Dictionary<string, ConfigEntry<float>>> effectConfigs = new();
 
+        public static ConfigEntry<Toggle> _fadeToBlackImmune = null!;
+
         #endregion
         private void InitConfigs()
         {
@@ -122,6 +124,8 @@ namespace Seasonality
             // };
             //
             _SeasonFades = config("2 - Settings", "Fade to Black", Toggle.On, "If on, plugin fades to black before season change");
+            _fadeToBlackImmune = config("2 - Settings", "Fade Immunity", Toggle.Off,
+                "If on, while fading to black, player is immune to damage");
             _SleepOverride = config("2 - Settings", "Sleep Season Change", Toggle.Off, "If on, seasons can only change if everyone is asleep");
             _SleepOverride.SettingChanged += (sender, args) =>
             {
