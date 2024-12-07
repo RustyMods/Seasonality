@@ -54,6 +54,12 @@ weather_warmsnow: "Warm Snow"
 weather_warmsnowstorm: "Warm Snow Storm"
 weather_nightfrost: "Night Frost"
 weather_swamprain: 'Acid Rain'
+weather_eikthyr: "Eikthyr"
+weather_gdking: "Greydwarf King"
+weather_queen: "Queen"
+weather_ashlands_storm: "Ash Storm"
+weather_ashlands_misty: "Ash Mist"
+weather_fader: "Fader"
 ## Weather Tooltip
 weather_clear_tooltip: "The weather is clear and peaceful"
 weather_misty_tooltip: "The gods do not engage with visionaries"

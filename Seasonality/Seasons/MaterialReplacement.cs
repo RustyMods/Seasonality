@@ -132,7 +132,8 @@ public static class MaterialReplacer
         switch (_Season.Value)
         {
             case Season.Fall:
-                material.color = SeasonColors.FallColors[index];
+                // material.color = SeasonColors.FallColors[index];
+                material.color = _fallColors[index].Value;
                 break;
             default:
                 material.color = Color.white;

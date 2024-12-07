@@ -60,8 +60,8 @@ public static class SeasonManager
         if (!saveTime) SeasonTimer.SaveTimeChange();
         --EnvMan.instance.m_environmentPeriod;
         if (!Player.m_localPlayer) return;
-        ClutterManager.UpdateClutter();
-        TerrainManager.UpdateTerrain();
+        SeasonalClutter.UpdateClutter();
+        SeasonalTerrain.UpdateTerrain();
         GlobalKeyManager.UpdateSeasonalKey();
         MaterialReplacer.ModifyCachedMaterials(SeasonalityPlugin._Season.Value);
         FrozenZones.UpdateInstances();
@@ -147,7 +147,8 @@ public static class SeasonManager
         public override string GetTooltipString()
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append($"$season_{SeasonalityPlugin._Season.Value.ToString().ToLower()}_tooltip\n");
+            var localizedTooltip = Localization.instance.Localize($"$season_{SeasonalityPlugin._Season.Value.ToString().ToLower()}_tooltip");
+            if (!localizedTooltip.Contains("[")) builder.Append($"$season_{SeasonalityPlugin._Season.Value.ToString().ToLower()}_tooltip\n");
             builder.Append(GetToolTip("Carry Weight", "$se_max_carryweight"));
             builder.Append(GetToolTip("Health Regeneration", "$se_healthregen"));
             builder.Append(GetToolTip("Damage", "$se_damage"));

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
@@ -21,7 +23,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.4.1";
+        internal const string ModVersion = "3.4.7";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static readonly string ConfigFileName = ModGUID + ".cfg";
@@ -29,7 +31,7 @@ namespace Seasonality
         internal static string ConnectionError = "";
         private readonly Harmony _harmony = new(ModGUID);
         public static readonly ManualLogSource SeasonalityLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
-        private static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
+        public static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
         public static SeasonalityPlugin _plugin = null!;
             
         public enum Toggle { On = 1, Off = 0 }
@@ -39,9 +41,7 @@ namespace Seasonality
             TextureManager.ReadCustomTextures();
             ZoneManager.InitSnowBundle();
             InitConfigs();
-            
             Localizer.Load();
-            
             Assembly assembly = Assembly.GetExecutingAssembly(); 
             _harmony.PatchAll(assembly);
             SetupWatcher();
@@ -50,7 +50,6 @@ namespace Seasonality
         public void Update()
         {
             float dt = Time.deltaTime;
-            // SeasonManager.UpdateSeason(dt);
             SeasonTimer.CheckSeasonTransition(dt);
             SeasonManager.UpdateSeasonEffects(dt);
             MaterialReplacer.UpdateInAshlands(dt);
@@ -96,8 +95,6 @@ namespace Seasonality
         public static ConfigEntry<Toggle> _DisplayWeatherTimer = null!;
         public static ConfigEntry<Toggle> _EnableModifiers = null!;
 
-        // public static ConfigEntry<double> _LastSeasonChange = null!;
-
         public static readonly Dictionary<Season, Dictionary<DurationType, ConfigEntry<int>>> _Durations = new();
 
         public static readonly Dictionary<Season, Dictionary<Heightmap.Biome, ConfigEntry<string>>> _WeatherConfigs = new();
@@ -106,23 +103,28 @@ namespace Seasonality
 
         public static ConfigEntry<Toggle> _fadeToBlackImmune = null!;
 
+        public static ConfigEntry<double> m_lastSeasonChange = null!;
+
+        public static readonly List<ConfigEntry<Color>> _fallColors = new();
+
         #endregion
         private void InitConfigs()
         {
             _serverConfigLocked = config("1 - General", "1 - Lock Configuration", Toggle.On, "If on, the configuration is locked and can be changed by server admins only.");
             _ = ConfigSync.AddLockingConfigEntry(_serverConfigLocked);
+
+            m_lastSeasonChange = config("9 - Data", "Last Season Change", 0.0, "Reset to set last season change");
             
             _Season = config("1 - General", "Current Season", Season.Fall, "Set duration to 0, and select your season, else season is determined by plugin");
             
             _ReplaceArmorTextures = config("2 - Settings", "Replace Armor Textures", Toggle.On, "If on, plugin modifies armor textures");
             _ReplaceCreatureTextures = config("2 - Settings", "Replace Creature Textures", Toggle.On, "If on, creature skins change with the seasons");
             // _ReplaceGrassTextures = config("2 - Settings", "Replace Grass Textures", Toggle.On, "If on, grass change with the seasons");
-            // _ReplaceGrassTextures.SettingChanged += (sender, args) =>
+            // _ReplaceGrassTextures.SettingChanged += (_, _) =>
             // {
-            //     if (_ReplaceGrassTextures.Value is Toggle.Off) ClutterManager.ResetClutter();
-            //     else ClutterManager.UpdateClutter();
+            //     SeasonalClutter.UpdateClutter(_ReplaceGrassTextures.Value is Toggle.Off);
             // };
-            //
+            
             _SeasonFades = config("2 - Settings", "Fade to Black", Toggle.On, "If on, plugin fades to black before season change");
             _fadeToBlackImmune = config("2 - Settings", "Fade Immunity", Toggle.Off,
                 "If on, while fading to black, player is immune to damage");
@@ -156,13 +158,25 @@ namespace Seasonality
             _DisplayWeather.SettingChanged += WeatherManager.OnDisplayConfigChange;
             _DisplayWeatherTimer = config("3 - Weather Settings", "Weather Timer", Toggle.On, "If on, weather status effect displays countdown till next environment");
             
+             List<Color> FallColors = new()
+            {
+                new Color(0.8f, 0.5f, 0f, 1f),
+                new Color(0.8f, 0.3f, 0f, 1f),
+                new Color(0.8f, 0.2f, 0f, 1f),
+                new Color(0.9f, 0.5f, 0f, 1f)
+            };
+             for (int index = 0; index < 4; ++index)
+             {
+                 var colorConfig = config("5 - Fall Colors", $"Color {index}", FallColors[index],
+                     $"Set fall color index {index}");
+                 _fallColors.Add(colorConfig);
+             }
+            
             InitDurationConfigs();
             
             InitWeatherConfigs();
             
             InitSeasonEffectConfigs();
-
-            // _LastSeasonChange = config("1 - General", "Last Season Change", 0.0, "Recorded last season change, do not touch unless you want to reset timer");
         }
         
         private static readonly Dictionary<List<string>, float> intConfigs = new()
@@ -211,6 +225,21 @@ namespace Seasonality
 
         private void InitWeatherConfigs()
         {
+            Assembly? bepinexConfigManager = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "ConfigurationManager");
+
+            Type? configManagerType = bepinexConfigManager?.GetType("ConfigurationManager.ConfigurationManager");
+            configManager = configManagerType == null
+                ? null
+                : BepInEx.Bootstrap.Chainloader.ManagerObject.GetComponent(configManagerType);
+
+            void ReloadConfigDisplay()
+            {
+                if (configManagerType?.GetProperty("DisplayingWindow")!.GetValue(configManager) is true)
+                {
+                    configManagerType.GetMethod("BuildSettingList")!.Invoke(configManager, Array.Empty<object>());
+                }
+            }
+            
             foreach (Season season in Enum.GetValues(typeof(Season)))
             {
                 Dictionary<Heightmap.Biome, ConfigEntry<string>> configs = new();
@@ -218,15 +247,18 @@ namespace Seasonality
                 {
                     if (biome is Heightmap.Biome.None or Heightmap.Biome.AshLands or Heightmap.Biome.All) continue;
                     int index = BiomeIndex(biome);
+                    ConfigurationManagerAttributes attributes = new()
+                        { CustomDrawer = DrawConfigTable, Order = 0, Category = $"{season} Weather Options" };
+
                     if (season is Season.Winter && biome != Heightmap.Biome.Mountain)
                     {
                         configs[biome] = _plugin.config($"{season} Weather Options", $"{index} - {biome}", "WarmSnow:1,Twilight_Snow:0.5,WarmSnowStorm:0.1",
-                            "Set weather options, [name]:[weight]");
+                            new ConfigDescription("Set weather options, [name]:[weight]", null, attributes));
                     }
                     else
                     {
                         configs[biome] = _plugin.config($"{season} Weather Options", $"{index} - {biome}", "",
-                            "Set weather options, [name]:[weight]");
+                            new ConfigDescription("Set weather options, [name]:[weight]", null, attributes));
                     }
                 }
 
@@ -273,11 +305,8 @@ namespace Seasonality
             };
         }
 
-        private void OnDestroy()
-        {
-            Config.Save();
-        }
-
+        private void OnDestroy() => Config.Save();
+        
         private void SetupWatcher()
         {
             FileSystemWatcher watcher = new(Paths.ConfigPath, ConfigFileName);
@@ -338,6 +367,103 @@ namespace Seasonality
             [UsedImplicitly] public bool? Browsable = null!;
             [UsedImplicitly] public string? Category = null!;
             [UsedImplicitly] public Action<ConfigEntryBase>? CustomDrawer = null!;
+        }
+
+        private static object? configManager;
+
+        private static void DrawConfigTable(ConfigEntryBase cfg)
+        {
+            bool locked = cfg.Description.Tags
+                .Select(a =>
+                    a.GetType().Name == "ConfigurationManagerAttributes"
+                        ? (bool?)a.GetType().GetField("ReadOnly")?.GetValue(a)
+                        : null).FirstOrDefault(v => v != null) ?? false;
+
+            List<WeatherData> newWeathers = new();
+            bool wasUpdated = false;
+
+            int RightColumnWidth =
+                (int)(configManager?.GetType()
+                    .GetProperty("RightColumnWidth", BindingFlags.Instance | BindingFlags.NonPublic)!.GetGetMethod(true)
+                    .Invoke(configManager, Array.Empty<object>()) ?? 130);
+            
+            GUILayout.BeginVertical();
+            foreach (var env in new SerializedWeather((string)cfg.BoxedValue).environments)
+            {
+                GUILayout.BeginHorizontal();
+
+                float weight = env.weight;
+                
+                var nameWidth = Mathf.Max(RightColumnWidth - 40 - 21 - 21, 180);
+                string newEnvironment = GUILayout.TextField(env.name, new GUIStyle(GUI.skin.textField) { fixedWidth = nameWidth});
+                string envName = locked ? env.name : newEnvironment;
+                wasUpdated = wasUpdated || envName != env.name;
+                
+                if (float.TryParse(
+                        GUILayout.TextField(weight.ToString(CultureInfo.InvariantCulture), new GUIStyle(GUI.skin.textField) { fixedWidth = 40 }),
+                        out float newAmount) && Math.Abs(newAmount - weight) > 0.01f && !locked)
+                {
+                    weight = newAmount;
+                    wasUpdated = true;
+                }
+
+                if (GUILayout.Button("x", new GUIStyle(GUI.skin.button) { fixedWidth = 21 }) && !locked)
+                {
+                    wasUpdated = true;
+                }
+                else
+                {
+                    newWeathers.Add(new WeatherData() { name = envName, weight = weight });
+                }
+
+                if (GUILayout.Button("+", new GUIStyle(GUI.skin.button) { fixedWidth = 21 }) && !locked)
+                {
+                    wasUpdated = true;
+                    newWeathers.Add(new WeatherData() { weight = 1f, name = "" });
+                }
+
+                GUILayout.EndHorizontal();
+            }
+
+            GUILayout.EndVertical();
+
+            if (wasUpdated)
+            {
+                cfg.BoxedValue = new SerializedWeather(newWeathers).ToString();
+            }
+        }
+
+        private class SerializedWeather
+        {
+            public readonly List<WeatherData> environments;
+            public SerializedWeather(List<WeatherData> weathers) => environments = weathers;
+
+            public SerializedWeather(string weathers)
+            {
+                environments = weathers
+                    .Split(',')
+                    .Select(input =>
+                    {
+                        var parts = input.Split(':');
+                        return new WeatherData
+                        {
+                            name = parts[0],
+                            weight = parts.Length > 1 && float.TryParse(parts[1], out float w) ? w : 1f
+                        };
+                    })
+                    .ToList();
+            }
+
+            public override string ToString()
+            {
+                return string.Join(",", environments.Select(e => $"{e.name}:{e.weight}"));
+            }
+        }
+
+        private struct WeatherData
+        {
+            public string name;
+            public float weight;
         }
 
         #endregion

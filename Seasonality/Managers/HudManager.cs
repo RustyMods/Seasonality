@@ -6,8 +6,8 @@ namespace Seasonality.Managers;
 
 public static class HudManager
 {
-    public static GameObject m_seasonScreen = null!;
-    public static Image m_seasonBlackScreen = null!;
+    public static GameObject? m_seasonScreen;
+    public static Image? m_seasonBlackScreen;
     
      [HarmonyPatch(typeof(Hud), nameof(Hud.Awake))]
      private static class Hud_Awake_Patch

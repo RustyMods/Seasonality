@@ -4,104 +4,27 @@ using System.Collections.Generic;
 using System.IO;
 using BepInEx.Configuration;
 using HarmonyLib;
+using ServerSync;
 using UnityEngine;
 
 namespace Seasonality.Managers;
 
 public static class SeasonTimer
 {
-    private static readonly string m_filePath = SeasonalityPaths.SeasonPaths.folderPath + Path.DirectorySeparatorChar + "SeasonTimeData.yml";
     private static float m_seasonTimer;
-    // private static readonly float m_threshold = 3f;
-    private static double m_lastFade;
     public static bool m_sleepOverride;
     public static bool m_fading;
-    private static double m_lastSeasonChange;
-    private static double GetLastSeasonChangeTime()
-    {
-        if (!File.Exists(m_filePath)) return 0;
-
-        string worldName = ZNet.m_world.m_name;
-        try
-        {
-            var data = File.ReadAllLines(m_filePath);
-
-            foreach (var line in data)
-            {
-                string[] info = line.Split(':');
-                string world = info[0];
-                string date = info[1];
-
-                if (world != worldName) continue;
-
-                return double.TryParse(date, out double output) ? output : 0;
-            }
-
-            return 0;
-        }
-        catch
-        {
-            return 0;
-        }
-    }
 
     private static double GetTimeElapsed()
     {
-        if (m_lastSeasonChange == 0)
-        {
-            m_lastSeasonChange = GetLastSeasonChangeTime();
-        }
-
-        var timeElapsed = ZNet.m_instance.GetTimeSeconds() - m_lastSeasonChange;
+        var timeElapsed = ZNet.m_instance.GetTimeSeconds() - SeasonalityPlugin.m_lastSeasonChange.Value;
         return timeElapsed < 0 ? 0 : timeElapsed;
     }
-
-    [HarmonyPatch(typeof(Game), nameof(Game.Logout))]
-    private static class Game_Logout_Patch
-    {
-        private static void Postfix()
-        {
-            m_lastSeasonChange = 0;
-            SeasonManager.m_firstSpawn = true;
-        }
-    }
-
     public static void SaveTimeChange()
     {
-        if (ZNet.m_world == null || !ZNet.m_instance) return;
+        if (!ZNet.m_instance) return;
         double time = ZNet.m_instance.GetTimeSeconds();
-        string worldName = ZNet.m_world.m_name;
-        m_lastSeasonChange = time;
-        string format = worldName + ":" + time;
-        if (!File.Exists(m_filePath))
-        {
-            File.WriteAllText(m_filePath, format);
-        }
-        else
-        {
-            var data = File.ReadAllLines(m_filePath);
-            bool updated = false;
-            List<string> newData = new();
-            foreach (var line in data)
-            {
-                string[] info = line.Split(':');
-                string world = info[0];
-
-                if (world != worldName)
-                {
-                    newData.Add(line);
-                    continue;
-                }
-                newData.Add(format);
-                updated = true;
-            }
-
-            if (!updated)
-            {
-                newData.Add(format);
-            }
-            File.WriteAllLines(m_filePath, newData);
-        }
+        SeasonalityPlugin.m_lastSeasonChange.Value = time;
     }
     
     private static double GetSeasonLength()
@@ -138,38 +61,48 @@ public static class SeasonTimer
     
     private static IEnumerator TriggerFade()
     {
-        m_lastFade = ZNet.m_instance.GetTimeSeconds();
-        float duration = 0f;
-        float length = SeasonalityPlugin._FadeLength.Value * 50f;
-        float alpha = 0f;
+        if (m_fading || HudManager.m_seasonScreen is null || HudManager.m_seasonBlackScreen is null) yield break; // Prevent duplicate coroutines
         m_fading = true;
-        
-        while (duration < length)
+        try
         {
-            alpha += 1f / length;
-            HudManager.m_seasonBlackScreen.color = new Color(0f, 0f, 0f, alpha);
-            ++duration;
-            yield return new WaitForFixedUpdate(); // 50 times per second
-        }
+            float duration = 0f;
+            float length = Mathf.Max(SeasonalityPlugin._FadeLength.Value * 50f, 1f); // Avoid zero length
+            float alpha = 0f;
 
-        Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"$msg_{GetNextSeason(SeasonalityPlugin._Season.Value).ToString().ToLower()}");
-        yield return new WaitForSeconds(1);
-        while (duration > 0)
+            // Fade to black
+            while (duration < length)
+            {
+                alpha += 1f / length;
+                HudManager.m_seasonBlackScreen.color = new Color(0f, 0f, 0f, Mathf.Clamp01(alpha));
+                duration++;
+                yield return new WaitForFixedUpdate();
+            }
+
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"$msg_{GetNextSeason(SeasonalityPlugin._Season.Value).ToString().ToLower()}");
+
+            yield return new WaitForSeconds(1);
+
+            // Fade back to normal
+            while (duration > 0)
+            {
+                alpha -= 1f / length;
+                HudManager.m_seasonBlackScreen.color = new Color(0f, 0f, 0f, Mathf.Clamp01(alpha));
+                duration--;
+                yield return new WaitForFixedUpdate();
+            }
+        }
+        finally
         {
-            alpha -= 1f / length;
-            HudManager.m_seasonBlackScreen.color = new Color(0f, 0f, 0f, alpha);
-            --duration;
-            yield return new WaitForFixedUpdate();
+            m_fading = false; // Ensure flag resets even on failure
         }
-
-        m_fading = false;
     }
     
     private static void CheckSeasonFade(double timer)
     {
         if (SeasonalityPlugin._SeasonFades.Value is SeasonalityPlugin.Toggle.Off) return;
-        if (timer > SeasonalityPlugin._FadeLength.Value / 2) return;
-        if (ZNet.instance.GetTimeSeconds() - m_lastFade < 1) return;
+        if (!Player.m_localPlayer || !ZNet.instance) return;
+        if (HudManager.m_seasonBlackScreen is null || HudManager.m_seasonScreen is null) return;
+        if (timer > SeasonalityPlugin._FadeLength.Value) return;
         if (!m_fading && Player.m_localPlayer) SeasonalityPlugin._plugin.StartCoroutine(TriggerFade());
     }
     
@@ -184,9 +117,9 @@ public static class SeasonTimer
         int countdown = (int)GetCountdown();
         if (SeasonalityPlugin._SleepOverride.Value is SeasonalityPlugin.Toggle.On)
         {
-            if (m_sleepOverride || EnvMan.instance.IsTimeSkipping()) m_lastSeasonChange = ZNet.m_instance.GetTimeSeconds();
-            if (countdown > 0 || m_sleepOverride) return;
-            if (!m_sleepOverride && !EnvMan.instance.IsTimeSkipping()) m_sleepOverride = true;
+            if (countdown > 0) return;
+            if (m_sleepOverride) return;
+            m_sleepOverride = true;
         }
         else
         {
@@ -202,22 +135,16 @@ public static class SeasonTimer
         SeasonalityPlugin._Season.Value = GetNextSeason(SeasonalityPlugin._Season.Value);
     }
 
-    
-    [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.SkipToMorning))]
-    private static class SleepOverride_SeasonChange
+
+    [HarmonyPatch(typeof(Game), nameof(Game.SleepStop))]
+    private static class Game_SleepStop_Patch
     {
         private static void Postfix()
         {
             if (!m_sleepOverride) return;
             m_sleepOverride = false;
             ChangeSeason();
-        }
-    
-        private static void Prefix()
-        {
-            if (SeasonalityPlugin._SleepOverride.Value is SeasonalityPlugin.Toggle.On) return;
-            if ((int)GetCountdown() >= 900) return;
-            SeasonalityPlugin._Season.Value = GetNextSeason(SeasonalityPlugin._Season.Value);
+            SaveTimeChange();
         }
     }
     

@@ -37,16 +37,15 @@ public static class CacheResources
             if (!__instance) return;
             foreach (GameObject? prefab in __instance.m_prefabs)
             {
-                VegetationType type = SeasonUtility.Utils.GetVegetationType(prefab.name);
-                if (type is VegetationType.None) continue;
+                if (SeasonUtility.Utils.GetVegetationType(prefab.name) is VegetationType.None) continue;
                 CacheBaseMaterials(prefab);
             }
             RegisterCustomSeasonalPrefabs(__instance);
         }
         private static List<Material[]> CreateBaseMaterials(GameObject prefab, string specifier, bool contains = true)
         {
-            MeshRenderer? PrefabRenderer = prefab.GetComponentInChildren<MeshRenderer>();
-            if (!PrefabRenderer) return new List<Material[]>();
+            if (prefab.GetComponentInChildren<MeshRenderer>() is not { } PrefabRenderer) return new List<Material[]>();
+            
             VegetationType type = SeasonUtility.Utils.GetVegetationType(prefab.name);
             Material[]? materials = PrefabRenderer.materials;
             // Create List of Material Array and apply unique colors to each
@@ -62,8 +61,10 @@ public static class CacheResources
             {
                 for (int i = 0; i < newMaterialArray[index].Length; ++i)
                 {
-                    newMaterialArray[index][i] = new Material(materials[i]); // Give new material array same values as original
-                    CustomMaterials["custom_" + materials[i].name.Replace("(Instance)", "").Replace(" ", "") + "_" + index] = newMaterialArray[index][i];
+                    var mat = new Material(materials[i]);
+                    mat.name = "custom_" + materials[i].name.Replace("(Instance)", "").Replace(" ", "") + "_" + index;
+                    newMaterialArray[index][i] = mat; // Give new material array same values as original
+                    CustomMaterials[mat.name] = mat;
                     if (newMaterialArray[index][i].HasProperty("_MossTex"))
                     {
                         m_customMossMaterials[newMaterialArray[index][i]] =
@@ -84,8 +85,7 @@ public static class CacheResources
 
                     Texture? tex = SeasonUtility.Utils.GetCustomTexture(directory, Season.Fall.ToString());
                     leafMat.SetTexture(mainProp, tex ? tex : GetDefaultTextures(type, prefab.name));
-                    leafMat.color = SeasonColors.FallColors[index];
-
+                    leafMat.color = _fallColors[index].Value;
                     if (directory is VegDirectories.Vines)
                     {
                         leafMat.SetColor(ColorProp, Color.white);
@@ -97,9 +97,7 @@ public static class CacheResources
         }
         private static void CacheBaseMaterials(GameObject prefab)
         {
-            VegetationType type = SeasonUtility.Utils.GetVegetationType(prefab.name);
-
-            switch (type)
+            switch (SeasonUtility.Utils.GetVegetationType(prefab.name))
             {
                 case VegetationType.Beech:
                     BeechMaterials = CreateBaseMaterials(prefab, "leaf");
@@ -135,12 +133,11 @@ public static class CacheResources
         }
     }
 
-    public static void RegisterCustomSeasonalPrefabs(ZNetScene __instance)
+    private static void RegisterCustomSeasonalPrefabs(ZNetScene __instance)
     {
         foreach (var kvp in TextureManager.RegisteredCustomTextures)
         {
-            GameObject prefab = __instance.GetPrefab(kvp.Key);
-            if (!prefab) continue;
+            if (__instance.GetPrefab(kvp.Key) is not { } prefab) continue;
             prefab.AddComponent<CustomSeason>();
         }
     }
@@ -157,7 +154,6 @@ public static class CacheResources
     private static void ApplyColorMaterials(GameObject prefab)
     {
         if (prefab == null) return;
-
         VegetationType type = SeasonUtility.Utils.GetVegetationType(prefab.name);
         if (type is VegetationType.None) return;
         switch (type)
@@ -205,14 +201,34 @@ public static class CacheResources
         for (int i = 0; i < prefab.transform.childCount; ++i)
         {
             Transform? child = prefab.transform.GetChild(i);
-            if (type is VegetationType.Birch or VegetationType.Yggashoot or VegetationType.PlainsBush)
+            if (!child || !child.TryGetComponent(out MeshRenderer meshRenderer)) continue;
+            switch (type)
             {
-                // SeasonalityLogger.LogWarning(child.name + " color tinting disabled");
-                if (child.name.ToLower() is "lod1" or "low") continue;
-            }
+                case VegetationType.Birch or VegetationType.Yggashoot:
+                {
+                    if (child.name.ToLower() is "lod1")
+                    {
+                        materials = materials
+                            .Select(array => array.Reverse().ToArray())
+                            .ToList();
+                    }
 
-            if (!child) continue;
-            if (!child.TryGetComponent(out MeshRenderer meshRenderer)) continue;
+                    break;
+                }
+                case VegetationType.PlainsBush:
+                {
+                    if (child.name.ToLower() is "low")
+                    {
+                        materials = materials
+                            .Where(array => array.Length > 0)          // Exclude empty arrays
+                            .Select(array => new Material[] { array[1] }) // Create a single-item array with the second element
+                            .ToList();
+                    }
+
+                    break;
+                }
+            }
+            
             meshRenderer.materials = materials[randomIndex];
 
             if (child.childCount > 0) SetMaterials(materials, child.gameObject);
@@ -237,7 +253,7 @@ public static class CacheResources
     {
         try
         {
-            return (type) switch
+            return type switch
             {
                 VegetationType.Beech => isBark
                     ? CachedTextures["beech_bark"]

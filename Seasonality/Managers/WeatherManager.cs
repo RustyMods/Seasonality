@@ -70,8 +70,10 @@ public static class WeatherManager
     {
         private static void Postfix(ref bool __result)
         {
+            if (!Player.m_localPlayer) return;
             if (SeasonalityPlugin._WinterAlwaysCold.Value is SeasonalityPlugin.Toggle.Off) return;
             if (SeasonalityPlugin._Season.Value is not SeasonalityPlugin.Season.Winter ) return;
+            if (Player.m_localPlayer.GetCurrentBiome() is Heightmap.Biome.AshLands) return;
             __result = true;
         }
     }

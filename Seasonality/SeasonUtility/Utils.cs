@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Seasonality.DataTypes;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Textures.Directories;
 using static Seasonality.Textures.TextureManager;
-using Random = System.Random;
 
 namespace Seasonality.SeasonUtility;
 
@@ -94,37 +92,6 @@ public static class Utils
             _ => VegetationType.None,
         };
     }
-    public static GrassTypes GetGrassType(string clutterName)
-    {
-        return clutterName switch
-        {
-            "instanced_meadows_grass" => GrassTypes.GreenGrass,
-            "instanced_meadows_grass_short" => GrassTypes.GreenGrassShort,
-            "instanced_shrub" => GrassTypes.ClutterShrubs,
-            "clutter_shrub_large" => GrassTypes.ClutterShrubs,
-            "instanced_forest_groundcover_brown" => GrassTypes.GroundCoverBrown,
-            "instanced_forest_groundcover" => GrassTypes.GroundCover,
-            "instanced_swamp_grass" => GrassTypes.SwampGrass,
-            "instanced_heathgrass" => GrassTypes.HeathGrass,
-            "grasscross_heath_green" => GrassTypes.GrassHeathGreen,
-            "instanced_heathflowers" => GrassTypes.HeathFlowers,
-            "instanced_swamp_ormbunke" => GrassTypes.OrmBunkeSwamp,
-            "instanced_ormbunke" => GrassTypes.Ormbunke,
-            "instanced_vass" => GrassTypes.Vass,
-            "instanced_waterlilies" => GrassTypes.WaterLilies,
-            "instanced_mistlands_rockplant" => GrassTypes.RockPlant,
-            "instanced_small_rock1" => GrassTypes.Rocks,
-            "instanced_mistlands_grass_short" => GrassTypes.MistlandGrassShort,
-            _ => GrassTypes.None
-        };
-    }
-    public static void ApplyRandomly(List<Action> methods)
-    {
-        if (methods.Count == 0) return;
-        Random random = new Random();
-        int randomIndex = random.Next(methods.Count);
-        methods[randomIndex]();
-    }
     public static Texture? GetCustomTexture(VegDirectories type, string key) => !CustomRegisteredTextures.TryGetValue(type, out Dictionary<string, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
     public static Texture? GetCustomTexture(ArmorDirectories type, string key) => !CustomRegisteredArmorTex.TryGetValue(type, out Dictionary<string, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
     public static Texture? GetCustomTexture(PickableDirectories type, string key) => !CustomRegisteredPickableTex.TryGetValue(type, out Dictionary<string, Texture?> map) ? null : map.TryGetValue(key, out Texture? tex) ? tex : null;
@@ -133,7 +100,7 @@ public static class Utils
     private static bool CustomTextureExist(VegDirectories type, string key) => CustomRegisteredTextures.TryGetValue(type, out Dictionary<string, Texture?> map) && map.ContainsKey(key);
     public static VegDirectories VegToDirectory(GrassTypes type)
     {
-        return (type) switch
+        return type switch
         {
             GrassTypes.GreenGrass => VegDirectories.MeadowGrass,
             GrassTypes.GreenGrassShort => VegDirectories.MeadowGrassShort,
