@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HarmonyLib;
 using Seasonality.Seasons;
 using Seasonality.Textures;
 using UnityEngine;
@@ -19,7 +20,7 @@ public class SeasonalLocation : MonoBehaviour
     {
         foreach (var instance in Instances)
         {
-            if (instance.m_lastSeason == SeasonalityPlugin._Season.Value) continue;
+            if (instance.m_lastSeason == Configurations._Season.Value) continue;
             instance.SetLocationMoss();
         }
     }
@@ -33,7 +34,11 @@ public class SeasonalLocation : MonoBehaviour
             {
                 if (material.HasProperty("_MossTex"))
                 {
-                    m_textureMap[material] = material.GetTexture(MossTex);
+                    if (MaterialReplacer.m_mossMaterials.TryGetValue(material, out Texture mossTex))
+                    {
+                        m_textureMap[material] = mossTex;
+                    }
+                    else m_textureMap[material] = material.GetTexture(MossTex);
                 }
             }
         }
@@ -43,7 +48,7 @@ public class SeasonalLocation : MonoBehaviour
 
     public void SetLocationMoss()
     {
-        switch (SeasonalityPlugin._Season.Value)
+        switch (Configurations._Season.Value)
         {
             case SeasonalityPlugin.Season.Spring:
                 ResetMossTexture();
@@ -79,6 +84,16 @@ public class SeasonalLocation : MonoBehaviour
         foreach (KeyValuePair<Material, Texture> kvp in m_textureMap)
         {
             kvp.Key.SetTexture(MossTex, texture);
+        }
+    }
+    
+    [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SpawnLocation))]
+    private static class ZoneSystem_SpawnLocation_Patch
+    {
+        private static void Postfix(ZoneSystem __instance, ref GameObject __result)
+        {
+            if (!__instance || !__result) return;
+            __result.AddComponent<SeasonalLocation>();
         }
     }
 }

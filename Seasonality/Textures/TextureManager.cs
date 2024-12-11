@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
-using static Seasonality.SeasonalityPaths.SeasonPaths;
+using static Seasonality.Helpers.SeasonPaths;
 using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Textures.HDConfigurations;
 using static Seasonality.Textures.Directories;

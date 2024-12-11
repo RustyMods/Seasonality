@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Seasonality.Seasons;
 
 namespace Seasonality.Managers;
 
@@ -23,7 +24,7 @@ public static class GlobalKeyManager
 
     private static void SetKey()
     {
-        string? newKey = GetKey(SeasonalityPlugin._Season.Value);
+        string? newKey = GetKey(Configurations._Season.Value);
         if (newKey != null) ZoneSystem.instance.SetGlobalKey(newKey);
     }
 

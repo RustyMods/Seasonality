@@ -1,7 +1,7 @@
 using System.IO;
 using BepInEx;
 
-namespace Seasonality.SeasonalityPaths;
+namespace Seasonality.Helpers;
 
 public static class SeasonPaths
 {

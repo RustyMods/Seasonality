@@ -7,13 +7,14 @@ using Seasonality.DataTypes;
 using Seasonality.Textures;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
+using static Seasonality.Seasons.Configurations;
 using static Seasonality.Seasons.MaterialReplacer;
 using static Seasonality.Textures.Directories;
 using Random = System.Random;
 
 namespace Seasonality.Seasons;
 
-public static class CacheResources
+public static class FallColors
 {
     private static List<Material[]> BeechMaterials = new();
     private static List<Material[]> BeechSmallMaterials = new();
@@ -37,7 +38,7 @@ public static class CacheResources
             if (!__instance) return;
             foreach (GameObject? prefab in __instance.m_prefabs)
             {
-                if (SeasonUtility.Utils.GetVegetationType(prefab.name) is VegetationType.None) continue;
+                if (Helpers.Utils.GetVegetationType(prefab.name) is VegetationType.None) continue;
                 CacheBaseMaterials(prefab);
             }
             RegisterCustomSeasonalPrefabs(__instance);
@@ -46,7 +47,7 @@ public static class CacheResources
         {
             if (prefab.GetComponentInChildren<MeshRenderer>() is not { } PrefabRenderer) return new List<Material[]>();
             
-            VegetationType type = SeasonUtility.Utils.GetVegetationType(prefab.name);
+            VegetationType type = Helpers.Utils.GetVegetationType(prefab.name);
             Material[]? materials = PrefabRenderer.materials;
             // Create List of Material Array and apply unique colors to each
             List<Material[]> newMaterialArray = new()
@@ -79,11 +80,11 @@ public static class CacheResources
                 if (leafMat == null) continue;
 
                 string[] properties = leafMat.GetTexturePropertyNames();
-                if (SeasonUtility.Utils.FindTexturePropName(properties, "main", out string mainProp))
+                if (Helpers.Utils.FindTexturePropName(properties, "main", out string mainProp))
                 {
-                    VegDirectories directory = SeasonUtility.Utils.VegToDirectory(type);
+                    VegDirectories directory = Helpers.Utils.VegToDirectory(type);
 
-                    Texture? tex = SeasonUtility.Utils.GetCustomTexture(directory, Season.Fall.ToString());
+                    Texture? tex = Helpers.Utils.GetCustomTexture(directory, Season.Fall.ToString());
                     leafMat.SetTexture(mainProp, tex ? tex : GetDefaultTextures(type, prefab.name));
                     leafMat.color = _fallColors[index].Value;
                     if (directory is VegDirectories.Vines)
@@ -97,7 +98,7 @@ public static class CacheResources
         }
         private static void CacheBaseMaterials(GameObject prefab)
         {
-            switch (SeasonUtility.Utils.GetVegetationType(prefab.name))
+            switch (Helpers.Utils.GetVegetationType(prefab.name))
             {
                 case VegetationType.Beech:
                     BeechMaterials = CreateBaseMaterials(prefab, "leaf");
@@ -154,7 +155,7 @@ public static class CacheResources
     private static void ApplyColorMaterials(GameObject prefab)
     {
         if (prefab == null) return;
-        VegetationType type = SeasonUtility.Utils.GetVegetationType(prefab.name);
+        VegetationType type = Helpers.Utils.GetVegetationType(prefab.name);
         if (type is VegetationType.None) return;
         switch (type)
         {
@@ -196,7 +197,7 @@ public static class CacheResources
         Random random = new Random();
         int randomIndex = random.Next(materials.Count);
 
-        VegetationType type = SeasonUtility.Utils.GetVegetationType(prefab.name);
+        VegetationType type = Helpers.Utils.GetVegetationType(prefab.name);
         
         for (int i = 0; i < prefab.transform.childCount; ++i)
         {

@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using HarmonyLib;
-using Seasonality.SeasonalityPaths;
 using Seasonality.Seasons;
 using UnityEngine;
 using static Seasonality.SeasonalityPlugin;
+using static Seasonality.Seasons.Configurations;
 
-namespace Seasonality.SeasonUtility;
+namespace Seasonality.Helpers;
 
 public static class ConsoleCommands
 {
@@ -21,44 +19,44 @@ public static class ConsoleCommands
         private static void Postfix() 
         {
             Terminal.ConsoleCommand Help = new Terminal.ConsoleCommand("seasonality", "Shows a list of console commands for seasonality", (Terminal.ConsoleEventFailable) (args =>
-                    {
-                        if (args.Length < 2) return false;
+            {
+                if (args.Length < 2) return false;
 
-                        switch (args[1])
+                switch (args[1])
+                {
+                    case "help":
+                        List<string> commandList = new List<string>();
+                        foreach (KeyValuePair<string, Terminal.ConsoleCommand> command in SeasonCommands)
                         {
-                            case "help":
-                                List<string> commandList = new List<string>();
-                                foreach (KeyValuePair<string, Terminal.ConsoleCommand> command in SeasonCommands)
-                                {
-                                    commandList.Add(command.Value.Command + " - " + command.Value.Description);
-                                }
+                            commandList.Add(command.Value.Command + " - " + command.Value.Description);
+                        }
 
-                                commandList.Sort();
+                        commandList.Sort();
 
-                                foreach (string command in commandList)
-                                {
-                                    SeasonalityLogger.LogInfo(command);
-                                }
-                                
-                                SeasonalityLogger.LogInfo("reload - force reload materials");
-                                SeasonalityLogger.LogInfo("list_weather - list available weather names");
-                                break;
-                            case "reload":
-                                MaterialReplacer.ModifyCachedMaterials(_Season.Value);
-                                break;
-                            case "list_weather":
-                                if (!EnvMan.instance) return false;
-                                foreach (var env in EnvMan.instance.m_environments)
-                                {
-                                    SeasonalityLogger.LogInfo(env.m_name);
-                                }
-                                break;
+                        foreach (string command in commandList)
+                        {
+                            SeasonalityLogger.LogInfo(command);
                         }
                         
+                        SeasonalityLogger.LogInfo("reload - force reload materials");
+                        SeasonalityLogger.LogInfo("list_weather - list available weather names");
+                        break;
+                    case "reload":
+                        MaterialReplacer.ModifyCachedMaterials(_Season.Value);
+                        break;
+                    case "list_weather":
+                        if (!EnvMan.instance) return false;
+                        foreach (var env in EnvMan.instance.m_environments)
+                        {
+                            SeasonalityLogger.LogInfo(env.m_name);
+                        }
+                        break;
+                }
+                
 
-                        return true;
-                    }
-                ), isCheat: false, optionsFetcher: ((Terminal.ConsoleOptionsFetcher) (() => new List<string>(){"help", "reload"})));
+                return true;
+            }
+        ), isCheat: false, optionsFetcher: () => new List<string>(){"help", "reload"});
             
             SeasonCommands.Clear();
             ConfigCommands();
@@ -91,7 +89,7 @@ public static class ConsoleCommands
                                     try
                                     {
                                         var encode = tex.EncodeToPNG();
-                                        if (!Directory.Exists(SeasonalityPaths.SeasonPaths.CustomSavePath))
+                                        if (!Directory.Exists(SeasonPaths.CustomSavePath))
                                             Directory.CreateDirectory(SeasonPaths.CustomSavePath);
                                         string path = SeasonPaths.CustomSavePath + Path.DirectorySeparatorChar +
                                                       material.name.Replace("(Instance)", string.Empty) + "." +

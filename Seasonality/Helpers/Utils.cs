@@ -6,7 +6,7 @@ using static Seasonality.SeasonalityPlugin;
 using static Seasonality.Textures.Directories;
 using static Seasonality.Textures.TextureManager;
 
-namespace Seasonality.SeasonUtility;
+namespace Seasonality.Helpers;
 
 public static class Utils
 {
@@ -122,7 +122,7 @@ public static class Utils
     }
     public static VegDirectories VegToDirectory(VegetationType type)
     {
-        return (type) switch
+        return type switch
         {
             VegetationType.Beech => VegDirectories.Beech,
             VegetationType.BeechSmall => VegDirectories.BeechSmall,

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using HarmonyLib;
+using Seasonality.Seasons;
 using UnityEngine;
 
 namespace Seasonality.Behaviors;
@@ -102,7 +103,7 @@ public class SeasonalTerrain : MonoBehaviour
     {
         private static void Postfix(Heightmap.Biome biome, ref Color32 __result)
         {
-            switch (SeasonalityPlugin._Season.Value)
+            switch (Configurations._Season.Value)
             {
                 case SeasonalityPlugin.Season.Winter:
                     switch (biome)

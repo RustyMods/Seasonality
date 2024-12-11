@@ -6,6 +6,7 @@ using Seasonality.Textures;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static Seasonality.SeasonalityPlugin;
+using static Seasonality.Seasons.Configurations;
 
 namespace Seasonality.Seasons;
 
@@ -85,8 +86,9 @@ public static class MaterialReplacer
             if (material.HasProperty(MainTex)) CachedTextures[normalizedName] = material.GetTexture(MainTex);
             if (material.HasProperty(MossTex))
             {
-                CachedTextures[normalizedName + "_moss"] = material.GetTexture(MossTex);
-                m_mossMaterials[material] = material.GetTexture(MossTex);
+                var mossTex = material.GetTexture(MossTex);
+                CachedTextures[normalizedName + "_moss"] = mossTex;
+                m_mossMaterials[material] = mossTex;
             }
 
             if (material.HasProperty("_MossColor"))
@@ -452,8 +454,8 @@ public static class MaterialReplacer
                         SetMossTextures(HeathMoss, Color.white);
                         break;
                     case Season.Winter:
-                        if (TextureManager.Pillar_Snow == null) break;
-                        SetMossTextures(TextureManager.Pillar_Snow, Color.white);
+                        if (TextureManager.Pillar_Snow is not {} pillarSnowTex) break;
+                        SetMossTextures(pillarSnowTex, Color.white);
                         break;
                 }
             }
@@ -494,27 +496,29 @@ public static class MaterialReplacer
     {
         foreach (KeyValuePair<Material, Texture> kvp in m_mossMaterials)
         {
-            if (kvp.Key == null) continue;
-            kvp.Key.SetTexture(MossTex, texture);
+            if (kvp.Key is not {} mat) continue;
+            mat.SetTexture(MossTex, texture);
         }
 
         foreach (KeyValuePair<Material, Color> kvp in m_mossColors)
         {
-            if (kvp.Key == null) continue;
-            kvp.Key.SetColor(MossColorProp, color);
+            if (kvp.Key is not {} mat) continue;
+            mat.SetColor(MossColorProp, color);
         }
     }
 
-    private static void ResetMossTextures()
+    public static void ResetMossTextures()
     {
-        foreach (var kvp in m_mossMaterials.Where(kvp => kvp.Key != null))
+        foreach (var kvp in m_mossMaterials)
         {
-            kvp.Key.SetTexture(MossTex, kvp.Value);
+            if (kvp.Key is not {} mat) continue;
+            mat.SetTexture(MossTex, kvp.Value);
         }
 
-        foreach (var kvp in m_mossColors.Where(kvp => kvp.Key != null))
+        foreach (var kvp in m_mossColors)
         {
-            kvp.Key.SetColor(MossColorProp, kvp.Value);
+            if (kvp.Key is not {} mat) continue;
+            mat.SetColor(MossColorProp, kvp.Value);
         }
     }
     private static void ModifyCustomMossMaterials()
@@ -524,23 +528,23 @@ public static class MaterialReplacer
             case Season.Spring or Season.Summer:
                 foreach (KeyValuePair<Material, Texture> kvp in m_customMossMaterials)
                 {
-                    if (kvp.Key == null) continue;
-                    kvp.Key.SetTexture(MossTex, kvp.Value);
+                    if (kvp.Key is not {} mat) continue;
+                    mat.SetTexture(MossTex, kvp.Value);
                 }
                 break;
             case Season.Fall:
                 if (!CachedTextures.TryGetValue("rock_heath_moss", out Texture HeathMoss)) return;
                 foreach (KeyValuePair<Material, Texture> kvp in m_customMossMaterials)
                 {
-                    if (kvp.Key == null) continue;
-                    kvp.Key.SetTexture(MossTex, HeathMoss);
+                    if (kvp.Key is not {} mat) continue;
+                    mat.SetTexture(MossTex, HeathMoss);
                 }
                 break;
             case Season.Winter:
                 foreach (KeyValuePair<Material, Texture> kvp in m_customMossMaterials)
                 {
-                    if (kvp.Key == null) continue;
-                    kvp.Key.SetTexture(MossTex, TextureManager.Pillar_Snow);
+                    if (kvp.Key is not {} mat) continue;
+                    mat.SetTexture(MossTex, TextureManager.Pillar_Snow);
                 }
                 break;
         }
@@ -582,9 +586,8 @@ public static class MaterialReplacer
         };
         foreach (KeyValuePair<string, Directories.CreatureDirectories> kvp in CreatureReplacementMap)
         {
-            Texture? texture = GetCustomTexture(season, kvp.Value, kvp.Key);
-            if (!texture) continue;
-            SetMainTexture(kvp.Key, texture);
+            if (GetCustomTexture(season, kvp.Value, kvp.Key) is not { } tex) continue;
+            SetMainTexture(kvp.Key, tex);
         }
     }
     private static void ModifyVegetation(Season season)
@@ -617,15 +620,13 @@ public static class MaterialReplacer
         };
         foreach (KeyValuePair<string, Directories.VegDirectories> kvp in VegetationReplacementMap)
         {
-            Texture? texture = GetCustomTexture(season, kvp.Value, kvp.Key);
-            if (!texture) continue;
-            SetMainTexture(kvp.Key, texture);
+            if (GetCustomTexture(season, kvp.Value, kvp.Key) is not { } tex) continue;
+            SetMainTexture(kvp.Key, tex);
         }
 
         foreach (KeyValuePair<string, Directories.VegDirectories> kvp in VinesMap)
         {
-            bool flag = GetCustomTexture(kvp.Value, kvp.Key, out Texture? texture);
-            if (!flag)
+            if (!GetCustomTexture(kvp.Value, kvp.Key, out Texture? texture))
             {
                 SetVineColorDefault(kvp.Key);
                 SetMainTexture(kvp.Key, texture);
@@ -663,8 +664,7 @@ public static class MaterialReplacer
         };
         foreach (KeyValuePair<string, Directories.VegDirectories> kvp in NormalReplacementMap)
         {
-            Texture? normal = GetCustomNormals(kvp.Value, kvp.Key);
-            if (!normal) continue;
+            if (GetCustomNormals(kvp.Value, kvp.Key) is not { } normal) continue;
             SetNormalTexture(kvp.Key, normal);
         }
     }
@@ -760,7 +760,7 @@ public static class MaterialReplacer
     }
     private static Texture? GetCustomTexture(Season season, Directories.CreatureDirectories directory, string originalMaterialName)
     {
-        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory, season);
+        Texture? customTexture = Helpers.Utils.GetCustomTexture(directory, season);
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
@@ -774,13 +774,13 @@ public static class MaterialReplacer
         string path = isWorn ? wornFilePath : filePath;
         if (isCorner) path = isWorn ? cornerWornFilePath : cornerFilePath;
         
-        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory, path);
+        Texture? customTexture = Helpers.Utils.GetCustomTexture(directory, path);
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
     private static Texture? GetCustomTexture(Season season, Directories.VegDirectories directory, string originalMaterialName, bool isBark = false)
     {
-        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory,  isBark ? season + "_bark" : season.ToString());
+        Texture? customTexture = Helpers.Utils.GetCustomTexture(directory,  isBark ? season + "_bark" : season.ToString());
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         if (originalMaterialName == "beech_particle" && season is Season.Fall) return originalTexture;
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
@@ -789,7 +789,7 @@ public static class MaterialReplacer
     private static bool GetCustomTexture(Directories.VegDirectories directory, string originalMaterialName, out Texture? texture, bool isBark = false)
     {
         texture = null;
-        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory,  isBark ? _Season.Value + "_bark" : _Season.Value.ToString());
+        Texture? customTexture = Helpers.Utils.GetCustomTexture(directory,  isBark ? _Season.Value + "_bark" : _Season.Value.ToString());
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
 
         texture = customTexture ? customTexture : originalTexture ? originalTexture : null;
@@ -798,19 +798,19 @@ public static class MaterialReplacer
     }
     private static Texture? GetCustomNormals(Directories.VegDirectories directory, string originalMaterialName)
     {
-        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory,  _Season.Value + "_normal");
+        Texture? customTexture = Helpers.Utils.GetCustomTexture(directory,  _Season.Value + "_normal");
         CachedTextures.TryGetValue(originalMaterialName + "_normal", out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
     private static Texture? GetCustomTexture(Season season, Directories.PickableDirectories directory, string originalMaterialName)
     {
-        Texture? customTexture = SeasonUtility.Utils.GetCustomTexture(directory, season.ToString());
+        Texture? customTexture = Helpers.Utils.GetCustomTexture(directory, season.ToString());
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }
     private static Texture? GetCustomTexture(Season season, Directories.ArmorDirectories directory, string originalMaterialName, bool isLegs = false, bool isCape = false, bool isHelmet = false)
     {
-        Texture? customTexture = isHelmet ? SeasonUtility.Utils.GetCustomTexture(directory, season +  "_helmet") : SeasonUtility.Utils.GetCustomTexture(directory, season + (isCape ? "_cape" : isLegs ? "_legs" : "_chest"));
+        Texture? customTexture = isHelmet ? Helpers.Utils.GetCustomTexture(directory, season +  "_helmet") : Helpers.Utils.GetCustomTexture(directory, season + (isCape ? "_cape" : isLegs ? "_legs" : "_chest"));
         CachedTextures.TryGetValue(originalMaterialName, out Texture originalTexture);
         return customTexture ? customTexture : originalTexture ? originalTexture : null;
     }

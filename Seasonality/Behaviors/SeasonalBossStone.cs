@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HarmonyLib;
 using Seasonality.Seasons;
 using Seasonality.Textures;
 using UnityEngine;
@@ -19,7 +20,7 @@ public class SeasonalBossStone : MonoBehaviour
     {
         foreach (SeasonalBossStone instance in Instances)
         {
-            if (instance.m_lastSeason == SeasonalityPlugin._Season.Value) continue;
+            if (instance.m_lastSeason == Configurations._Season.Value) continue;
             instance.SetLocationMoss();
         }
     }
@@ -44,7 +45,12 @@ public class SeasonalBossStone : MonoBehaviour
             {
                 if (material.HasProperty("_MossTex"))
                 {
-                    m_textureMap[material] = material.GetTexture(MossTex);
+                    if (MaterialReplacer.m_mossMaterials.TryGetValue(material, out Texture mossTex))
+                    {
+                        m_textureMap[material] = mossTex;
+                    }
+                    else m_textureMap[material] = material.GetTexture(MossTex);
+                    
                 }
             }
         }
@@ -52,7 +58,7 @@ public class SeasonalBossStone : MonoBehaviour
     
     public void SetLocationMoss()
     {
-        switch (SeasonalityPlugin._Season.Value)
+        switch (Configurations._Season.Value)
         {
             case SeasonalityPlugin.Season.Spring or SeasonalityPlugin.Season.Summer:
                 if (!MaterialReplacer.CachedTextures.TryGetValue("Firetree_oldlog_moss", out Texture StoneMoss)) return;
@@ -67,7 +73,7 @@ public class SeasonalBossStone : MonoBehaviour
                 ModifyMoss(TextureManager.Pillar_Snow);
                 break;
         }
-        m_lastSeason = SeasonalityPlugin._Season.Value;
+        m_lastSeason = Configurations._Season.Value;
 
     }
 
@@ -84,6 +90,16 @@ public class SeasonalBossStone : MonoBehaviour
         foreach (KeyValuePair<Material, Texture> kvp in m_textureMap)
         {
             kvp.Key.SetTexture(MossTex, texture);
+        }
+    }
+    
+    [HarmonyPatch(typeof(BossStone), nameof(BossStone.Start))]
+    private static class BossStone_Start_Patch
+    {
+        private static void Postfix(BossStone __instance)
+        {
+            if (!__instance) return;
+            __instance.gameObject.AddComponent<SeasonalBossStone>();
         }
     }
 }

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using HarmonyLib;
 using Seasonality.Managers;
+using Seasonality.Seasons;
 using UnityEngine;
 
 namespace Seasonality.Behaviors;
@@ -18,13 +20,13 @@ public class FrozenZones : MonoBehaviour
     {
         foreach (FrozenZones instance in Instances)
         {
-            if (SeasonalityPlugin._WinterFreezes.Value is SeasonalityPlugin.Toggle.Off)
+            if (Configurations._WinterFreezes.Value is SeasonalityPlugin.Toggle.Off)
             {
                 instance.ThawWater();
             }
             else
             {
-                if (SeasonalityPlugin._Season.Value is SeasonalityPlugin.Season.Winter 
+                if (Configurations._Season.Value is SeasonalityPlugin.Season.Winter 
                     && !instance.IsAshlands()) 
                     instance.FreezeWater();
                 else instance.ThawWater();
@@ -58,11 +60,11 @@ public class FrozenZones : MonoBehaviour
 
     private void SetInitialValues()
     {
-        if (SeasonalityPlugin._Season.Value is SeasonalityPlugin.Season.Winter 
-            && SeasonalityPlugin._WinterFreezes.Value is SeasonalityPlugin.Toggle.On 
+        if (Configurations._Season.Value is SeasonalityPlugin.Season.Winter 
+            && Configurations._WinterFreezes.Value is SeasonalityPlugin.Toggle.On 
             && !IsAshlands())
         {
-            m_surfaceRenderer.material = ZoneManager.SnowMaterial;
+            m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat;
             m_surfaceCollider.enabled = true;
             m_waterVolume.m_useGlobalWind = false;
             m_frozen = true;
@@ -81,7 +83,7 @@ public class FrozenZones : MonoBehaviour
         if (!m_surfaceCollider || !m_surfaceCollider || !m_waterVolume) return;
         if (m_frozen) return;
 
-        m_surfaceRenderer.material = ZoneManager.SnowMaterial;
+        m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat;
         m_surfaceCollider.enabled = true;
         m_waterVolume.m_useGlobalWind = false;
         m_frozen = true;
@@ -99,5 +101,15 @@ public class FrozenZones : MonoBehaviour
         m_waterVolume.Start();
         
         m_frozen = false;
+    }
+    
+    [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.Start))]
+    private static class ZoneSystem_Start_Patch
+    {
+        private static void Postfix(ZoneSystem __instance)
+        {
+            if (!__instance) return;
+            __instance.m_zonePrefab.AddComponent<FrozenZones>();
+        }
     }
 }

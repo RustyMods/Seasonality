@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using Seasonality.DataTypes;
+using Seasonality.Seasons;
 using UnityEngine;
 
 namespace Seasonality.Behaviors;
@@ -43,8 +43,8 @@ public class SeasonalClutter : MonoBehaviour
     public void SetClutter()
     {
         Reset();
-        var directory = SeasonUtility.Utils.VegToDirectory(m_type);
-        if (SeasonUtility.Utils.ApplyBasedOnAvailable(directory, SeasonalityPlugin._Season.Value, m_material, "_MainTex"))
+        var directory = Helpers.Utils.VegToDirectory(m_type);
+        if (Helpers.Utils.ApplyBasedOnAvailable(directory, Configurations._Season.Value, m_material, "_MainTex"))
         {
             switch (m_type)
             {
@@ -56,7 +56,7 @@ public class SeasonalClutter : MonoBehaviour
                 case GrassTypes.ClutterShrubs:
                 case GrassTypes.Ormbunke:
                 case GrassTypes.OrmBunkeSwamp:
-                    switch (SeasonalityPlugin._Season.Value)
+                    switch (Configurations._Season.Value)
                     {
                         case SeasonalityPlugin.Season.Fall:
                             m_material.color = new Color(0.8f, 0.5f, 0f, 1f);

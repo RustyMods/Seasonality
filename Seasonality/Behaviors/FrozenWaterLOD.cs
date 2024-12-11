@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using Seasonality.Managers;
+using Seasonality.Seasons;
 using UnityEngine;
 
 namespace Seasonality.Behaviors;
@@ -19,9 +19,9 @@ public class FrozenWaterLOD : MonoBehaviour
     {
         foreach (FrozenWaterLOD instance in Instances)
         {
-            if (SeasonalityPlugin._Season.Value is SeasonalityPlugin.Season.Winter 
-                && SeasonalityPlugin._WinterFreezes.Value is SeasonalityPlugin.Toggle.On
-               && Player.m_localPlayer && !WorldGenerator.IsAshlands(Player.m_localPlayer.transform.position.x, Player.m_localPlayer.transform.position.z))
+            if (Configurations._Season.Value is SeasonalityPlugin.Season.Winter 
+                && Configurations._WinterFreezes.Value is SeasonalityPlugin.Toggle.On
+                && Player.m_localPlayer && !WorldGenerator.IsAshlands(Player.m_localPlayer.transform.position.x, Player.m_localPlayer.transform.position.z))
             {
                 instance.Freeze();
             }
@@ -44,10 +44,10 @@ public class FrozenWaterLOD : MonoBehaviour
     private void SetInitialValues()
     {
         if (!m_renderer) return;
-        if (SeasonalityPlugin._WinterFreezes.Value is SeasonalityPlugin.Toggle.On
-            && SeasonalityPlugin._Season.Value is SeasonalityPlugin.Season.Winter)
+        if (Configurations._WinterFreezes.Value is SeasonalityPlugin.Toggle.On
+            && Configurations._Season.Value is SeasonalityPlugin.Season.Winter)
         {
-            m_renderer.material = ZoneManager.SnowMaterial;
+            m_renderer.material = SeasonalityPlugin.FrozenWaterMat;
             transform.position = m_originalPos + new Vector3(0f, -0.2f, 0f);
             m_frozen = true;
         }
@@ -75,7 +75,7 @@ public class FrozenWaterLOD : MonoBehaviour
     public void Freeze()
     {
         if (m_frozen) return;
-        m_renderer.material = ZoneManager.SnowMaterial;
+        m_renderer.material = SeasonalityPlugin.FrozenWaterMat;
         transform.position = m_originalPos + new Vector3(0f, -0.2f, 0f);
         m_frozen = true;
     }
@@ -86,10 +86,6 @@ public class FrozenWaterLOD : MonoBehaviour
         private static void Postfix(Game __instance)
         {
             if (!__instance) return;
-            // GameObject _GameMain = __instance.gameObject;
-            // Transform WaterPlane = Utils.FindChild(_GameMain.transform, "WaterPlane");
-            // if (!WaterPlane) return;
-            // Transform? m_waterSurface = Utils.FindChild(__instance.gameObject.transform, "WaterPlane").GetChild(0);
             try
             {
                 Utils.FindChild(__instance.gameObject.transform, "WaterPlane").GetChild(0).gameObject

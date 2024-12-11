@@ -48,24 +48,32 @@ public class CustomSeason : MonoBehaviour
             foreach (Material? material in renderer.materials)
             {
                 if (material.HasProperty(MainTex))
+                {
                     m_textureMap[material] = material.GetTexture(MainTex);
+                }
                 if (material.HasProperty(MossTex))
-                    m_mossMap[material] = material.GetTexture(MossTex);
+                {
+                    if (MaterialReplacer.m_mossMaterials.TryGetValue(material, out Texture mossTex))
+                    {
+                        m_textureMap[material] = mossTex;
+                    }
+                    else m_mossMap[material] = material.GetTexture(MossTex);
+                }
             }
         }
     }
 
     public void SetTextures()
     {
-        if (m_lastSeason == SeasonalityPlugin._Season.Value) return;
+        if (m_lastSeason == Configurations._Season.Value) return;
         SetPrefabMoss();
         SetPrefabTextures();
-        m_lastSeason = SeasonalityPlugin._Season.Value;
+        m_lastSeason = Configurations._Season.Value;
     }
 
     private void SetPrefabTextures()
     {
-        UpdateTexture(SeasonalityPlugin._Season.Value.ToString().ToLower());
+        UpdateTexture(Configurations._Season.Value.ToString().ToLower());
     }
 
     private void UpdateTexture(string key)
@@ -91,7 +99,7 @@ public class CustomSeason : MonoBehaviour
 
     private void SetPrefabMoss()
     {
-        switch (SeasonalityPlugin._Season.Value)
+        switch (Configurations._Season.Value)
         {
             case SeasonalityPlugin.Season.Winter:
                 if (TextureManager.Pillar_Snow == null) break;
