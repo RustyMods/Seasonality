@@ -164,13 +164,17 @@ public static class WeatherManager
         
         public override string GetTooltipString()
         {
-            return m_tooltip + Localization.instance.Localize($"$weather_{EnvMan.instance.m_currentEnv.m_name.ToLower().Replace(" ", "_")}_tooltip");
+            var localized = Localization.instance.Localize($"$weather_{EnvMan.instance.m_currentEnv.m_name.ToLower().Replace(" ", "_")}_tooltip");
+            if (localized.Contains("[")) localized = "";
+            return m_tooltip + localized;
         }
 
         public override string GetIconText()
         {
             if (EnvMan.instance == null) return "";
-            m_name = Localization.instance.Localize($"$weather_{EnvMan.instance.m_currentEnv.m_name.ToLower().Replace(" ", "_")}");
+            var env = EnvMan.instance.m_currentEnv.m_name;
+            var localized = Localization.instance.Localize($"$weather_{EnvMan.instance.m_currentEnv.m_name.ToLower().Replace(" ", "_")}");
+            m_name = localized.Contains("[") ? env : localized;
 
             if (Configs.m_displayWeatherTimer.Value is Configs.Toggle.Off) return "";
             double seed = EnvMan.instance.m_totalSeconds / EnvMan.instance.m_environmentDuration;

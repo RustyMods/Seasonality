@@ -1,22 +1,61 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using Seasonality.Helpers;
+using ServerSync;
 using YamlDotNet.Serialization;
 
 namespace Seasonality.GameplayModifiers;
 
 public static class PlantTweaks
 {
+    private const string FileName = "Plants.yml";
+    private static readonly string FilePath = TweaksManager.FolderPath + Path.DirectorySeparatorChar + FileName;
+    private static readonly CustomSyncedValue<string> ServerConfigs = new(SeasonalityPlugin.ConfigSync, "ServerPlantConfigs", "");
     private static ConfigEntry<Configs.Toggle> m_enabled = null!;
-    private static readonly string FilePath = TweaksManager.FolderPath + Path.DirectorySeparatorChar + "Plants.yml";
     public static Dictionary<string, Plants> m_data = new();
 
     public static void Setup()
     {
         m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Plants Tweaks", Configs.Toggle.Off, "If on, plant tweaks are enabled");
+        ServerConfigs.ValueChanged += () =>
+        {
+            if (!ZNet.m_instance || ZNet.m_instance.IsServer()) return;
+            var deserializer = new DeserializerBuilder().Build();
+            try
+            {
+                m_data = deserializer.Deserialize<Dictionary<string, Plants>>(ServerConfigs.Value);
+            }
+            catch
+            {
+                SeasonalityPlugin.Record.LogWarning("Failed to deserialize server plant configs");
+            }
+        };
+    }
+
+    public static void UpdateServerConfigs()
+    {
+        if (!ZNet.m_instance || !ZNet.m_instance.IsServer()) return;
+        var serializer = new SerializerBuilder().Build();
+        ServerConfigs.Value = serializer.Serialize(m_data);
+    }
+
+    public static void SetupFileWatch()
+    {
+        void ReadConfigValues(object sender, FileSystemEventArgs args)
+        {
+            UpdateServerConfigs();
+        }
+        FileSystemWatcher watcher = new FileSystemWatcher(TweaksManager.FolderPath, FileName);
+        watcher.Changed += ReadConfigValues;
+        watcher.Created += ReadConfigValues;
+        watcher.Renamed += ReadConfigValues;
+        watcher.IncludeSubdirectories = false;
+        watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+        watcher.EnableRaisingEvents = true;
     }
 
     public static void Read()

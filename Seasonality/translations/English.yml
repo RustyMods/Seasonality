@@ -17,6 +17,8 @@ msg_ready: "Ready"
 
 se_skill_modifier: "Experience modifier"
 se_damage: "Damage modifier"
+
+cannot_pick: 'Cannot Pick'
 ## Weather Names
 weather_clear: "Clear"
 weather_misty: "Misty"

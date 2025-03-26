@@ -92,7 +92,6 @@ public class MossController : MonoBehaviour
         private static void Postfix(BossStone __instance)
         {
             if (!__instance) return;
-            if (Configs.m_mossController.Value is Configs.Toggle.Off) return;
             if (__instance.GetComponentInParent<LocationMossController>()) return;
             var component = __instance.gameObject.AddComponent<MossController>();
             component.Cache();

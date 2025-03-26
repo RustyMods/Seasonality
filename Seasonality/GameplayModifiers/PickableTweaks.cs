@@ -1,23 +1,60 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using Seasonality.Helpers;
+using ServerSync;
 using YamlDotNet.Serialization;
 
 namespace Seasonality.GameplayModifiers;
 
 public static class PickableTweaks
 {
+    private const string FileName = "Pickables.yml";
+    private static readonly string FilePath = TweaksManager.FolderPath + Path.DirectorySeparatorChar + FileName;
+    private static readonly CustomSyncedValue<string> ServerPickableConfigs = new(SeasonalityPlugin.ConfigSync, "ServerPickableConfigs", "");
     private static ConfigEntry<Configs.Toggle> m_enabled = null!;
     public static Dictionary<string, Harvest> m_data = new();
-    private static readonly string FilePath = TweaksManager.FolderPath + Path.DirectorySeparatorChar + "Pickables.yml";
     public static void Setup()
     {
         m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Pickable Enabled", Configs.Toggle.Off, "If on, pickable tweaks are enabled");
+        ServerPickableConfigs.ValueChanged += () =>
+        {
+            var deserializer = new DeserializerBuilder().Build();
+            try
+            {
+                m_data = deserializer.Deserialize<Dictionary<string, Harvest>>(ServerPickableConfigs.Value);
+            }
+            catch
+            {
+                SeasonalityPlugin.Record.LogWarning("Failed to deserialize server pickable configs");
+            }
+        };
+    }
+    
+    public static void SetupFileWatch()
+    {
+        void ReadConfigValues(object sender, FileSystemEventArgs args)
+        {
+            UpdateServerConfigs();
+        }
+        FileSystemWatcher watcher = new FileSystemWatcher(TweaksManager.FolderPath, FileName);
+        watcher.Changed += ReadConfigValues;
+        watcher.Created += ReadConfigValues;
+        watcher.Renamed += ReadConfigValues;
+        watcher.IncludeSubdirectories = false;
+        watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+        watcher.EnableRaisingEvents = true;
     }
 
+    public static void UpdateServerConfigs()
+    {
+        if (!ZNet.m_instance || !ZNet.m_instance.IsServer()) return;
+        var serializer = new SerializerBuilder().Build();
+        ServerPickableConfigs.Value = serializer.Serialize(m_data);
+    }
     
 
     [HarmonyPatch(typeof(Pickable), nameof(Pickable.Awake))]
@@ -50,8 +87,7 @@ public static class PickableTweaks
             if (m_enabled.Value is Configs.Toggle.Off) return;
             if (!GetHarvestData(__instance.name.Replace("(Clone)", string.Empty), out Harvest.HarvestData data)) return;
             if (data.CanHarvest) return;
-            __result += Localization.instance.Localize(
-                $"\n <color=red>${Configs.m_season.Value.ToString().ToLower()}_cannot_pick</color>");
+            __result += Localization.instance.Localize("\n <color=red>$cannot_pick</color>");
         }
     }
 

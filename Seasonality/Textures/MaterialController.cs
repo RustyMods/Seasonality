@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using BepInEx;
+using BepInEx.Configuration;
 using HarmonyLib;
 using Seasonality.Helpers;
 using UnityEngine;
@@ -152,21 +152,36 @@ public static class MaterialController
         
         SpecialCase InstanceShrub = new("clutter_shrub", material =>
         {
-            material.m_mainColors[Configs.Season.Fall] = new Color32(205, 92, 92, 255);
+            material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+            Configs.m_fallColor1.SettingChanged += (_, _) =>
+            {
+                material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+                material.UpdateColors();
+            };
             material.m_updateColors = true;
             return true;
         });
         
         SpecialCase InstancedOrmbunke = new("ormbunke", material =>
         {
-            material.m_mainColors[Configs.Season.Fall] = new Color32(205, 92, 92, 255);
+            material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+            Configs.m_fallColor1.SettingChanged += (_, _) =>
+            {
+                material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+                material.UpdateColors();
+            };
             material.m_updateColors = true;
             return true;
         });
         
         SpecialCase InstancedOrmbunkeYellow = new("ormbunke_yellow", material =>
         {
-            material.m_mainColors[Configs.Season.Fall] = new Color32(205, 92, 92, 255);
+            material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+            Configs.m_fallColor1.SettingChanged += (_, _) =>
+            {
+                material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+                material.UpdateColors();
+            };
             material.m_updateColors = true;
             return true;
         });
@@ -179,18 +194,12 @@ public static class MaterialController
             "beech_leaf", "beech_particle", "beech_leaf_small", "birch_leaf", "birch_leaf_aut", "oak_leaf",
             "Shoot_Leaf_mat", "leaf", "birch_particle", "oak_particle", "shoot_leaf_particle"
         };
-        List<Color32> m_colors = new()
+        List<ConfigEntry<Color>> m_colors = new()
          {
-             new Color32(205, 92, 92, 255),   // Indian Red
-             new Color32(255, 87, 51, 255),   // Pumpkin Orange
-             new Color32(218, 165, 32, 255),  // Goldenrod
-             new Color32(139, 69, 19, 255),   // Saddle Brown
-             new Color32(255, 140, 0, 255),   // Dark Orange
-             new Color32(184, 134, 11, 255),  // Dark Goldenrod
-             new Color32(153, 101, 21, 255),  // Light Brown
-             new Color32(233, 116, 81, 255),  // Autumn Leaf Red
-             new Color32(244, 164, 96, 255),  // Sandy Brown
-             new Color32(255, 99, 71, 255)    // Tomato Red
+             Configs.m_fallColor1,
+             Configs.m_fallColor2,
+             Configs.m_fallColor3,
+             Configs.m_fallColor4
          };
         
         foreach (var material in materialsToClone)
@@ -202,7 +211,12 @@ public static class MaterialController
                 var color = m_colors[index];
                 string name = $"{original.m_name}_{index}";
                 var clone = original.Clone(name);
-                clone.m_mainColors[Configs.Season.Fall] = color;
+                clone.m_mainColors[Configs.Season.Fall] = color.Value;
+                color.SettingChanged += (_, _) =>
+                {
+                    clone.m_mainColors[Configs.Season.Fall] = color.Value;
+                    clone.UpdateColors();
+                };
                 clone.m_updateColors = true;
                 list.Add(clone);
             }
@@ -279,7 +293,7 @@ public static class MaterialController
             Stopwatch watch = Stopwatch.StartNew();
             var count = Load();
             watch.Stop();
-            SeasonalityPlugin.Record.LogInfo($"[FejdStartup Awake] Generation textures time: {watch.ElapsedMilliseconds}ms");
+            SeasonalityPlugin.Record.LogDebug($"[FejdStartup Awake] Generation textures time: {watch.ElapsedMilliseconds}ms");
             SeasonalityPlugin.Record.LogDebug($"[FejdStartup Awake]: Registered {count} new materials");
             SeasonalityPlugin.OnSeasonChange();
         }
@@ -294,7 +308,7 @@ public static class MaterialController
             Stopwatch watch = Stopwatch.StartNew();
             var count = Load();
             watch.Stop();
-            SeasonalityPlugin.Record.LogInfo($"[ZoneSystem SetupLocations] Generation textures time: {watch.ElapsedMilliseconds}ms");
+            SeasonalityPlugin.Record.LogDebug($"[ZoneSystem SetupLocations] Generation textures time: {watch.ElapsedMilliseconds}ms");
             SetupFallMaterials();
             SeasonalityPlugin.Record.LogDebug($"[ZoneSystem SetupLocations]: Registered {count} new materials");
             SeasonalityPlugin.OnSeasonChange();
@@ -311,7 +325,7 @@ public static class MaterialController
             Stopwatch watch = Stopwatch.StartNew();
             var count = Load();
             watch.Stop();
-            SeasonalityPlugin.Record.LogInfo($"[ZNetScene Awake] Generation textures time: {watch.ElapsedMilliseconds}ms");
+            SeasonalityPlugin.Record.LogDebug($"[ZNetScene Awake] Generation textures time: {watch.ElapsedMilliseconds}ms");
             SeasonalityPlugin.Record.LogDebug($"[ZNetScene Awake]: Registered {count} new materials");
             SeasonalityPlugin.OnSeasonChange();
         }
@@ -486,7 +500,7 @@ public static class MaterialController
             }
         }
 
-        private void UpdateColors()
+        public void UpdateColors()
         {
             if (!m_updateColors || !m_material.HasProperty("_Color")) return;
             m_material.color = m_mainColors.TryGetValue(Configs.m_season.Value, out Color32 newColor) ? newColor : m_originalColor;

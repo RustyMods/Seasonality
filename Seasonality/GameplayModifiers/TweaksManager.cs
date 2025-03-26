@@ -20,6 +20,20 @@ public static class TweaksManager
         FishTweaks.Setup();
         SpawnTweaks.Setup();
     }
+
+    [HarmonyPatch(typeof(ZNet), nameof(ZNet.Awake))]
+    private static class ZNet_Awake_Patch
+    {
+        private static void Postfix(ZNet __instance)
+        {
+            if (!__instance.IsServer()) return;
+            PlantTweaks.UpdateServerConfigs();
+            PickableTweaks.UpdateServerConfigs();
+            
+            PlantTweaks.SetupFileWatch();
+            PickableTweaks.SetupFileWatch();
+        }
+    }
     
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     private static class ZNetScene_Awake_Patch

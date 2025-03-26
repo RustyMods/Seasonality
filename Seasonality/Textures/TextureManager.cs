@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using BepInEx;
 using Seasonality.Helpers;
@@ -13,10 +12,14 @@ namespace Seasonality.Textures;
 public static class TextureManager
 {
     private static readonly string ConfigFolder = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality";
-    // public static readonly Texture? PillarSnowD2 = RegisterTexture("pillar_snow_d2.png");
     public static readonly TextureRef Stonemoss_heath = new ("stonemoss_heath");
     public static readonly TextureRef AshOnRocks_d = new("AshOnRocks_d");
     public static readonly TextureRef stonemoss = new("stonemoss");
+    public static readonly TextureRef stonekit_moss = new("stonekit_moss");
+    public static readonly TextureRef FinalPortal_moss = new("FinalPortal_moss");
+    public static readonly TextureRef stonemoss_swamp = new("stonemoss_swamp");
+    public static readonly TextureRef dead_moss = new("dead_moss");
+    public static readonly TextureRef stonekit_moss_hildir = new("stonekit_moss_hildir");
     private static readonly Dictionary<string, Texture> m_cachedTextures = new();
     public static readonly Dictionary<string, TexturePack> m_texturePacks = new();
     public static Dictionary<string, Texture> GetAllTextures(bool clear = false)
@@ -134,7 +137,7 @@ public static class TextureManager
             SeasonalityPlugin.Record.LogSuccess($"Registered: {data.m_fileName}");
         }
         watch.Stop();
-        SeasonalityPlugin.Record.LogInfo($"Reading textures took: {watch.ElapsedMilliseconds}ms");
+        SeasonalityPlugin.Record.LogDebug($"Reading textures took: {watch.ElapsedMilliseconds}ms");
     }
 
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")

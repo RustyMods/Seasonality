@@ -46,7 +46,6 @@ public class LocationMossController : MonoBehaviour
 
     public void UpdateMoss()
     {
-        if (Configs.m_mossController.Value is Configs.Toggle.Off) return;
         switch (Configs.m_season.Value)
         {
             case Configs.Season.Winter:
@@ -84,7 +83,6 @@ public class LocationMossController : MonoBehaviour
         private static void Postfix(ref GameObject __result)
         {
             if (!__result) return;
-            if (Configs.m_mossController.Value is Configs.Toggle.Off) return;
             __result.AddComponent<LocationMossController>();
         }
     }

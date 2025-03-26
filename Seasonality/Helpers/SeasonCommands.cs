@@ -39,7 +39,7 @@ public static class SeasonCommands
             {
                 if (material.Key.ToLower().Contains(args[2].ToLower()))
                 {
-                    Debug.LogWarning(material.Key);
+                    Debug.Log(material.Key);
                 }
             }
 
@@ -49,7 +49,7 @@ public static class SeasonCommands
                 {
                     foreach (var mat in list.Value)
                     {
-                        Debug.LogWarning(mat.m_name);
+                        Debug.Log(mat.m_name);
                     }
                 }
             }
@@ -64,7 +64,7 @@ public static class SeasonCommands
             {
                 if (material.Key.ToLower().Contains(args[2].ToLower()))
                 {
-                    Debug.LogWarning(material.Key);
+                    Debug.Log(material.Key);
                 }
             }
             return true;
@@ -88,7 +88,7 @@ public static class SeasonCommands
             }
 
             return true;
-        }, optionsFetcher: () => TextureManager.GetAllTextures().Keys.ToList());
+        }, isSecret: true , optionsFetcher: () => TextureManager.GetAllTextures().Keys.ToList());
         
         SeasonCommand SetSeason = new("set", "Set current season, admin only", args =>
         {

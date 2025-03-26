@@ -2,48 +2,26 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FallColors.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Behaviors/LocationMossController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Behaviors/VisEquipController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/FishTweaks.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PickableTweaks.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/SpawnTweaks.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Helpers/Records.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Textures/MaterialController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/CustomSeason.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/CustomSeason.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenWaterLOD.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenWaterLOD.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenZones.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenZones.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/SeasonalBossStone.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/SeasonalClutter.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/SeasonalLocation.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/SeasonalTerrain.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/TerrainController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/DataTypes/GrassTypes.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/DataTypes/VegetationType.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/ConsoleCommands.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/FadeToBlack.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/FadeToBlack.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonPaths.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FallColors.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FallColors.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/LocationMossController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/LocationMossController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/FishTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/FishTweaks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PickableTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PickableTweaks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Records.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Records.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonTimer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonTimer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Utils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Utils.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/GlobalKeyManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/GlobalKeyManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/SeasonManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/SeasonSE.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/WeatherManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/ConfigManagerPatch.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/Configurations.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/FallColors.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasons/MaterialReplacement.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/Directories.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/HDConfigurations.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/MaterialController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/MaterialController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/VersionHandshake.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/VersionHandshake.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/assets/pillar_snow_d2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/translations/English.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/translations/English.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -232,12 +210,14 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/3a/ab58b091/Color.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/41/21778c5a/Texture.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/4e/be7ed6d8/RenderTextureSubElement.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/71/1f8160e5/ILogger.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/86/35dc1cce/Shader.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/ba/ee13fbc6/GameObject.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/c0/231ed4e7/Object.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/c9/fe0647f7/MeshRenderer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/cd/2d3f7505/Renderer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/cf/cd127846/Mathf.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/e1/271cb2d1/Debug.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/e1/e9820e17/Mesh.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/e2/09627aac/NoAllocHelpers.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/eb/d5a489a5/MonoBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
@@ -554,7 +534,7 @@
       <workItem from="1742675685851" duration="11160000" />
       <workItem from="1742744026833" duration="40158000" />
       <workItem from="1742830376733" duration="39792000" />
-      <workItem from="1742908824731" duration="22647000" />
+      <workItem from="1742908824731" duration="29545000" />
     </task>
     <task id="LOCAL-00001" summary="update for latest patch">
       <created>1713580281581</created>
@@ -633,7 +613,14 @@
       <option name="project" value="LOCAL" />
       <updated>1733595264610</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Overhaul">
+      <created>1742948971676</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1742948971677</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -665,7 +652,8 @@
     <MESSAGE value="change season timer to save on disk" />
     <MESSAGE value="hotfix for fade to black" />
     <MESSAGE value="fade break and draw config" />
-    <option name="LAST_COMMIT_MESSAGE" value="fade break and draw config" />
+    <MESSAGE value="Overhaul" />
+    <option name="LAST_COMMIT_MESSAGE" value="Overhaul" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

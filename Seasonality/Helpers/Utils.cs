@@ -29,4 +29,9 @@ public static class Utils
         if (!dict.ContainsKey(TKey)) dict[TKey] = new Dictionary<J, Texture?>();
         dict[TKey][OKey] = value;
     }
+
+    public static Vector3 GetOrDefault<T>(this Dictionary<T, ConfigEntry<Vector3>> dict, T season, Vector3 defaultValue)
+    {
+        return !dict.TryGetValue(season, out ConfigEntry<Vector3> config) ? defaultValue : config.Value;
+    }
 }

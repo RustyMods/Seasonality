@@ -165,7 +165,6 @@
           <Link>assets\snowmaterialbundle</Link>
         </EmbeddedResource>
         <Content Include=".gitignore" />
-        <EmbeddedResource Include="assets\pillar_snow_d2.png" />
         <Content Include="environment.props" />
         <EmbeddedResource Include="icons\fall_icon.png" />
         <EmbeddedResource Include="icons\spring_icon.png" />

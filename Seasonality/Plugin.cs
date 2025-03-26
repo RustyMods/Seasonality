@@ -28,7 +28,7 @@ namespace Seasonality
         internal static string ConnectionError = "";
         private readonly Harmony _harmony = new(ModGUID);
         private static readonly ManualLogSource SeasonalityLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
-        private static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
+        public static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
         public static SeasonalityPlugin _plugin = null!;
         private static readonly AssetBundle Assets = GetAssetBundle("snowmaterialbundle");
         public static Material FrozenWaterMat = null!;

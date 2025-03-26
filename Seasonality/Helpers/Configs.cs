@@ -68,8 +68,12 @@ public class Configs
     public static ConfigEntry<Toggle> m_enableModifiers = null!;
     public static ConfigEntry<string> m_rootTextureFolder = null!;
     public static ConfigEntry<Toggle> m_randomColors = null!;
-    public static ConfigEntry<Toggle> m_mossController = null!;
     public static ConfigEntry<Toggle> m_particlesController = null!;
+    public static ConfigEntry<Color> m_fallColor1 = null!;
+    public static ConfigEntry<Color> m_fallColor2 = null!;
+    public static ConfigEntry<Color> m_fallColor3 = null!;
+    public static ConfigEntry<Color> m_fallColor4 = null!;
+
 
     private void Init()
     {
@@ -82,7 +86,6 @@ public class Configs
         m_fadeToBlackImmune = config("1 - Settings", "Fade Immune", Toggle.Off, "If on, player immune while fading to black");
         m_enableModifiers = config("1 - Settings", "Modifiers Enabled", Toggle.Off, "If on, season status effect modifiers are enabled");
         m_rootTextureFolder = config("1 - Settings", "Texture Folder", "Default", "Set the root folder to register textures");
-        m_mossController = config("1 - Settings", "Moss Controller", Toggle.On, "If on, moss controller fixes moss textures");
         m_particlesController = config("1 - Settings", "Particles", Toggle.Off, "If on, particles are affected");
         
         m_displayTimer = config("2 - HUD", "Display Timer", Toggle.On, "If on, timer is displayed");
@@ -104,6 +107,13 @@ public class Configs
         m_winterAlwaysCold = config("Winter", "Always Cold", Toggle.Off, "If on, winter is always cold, and applies Cold Status Effect");
         m_displaySeason.SettingChanged += SeasonSE.OnSeasonDisplayConfigChange;
         m_randomColors = config("Fall", "Random Colors", Toggle.On, "If on, random colors are applied to targeted prefabs");
+        m_fallColor1 = config("Fall", "Color 1", new Color(0.803f, 0.360f, 0.360f, 1f), "Set fall color 1");
+        m_fallColor2 = config("Fall", "Color 2", new Color(0.855f, 0.647f, 0.125f, 1f), "Set fall color 2");
+        m_fallColor3 = config("Fall", "Color 3", new Color(0.914f, 0.455f, 0.318f, 1f), "Set fall color 3");
+        m_fallColor4 = config("Fall", "Color 4", new Color(0.545f, 0.270f, 0.074f, 1f), "Set fall color 4");
+
+
+        
         foreach (Season season in Enum.GetValues(typeof(Season)))
         {
             m_durations[season] = config(season.ToString(), "In-Game Duration", new Vector3(0, 5, 0),

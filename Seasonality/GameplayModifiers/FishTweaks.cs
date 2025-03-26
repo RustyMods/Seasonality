@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using BepInEx.Configuration;
 using HarmonyLib;
 using Seasonality.Helpers;
-
 namespace Seasonality.GameplayModifiers;
 
 public static class FishTweaks
@@ -29,7 +29,7 @@ public static class FishTweaks
         {
             if (m_enabled.Value is Configs.Toggle.Off) return;
             if (Configs.m_season.Value is not Configs.Season.Winter) return;
-            __result += Localization.instance.Localize("\n $winter_cannot_pick_fish");
+            __result += Localization.instance.Localize("\n $cannot_pick");
         }
     }
 }

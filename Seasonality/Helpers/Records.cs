@@ -24,29 +24,30 @@ public class Records
 
     public void LogSuccess(string log)
     {
-        m_records.Add($"[SUCCESS]: {log}");
+        m_records.Add($"[Success]: {log}");
     }
 
     public void LogDebug(string log)
     {
-        m_records.Add($"[DEBUG]: {log}");
+        m_records.Add($"[Debug]: {log}");
+        m_manualLogSource.LogDebug(log);
     }
 
     public void LogInfo(string log)
     {
-        m_records.Add($"[INFO]: {log}");
+        m_records.Add($"[Info]: {log}");
         m_manualLogSource.LogInfo(log);
     }
 
     public void LogWarning(string log)
     {
-        m_records.Add($"[WARNING]: {log}");
+        m_records.Add($"[Warning]: {log}");
         m_manualLogSource.LogWarning(log);
     }
 
     public void LogError(string log)
     {
-        m_records.Add($"[ERROR]: {log}");
+        m_records.Add($"[Error]: {log}");
         m_manualLogSource.LogError(log);
     }
 
@@ -55,5 +56,11 @@ public class Records
         if (!Directory.Exists(ConfigFolder)) Directory.CreateDirectory(ConfigFolder);
         File.WriteAllLines(FilePath, m_records);
         LogInfo($"{FileName} wrote to file: {FilePath}");
+    }
+
+    [HarmonyPatch(typeof(Game), nameof(Game.Logout))]
+    private static class Game_Logout_Patch
+    {
+        private static void Prefix() => SeasonalityPlugin.Record.Write();
     }
 }

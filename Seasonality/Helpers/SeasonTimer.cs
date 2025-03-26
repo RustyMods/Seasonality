@@ -1,5 +1,4 @@
 using System;
-using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
 
@@ -27,11 +26,7 @@ public static class SeasonTimer
     
     private static double GetSeasonLength()
     {
-        var vector = Vector3.zero;
-        if (Configs.m_durations.TryGetValue(Configs.m_season.Value, out ConfigEntry<Vector3> config))
-        {
-            vector = config.Value;
-        }
+        var vector = Configs.m_durations.GetOrDefault(Configs.m_season.Value, Vector3.zero);
         double days = vector.x * 86400;
         double hours = vector.y * 3600;
         double minutes = vector.z * 60;
