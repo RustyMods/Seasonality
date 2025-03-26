@@ -15,12 +15,12 @@ namespace Seasonality
         private static void Prefix(ZNetPeer peer, ref ZNet __instance)
         {
             // Register version check call
-            SeasonalityPlugin.SeasonalityLogger.LogDebug("Registering version RPC handler");
+            SeasonalityPlugin.Record.LogDebug("Registering version RPC handler");
             peer.m_rpc.Register($"{SeasonalityPlugin.ModName}_VersionCheck",
                 new Action<ZRpc, ZPackage>(RpcHandlers.RPC_Seasonality_Version));
 
             // Make calls to check versions
-            SeasonalityPlugin.SeasonalityLogger.LogInfo("Invoking version check");
+            SeasonalityPlugin.Record.LogInfo("Invoking version check");
             ZPackage zpackage = new();
             zpackage.Write(SeasonalityPlugin.ModVersion);
             zpackage.Write(RpcHandlers.ComputeHashForMod().Replace("-", ""));
@@ -71,7 +71,7 @@ namespace Seasonality
         {
             if (!__instance.IsServer()) return;
             // Remove peer from validated list
-            SeasonalityPlugin.SeasonalityLogger.LogInfo($"Peer ({peer.m_rpc.m_socket.GetHostName()}) disconnected, removing from validated list");
+            SeasonalityPlugin.Record.LogInfo($"Peer ({peer.m_rpc.m_socket.GetHostName()}) disconnected, removing from validated list");
             _ = RpcHandlers.ValidatedPeers.Remove(peer.m_rpc);
         }
     }
@@ -86,14 +86,14 @@ namespace Seasonality
             string? hash = pkg.ReadString();
 
             var hashForAssembly = ComputeHashForMod().Replace("-", "");
-            SeasonalityPlugin.SeasonalityLogger.LogInfo("Version check, local: " +
+            SeasonalityPlugin.Record.LogInfo("Version check, local: " +
                                                         SeasonalityPlugin.ModVersion +
                                                         ",  remote: " + version);
             if (hash != hashForAssembly || version != SeasonalityPlugin.ModVersion)
             {
                 SeasonalityPlugin.ConnectionError = $"{SeasonalityPlugin.ModName} Installed: {SeasonalityPlugin.ModVersion} {hashForAssembly}\n Needed: {version} {hash}";
                 if (!ZNet.instance.IsServer()) return;
-                SeasonalityPlugin.SeasonalityLogger.LogWarning($"Peer ({rpc.m_socket.GetHostName()}) has incompatible version");
+                SeasonalityPlugin.Record.LogWarning($"Peer ({rpc.m_socket.GetHostName()}) has incompatible version");
 
                 // Different versions - force disconnect client from server
                 // SeasonalityPlugin.SeasonalityLogger.LogWarning($"Peer ({rpc.m_socket.GetHostName()}) has incompatible version, disconnecting...");
@@ -104,13 +104,13 @@ namespace Seasonality
                 if (!ZNet.instance.IsServer())
                 {
                     // Enable mod on client if versions match
-                    SeasonalityPlugin.SeasonalityLogger.LogInfo("Received same version from server!");
+                    SeasonalityPlugin.Record.LogInfo("Received same version from server!");
                     SeasonTimer.ValidServer = true;
                 }
                 else
                 {
                     // Add client to validated list
-                    SeasonalityPlugin.SeasonalityLogger.LogInfo($"Adding peer ({rpc.m_socket.GetHostName()}) to validated list");
+                    SeasonalityPlugin.Record.LogInfo($"Adding peer ({rpc.m_socket.GetHostName()}) to validated list");
                     ValidatedPeers.Add(rpc);
                 }
             }

@@ -10,7 +10,7 @@
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>Seasonality</RootNamespace>
         <AssemblyName>Seasonality</AssemblyName>
-        <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <LangVersion>10</LangVersion>
         <Nullable>enable</Nullable>
@@ -79,6 +79,9 @@
         <Reference Include="BepInEx">
             <HintPath>$(BepInExPath)\core\BepInEx.dll</HintPath>
         </Reference>
+        <Reference Include="gui_framework">
+          <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\gui_framework_publicized.dll</HintPath>
+        </Reference>
         <Reference Include="ServerSync">
             <HintPath>Libs\ServerSync.dll</HintPath>
         </Reference>
@@ -125,30 +128,31 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Behaviors\CustomSeason.cs" />
+        <Compile Include="Behaviors\FallColors.cs" />
         <Compile Include="Behaviors\FrozenWaterLOD.cs" />
         <Compile Include="Behaviors\FrozenZones.cs" />
-        <Compile Include="Behaviors\SeasonalBossStone.cs" />
-        <Compile Include="Behaviors\SeasonalClutter.cs" />
-        <Compile Include="Behaviors\SeasonalLocation.cs" />
-        <Compile Include="Behaviors\SeasonalTerrain.cs" />
-        <Compile Include="DataTypes\GrassTypes.cs" />
-        <Compile Include="DataTypes\VegetationType.cs" />
+        <Compile Include="Behaviors\GlobalKeyManager.cs" />
+        <Compile Include="Behaviors\MossController.cs" />
+        <Compile Include="Behaviors\LocationMossController.cs" />
+        <Compile Include="Behaviors\SeasonSE.cs" />
+        <Compile Include="Behaviors\TerrainController.cs" />
+        <Compile Include="Behaviors\VisEquipController.cs" />
+        <Compile Include="Behaviors\WeatherManager.cs" />
+        <Compile Include="GameplayModifiers\FishTweaks.cs" />
+        <Compile Include="GameplayModifiers\PickableTweaks.cs" />
+        <Compile Include="GameplayModifiers\PlantTweaks.cs" />
+        <Compile Include="GameplayModifiers\SpawnTweaks.cs" />
+        <Compile Include="GameplayModifiers\TweaksManager.cs" />
+        <Compile Include="Helpers\Configs.cs" />
+        <Compile Include="Helpers\Records.cs" />
+        <Compile Include="Helpers\SeasonCommands.cs" />
         <Compile Include="Helpers\SeasonTimer.cs" />
-        <Compile Include="Managers\GlobalKeyManager.cs" />
+        <Compile Include="Helpers\Utils.cs" />
         <Compile Include="Managers\LocalizationManager.cs" />
-        <Compile Include="Managers\SeasonManager.cs" />
-        <Compile Include="Managers\WeatherManager.cs" />
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Seasons\Configurations.cs" />
-        <Compile Include="Seasons\MaterialReplacement.cs" />
-        <Compile Include="Seasons\FallColors.cs" />
-        <Compile Include="Helpers\ConsoleCommands.cs" />
         <Compile Include="Helpers\FadeToBlack.cs" />
-        <Compile Include="Helpers\SeasonPaths.cs" />
-        <Compile Include="Helpers\Utils.cs" />
-        <Compile Include="Textures\Directories.cs" />
-        <Compile Include="Textures\HDConfigurations.cs" />
+        <Compile Include="Textures\MaterialController.cs" />
         <Compile Include="Textures\SpriteManager.cs" />
         <Compile Include="Textures\TextureManager.cs" />
         <Compile Include="VersionHandshake.cs" />
@@ -157,12 +161,6 @@
         <None Include="App.config" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="..\..\..\Textures\mistlands_moss.png">
-          <Link>assets\mistlands_moss.png</Link>
-        </Content>
-        <Content Include="..\..\..\Textures\MistlandsVegetation_d.png">
-          <Link>assets\MistlandsVegetation_d.png</Link>
-        </Content>
         <EmbeddedResource Include="..\..\..\evennewerbundles\snowmaterialbundle">
           <Link>assets\snowmaterialbundle</Link>
         </EmbeddedResource>

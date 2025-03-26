@@ -1,19 +1,28 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using Seasonality.Seasons;
+using Seasonality.Helpers;
 using UnityEngine;
 
 namespace Seasonality.Behaviors;
 
-public class SeasonalTerrain : MonoBehaviour
+public class TerrainController : MonoBehaviour
 {
-    private static readonly List<SeasonalTerrain> m_instances = new();
+    private static readonly List<TerrainController> m_instances = new();
 
-    private Heightmap m_heightmap = null!;
+    private Heightmap? m_heightmap;
 
     public static void UpdateTerrain()
     {
-        foreach(var instance in m_instances) instance.ChangeTerrainColor();
+        foreach (var instance in m_instances)
+        {
+            if (instance == null || instance.m_heightmap == null) continue;
+            instance.ChangeTerrainColor();
+        }
+    }
+
+    public void OnDestroy()
+    {
+        m_instances.Remove(this);
     }
 
     public void Load()
@@ -24,8 +33,8 @@ public class SeasonalTerrain : MonoBehaviour
 
     public void ChangeTerrainColor()
     {
+        if (WorldGenerator.instance == null || m_heightmap == null || m_heightmap.m_renderMesh == null) return;
         Heightmap.s_tempColors.Clear();
-        var instance = WorldGenerator.instance;
         var vector3 = transform.position +
                       new Vector3((float)(m_heightmap.m_width * (double)m_heightmap.m_scale * -0.5), 0.0f,
                           (float)(m_heightmap.m_width * (double)m_heightmap.m_scale * -0.5));
@@ -42,7 +51,7 @@ public class SeasonalTerrain : MonoBehaviour
                 {
                     var wx = vector3.x + index2 * m_heightmap.m_scale;
                     var wy = vector3.z + index1 * m_heightmap.m_scale;
-                    var biome = instance.GetBiome(wx, wy);
+                    var biome = WorldGenerator.instance.GetBiome(wx, wy);
                     Heightmap.s_tempColors.Add(Heightmap.GetBiomeColor(biome));
                 }
                 else
@@ -61,7 +70,7 @@ public class SeasonalTerrain : MonoBehaviour
     {
         private static void Postfix(Heightmap __instance)
         {
-            __instance.gameObject.AddComponent<SeasonalTerrain>();
+            __instance.gameObject.AddComponent<TerrainController>();
         }
     }
 
@@ -70,7 +79,7 @@ public class SeasonalTerrain : MonoBehaviour
     {
         private static void Postfix(Heightmap __instance)
         {
-            if (!__instance.TryGetComponent(out SeasonalTerrain component)) return;
+            if (!__instance.TryGetComponent(out TerrainController component)) return;
             component.Load();
         }
     }
@@ -80,7 +89,7 @@ public class SeasonalTerrain : MonoBehaviour
     {
         private static void Postfix(Heightmap __instance)
         {
-            if (!__instance.TryGetComponent(out SeasonalTerrain component)) return;
+            if (!__instance.TryGetComponent(out TerrainController component)) return;
             m_instances.Remove(component);
         }
     }
@@ -103,9 +112,9 @@ public class SeasonalTerrain : MonoBehaviour
     {
         private static void Postfix(Heightmap.Biome biome, ref Color32 __result)
         {
-            switch (Configurations._Season.Value)
+            switch (Configs.m_season.Value)
             {
-                case SeasonalityPlugin.Season.Winter:
+                case Configs.Season.Winter:
                     switch (biome)
                     {
                         case Heightmap.Biome.Meadows:
@@ -117,7 +126,7 @@ public class SeasonalTerrain : MonoBehaviour
                             break;
                     }
                     break;
-                case SeasonalityPlugin.Season.Fall:
+                case Configs.Season.Fall:
                     switch (biome)
                     {
                         case Heightmap.Biome.Meadows:

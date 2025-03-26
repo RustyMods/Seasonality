@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using Seasonality.Managers;
-using Seasonality.Seasons;
+using Seasonality.Helpers;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Seasonality.Behaviors;
 
@@ -16,17 +16,17 @@ public class FrozenZones : MonoBehaviour
     private static readonly List<FrozenZones> Instances = new();
     public bool m_frozen;
 
-    public static void UpdateInstances()
+    public static void UpdateAll()
     {
         foreach (FrozenZones instance in Instances)
         {
-            if (Configurations._WinterFreezes.Value is SeasonalityPlugin.Toggle.Off)
+            if (Configs.m_waterFreezes.Value is Configs.Toggle.Off)
             {
                 instance.ThawWater();
             }
             else
             {
-                if (Configurations._Season.Value is SeasonalityPlugin.Season.Winter 
+                if (Configs.m_season.Value is Configs.Season.Winter 
                     && !instance.IsAshlands()) 
                     instance.FreezeWater();
                 else instance.ThawWater();
@@ -60,8 +60,8 @@ public class FrozenZones : MonoBehaviour
 
     private void SetInitialValues()
     {
-        if (Configurations._Season.Value is SeasonalityPlugin.Season.Winter 
-            && Configurations._WinterFreezes.Value is SeasonalityPlugin.Toggle.On 
+        if (Configs.m_season.Value is Configs.Season.Winter 
+            && Configs.m_waterFreezes.Value is Configs.Toggle.On 
             && !IsAshlands())
         {
             m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat;

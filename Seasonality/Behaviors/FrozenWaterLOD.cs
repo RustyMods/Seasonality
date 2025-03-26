@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using Seasonality.Seasons;
+using Seasonality.Helpers;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Seasonality.Behaviors;
 
@@ -15,12 +16,12 @@ public class FrozenWaterLOD : MonoBehaviour
 
     private static readonly List<FrozenWaterLOD> Instances = new();
 
-    public static void UpdateInstances()
+    public static void UpdateAll()
     {
         foreach (FrozenWaterLOD instance in Instances)
         {
-            if (Configurations._Season.Value is SeasonalityPlugin.Season.Winter 
-                && Configurations._WinterFreezes.Value is SeasonalityPlugin.Toggle.On
+            if (Configs.m_season.Value is Configs.Season.Winter 
+                && Configs.m_waterFreezes.Value is Configs.Toggle.On
                 && Player.m_localPlayer && !WorldGenerator.IsAshlands(Player.m_localPlayer.transform.position.x, Player.m_localPlayer.transform.position.z))
             {
                 instance.Freeze();
@@ -44,8 +45,8 @@ public class FrozenWaterLOD : MonoBehaviour
     private void SetInitialValues()
     {
         if (!m_renderer) return;
-        if (Configurations._WinterFreezes.Value is SeasonalityPlugin.Toggle.On
-            && Configurations._Season.Value is SeasonalityPlugin.Season.Winter)
+        if (Configs.m_waterFreezes.Value is Configs.Toggle.On
+            && Configs.m_season.Value is Configs.Season.Winter)
         {
             m_renderer.material = SeasonalityPlugin.FrozenWaterMat;
             transform.position = m_originalPos + new Vector3(0f, -0.2f, 0f);
@@ -93,7 +94,7 @@ public class FrozenWaterLOD : MonoBehaviour
             }
             catch
             {
-                SeasonalityPlugin.SeasonalityLogger.LogDebug("Failed to find water LOD");
+                SeasonalityPlugin.Record.LogDebug("Failed to find water LOD");
             }
         }
     }

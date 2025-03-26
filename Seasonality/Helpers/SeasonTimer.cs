@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using BepInEx.Configuration;
 using HarmonyLib;
-using Seasonality.Seasons;
+using UnityEngine;
 
 namespace Seasonality.Helpers;
 
@@ -15,23 +14,27 @@ public static class SeasonTimer
     private static double GetTimeElapsed()
     {
         if (!ZNet.instance) return 0;
-        if (Configurations.m_lastSeasonChange.Value > ZNet.instance.GetTimeSeconds()) Configurations.m_lastSeasonChange.Value = 0;
-        var timeElapsed = ZNet.m_instance.GetTimeSeconds() - Configurations.m_lastSeasonChange.Value;
+        if (Configs.m_lastSeasonChange.Value > ZNet.instance.GetTimeSeconds()) Configs.m_lastSeasonChange.Value = 0;
+        var timeElapsed = ZNet.m_instance.GetTimeSeconds() - Configs.m_lastSeasonChange.Value;
         return timeElapsed < 0 ? 0 : timeElapsed;
     }
 
     private static void SetLastSeasonChangeTime()
     {
         double time = ZNet.m_instance.GetTimeSeconds();
-        Configurations.m_lastSeasonChange.Value = time;
+        Configs.m_lastSeasonChange.Value = time;
     }
     
     private static double GetSeasonLength()
     {
-        if (!Configurations._Durations.TryGetValue(Configurations._Season.Value, out Dictionary<Configurations.DurationType, ConfigEntry<int>> configs)) return 0;
-        double days = configs[Configurations.DurationType.Day].Value * 86400;
-        double hours = configs[Configurations.DurationType.Hours].Value * 3600;
-        double minutes = configs[Configurations.DurationType.Minutes].Value * 60;
+        var vector = Vector3.zero;
+        if (Configs.m_durations.TryGetValue(Configs.m_season.Value, out ConfigEntry<Vector3> config))
+        {
+            vector = config.Value;
+        }
+        double days = vector.x * 86400;
+        double hours = vector.y * 3600;
+        double minutes = vector.z * 60;
         return days + hours + minutes;
     }
 
@@ -45,13 +48,13 @@ public static class SeasonTimer
 
     private static double GetCountdown() => TimeSpan.FromSeconds(GetTimeDifference()).TotalSeconds;
     
-    public static SeasonalityPlugin.Season GetNextSeason(SeasonalityPlugin.Season season)
+    public static Configs.Season GetNextSeason(Configs.Season season)
     {
         int currentSeason = (int)season;
-        SeasonalityPlugin.Season nextSeason;
+        Configs.Season nextSeason;
 
-        if (Enum.IsDefined(typeof(SeasonalityPlugin.Season), currentSeason + 1))
-            nextSeason = (SeasonalityPlugin.Season)currentSeason + 1;
+        if (Enum.IsDefined(typeof(Configs.Season), currentSeason + 1))
+            nextSeason = (Configs.Season)currentSeason + 1;
         else 
             nextSeason = 0;
 
@@ -60,14 +63,14 @@ public static class SeasonTimer
 
     private static void CheckSeasonFade(double timer)
     {
-        if (Configurations._SeasonFades.Value is SeasonalityPlugin.Toggle.Off) return;
-        if (!Player.m_localPlayer || !ZNet.instance || FadeToBlack.m_seasonBlackScreen is null || FadeToBlack.m_seasonScreen is null) return;
-        if (timer > Configurations._FadeLength.Value) return;
+        if (Configs.m_seasonFades.Value is Configs.Toggle.Off) return;
+        if (!Player.m_localPlayer || !ZNet.instance || FadeToBlack.m_blackScreenImg is null || FadeToBlack.m_blackScreen is null) return;
+        if (timer > Configs.m_fadeLength.Value) return;
         if (ZNet.instance.GetTimeSeconds() - FadeToBlack.m_timeLastFade < 50f || FadeToBlack.m_fading) return;
         SeasonalityPlugin._plugin.StartCoroutine(FadeToBlack.TriggerFade());
     }
     
-    public static void CheckSeasonTransition(float dt)
+    public static void CheckTransition(float dt)
     {
         if (!ZNet.instance || !EnvMan.instance || ZNet.m_world == null || !ShouldCount()) return;
         m_seasonTimer += dt;
@@ -75,7 +78,7 @@ public static class SeasonTimer
         m_seasonTimer = 0.0f;
         
         int countdown = (int)GetCountdown();
-        if (Configurations._SleepOverride.Value is SeasonalityPlugin.Toggle.On)
+        if (Configs.m_sleepOverride.Value is Configs.Toggle.On)
         {
             if (countdown > 0) return;
             if (m_sleepOverride) return;
@@ -92,7 +95,7 @@ public static class SeasonTimer
     private static void ChangeSeason()
     {
         if (!ZNet.instance.IsServer() && ValidServer) return;
-        Configurations._Season.Value = GetNextSeason(Configurations._Season.Value);
+        Configs.m_season.Value = GetNextSeason(Configs.m_season.Value);
         SetLastSeasonChangeTime();
     }
 

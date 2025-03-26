@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Seasonality.Seasons;
+using Seasonality.Helpers;
 
-namespace Seasonality.Managers;
+namespace Seasonality.Behaviors;
 
 public static class GlobalKeyManager
 {
@@ -24,18 +24,18 @@ public static class GlobalKeyManager
 
     private static void SetKey()
     {
-        string? newKey = GetKey(Configurations._Season.Value);
+        string? newKey = GetKey(Configs.m_season.Value);
         if (newKey != null) ZoneSystem.instance.SetGlobalKey(newKey);
     }
 
-    private static string? GetKey(SeasonalityPlugin.Season season)
+    private static string? GetKey(Configs.Season season)
     {
         return season switch
         {
-            SeasonalityPlugin.Season.Winter => "season_winter",
-            SeasonalityPlugin.Season.Fall => "season_fall",
-            SeasonalityPlugin.Season.Summer => "season_summer",
-            SeasonalityPlugin.Season.Spring => "season_spring",
+            Configs.Season.Winter => "season_winter",
+            Configs.Season.Fall => "season_fall",
+            Configs.Season.Summer => "season_summer",
+            Configs.Season.Spring => "season_spring",
             _ => null
         };
     }
