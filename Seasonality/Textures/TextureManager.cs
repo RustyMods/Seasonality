@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -20,6 +19,9 @@ public static class TextureManager
     public static readonly TextureRef stonemoss_swamp = new("stonemoss_swamp");
     public static readonly TextureRef dead_moss = new("dead_moss");
     public static readonly TextureRef stonekit_moss_hildir = new("stonekit_moss_hildir");
+    public static readonly TextureRef stonemoss_bw = new("stonemoss_bw");
+    public static readonly TextureRef groundcreep_d = new("groundcreep_d");
+    
     private static readonly Dictionary<string, Texture> m_cachedTextures = new();
     public static readonly Dictionary<string, TexturePack> m_texturePacks = new();
     public static Dictionary<string, Texture> GetAllTextures(bool clear = false)
@@ -64,16 +66,19 @@ public static class TextureManager
     public class TexturePack
     {
         public readonly string m_materialName;
-        public readonly List<ImageData> m_images = new();
+        public readonly Dictionary<string, ImageData> m_textures = new();
 
         public TexturePack(ImageData imageData)
         {
             m_materialName = imageData.m_materialName;
-            m_images.Add(imageData);
+            m_textures[imageData.m_fileName] = imageData;
             m_texturePacks[m_materialName] = this;
         }
 
-        public void Add(ImageData imageData) => m_images.Add(imageData);
+        public void Add(ImageData imageData)
+        {
+            m_textures[imageData.m_fileName] = imageData;
+        }
     }
 
     public class ImageData
@@ -82,34 +87,31 @@ public static class TextureManager
         public readonly string m_materialName = "";
         public readonly string m_property = "";
         public readonly byte[] m_bytes = null!;
+        public readonly Texture m_texture = null!;
         public readonly Configs.Season m_season;
         public readonly bool m_isValid = true;
+        public readonly bool m_isTex = false;
+
+        public ImageData(Texture texture, string fileName, string materialName, Configs.Season season, string property)
+        {
+            m_texture = texture;
+            m_fileName = fileName;
+            m_materialName = materialName;
+            m_season = season;
+            m_property = property;
+            m_isTex = true;
+        }
 
         public ImageData(string filePath)
         {
             var fileName = Path.GetFileName(filePath);
             m_fileName = fileName;
-            if (!fileName.Contains("@"))
+            if (!Helpers.Utils.ParseName(fileName.Replace(".png", string.Empty), out string materialName, out Configs.Season season, out string property))
             {
-                SeasonalityPlugin.Record.LogWarning($"Invalid file name: {fileName}, missing @ to distinguish season");
                 m_isValid = false;
                 return;
             }
-            var name = fileName.Replace(".png", string.Empty);
-            var parts = name.Split('@');
-            var materialName = parts[0];
-            if (!Enum.TryParse(parts[1], true, out Configs.Season season))
-            {
-                SeasonalityPlugin.Record.LogWarning($"Invalid season: {fileName} - [{parts[1]} is invalid]");
-                m_isValid = false;
-                return;
-            }
-            if (materialName.Contains("#"))
-            {
-                var matParts = materialName.Split('#');
-                materialName = matParts[0];
-                m_property = "_" + matParts[1];;
-            }
+            m_property = property;
             m_season = season;
             m_materialName = materialName;
             m_bytes = File.ReadAllBytes(filePath);
@@ -119,21 +121,14 @@ public static class TextureManager
     {
         Stopwatch watch = Stopwatch.StartNew();
         var folderPath = ConfigFolder + Path.DirectorySeparatorChar + Configs.m_rootTextureFolder.Value;
-        if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+        if (!Directory.Exists(folderPath)) return;
         var filePaths = Directory.GetFiles(folderPath, "*.png", SearchOption.AllDirectories);
         if (filePaths.Length <= 0) return;
         foreach (var filePath in filePaths)
         {
             var data = new ImageData(filePath);
             if (!data.m_isValid) continue;
-            if (m_texturePacks.TryGetValue(data.m_materialName, out TexturePack group))
-            {
-                group.Add(data);
-            }
-            else
-            {
-                var _ = new TexturePack(data);
-            }
+            m_texturePacks.AddOrSet(data.m_materialName, data);
             SeasonalityPlugin.Record.LogSuccess($"Registered: {data.m_fileName}");
         }
         watch.Stop();
@@ -149,7 +144,7 @@ public static class TextureManager
         using var stream = assembly.GetManifestResourceStream(path);
         if (stream == null) return null;
         byte[] buffer = new byte[stream.Length];
-        var _ =stream.Read(buffer, 0, buffer.Length);
+        var _ = stream.Read(buffer, 0, buffer.Length);
         Texture2D texture = new Texture2D(2, 2);
         texture.name = fileName.Replace(".png", string.Empty);
 

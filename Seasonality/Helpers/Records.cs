@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using BepInEx;
 using BepInEx.Logging;
-using HarmonyLib;
 
 namespace Seasonality.Helpers;
 
@@ -24,7 +23,7 @@ public class Records
 
     public void LogSuccess(string log)
     {
-        m_records.Add($"[Success]: {log}");
+        // m_records.Add($"[Success]: {log}");
     }
 
     public void LogDebug(string log)
@@ -56,11 +55,5 @@ public class Records
         if (!Directory.Exists(ConfigFolder)) Directory.CreateDirectory(ConfigFolder);
         File.WriteAllLines(FilePath, m_records);
         LogInfo($"{FileName} wrote to file: {FilePath}");
-    }
-
-    [HarmonyPatch(typeof(Game), nameof(Game.Logout))]
-    private static class Game_Logout_Patch
-    {
-        private static void Prefix() => SeasonalityPlugin.Record.Write();
     }
 }

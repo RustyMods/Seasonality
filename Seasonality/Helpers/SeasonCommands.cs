@@ -35,15 +35,15 @@ public static class SeasonCommands
         SeasonCommand materials = new("materials", "search materials", args =>
         {
             if (args.Length < 2) return false;
-            foreach (var material in MaterialController.m_allMaterials)
+            foreach (var material in TextureReplacer.m_allMaterials)
             {
                 if (material.Key.ToLower().Contains(args[2].ToLower()))
                 {
                     Debug.Log(material.Key);
                 }
             }
-
-            foreach (var list in MaterialController.m_fallMaterials)
+        
+            foreach (var list in TextureReplacer.m_fallMaterials)
             {
                 if (list.Key.ToLower().Contains(args[2].ToLower()))
                 {
@@ -56,20 +56,7 @@ public static class SeasonCommands
                 
             return true;
         }, isSecret: true);
-        
-        SeasonCommand registry = new("registered", "search registered materials", args =>
-        {
-            if (args.Length < 2) return false;
-            foreach (var material in MaterialController.m_materials)
-            {
-                if (material.Key.ToLower().Contains(args[2].ToLower()))
-                {
-                    Debug.Log(material.Key);
-                }
-            }
-            return true;
-        }, isSecret: true);
-        
+
         SeasonCommand print = new("log", "writes to file the current sessions seasonality logs", _ =>
         {
             SeasonalityPlugin.Record.Write();

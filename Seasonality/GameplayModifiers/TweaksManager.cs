@@ -19,6 +19,8 @@ public static class TweaksManager
         PlantTweaks.Setup();
         FishTweaks.Setup();
         SpawnTweaks.Setup();
+        TraderTweaks.Setup();
+        BuildTweaks.Setup();
     }
 
     [HarmonyPatch(typeof(ZNet), nameof(ZNet.Awake))]

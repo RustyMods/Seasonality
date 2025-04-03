@@ -20,7 +20,7 @@ public class Configs
     private readonly ConfigFile ConfigFile;
     private readonly string FileName;
     private readonly string FilePath;
-    private static object? configManager;
+    public static object? configManager;
 
     [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
     private static class FejdStartup_Awake_Patch
@@ -73,6 +73,8 @@ public class Configs
     public static ConfigEntry<Color> m_fallColor2 = null!;
     public static ConfigEntry<Color> m_fallColor3 = null!;
     public static ConfigEntry<Color> m_fallColor4 = null!;
+    public static ConfigEntry<string> m_fallObjects = null!;
+    public static ConfigEntry<string> m_fallMaterials = null!;
 
 
     private void Init()
@@ -87,6 +89,26 @@ public class Configs
         m_enableModifiers = config("1 - Settings", "Modifiers Enabled", Toggle.Off, "If on, season status effect modifiers are enabled");
         m_rootTextureFolder = config("1 - Settings", "Texture Folder", "Default", "Set the root folder to register textures");
         m_particlesController = config("1 - Settings", "Particles", Toggle.Off, "If on, particles are affected");
+        m_fallObjects = config("Fall", "Fall Objects",
+            new SerializedNameList("Beech1", "Birch1", "Birch2", "Birch1_aut", "Birch2_aut", "Beech_small1",
+                "Beech_small2", "YggaShoot1", "YggaShoot2", "YggaShoot3", "YggaShoot_small1", "Oak1", "vfx_beech_cut",
+                "vfx_birch1_cut", "vfx_birch2_cut", "vfx_birch1_aut_cut", "vfx_birch2_aut_cut", "vfx_oak_cut",
+                "vfx_beech_small1_destroy", "vfx_beech_small2_destroy", "vfx_yggashoot_cut",
+                "vfx_yggashoot_small1_destroy").ToString(),
+            new ConfigDescription("List of objects affected by random fall colors", null, new ConfigurationManagerAttributes()
+            {
+                Category = "Fall",
+                CustomDrawer = SerializedNameList.Draw
+            }));
+        m_fallMaterials = config("Fall", "Fall Materials", new SerializedNameList("beech_leaf", "beech_particle",
+                "beech_leaf_small", "birch_leaf", "birch_leaf_aut", "oak_leaf",
+                "Shoot_Leaf_mat", "leaf", "birch_particle", "oak_particle", "shoot_leaf_particle").ToString(),
+            new ConfigDescription("List of materials affected by random fall colors", null,
+                new ConfigurationManagerAttributes()
+                {
+                    Category = "Fall",
+                    CustomDrawer = SerializedNameList.Draw
+                }));
         
         m_displayTimer = config("2 - HUD", "Display Timer", Toggle.On, "If on, timer is displayed");
         m_displayType = config("2 - HUD", "Display Type", DisplayType.Above, "Set where the name of season is displayed");
@@ -111,8 +133,6 @@ public class Configs
         m_fallColor2 = config("Fall", "Color 2", new Color(0.855f, 0.647f, 0.125f, 1f), "Set fall color 2");
         m_fallColor3 = config("Fall", "Color 3", new Color(0.914f, 0.455f, 0.318f, 1f), "Set fall color 3");
         m_fallColor4 = config("Fall", "Color 4", new Color(0.545f, 0.270f, 0.074f, 1f), "Set fall color 4");
-
-
         
         foreach (Season season in Enum.GetValues(typeof(Season)))
         {
@@ -130,18 +150,76 @@ public class Configs
 
             foreach (Heightmap.Biome biome in Enum.GetValues(typeof(Heightmap.Biome)))
             {
+                if (biome is Heightmap.Biome.None or Heightmap.Biome.All) continue;
                 var weathers = new SerializedWeather();
-                if (season is Season.Winter)
+                if (season is Season.Winter && biome != Heightmap.Biome.Mountain)
                 {
                     weathers.Add("WarmSnow", 1f);
                     weathers.Add("Twilight_Snow", 0.5f);
                     weathers.Add("WarmSnowStorm", 0.1f);
                 }
 
-                m_weatherOptions.AddOrSet(season, biome, config(season.ToString(), "Weather Options",
+                m_weatherOptions.AddOrSet(season, biome, config(season.ToString(), $"{biome} Weather",
                     weathers.ToString(), new ConfigDescription(
                         "List of environment names and weights, [env]:[weight],[env]:[weight],...", null,
                         new ConfigurationManagerAttributes() { Category = season.ToString(), CustomDrawer = SerializedWeather.Draw, })));
+            }
+        }
+    }
+
+    public class SerializedNameList
+    {
+        public readonly List<string> m_names;
+
+        public SerializedNameList(List<string> prefabs) => m_names = prefabs;
+
+        public SerializedNameList(params string[] prefabs) => m_names = prefabs.ToList(); 
+
+        public SerializedNameList(string config) => m_names = config.Split(',').ToList();
+        
+        public override string ToString() => string.Join(",", m_names);
+
+        public static void Draw(ConfigEntryBase cfg)
+        {
+            bool locked = cfg.Description.Tags
+                .Select(a =>
+                    a.GetType().Name == "ConfigurationManagerAttributes"
+                        ? (bool?)a.GetType().GetField("ReadOnly")?.GetValue(a)
+                        : null).FirstOrDefault(v => v != null) ?? false;
+            bool wasUpdated = false;
+            List<string> prefabs = new();
+            GUILayout.BeginVertical();
+            foreach (var prefab in new SerializedNameList((string)cfg.BoxedValue).m_names)
+            {
+                GUILayout.BeginHorizontal();
+                var prefabName = prefab;
+                var nameField = GUILayout.TextField(prefab);
+                if (nameField != prefab && !locked)
+                {
+                    wasUpdated = true;
+                    prefabName = nameField;
+                }
+
+                if (GUILayout.Button("x", new GUIStyle(GUI.skin.button) { fixedWidth = 21 }) && !locked)
+                {
+                    wasUpdated = true;
+                }
+                else
+                {
+                    prefabs.Add(prefabName);
+                }
+
+                if (GUILayout.Button("+", new GUIStyle(GUI.skin.button) { fixedWidth = 21 }) && !locked)
+                {
+                    prefabs.Add("");
+                    wasUpdated = true;
+                }
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.EndVertical();
+            if (wasUpdated)
+            {
+                cfg.BoxedValue = new SerializedNameList(prefabs).ToString();
             }
         }
     }

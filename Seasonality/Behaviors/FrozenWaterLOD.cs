@@ -20,9 +20,7 @@ public class FrozenWaterLOD : MonoBehaviour
     {
         foreach (FrozenWaterLOD instance in Instances)
         {
-            if (Configs.m_season.Value is Configs.Season.Winter 
-                && Configs.m_waterFreezes.Value is Configs.Toggle.On
-                && Player.m_localPlayer && !WorldGenerator.IsAshlands(Player.m_localPlayer.transform.position.x, Player.m_localPlayer.transform.position.z))
+            if (Configs.m_season.Value is Configs.Season.Winter && Configs.m_waterFreezes.Value is Configs.Toggle.On)
             {
                 instance.Freeze();
             }

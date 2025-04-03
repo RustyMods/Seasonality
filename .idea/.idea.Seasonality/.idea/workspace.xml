@@ -2,26 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BuildTweaks.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TraderTweaks.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Seasonality/Textures/AssetLoader.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Seasonality/assets/snowmaterialbundle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FallColors.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FallColors.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/CustomSeason.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FallColors.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/RandomColors.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenWaterLOD.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenWaterLOD.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenZones.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenZones.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/GlobalKeyManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/GlobalKeyManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/LocationMossController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/LocationMossController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/FishTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/FishTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PickableTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PickableTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/VisEquipController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/VisEquipController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Records.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Records.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonTimer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonTimer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Utils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Utils.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/ILRepack.targets" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/ILRepack.targets" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/MaterialController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/MaterialController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/MaterialController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/assets/pillar_snow_d2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/translations/English.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/translations/English.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,25 +84,35 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1f17a254067e41d0b59746dec98ad6071d0c00/c4/15a674b1/InstanceRenderer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1f17a254067e41d0b59746dec98ad6071d0c00/f0/9aa99e54/ZNet.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/234138314e1f45acbffc268fb8d6995a26400/58/109010ae/Utils.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/20/8f7be684/SlowUpdater.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/22/05ac0412/Character.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/23/ce949baf/Terminal.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/24/04d7515c/ItemStand.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/24/7be82d6d/MaterialVariation.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/33/1f85b990/InstanceRenderer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/3b/013b98df/RandomSpawn.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/45/7f014215/TreeBase.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/4f/73381bfa/PieceTable.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/55/13c847a1/RandomMaterialValues.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/68/7390b2f8/Player.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/5b/caa1f13b/Game.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/68/7390b2f8/Player.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/70/517233dc/SpawnArea.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/78/ca394952/LocationList.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/7b/424058fb/Plant.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/7d/ec6485aa/Heightmap.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/8e/955f6170/Trader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/95/0ac687f0/LodFadeInOut.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/aa/cf444698/SpawnSystem.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/b5/4853e3dc/Location.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/b8/c96a6faf/MaterialMan.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/c1/9b316f80/ItemDrop.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/ce/33110c30/VisEquipment.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/dd/ca1b2d34/EffectList.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/e6/16da6bce/ClutterSystem.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/e9/de69102e/SEMan.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/f8/c7d28e08/ItemSets.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/ff/599d4c53/ZoneSystem.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/45d6aadbde92434b9bbba43aa14e895c2200/c2/0c6dc1d9/CompatibilityAssetBundleManifest.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4dc9e5b312774ed097f459680404b14c198a00/01/d0297916/StatusEffect.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4dc9e5b312774ed097f459680404b14c198a00/07/1c5731c2/Game.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4dc9e5b312774ed097f459680404b14c198a00/14/84d29206/VisEquipment.cs" root0="SKIP_HIGHLIGHTING" />
@@ -172,6 +186,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5e471ddbeb974684bff43bc61f1b58cb1f200/ab/75fa990f/ManualLogSource.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5e471ddbeb974684bff43bc61f1b58cb1f200/ad/33f51e8d/ConfigEntry`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5e471ddbeb974684bff43bc61f1b58cb1f200/e8/b891fe71/AcceptableValueRange`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/608952189cd540a9924a92a9a9d13fcc38f448/60/92ae5b28/BitmapImage.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/30/920b683d/Hud.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/3a/3d462345/Game.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/3e/c4da0bf0/EnvSetup.cs" root0="SKIP_HIGHLIGHTING" />
@@ -212,6 +227,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/4e/be7ed6d8/RenderTextureSubElement.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/71/1f8160e5/ILogger.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/86/35dc1cce/Shader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/96/284f6619/SkinnedMeshRenderer.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/ba/ee13fbc6/GameObject.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/c0/231ed4e7/Object.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/c9/fe0647f7/MeshRenderer.cs" root0="SKIP_HIGHLIGHTING" />
@@ -229,8 +245,11 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/898aeb3e1b1847049f5d773be8071d0426400/62/e4987ce8/Utils.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/92f22119cd964385a87d2ff8a5291a2ba600/12/4eed3c81/ReferenceHolder.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9ce17bd73eb34c8c8462832ce2833d1816400/54/346498a3/Vector2i.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/a875530a1ff445c3bbb5ca15b69d857b58c0/f9/78cf04f4/ImageConversion.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b7513305042d41128726d7378f1f9ba4531030/c4/358c6f50/StringBuilder.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ebb45651d76c45f5bdf00e15634224e516200/b9/9afc5b8d/Utils.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ee6315ec98994d6db24137f7c43972db2d000/1a/45696487/FreeImage.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ee6315ec98994d6db24137f7c43972db2d000/61/99d66ce2/FIBITMAP.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f4231356d7084225a1943554bcef12b31c9200/01/2e580dd7/SEMan.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f4231356d7084225a1943554bcef12b31c9200/02/b36ab55b/EnvSetup.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f4231356d7084225a1943554bcef12b31c9200/13/f519969e/Hud.cs" root0="SKIP_HIGHLIGHTING" />
@@ -253,8 +272,8 @@
     <setting file="file://$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Helpers/SeasonTimer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Plugin.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Seasonality/Textures/MaterialController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -534,7 +553,23 @@
       <workItem from="1742675685851" duration="11160000" />
       <workItem from="1742744026833" duration="40158000" />
       <workItem from="1742830376733" duration="39792000" />
-      <workItem from="1742908824731" duration="29545000" />
+      <workItem from="1742908824731" duration="32703000" />
+      <workItem from="1742997164339" duration="241000" />
+      <workItem from="1743028356136" duration="1721000" />
+      <workItem from="1743030177474" duration="5707000" />
+      <workItem from="1743045755520" duration="3523000" />
+      <workItem from="1743079419632" duration="11439000" />
+      <workItem from="1743113704427" duration="2364000" />
+      <workItem from="1743118818202" duration="675000" />
+      <workItem from="1743126257995" duration="10780000" />
+      <workItem from="1743168175116" duration="6245000" />
+      <workItem from="1743188004805" duration="6558000" />
+      <workItem from="1743256713843" duration="2011000" />
+      <workItem from="1743388717106" duration="3866000" />
+      <workItem from="1743425997409" duration="17121000" />
+      <workItem from="1743473329998" duration="4055000" />
+      <workItem from="1743538488288" duration="8656000" />
+      <workItem from="1743598003321" duration="400000" />
     </task>
     <task id="LOCAL-00001" summary="update for latest patch">
       <created>1713580281581</created>
@@ -620,7 +655,14 @@
       <option name="project" value="LOCAL" />
       <updated>1742948971677</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="published 3.4.9">
+      <created>1742956244585</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1742956244585</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -653,7 +695,8 @@
     <MESSAGE value="hotfix for fade to black" />
     <MESSAGE value="fade break and draw config" />
     <MESSAGE value="Overhaul" />
-    <option name="LAST_COMMIT_MESSAGE" value="Overhaul" />
+    <MESSAGE value="published 3.4.9" />
+    <option name="LAST_COMMIT_MESSAGE" value="published 3.4.9" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

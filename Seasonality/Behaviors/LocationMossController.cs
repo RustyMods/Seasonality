@@ -13,6 +13,31 @@ public class LocationMossController : MonoBehaviour
     public readonly Dictionary<Material, Texture> m_textures = new();
     private static readonly int MossTex = Shader.PropertyToID("_MossTex");
 
+    private Texture TryGetOriginalMoss(Texture current)
+    {
+        Texture? texture;
+        switch (WorldGenerator.instance.GetBiome(transform.position))
+        {
+            case Heightmap.Biome.Meadows or Heightmap.Biome.BlackForest:
+                texture = TextureManager.stonemoss.m_tex;
+                break;
+            case Heightmap.Biome.Swamp:
+                texture = TextureManager.stonemoss_swamp.m_tex;
+                break;
+            case Heightmap.Biome.Mistlands:
+                texture = transform.name.ToLower().Contains("dvergr") ? TextureManager.groundcreep_d.m_tex : TextureManager.stonemoss_bw.m_tex;
+                break;
+            case Heightmap.Biome.Plains:
+                texture = TextureManager.Stonemoss_heath.m_tex;
+                break;
+            default:
+                texture = TextureManager.stonemoss.m_tex;
+                break;
+        }
+
+        return texture != null ? texture : current;
+    }
+
     public void Awake()
     {
         m_renderers = GetComponentsInChildren<Renderer>();
@@ -24,15 +49,7 @@ public class LocationMossController : MonoBehaviour
             {
                 if (material.HasProperty(MossTex))
                 {
-                    var ogMoss = material.GetTexture(MossTex);
-                    if (Configs.m_season.Value is Configs.Season.Summer && ogMoss != null)
-                    {
-                        m_textures[material] = ogMoss;
-                    }
-                    else if (MaterialController.m_mossTextures.TryGetValue("stonemoss", out Texture stonemoss))
-                    {
-                        m_textures[material] = stonemoss;
-                    }
+                    m_textures[material] = TryGetOriginalMoss(material.GetTexture(MossTex));
                 }
             }
         }

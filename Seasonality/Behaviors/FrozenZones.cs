@@ -26,8 +26,7 @@ public class FrozenZones : MonoBehaviour
             }
             else
             {
-                if (Configs.m_season.Value is Configs.Season.Winter 
-                    && !instance.IsAshlands()) 
+                if (Configs.m_season.Value is Configs.Season.Winter) 
                     instance.FreezeWater();
                 else instance.ThawWater();
             }
@@ -50,9 +49,6 @@ public class FrozenZones : MonoBehaviour
         if (Instances.Contains(this)) return;
         Instances.Add(this);
     }
-
-    private bool IsAshlands() => WorldGenerator.IsAshlands(transform.position.x, transform.position.z);
-
     public void OnDestroy()
     {
         Instances.Remove(this);
@@ -60,9 +56,7 @@ public class FrozenZones : MonoBehaviour
 
     private void SetInitialValues()
     {
-        if (Configs.m_season.Value is Configs.Season.Winter 
-            && Configs.m_waterFreezes.Value is Configs.Toggle.On 
-            && !IsAshlands())
+        if (Configs.m_season.Value is Configs.Season.Winter && Configs.m_waterFreezes.Value is Configs.Toggle.On)
         {
             m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat;
             m_surfaceCollider.enabled = true;

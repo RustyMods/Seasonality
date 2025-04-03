@@ -92,6 +92,9 @@
         <Reference Include="System.Core" />
         <Reference Include="System.Data" />
         <Reference Include="System.Xml" />
+        <Reference Include="Unity.ScriptableBuildPipeline">
+          <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\Unity.ScriptableBuildPipeline.dll</HintPath>
+        </Reference>
         <Reference Include="UnityEngine">
             <HintPath>$(CorlibPath)\UnityEngine.dll</HintPath>
         </Reference>
@@ -127,8 +130,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Behaviors\CustomSeason.cs" />
-        <Compile Include="Behaviors\FallColors.cs" />
+        <Compile Include="Behaviors\RandomColors.cs" />
         <Compile Include="Behaviors\FrozenWaterLOD.cs" />
         <Compile Include="Behaviors\FrozenZones.cs" />
         <Compile Include="Behaviors\GlobalKeyManager.cs" />
@@ -138,10 +140,12 @@
         <Compile Include="Behaviors\TerrainController.cs" />
         <Compile Include="Behaviors\VisEquipController.cs" />
         <Compile Include="Behaviors\WeatherManager.cs" />
+        <Compile Include="GameplayModifiers\BuildTweaks.cs" />
         <Compile Include="GameplayModifiers\FishTweaks.cs" />
         <Compile Include="GameplayModifiers\PickableTweaks.cs" />
         <Compile Include="GameplayModifiers\PlantTweaks.cs" />
         <Compile Include="GameplayModifiers\SpawnTweaks.cs" />
+        <Compile Include="GameplayModifiers\TraderTweaks.cs" />
         <Compile Include="GameplayModifiers\TweaksManager.cs" />
         <Compile Include="Helpers\Configs.cs" />
         <Compile Include="Helpers\Records.cs" />
@@ -152,7 +156,8 @@
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Helpers\FadeToBlack.cs" />
-        <Compile Include="Textures\MaterialController.cs" />
+        <Compile Include="Textures\AssetLoader.cs" />
+        <Compile Include="Textures\TextureReplacer.cs" />
         <Compile Include="Textures\SpriteManager.cs" />
         <Compile Include="Textures\TextureManager.cs" />
         <Compile Include="VersionHandshake.cs" />
@@ -161,10 +166,8 @@
         <None Include="App.config" />
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Include="..\..\..\evennewerbundles\snowmaterialbundle">
-          <Link>assets\snowmaterialbundle</Link>
-        </EmbeddedResource>
         <Content Include=".gitignore" />
+        <EmbeddedResource Include="assets\snowmaterialbundle" />
         <Content Include="environment.props" />
         <EmbeddedResource Include="icons\fall_icon.png" />
         <EmbeddedResource Include="icons\spring_icon.png" />

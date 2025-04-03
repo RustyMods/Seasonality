@@ -44,17 +44,10 @@ public class MossController : MonoBehaviour
                     if (TextureManager.stonemoss.m_tex is { } tex)
                     {
                         m_textureMap[material] = tex;
-                        continue;
-                    }
-                    if (MaterialController.m_mossTextures.TryGetValue("stonemoss", out Texture originalMoss))
-                    {
-                        m_textureMap[material] = originalMoss;
                     }
                     else
                     {
-                        var ogMoss = material.GetTexture(MossTex);
-                        m_textureMap[material] = ogMoss;
-                        MaterialController.m_mossTextures[ogMoss.name] = ogMoss;
+                        m_textureMap[material] = material.GetTexture(MossTex);
                     }
                 }
             }

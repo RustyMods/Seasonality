@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using BepInEx;
 using BepInEx.Configuration;
@@ -9,7 +10,7 @@ using UnityEngine;
 
 namespace Seasonality.Textures;
 
-public static class MaterialController
+public static class TextureReplacer
 {
     private static readonly int MossTex = Shader.PropertyToID("_MossTex");
     private static readonly int MossColor = Shader.PropertyToID("_MossColor");
@@ -34,7 +35,8 @@ public static class MaterialController
     public static readonly Dictionary<string, Texture> m_mossTextures = new();
     private static readonly Dictionary<string, SpecialCase> m_cases = new();
     public static readonly Dictionary<string, List<MaterialData>> m_fallMaterials = new();
-
+    
+    [Description("Setup special cases")]
     private static void Setup()
     {
         SpecialCase MistLandGrassShort = new("grasscross_mistlands_short", material =>
@@ -186,15 +188,11 @@ public static class MaterialController
             return true;
         });
     }
-
+    
+    [Description("Using registered materials, clone fall variants")]
     private static void SetupFallMaterials()
     {
-        List<string> materialsToClone = new()
-        {
-            "beech_leaf", "beech_particle", "beech_leaf_small", "birch_leaf", "birch_leaf_aut", "oak_leaf",
-            "Shoot_Leaf_mat", "leaf", "birch_particle", "oak_particle", "shoot_leaf_particle"
-        };
-        List<ConfigEntry<Color>> m_colors = new()
+        List<ConfigEntry<Color>> colorConfigs = new()
          {
              Configs.m_fallColor1,
              Configs.m_fallColor2,
@@ -202,13 +200,13 @@ public static class MaterialController
              Configs.m_fallColor4
          };
         
-        foreach (var material in materialsToClone)
+        foreach (var material in new Configs.SerializedNameList(Configs.m_fallMaterials.Value).m_names)
         {
             if (!m_materials.TryGetValue(material, out MaterialData original)) continue;
             List<MaterialData> list = new();
-            for (var index = 0; index < m_colors.Count; index++)
+            for (var index = 0; index < colorConfigs.Count; index++)
             {
-                var color = m_colors[index];
+                var color = colorConfigs[index];
                 string name = $"{original.m_name}_{index}";
                 var clone = original.Clone(name);
                 clone.m_mainColors[Configs.Season.Fall] = color.Value;
@@ -222,8 +220,32 @@ public static class MaterialController
             }
             m_fallMaterials[original.m_name] = list;
         }
-    }
 
+        Configs.m_fallMaterials.SettingChanged += (_, _) =>
+        {
+            m_fallMaterials.Clear();
+            foreach (var material in new Configs.SerializedNameList(Configs.m_fallMaterials.Value).m_names)
+            {
+                if (!m_materials.TryGetValue(material, out MaterialData original)) continue;
+                List<MaterialData> list = new();
+                for (var index = 0; index < colorConfigs.Count; index++)
+                {
+                    var color = colorConfigs[index];
+                    string name = $"{original.m_name}_{index}";
+                    var clone = original.Clone(name);
+                    clone.m_mainColors[Configs.Season.Fall] = color.Value;
+                    color.SettingChanged += (_, _) =>
+                    {
+                        clone.m_mainColors[Configs.Season.Fall] = color.Value;
+                        clone.UpdateColors();
+                    };
+                    clone.m_updateColors = true;
+                    list.Add(clone);
+                }
+                m_fallMaterials[original.m_name] = list;
+            }
+        };
+    }
     public static void UpdateAll()
     {
         foreach (var material in m_materials) material.Value.Update();
@@ -236,6 +258,7 @@ public static class MaterialController
         }
     }
 
+    [Description("Find all materials in resources, and register")]
     private static int Load(bool clear = false)
     {
         if (clear)
@@ -243,10 +266,10 @@ public static class MaterialController
             m_materials.Clear();
             m_allMaterials.Clear();
             m_mossTextures.Clear();
+            m_fallMaterials.Clear();
         }
         m_referenceCount = m_materials.Count;
-        var materials = Resources.FindObjectsOfTypeAll<Material>();
-        foreach (Material? mat in materials)
+        foreach (Material? mat in Resources.FindObjectsOfTypeAll<Material>())
         {
             if (mat == null) continue;
             if (!m_allMaterials.ContainsKey(mat.name)) m_allMaterials[mat.name] = mat;
@@ -254,6 +277,7 @@ public static class MaterialController
             if (!mat.HasProperty("_MainTex")) continue;
             if (TextureManager.m_texturePacks.TryGetValue(mat.name, out TextureManager.TexturePack texturePack))
             {
+                // Register any materials that match imported textures
                 var data = new MaterialData(mat, texturePack);
                 data.ApplySpecialCases();
                 if (!data.m_isValid) continue;
@@ -262,6 +286,7 @@ public static class MaterialController
             }
             else
             {
+                // Register all moss materials
                 if (!mat.HasProperty(MossTex)) continue;
                 var data = new MaterialData(mat);
                 data.ApplySpecialCases();
@@ -309,8 +334,8 @@ public static class MaterialController
             var count = Load();
             watch.Stop();
             SeasonalityPlugin.Record.LogDebug($"[ZoneSystem SetupLocations] Generation textures time: {watch.ElapsedMilliseconds}ms");
-            SetupFallMaterials();
             SeasonalityPlugin.Record.LogDebug($"[ZoneSystem SetupLocations]: Registered {count} new materials");
+            SetupFallMaterials();
             SeasonalityPlugin.OnSeasonChange();
         }
     }
@@ -349,7 +374,7 @@ public static class MaterialController
         public bool m_updateMoss;
         public bool m_updateMossColor;
         public bool m_isAshlandMaterial;
-        public bool m_isValid = true;
+        public readonly bool m_isValid = true;
 
         public MaterialData(Material material)
         {
@@ -392,27 +417,36 @@ public static class MaterialController
             if (!m_cases.TryGetValue(m_name, out SpecialCase specialCase)) return;
             specialCase.Run(this);
         }
-
-        private static Texture? Create(Texture2D original, byte[] data)
+        
+        private static Texture? Create(Texture2D original, TextureManager.ImageData data)
         {
-            Texture2D newTexture = new Texture2D(original.width, original.height, original.format, original.mipmapCount > 1)
+            if (data.m_isTex) return data.m_texture;
+            try
             {
-                anisoLevel = original.anisoLevel,
-                filterMode = original.filterMode,
-                mipMapBias = original.mipMapBias,
-                wrapMode = original.wrapMode,
-                wrapModeU = original.wrapModeU,
-                wrapModeV = original.wrapModeV,
-                wrapModeW = original.wrapModeW
-            };
-            if (!newTexture.LoadImage(data)) return null;
-            newTexture.Apply();
-            return newTexture;
+                Texture2D texture = new Texture2D(original.width, original.height, original.format, original.mipmapCount > 1)
+                {
+                    anisoLevel = original.anisoLevel,
+                    filterMode = original.filterMode,
+                    mipMapBias = original.mipMapBias,
+                    wrapMode = original.wrapMode,
+                    wrapModeU = original.wrapModeU,
+                    wrapModeV = original.wrapModeV,
+                    wrapModeW = original.wrapModeW
+                };
+                if (!texture.LoadImage(data.m_bytes)) return null;
+                texture.Apply();
+                return texture;
+            }
+            catch 
+            {
+                SeasonalityPlugin.Record.LogError("Failed to generate texture for: " + data.m_fileName);
+                return null;
+            }
         }
-
+        
         public MaterialData(Material material, TextureManager.TexturePack package) : this(material)
         {
-            foreach (TextureManager.ImageData? data in package.m_images)
+            foreach (TextureManager.ImageData? data in package.m_textures.Values)
             {
                 if (!data.m_property.IsNullOrWhiteSpace())
                 {
@@ -430,7 +464,7 @@ public static class MaterialController
                         continue;
                     }
 
-                    if (Create(originalTex, data.m_bytes) is not { } texture)
+                    if (Create(originalTex, data) is not { } texture)
                     {
                         SeasonalityPlugin.Record.LogDebug($"Failed to create new texture: {data.m_fileName}");
                         m_isValid = false;
@@ -446,14 +480,12 @@ public static class MaterialController
                         m_isValid = false;
                         continue;
                     }
-
-                    if (Create(originalTex, data.m_bytes) is not { } texture)
+                    if (Create(originalTex, data) is not { } texture)
                     {
                         SeasonalityPlugin.Record.LogDebug($"Failed to create new texture: {data.m_fileName}");
                         m_isValid = false;
                         continue;
                     }
-
                     if (m_mainTextures.ContainsKey(data.m_season))
                     {
                         SeasonalityPlugin.Record.LogDebug($"Duplicate season, skipping: {data.m_fileName}");
@@ -468,13 +500,13 @@ public static class MaterialController
         public void Update()
         {
             if (m_material == null) return;
-            UpdateTextures();
+            UpdateMainTex();
             UpdateMoss();
             UpdateTexProperties();
             UpdateColors();
         }
         
-        private void UpdateTextures()
+        private void UpdateMainTex()
         {
             if (m_mainTextures.Count <= 0) return;
             m_material.mainTexture = m_mainTextures.TryGetValue(Configs.m_season.Value, out Texture newTexture) ? newTexture : m_originalTex;
@@ -544,7 +576,6 @@ public static class MaterialController
             {
                 object? value = field.GetValue(this);
                 if (value is Material) continue;
-                // Ensure dictionaries are deep copied
                 if (value is Dictionary<string, Texture> textureDict)
                 {
                     field.SetValue(clone, new Dictionary<string, Texture>(textureDict));
@@ -568,7 +599,7 @@ public static class MaterialController
                 }
                 else
                 {
-                    field.SetValue(clone, value); // Copy all other values directly
+                    field.SetValue(clone, value);
                 }
             }
             clone.m_name = name;
@@ -578,13 +609,11 @@ public static class MaterialController
     
     private class SpecialCase
     {
-        private readonly string m_materialName;
         private readonly Func<MaterialData, bool> m_action;
         private bool m_added;
 
         public SpecialCase(string materialName, Func<MaterialData, bool> action)
         {
-            m_materialName = materialName;
             m_action = action;
             m_cases[materialName] = this;
         }

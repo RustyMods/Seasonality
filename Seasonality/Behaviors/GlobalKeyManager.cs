@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Seasonality.Helpers;
 
@@ -15,28 +14,14 @@ public static class GlobalKeyManager
 
     private static void ClearSeasonalKeys()
     {
-        List<string> current = ZoneSystem.instance.GetGlobalKeys();
-        foreach (var key in current.Where(key => key.StartsWith("season_")))
+        foreach (var key in ZoneSystem.instance.GetGlobalKeys().ToList())
         {
-            ZoneSystem.instance.RemoveGlobalKey(key);
+            if (key.StartsWith("season_")) ZoneSystem.instance.RemoveGlobalKey(key);
         }
     }
 
     private static void SetKey()
     {
-        string? newKey = GetKey(Configs.m_season.Value);
-        if (newKey != null) ZoneSystem.instance.SetGlobalKey(newKey);
-    }
-
-    private static string? GetKey(Configs.Season season)
-    {
-        return season switch
-        {
-            Configs.Season.Winter => "season_winter",
-            Configs.Season.Fall => "season_fall",
-            Configs.Season.Summer => "season_summer",
-            Configs.Season.Spring => "season_spring",
-            _ => null
-        };
+        ZoneSystem.instance.SetGlobalKey($"season_{Configs.m_season.Value.ToString().ToLower()}");
     }
 }

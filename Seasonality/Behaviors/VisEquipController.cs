@@ -12,6 +12,9 @@ public class VisEquipController : MonoBehaviour
 {
     public static readonly List<VisEquipController> m_instances = new();
     public static VisEquipment m_visEquipment = null!;
+    private static readonly int ChestTex = Shader.PropertyToID("_ChestTex");
+    private static readonly int LegsTex = Shader.PropertyToID("_LegsTex");
+
     public void Awake()
     {
         m_visEquipment = GetComponent<VisEquipment>();
@@ -31,47 +34,44 @@ public class VisEquipController : MonoBehaviour
 
     public void UpdateChestTexture()
     {
-        if (m_visEquipment == null) return;
+        if (m_visEquipment == null || m_visEquipment.m_bodyModel == null) return;
         if (ObjectDB.m_instance.GetItemPrefab(m_visEquipment.m_currentChestItemHash) is not { } chestItem) return;
         if (!chestItem.TryGetComponent(out ItemDrop component)) return;
         if (component.m_itemData.m_shared.m_armorMaterial is not { } material) return;
             
         var materialName = material.name.Replace("(Instance)", string.Empty).Trim();
-
-        if (!MaterialController.m_materials.TryGetValue(materialName, out MaterialController.MaterialData data)) return;
+        if (!TextureReplacer.m_materials.TryGetValue(materialName, out TextureReplacer.MaterialData data)) return;
         if (!data.m_specialTextures.TryGetValue("_ChestTex", out Dictionary<Configs.Season, Texture?> textures)) return;
             
         if (textures.TryGetValue(Configs.m_season.Value, out Texture? texture))
         {
-            m_visEquipment.m_bodyModel.material.SetTexture("_ChestTex", texture);
+            m_visEquipment.m_bodyModel.material.SetTexture(ChestTex, texture);
         }
         else
         {
             if (!data.m_originalTextures.TryGetValue("_ChestTex", out Texture originalChestTex)) return;
-            m_visEquipment.m_bodyModel.material.SetTexture("_ChestTex", originalChestTex);
+            m_visEquipment.m_bodyModel.material.SetTexture(ChestTex, originalChestTex);
         }
     }
 
     public void UpdateLegTexture()
     {
-        if (m_visEquipment == null) return;
+        if (m_visEquipment == null || m_visEquipment.m_bodyModel == null) return;
         if (ObjectDB.m_instance.GetItemPrefab(m_visEquipment.m_currentLegItemHash) is not { } legsItem) return;
         if (!legsItem.TryGetComponent(out ItemDrop component)) return;
         if (component.m_itemData.m_shared.m_armorMaterial is not { } material) return;
-            
         var materialName = material.name.Replace("(Instance)", string.Empty).Trim();
-
-        if (!MaterialController.m_materials.TryGetValue(materialName, out MaterialController.MaterialData data)) return;
+        if (!TextureReplacer.m_materials.TryGetValue(materialName, out TextureReplacer.MaterialData data)) return;
         if (!data.m_specialTextures.TryGetValue("_LegsTex", out Dictionary<Configs.Season, Texture?> textures)) return;
             
         if (textures.TryGetValue(Configs.m_season.Value, out Texture? texture))
         {
-            m_visEquipment.m_bodyModel.material.SetTexture("_LegsTex", texture);
+            m_visEquipment.m_bodyModel.material.SetTexture(LegsTex, texture);
         }
         else
         {
             if (!data.m_originalTextures.TryGetValue("_LegsTex", out Texture originalChestTex)) return;
-            m_visEquipment.m_bodyModel.material.SetTexture("_LegsTex", originalChestTex);
+            m_visEquipment.m_bodyModel.material.SetTexture(LegsTex, originalChestTex);
         }
     }
 
@@ -82,7 +82,6 @@ public class VisEquipController : MonoBehaviour
             instance.UpdatePlayerMaterial();
         }
     }
-
 
     [HarmonyPatch(typeof(Player), nameof(Player.Awake))]
     private static class Player_Awake_Patch

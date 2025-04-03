@@ -13,14 +13,13 @@ using Seasonality.Textures;
 using ServerSync;
 using UnityEngine;
 
-
 namespace Seasonality
 {
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.4.9";
+        internal const string ModVersion = "3.5.4";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private const string ConfigFileName = ModGUID + ".cfg";
@@ -41,6 +40,7 @@ namespace Seasonality
             _plugin = this;
             FrozenWaterMat = Assets.LoadAsset<Material>("BallSnow04");
             Localizer.Load();
+            AssetLoader.Read();
             TextureManager.Read();
             TweaksManager.Setup();
             Assembly assembly = Assembly.GetExecutingAssembly(); 
@@ -49,9 +49,14 @@ namespace Seasonality
             if (BadgerHDLoaded) Record.LogInfo("HD Valheim Textures loaded");
         }
 
+        public void OnDisable()
+        {
+            Record.Write();
+        }
+
         public static void OnSeasonChange()
         {
-            MaterialController.UpdateAll();
+            TextureReplacer.UpdateAll();
             RandomColors.UpdateAll();
             LocationMossController.UpdateAll();
             TerrainController.UpdateTerrain();
