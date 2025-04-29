@@ -57,6 +57,21 @@ public static class SeasonCommands
             return true;
         }, isSecret: true);
 
+        SeasonCommand printMaterialData = new("material", "", args =>
+        {
+            if (args.Length < 2) return false;
+            if (!TextureReplacer.m_allMaterials.TryGetValue(args[2], out Material material))
+            {
+                return false;
+            }
+            Debug.LogWarning(material.name);
+            Debug.LogWarning(material.shader.name);
+            if (material.mainTexture != null) Debug.LogWarning(material.mainTexture.name);
+            if (material.HasProperty("_Cutoff")) Debug.LogWarning(material.GetFloat("_Cutoff"));
+
+            return true;
+        });
+
         SeasonCommand print = new("log", "writes to file the current sessions seasonality logs", _ =>
         {
             SeasonalityPlugin.Record.Write();

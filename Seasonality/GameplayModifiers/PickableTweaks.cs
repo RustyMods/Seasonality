@@ -32,6 +32,7 @@ public static class PickableTweaks
                 SeasonalityPlugin.Record.LogWarning("Failed to deserialize server pickable configs");
             }
         };
+        Read();
     }
     
     public static void SetupFileWatch()
@@ -130,6 +131,7 @@ public static class PickableTweaks
         try
         {
             m_data = deserializer.Deserialize<Dictionary<string, Harvest>>(File.ReadAllText(FilePath));
+            
         }
         catch
         {

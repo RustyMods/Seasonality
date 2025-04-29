@@ -75,7 +75,7 @@ public class Configs
     public static ConfigEntry<Color> m_fallColor4 = null!;
     public static ConfigEntry<string> m_fallObjects = null!;
     public static ConfigEntry<string> m_fallMaterials = null!;
-
+    public static ConfigEntry<Toggle> m_fixShader = null!;
 
     private void Init()
     {
@@ -133,6 +133,7 @@ public class Configs
         m_fallColor2 = config("Fall", "Color 2", new Color(0.855f, 0.647f, 0.125f, 1f), "Set fall color 2");
         m_fallColor3 = config("Fall", "Color 3", new Color(0.914f, 0.455f, 0.318f, 1f), "Set fall color 3");
         m_fallColor4 = config("Fall", "Color 4", new Color(0.545f, 0.270f, 0.074f, 1f), "Set fall color 4");
+        m_fixShader = config("1 - General", "Fix Shaders", Toggle.Off, "If on, plugin will try to fix shaders");
         
         foreach (Season season in Enum.GetValues(typeof(Season)))
         {
@@ -165,6 +166,7 @@ public class Configs
                         new ConfigurationManagerAttributes() { Category = season.ToString(), CustomDrawer = SerializedWeather.Draw, })));
             }
         }
+
     }
 
     public class SerializedNameList

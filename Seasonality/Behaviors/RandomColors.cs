@@ -20,28 +20,29 @@ public class RandomColors : MonoBehaviour
         if (!new Configs.SerializedNameList(Configs.m_fallObjects.Value).m_names.Contains(name.Replace("(Clone)", string.Empty))) return;
         m_renderers = GetComponentsInChildren<Renderer>(true);
         m_particleSystem = GetComponentInChildren<ParticleSystem>();
+        m_instances.Add(this);
+    }
+
+    public void Start()
+    {
         if (m_renderers != null)
         {
             foreach (var renderer in m_renderers)
             {
-                List<Material> newMats = new();
-                foreach (var material in renderer.sharedMaterials)
+                if (renderer.sharedMaterials == null) continue;
+                Material[] sharedMaterials = renderer.sharedMaterials;
+
+                for (int index = 0; index < sharedMaterials.Length; ++index)
                 {
-                    if (material == null) continue;
-                    var instanceName = material.name.Replace("(Instance)", string.Empty).Trim();
+                    if (sharedMaterials[index] == null) continue;
+                    var instanceName = sharedMaterials[index].name.Replace("(Instance)", string.Empty).Trim();
                     if (TextureReplacer.m_fallMaterials.TryGetValue(instanceName, out List<TextureReplacer.MaterialData> data))
                     {
-                        var mat = data[Random.Range(0, data.Count)];
-                        newMats.Add(mat.m_material);
-                    }
-                    else
-                    {
-                        newMats.Add(material);
+                        sharedMaterials[index] = data[Random.Range(0, data.Count)].m_material;
                     }
                 }
 
-                renderer.materials = newMats.ToArray();
-                renderer.sharedMaterials = newMats.ToArray();
+                renderer.sharedMaterials = sharedMaterials;
             }
         }
 
@@ -50,8 +51,7 @@ public class RandomColors : MonoBehaviour
             var main = m_particleSystem.main;
             m_originalGradient = main.startColor;
         }
-
-        m_instances.Add(this);
+        
         UpdateParticleColors();
     }
 

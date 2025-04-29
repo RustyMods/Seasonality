@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using BepInEx.Configuration;
 using HarmonyLib;
 using Seasonality.Helpers;
@@ -9,7 +8,7 @@ public static class FishTweaks
     private static ConfigEntry<Configs.Toggle> m_enabled = null!;
     public static void Setup()
     {
-        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Frozen Fish", Configs.Toggle.On, "If on, fish cannot be picked up during winter");
+        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Frozen Fish", Configs.Toggle.Off, "If on, fish cannot be picked up during winter");
     }
 
     [HarmonyPatch(typeof(Fish), nameof(Fish.Interact))]
