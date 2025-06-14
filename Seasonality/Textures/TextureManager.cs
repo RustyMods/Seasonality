@@ -135,6 +135,46 @@ public static class TextureManager
         SeasonalityPlugin.Record.LogDebug($"Reading textures took: {watch.ElapsedMilliseconds}ms");
     }
 
+    public static void Save(Material material, string path)
+    {
+        var ignoredProperties = new List<string>() { "_NoiseTex", "_BumpMap", "_RefractionNormal", "_Normal" };
+
+        if (material == null) return;
+        if (material.name.Contains($"{Path.DirectorySeparatorChar}")) return;
+        if (material.GetInstanceID() < 0) return;
+        foreach (var property in material.GetTexturePropertyNames())
+        {
+            if (ignoredProperties.Contains(property)) continue;
+            var texture = material.GetTexture(property) as Texture2D;
+            if (texture == null) continue;
+            var fileName = material.name + property.Replace("_", "#");
+            var filePath = path + Path.DirectorySeparatorChar + fileName + ".png";
+            if (File.Exists(filePath)) continue;
+            try
+            {
+                RenderTexture tmp = RenderTexture.GetTemporary(texture.width, texture.height, 0,
+                    RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
+                Graphics.Blit(texture, tmp);
+                RenderTexture previous = RenderTexture.active;
+                RenderTexture.active = tmp;
+                Texture2D newTex = new Texture2D(texture.width, texture.height);
+                newTex.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+                newTex.Apply();
+
+                RenderTexture.active = previous;
+                RenderTexture.ReleaseTemporary(tmp);
+
+                var encoded = newTex.EncodeToPNG();
+                File.WriteAllBytes(filePath, encoded);
+                SeasonalityPlugin.Record.LogInfo("Saved: " + fileName);
+            }
+            catch
+            {
+                SeasonalityPlugin.Record.LogWarning("Failed: " + fileName);
+            }
+        }
+    }
+
     private static Texture? RegisterTexture(string fileName, string folderName = "assets")
     {
         Assembly assembly = Assembly.GetExecutingAssembly();

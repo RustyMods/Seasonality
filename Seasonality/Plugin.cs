@@ -19,7 +19,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.5.6";
+        internal const string ModVersion = "3.5.7";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private const string ConfigFileName = ModGUID + ".cfg";
@@ -34,11 +34,15 @@ namespace Seasonality
         public static Configs ConfigManager = null!;
         public static bool BadgerHDLoaded;
         public static readonly Records Record = new (SeasonalityLogger, ModName, $"{ModName}-LogOutput.log");
+        public static GameObject Root = null!;
         public void Awake()
         {
             ConfigManager = new Configs(Config, ConfigSync, ConfigFileName, ConfigFileFullPath);
             _plugin = this;
             FrozenWaterMat = Assets.LoadAsset<Material>("BallSnow04");
+            Root = new GameObject("root");
+            DontDestroyOnLoad(Root);
+            Root.SetActive(false);
             Localizer.Load();
             AssetLoader.Read();
             TextureManager.Read();
@@ -53,19 +57,20 @@ namespace Seasonality
         {
             Record.Write();
         }
-
         public static void OnSeasonChange()
         {
             TextureReplacer.UpdateAll();
             RandomColors.UpdateAll();
-            LocationMossController.UpdateAll();
+            LocationFix.UpdateAll();
             TerrainController.UpdateTerrain();
             FrozenZones.UpdateAll();
             FrozenWaterLOD.UpdateAll();
             MossController.UpdateAll();
             GlobalKeyManager.UpdateSeasonalKey();
             VisEquipController.UpdateAll();
-            
+            SeasonalIce.UpdateAll();
+            SeasonalIce.UpdateIce();
+
             SeasonSE.UpdateStatus();
         }
 

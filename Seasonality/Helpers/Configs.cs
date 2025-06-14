@@ -76,6 +76,7 @@ public class Configs
     public static ConfigEntry<string> m_fallObjects = null!;
     public static ConfigEntry<string> m_fallMaterials = null!;
     public static ConfigEntry<Toggle> m_fixShader = null!;
+    public static ConfigEntry<Toggle> m_addIceShelves = null!;
 
     private void Init()
     {
@@ -127,6 +128,9 @@ public class Configs
             FrozenWaterLOD.UpdateAll();
         };
         m_winterAlwaysCold = config("Winter", "Always Cold", Toggle.Off, "If on, winter is always cold, and applies Cold Status Effect");
+        m_addIceShelves = config("Winter", "Spawn Ice Shelves", Toggle.Off,
+            "If on, ice shelves spawn around coastlines");
+        
         m_displaySeason.SettingChanged += SeasonSE.OnSeasonDisplayConfigChange;
         m_randomColors = config("Fall", "Random Colors", Toggle.On, "If on, random colors are applied to targeted prefabs");
         m_fallColor1 = config("Fall", "Color 1", new Color(0.803f, 0.360f, 0.360f, 1f), "Set fall color 1");

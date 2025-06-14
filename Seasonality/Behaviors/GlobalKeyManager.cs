@@ -14,6 +14,7 @@ public static class GlobalKeyManager
 
     private static void ClearSeasonalKeys()
     {
+        if (!ZoneSystem.instance) return;
         foreach (var key in ZoneSystem.instance.GetGlobalKeys().ToList())
         {
             if (key.StartsWith("season_")) ZoneSystem.instance.RemoveGlobalKey(key);
@@ -22,6 +23,7 @@ public static class GlobalKeyManager
 
     private static void SetKey()
     {
+        if (!ZoneSystem.instance) return;
         ZoneSystem.instance.SetGlobalKey($"season_{Configs.m_season.Value.ToString().ToLower()}");
     }
 }

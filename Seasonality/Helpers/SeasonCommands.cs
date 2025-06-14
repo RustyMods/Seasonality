@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using BepInEx;
 using HarmonyLib;
@@ -57,7 +58,7 @@ public static class SeasonCommands
             return true;
         }, isSecret: true);
 
-        SeasonCommand printMaterialData = new("material", "", args =>
+        SeasonCommand printMaterialData = new("material", "[materialName<string>] prints material data", args =>
         {
             if (args.Length < 2) return false;
             if (!TextureReplacer.m_allMaterials.TryGetValue(args[2], out Material material))
@@ -70,7 +71,7 @@ public static class SeasonCommands
             if (material.HasProperty("_Cutoff")) Debug.LogWarning(material.GetFloat("_Cutoff"));
 
             return true;
-        });
+        }, isSecret: true, optionsFetcher: TextureReplacer.m_allMaterials.Keys.ToList);
 
         SeasonCommand print = new("log", "writes to file the current sessions seasonality logs", _ =>
         {
@@ -108,6 +109,42 @@ public static class SeasonCommands
             }
             return true;
         });
+
+        SeasonCommand save = new("save", "[prefabName or empty] to save textures to disk", args =>
+        {
+            var configPath = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality";
+            if (!Directory.Exists(configPath)) Directory.CreateDirectory(configPath);
+            var folderPath = configPath + Path.DirectorySeparatorChar + "Saved Textures";
+            if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+            
+            if (args.Length < 2)
+            {
+                foreach (var material in TextureReplacer.m_allMaterials.Values)
+                {
+                    TextureManager.Save(material, folderPath);
+                }
+            }
+            else
+            {
+                var hash = args[2].GetStableHashCode();
+                if (!ZNetScene.instance.m_namedPrefabs.TryGetValue(hash, out GameObject prefab))
+                {
+                    Debug.LogWarning("Failed to find: " + args[2]);
+                    return true;
+                }
+                var prefabPath = folderPath + Path.DirectorySeparatorChar + prefab.name;
+                if (!Directory.Exists(prefabPath)) Directory.CreateDirectory(prefabPath);
+                foreach (var renderer in prefab.GetComponentsInChildren<Renderer>())
+                {
+                    foreach (var material in renderer.sharedMaterials)
+                    {
+                        TextureManager.Save(material, prefabPath);
+                    }
+                }
+            }
+            return true;
+        }, optionsFetcher: () => ZNetScene.instance.m_prefabs.Select(prefab => prefab.name).ToList());
+        
     }
 
 

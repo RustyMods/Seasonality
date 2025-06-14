@@ -274,6 +274,7 @@ public static class TextureReplacer
             m_mats.Clear();
         }
         m_referenceCount = m_mats.Count;
+
         foreach (Material? mat in Resources.FindObjectsOfTypeAll<Material>())
         {
             if (mat == null) continue;
@@ -312,6 +313,7 @@ public static class TextureReplacer
                 m_mossTextures[data.m_originalMossTex.name] = data.m_originalMossTex;
             }
         }
+        
         var difference = m_mats.Count - m_referenceCount;
         return difference;
     }

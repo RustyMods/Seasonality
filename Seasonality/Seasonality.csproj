@@ -130,16 +130,18 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Behaviors\IceShelves.cs" />
         <Compile Include="Behaviors\RandomColors.cs" />
         <Compile Include="Behaviors\FrozenWaterLOD.cs" />
         <Compile Include="Behaviors\FrozenZones.cs" />
         <Compile Include="Behaviors\GlobalKeyManager.cs" />
         <Compile Include="Behaviors\MossController.cs" />
-        <Compile Include="Behaviors\LocationMossController.cs" />
+        <Compile Include="Behaviors\LocationFix.cs" />
         <Compile Include="Behaviors\SeasonSE.cs" />
         <Compile Include="Behaviors\TerrainController.cs" />
         <Compile Include="Behaviors\VisEquipController.cs" />
         <Compile Include="Behaviors\WeatherManager.cs" />
+        <Compile Include="GameplayModifiers\BeeHiveTweaks.cs" />
         <Compile Include="GameplayModifiers\BuildTweaks.cs" />
         <Compile Include="GameplayModifiers\FishTweaks.cs" />
         <Compile Include="GameplayModifiers\PickableTweaks.cs" />

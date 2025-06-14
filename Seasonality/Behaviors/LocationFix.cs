@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Seasonality.Behaviors;
 
-public class LocationMossController : MonoBehaviour
+public class LocationFix : MonoBehaviour
 {
-    public static readonly List<LocationMossController> m_instances = new();
+    public static readonly List<LocationFix> m_instances = new();
     public Renderer[] m_renderers = null!;
     public readonly Dictionary<Material, Texture> m_textures = new();
     private static readonly int MossTex = Shader.PropertyToID("_MossTex");
@@ -45,13 +45,25 @@ public class LocationMossController : MonoBehaviour
         if (m_renderers.Length <= 0) return;
         foreach (var renderer in m_renderers)
         {
-            foreach (var material in renderer.sharedMaterials)
+            var materials = renderer.sharedMaterials;
+            for (var index = 0; index < renderer.sharedMaterials.Length; index++)
             {
+                var material = renderer.sharedMaterials[index];
                 if (material.HasProperty(MossTex))
                 {
                     m_textures[material] = TryGetOriginalMoss(material.GetTexture(MossTex));
                 }
+
+                if (material.name.Contains("HildirsLox"))
+                {
+                    if (TextureReplacer.m_materials.TryGetValue("lox", out TextureReplacer.MaterialData data))
+                    {
+                        materials[index] = data.m_material;
+                    }
+                }
             }
+
+            renderer.sharedMaterials = materials;
         }
         UpdateMoss();
     }
@@ -100,7 +112,7 @@ public class LocationMossController : MonoBehaviour
         private static void Postfix(ref GameObject __result)
         {
             if (!__result) return;
-            __result.AddComponent<LocationMossController>();
+            __result.AddComponent<LocationFix>();
         }
     }
 }
