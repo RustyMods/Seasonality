@@ -157,11 +157,15 @@ public class Configs
             {
                 if (biome is Heightmap.Biome.None or Heightmap.Biome.All) continue;
                 var weathers = new SerializedWeather();
-                if (season is Season.Winter && biome != Heightmap.Biome.Mountain)
+                if (season is Season.Winter)
                 {
-                    weathers.Add("WarmSnow", 1f);
-                    weathers.Add("Twilight_Snow", 0.5f);
-                    weathers.Add("WarmSnowStorm", 0.1f);
+                    if (biome is Heightmap.Biome.Meadows or Heightmap.Biome.BlackForest or Heightmap.Biome.Swamp
+                        or Heightmap.Biome.Plains or Heightmap.Biome.Mistlands or Heightmap.Biome.Ocean)
+                    {
+                        weathers.Add("WarmSnow", 1f);
+                        weathers.Add("Twilight_Snow", 0.5f);
+                        weathers.Add("WarmSnowStorm", 0.1f);
+                    }
                 }
 
                 m_weatherOptions.AddOrSet(season, biome, config(season.ToString(), $"{biome} Weather",

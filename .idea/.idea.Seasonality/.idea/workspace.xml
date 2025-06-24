@@ -2,18 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Seasonality/Behaviors/IceShelves.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BeeHiveTweaks.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Seasonality/Behaviors/SnowMaterial.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/GlobalKeyManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/GlobalKeyManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/LocationMossController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/LocationFix.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenWaterLOD.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenWaterLOD.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/ShaderFix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/ShaderFix.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -89,6 +85,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/5c/ca4dec57/Beehive.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/66/96de2d17/ZNet.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/68/7390b2f8/Player.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/69/5a40c627/ZNetScene.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/70/517233dc/SpawnArea.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/78/ca394952/LocationList.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/285f74454c9841259bb8585eb4409ef41eec00/7b/424058fb/Plant.cs" root0="SKIP_HIGHLIGHTING" />
@@ -595,7 +592,11 @@
       <workItem from="1749594622129" duration="420000" />
       <workItem from="1749840743260" duration="11353000" />
       <workItem from="1749870709741" duration="1618000" />
-      <workItem from="1749874095165" duration="4086000" />
+      <workItem from="1749874095165" duration="4191000" />
+      <workItem from="1749934109546" duration="1380000" />
+      <workItem from="1749954442068" duration="12099000" />
+      <workItem from="1750771464174" duration="683000" />
+      <workItem from="1750777026567" duration="4056000" />
     </task>
     <task id="LOCAL-00001" summary="update for latest patch">
       <created>1713580281581</created>
@@ -702,7 +703,14 @@
       <option name="project" value="LOCAL" />
       <updated>1745933924252</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="fixed hildir lox; added saving command; added ice shelves">
+      <created>1749878229997</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1749878229997</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -738,7 +746,8 @@
     <MESSAGE value="published 3.4.9" />
     <MESSAGE value="configs to control random colors" />
     <MESSAGE value="added shader fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="added shader fix" />
+    <MESSAGE value="fixed hildir lox; added saving command; added ice shelves" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed hildir lox; added saving command; added ice shelves" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

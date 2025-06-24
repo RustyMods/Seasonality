@@ -7,7 +7,6 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using Seasonality.Helpers;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace Seasonality.Textures;
 
@@ -44,7 +43,7 @@ public static class TextureReplacer
     {
         SpecialCase MistLandGrassShort = new("grasscross_mistlands_short", material =>
         {
-            foreach (KeyValuePair<Configs.Season, Texture> kvp in material.m_mainTextures)
+            foreach (KeyValuePair<Configs.Season, Texture?> kvp in material.m_mainTextures)
             {
                 material.m_mainColors[kvp.Key] = new Color32(255, 255, 255, 255);
                 material.m_updateColors = true;
@@ -55,7 +54,7 @@ public static class TextureReplacer
 
         SpecialCase GrassCrossMeadows = new("grasscross_meadows", material =>
         {
-            foreach (KeyValuePair<Configs.Season, Texture> texture in material.m_mainTextures)
+            foreach (KeyValuePair<Configs.Season, Texture?> texture in material.m_mainTextures)
             {
                 material.m_specialTextures.AddOrSetNull("_TerrainColorTex", texture.Key, null);
             }
@@ -279,18 +278,19 @@ public static class TextureReplacer
         {
             if (mat == null) continue;
             if (!m_allMaterials.ContainsKey(mat.name)) m_allMaterials[mat.name] = mat;
-            // if (mat.GetInstanceID() < 0) continue;
+            if (mat.GetInstanceID() < 0) continue;
             // negative instance id is an instance, while positive is an a asset
             if (m_mats.ContainsKey(mat)) continue;
             
             if (!mat.HasProperty("_MainTex")) continue;
             var name = mat.name;
-            if (name == "oak_leaf_nosnow") name = "oak_leaf";
+            if (name == "oak_leaf_nosnow") name = "oak_leaf"; // MonsterLabz asset that needs to be switched to the original version
             if (TextureManager.m_texturePacks.TryGetValue(name, out TextureManager.TexturePack texturePack))
             {
                 // Register any materials that match imported textures
                 var data = new MaterialData(mat, texturePack);
                 data.ApplySpecialCases();
+                data.Conclude();
                 if (!data.m_isValid) continue;
                 m_materials[mat.name] = data; // for reference for fall materials
                 m_mats[mat] = data; 
@@ -399,7 +399,7 @@ public static class TextureReplacer
         public Color32 m_originalColor;
         public Texture? m_originalMossTex;
         public Dictionary<string, Texture> m_originalTextures = new();
-        public Dictionary<Configs.Season, Texture> m_mainTextures = new();
+        public Dictionary<Configs.Season, Texture?> m_mainTextures = new();
         public Dictionary<Configs.Season, Color32> m_mainColors = new();
         public Dictionary<string, Dictionary<Configs.Season, Texture?>> m_specialTextures = new();
         public Color32 m_originalMossColor;
@@ -415,7 +415,7 @@ public static class TextureReplacer
             var newMat = new Material(m_material);
             newMat.name = name;
             MaterialData clone = new MaterialData(newMat);
-            clone.m_mainTextures = new Dictionary<Configs.Season, Texture>(m_mainTextures);
+            clone.m_mainTextures = new Dictionary<Configs.Season, Texture?>(m_mainTextures);
             clone.m_mainColors = new Dictionary<Configs.Season, Color32>(m_mainColors);
             var specialTex = new Dictionary<string, Dictionary<Configs.Season, Texture?>>();
             foreach (var kvp in m_specialTextures)
@@ -447,6 +447,17 @@ public static class TextureReplacer
             CacheMoss();
         }
 
+        public void Conclude()
+        {
+            // After reading custom textures, make sure dictionary has original texture set to seasons without custom textures
+            // to fix problem of returning to original textures
+            foreach (Configs.Season season in Enum.GetValues(typeof(Configs.Season)))
+            {
+                if (m_mainTextures.ContainsKey(season)) continue;
+                m_mainTextures[season] = m_originalTex;
+            }
+        }
+
         private void CacheMoss()
         {
             if (!m_material.HasProperty(MossTex)) return;
@@ -457,7 +468,7 @@ public static class TextureReplacer
         }
         private void CacheOriginalTextures()
         {
-            foreach (var property in m_material.GetTexturePropertyNames())
+            foreach (string property in m_material.GetTexturePropertyNames())
             {
                 if (m_material.GetTexture(property) is {} tex)
                 {
@@ -559,7 +570,9 @@ public static class TextureReplacer
         private void UpdateMainTex()
         {
             if (m_mainTextures.Count <= 0) return;
-            m_material.mainTexture = m_mainTextures.TryGetValue(Configs.m_season.Value, out Texture newTexture) ? newTexture : m_originalTex;
+            // original textures changes to the season which game starts, but still use this as backup to make sure it switches to something
+            // when trying to go to original texture
+            m_material.mainTexture = m_mainTextures.TryGetValue(Configs.m_season.Value, out Texture? newTexture) ? newTexture : m_originalTex;
         }
         private void UpdateTexProperties()
         {

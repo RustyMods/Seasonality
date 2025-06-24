@@ -138,6 +138,7 @@
         <Compile Include="Behaviors\MossController.cs" />
         <Compile Include="Behaviors\LocationFix.cs" />
         <Compile Include="Behaviors\SeasonSE.cs" />
+        <Compile Include="Behaviors\SnowMaterial.cs" />
         <Compile Include="Behaviors\TerrainController.cs" />
         <Compile Include="Behaviors\VisEquipController.cs" />
         <Compile Include="Behaviors\WeatherManager.cs" />
@@ -169,6 +170,9 @@
         <None Include="App.config" />
     </ItemGroup>
     <ItemGroup>
+        <Content Include="..\..\..\VALHEIM RIPPED\BOG WITCH\AssetBundles\StandaloneWindows\seasonality">
+          <Link>assets\seasonality</Link>
+        </Content>
         <Content Include=".gitignore" />
         <EmbeddedResource Include="assets\snowmaterialbundle" />
         <Content Include="environment.props" />

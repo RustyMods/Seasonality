@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
 using Seasonality.Helpers;
+using Seasonality.Textures;
 using UnityEngine;
 using UnityEngine.Rendering;
 
