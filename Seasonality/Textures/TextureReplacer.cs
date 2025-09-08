@@ -5,6 +5,7 @@ using System.Diagnostics;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
+using Seasonality.Behaviors;
 using Seasonality.Helpers;
 using UnityEngine;
 
@@ -37,6 +38,8 @@ public static class TextureReplacer
     public static readonly Dictionary<string, List<MaterialData>> m_fallMaterials = new();
 
     public static readonly Dictionary<Material, MaterialData> m_mats = new();
+
+    private static bool TestSnowShader = true;
 
     [Description("Setup special cases")]
     private static void Setup()
@@ -251,7 +254,6 @@ public static class TextureReplacer
     public static void UpdateAll()
     {
         foreach(var material in m_mats.Values) material.Update();
-        // foreach (var material in m_materials) material.Value.Update();
         foreach (var material in m_fallMaterials)
         {
             foreach (var mat in material.Value)
@@ -299,18 +301,35 @@ public static class TextureReplacer
             }
             else
             {
-                // Register all moss materials
-                if (!mat.HasProperty(MossTex)) continue;
-                var data = new MaterialData(mat);
-                data.ApplySpecialCases();
-                if (!data.m_isValid) continue;
+                if (mat.shader.name == "Custom/Piece")
+                {
+                    if (TestSnowShader)
+                    {
+                        // Register all piece materials
+                        var data = new MaterialData(mat);
+                        data.ApplySpecialCases();
+                        if (!data.m_isValid) continue;
+                    
+                        m_mats[mat] = data;
+                        m_materials[mat.name] = data;
+                        SeasonalityPlugin.Record.LogSuccess($"Registered piece material: {data.m_name}");
+                    }
+                }
+                else
+                {
+                    // Register all moss materials
+                    if (!mat.HasProperty(MossTex)) continue;
+                    var data = new MaterialData(mat);
+                    data.ApplySpecialCases();
+                    if (!data.m_isValid) continue;
 
-                m_mats[mat] = data;
-                m_materials[mat.name] = data;
-                SeasonalityPlugin.Record.LogSuccess($"Registered moss material: {data.m_name}");
-                if (data.m_originalMossTex == null) continue;
-                if (!m_mossTextures.ContainsKey(data.m_originalMossTex.name)) continue;
-                m_mossTextures[data.m_originalMossTex.name] = data.m_originalMossTex;
+                    m_mats[mat] = data;
+                    m_materials[mat.name] = data;
+                    SeasonalityPlugin.Record.LogSuccess($"Registered moss material: {data.m_name}");
+                    if (data.m_originalMossTex == null) continue;
+                    if (!m_mossTextures.ContainsKey(data.m_originalMossTex.name)) continue;
+                    m_mossTextures[data.m_originalMossTex.name] = data.m_originalMossTex;
+                }
             }
         }
         
@@ -323,6 +342,7 @@ public static class TextureReplacer
     {
         private static void Postfix()
         {
+            ShaderFix.CacheShaders();
             Setup();
             if (SeasonalityPlugin.BadgerHDLoaded) return;
             Stopwatch watch = Stopwatch.StartNew();
@@ -394,6 +414,7 @@ public static class TextureReplacer
     {
         public string m_name;
         public string m_shaderName;
+        public Shader m_originalShader;
         public Material m_material; // Can become null
         public Texture? m_originalTex;
         public Color32 m_originalColor;
@@ -433,6 +454,7 @@ public static class TextureReplacer
         }
         public MaterialData(Material material)
         {
+            m_originalShader = material.shader;
             m_shaderName = material.shader.name;
             m_name = material.name;
             m_material = material;
@@ -445,7 +467,23 @@ public static class TextureReplacer
             if (material.HasProperty("_Color")) m_originalColor = material.color;
             CacheOriginalTextures();
             CacheMoss();
+
+            // if (TestSnowShader)
+            // {
+            //     if (m_shaderName == "Custom/Piece")
+            //     {
+            //         material.shader = FrozenManager.SnowPieces;
+            //     }
+            // }
         }
+
+        // public void ToggleSnowShader(bool value)
+        // {
+        //     if (m_originalShader.name == "Custom/Piece")
+        //     {
+        //         m_material.shader = value ? FrozenManager.SnowPieces : m_originalShader;
+        //     }
+        // }
 
         public void Conclude()
         {

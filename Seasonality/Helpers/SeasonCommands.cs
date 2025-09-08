@@ -145,33 +145,33 @@ public static class SeasonCommands
             return true;
         }, optionsFetcher: () => ZNetScene.instance.m_prefabs.Select(prefab => prefab.name).ToList());
 
-        SeasonCommand reload = new SeasonCommand("reload", "reloads materials on all prefabs within the scene",
-            _ =>
-            {
-                if (!ZNetScene.instance) return false;
-
-                foreach (var znv in ZNetScene.instance.m_instances.Values)
-                {
-                    foreach (var renderer in znv.GetComponentsInChildren<Renderer>())
-                    {
-                        var sharedMaterials = renderer.sharedMaterials;
-                        for (var index = 0; index < renderer.sharedMaterials.Length; index++)
-                        {
-                            var material = renderer.sharedMaterials[index];
-                            if (material == null) continue;
-                            var name = material.name.Replace("(Instance)", string.Empty);
-                            if (TextureReplacer.m_materials.TryGetValue(name, out TextureReplacer.MaterialData data))
-                            {
-                                sharedMaterials[index] = data.m_material;
-                            }
-                        }
-
-                        renderer.sharedMaterials = sharedMaterials;
-                    }
-                }
-
-                return true;
-            });
+        // SeasonCommand reload = new SeasonCommand("reload", "reloads materials on all prefabs within the scene",
+        //     _ =>
+        //     {
+        //         if (!ZNetScene.instance) return false;
+        //
+        //         foreach (var znv in ZNetScene.instance.m_instances.Values)
+        //         {
+        //             foreach (var renderer in znv.GetComponentsInChildren<Renderer>())
+        //             {
+        //                 var sharedMaterials = renderer.sharedMaterials;
+        //                 for (var index = 0; index < renderer.sharedMaterials.Length; index++)
+        //                 {
+        //                     var material = renderer.sharedMaterials[index];
+        //                     if (material == null) continue;
+        //                     var name = material.name.Replace("(Instance)", string.Empty);
+        //                     if (TextureReplacer.m_materials.TryGetValue(name, out TextureReplacer.MaterialData data))
+        //                     {
+        //                         sharedMaterials[index] = data.m_material;
+        //                     }
+        //                 }
+        //
+        //                 renderer.sharedMaterials = sharedMaterials;
+        //             }
+        //         }
+        //
+        //         return true;
+        //     });
     }
 
 

@@ -67,7 +67,7 @@ public class SeasonalIce : MonoBehaviour
         }
     }
 
-    public static void UpdateIce()
+    public static void UpdateZoneVeg()
     {
         ZoneVeg.m_enable = Configs.m_season.Value is Configs.Season.Winter && Configs.m_addIceShelves.Value is Configs.Toggle.On;
     }

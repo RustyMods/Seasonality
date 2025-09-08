@@ -19,6 +19,10 @@ se_skill_modifier: "Experience modifier"
 se_damage: "Damage modifier"
 
 cannot_pick: 'Cannot Pick'
+winter_cannot_grow: 'Too cold to grow'
+fall_cannot_grow: 'Cannot grow'
+spring_cannot_grow: 'Cannot grow'
+summer_cannot_grow: 'Cannot grow'
 ## Weather Names
 weather_clear: "Clear"
 weather_misty: "Misty"

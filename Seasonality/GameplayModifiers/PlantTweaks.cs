@@ -34,6 +34,7 @@ public static class PlantTweaks
                 SeasonalityPlugin.Record.LogWarning("Failed to deserialize server plant configs");
             }
         };
+        Read();
     }
 
     public static void UpdateServerConfigs()

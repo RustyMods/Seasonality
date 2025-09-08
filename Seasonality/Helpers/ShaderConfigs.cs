@@ -1,14 +1,13 @@
 using System;
 using BepInEx.Configuration;
-using Seasonality.Helpers;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Seasonality.Behaviors;
+namespace Seasonality.Helpers;
 
-public class SnowMaterial
+public static class ShaderConfigs
 {
-    private static void CreateConfigs(Material material, string configGroup, Action? onConfigChange = null)
+    public static void CreateConfigs(Material material, string configGroup, Action? onConfigChange = null)
     {
         for (int index = 0; index < material.shader.GetPropertyCount(); ++index)
         {
@@ -19,7 +18,9 @@ public class SnowMaterial
             if (type is ShaderPropertyType.Float)
             {
                 if (!material.HasProperty(property)) continue;
-                var config = SeasonalityPlugin.ConfigManager.config(configGroup, property.Replace("_", string.Empty), material.GetFloat(property), desc);
+                var config = SeasonalityPlugin.ConfigManager.config(configGroup,
+                    Helpers.Utils.SplitCamelCase(property.Replace("_", string.Empty)), material.GetFloat(property),
+                    desc);
                 config.SettingChanged += (_, _) =>
                 {
                     material.SetFloat(property, config.Value);
@@ -31,7 +32,9 @@ public class SnowMaterial
             {
                 if (!material.HasProperty(property)) continue;
                 Vector2 range = material.shader.GetPropertyRangeLimits(index);
-                var config = SeasonalityPlugin.ConfigManager.config(configGroup, property.Replace("_", string.Empty), material.GetFloat(property), new ConfigDescription(desc, new AcceptableValueRange<float>(range.x, range.y)));
+                var config = SeasonalityPlugin.ConfigManager.config(configGroup,
+                    Helpers.Utils.SplitCamelCase(property.Replace("_", string.Empty)), material.GetFloat(property),
+                    new ConfigDescription(desc, new AcceptableValueRange<float>(range.x, range.y)));
                 config.SettingChanged += (_, _) =>
                 {
                     material.SetFloat(property, config.Value);
@@ -43,18 +46,22 @@ public class SnowMaterial
             else if (type is ShaderPropertyType.Color)
             {
                 if (!material.HasProperty(property)) continue;
-                var config = SeasonalityPlugin.ConfigManager.config(configGroup, property.Replace("_", string.Empty), material.GetColor(property), desc);
+                var config = SeasonalityPlugin.ConfigManager.config(configGroup,
+                    Helpers.Utils.SplitCamelCase(property.Replace("_", string.Empty)), material.GetColor(property),
+                    desc);
                 config.SettingChanged += (_, _) =>
                 {
                     material.SetColor(property, config.Value);
                     onConfigChange?.Invoke();
                 };
-                SeasonalityPlugin.FrozenWaterMat.SetColor(property, config.Value);
+                material.SetColor(property, config.Value);
             }
             else if (type is ShaderPropertyType.Vector)
             {
                 if (!material.HasProperty(property)) continue;
-                var config = SeasonalityPlugin.ConfigManager.config(configGroup, property.Replace("_", string.Empty), material.GetVector(property), desc);
+                var config = SeasonalityPlugin.ConfigManager.config(configGroup,
+                    Helpers.Utils.SplitCamelCase(property.Replace("_", string.Empty)), material.GetVector(property),
+                    desc);
                 config.SettingChanged += (_, _) =>
                 {
                     material.SetVector(property, config.Value);
@@ -63,20 +70,5 @@ public class SnowMaterial
                 material.SetVector(property, config.Value);
             }
         }
-    }
-    public static void Setup()
-    {
-        
-        CreateConfigs(SeasonalityPlugin.FrozenWaterMat, "Frozen Material", () =>
-        {
-            Configs.m_waterFreezes.Value = Configs.Toggle.Off;
-            Configs.m_waterFreezes.Value = Configs.Toggle.On;
-        });
-                
-        // CreateConfigs(SeasonalityPlugin.DistanceFrozenWaterMat, "Distant Frozen Material", () =>
-        // {
-        //     Configs.m_waterFreezes.Value = Configs.Toggle.Off;
-        //     Configs.m_waterFreezes.Value = Configs.Toggle.On;
-        // });
     }
 }

@@ -19,7 +19,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.5.8";
+        internal const string ModVersion = "3.6.1";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private const string ConfigFileName = ModGUID + ".cfg";
@@ -29,10 +29,9 @@ namespace Seasonality
         private static readonly ManualLogSource SeasonalityLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
         public static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
         public static SeasonalityPlugin _plugin = null!;
-        private static readonly AssetBundle Assets = GetAssetBundle("snowmaterialbundle");
-        // private static readonly AssetBundle NewIce = GetAssetBundle("seasonality");
-        public static Material FrozenWaterMat = null!;
-        // public static Material DistanceFrozenWaterMat = null!;
+        // private static readonly AssetBundle Assets = GetAssetBundle("snowmaterialbundle");
+        public static readonly AssetBundle NewIce = GetAssetBundle("seasonality");
+        
         public static Configs ConfigManager = null!;
         public static bool BadgerHDLoaded;
         public static readonly Records Record = new (SeasonalityLogger, ModName, $"{ModName}-LogOutput.log");
@@ -41,11 +40,6 @@ namespace Seasonality
         {
             ConfigManager = new Configs(Config, ConfigSync, ConfigFileName, ConfigFileFullPath);
             _plugin = this;
-            FrozenWaterMat = Assets.LoadAsset<Material>("BallSnow04");
-            // DistanceFrozenWaterMat = NewIce.LoadAsset<Material>("darkness");
-            // FrozenWaterMat = NewIce.LoadAsset<Material>("FrozenWater_mat2");
-            // SnowMaterial.Setup();
-
             Root = new GameObject("root");
             DontDestroyOnLoad(Root);
             Root.SetActive(false);
@@ -53,6 +47,7 @@ namespace Seasonality
             AssetLoader.Read();
             TextureManager.Read();
             TweaksManager.Setup();
+            FrozenManager.Setup();
             Assembly assembly = Assembly.GetExecutingAssembly(); 
             _harmony.PatchAll(assembly);
             BadgerHDLoaded = Chainloader.PluginInfos.ContainsKey("Badgers.HDValheimTextures");
@@ -75,7 +70,7 @@ namespace Seasonality
             GlobalKeyManager.UpdateSeasonalKey();
             VisEquipController.UpdateAll();
             SeasonalIce.UpdateAll();
-            SeasonalIce.UpdateIce();
+            SeasonalIce.UpdateZoneVeg();
 
             SeasonSE.UpdateStatus();
         }

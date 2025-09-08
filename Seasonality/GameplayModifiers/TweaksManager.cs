@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using BepInEx;
 using HarmonyLib;
+using JetBrains.Annotations;
 using Seasonality.Helpers;
+using UnityEngine;
 
 namespace Seasonality.GameplayModifiers;
 
@@ -32,7 +34,6 @@ public static class TweaksManager
             if (!__instance.IsServer()) return;
             PlantTweaks.UpdateServerConfigs();
             PickableTweaks.UpdateServerConfigs();
-            
             PlantTweaks.SetupFileWatch();
             PickableTweaks.SetupFileWatch();
         }
@@ -41,10 +42,12 @@ public static class TweaksManager
     [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
     private static class ZNetScene_Awake_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(ZNetScene __instance)
         {
-            foreach (var prefab in __instance.m_prefabs)
+            foreach (GameObject? prefab in __instance.m_prefabs)
             {
+                if (prefab == null) continue;
                 if (prefab.TryGetComponent(out Pickable pickable))
                 {
                     PickableTweaks.m_data[prefab.name] = new PickableTweaks.Harvest()
@@ -67,7 +70,7 @@ public static class TweaksManager
                 }
                 else if (prefab.TryGetComponent(out Character character))
                 {
-                    if (character.IsPlayer()) continue;
+                    if (character is Player) continue;
                     SpawnTweaks.m_data[prefab.name] = new Dictionary<Configs.Season, bool>()
                     {
                         [Configs.Season.Spring] = true,

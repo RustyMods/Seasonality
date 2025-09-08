@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using Seasonality.Textures;
 using UnityEngine;
@@ -75,5 +76,10 @@ public static class Utils
         }
 
         return true;
+    }
+    
+    public static string SplitCamelCase(string input)
+    {
+        return Regex.Replace(input, "(?<=[a-z])([A-Z])", " $1");
     }
 }

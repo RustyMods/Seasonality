@@ -23,7 +23,8 @@ public class Records
 
     public void LogSuccess(string log)
     {
-        // m_records.Add($"[Success]: {log}");
+        m_records.Add($"[Success]: {log}");
+        // m_manualLogSource.LogDebug($"[Success]: {log}");
     }
 
     public void LogDebug(string log)

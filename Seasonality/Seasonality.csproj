@@ -130,6 +130,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Behaviors\FrozenManager.cs" />
         <Compile Include="Behaviors\IceShelves.cs" />
         <Compile Include="Behaviors\RandomColors.cs" />
         <Compile Include="Behaviors\FrozenWaterLOD.cs" />
@@ -138,7 +139,6 @@
         <Compile Include="Behaviors\MossController.cs" />
         <Compile Include="Behaviors\LocationFix.cs" />
         <Compile Include="Behaviors\SeasonSE.cs" />
-        <Compile Include="Behaviors\SnowMaterial.cs" />
         <Compile Include="Behaviors\TerrainController.cs" />
         <Compile Include="Behaviors\VisEquipController.cs" />
         <Compile Include="Behaviors\WeatherManager.cs" />
@@ -154,6 +154,7 @@
         <Compile Include="Helpers\Records.cs" />
         <Compile Include="Helpers\SeasonCommands.cs" />
         <Compile Include="Helpers\SeasonTimer.cs" />
+        <Compile Include="Helpers\ShaderConfigs.cs" />
         <Compile Include="Helpers\ShaderFix.cs" />
         <Compile Include="Helpers\Utils.cs" />
         <Compile Include="Managers\LocalizationManager.cs" />
@@ -170,11 +171,16 @@
         <None Include="App.config" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="..\..\..\VALHEIM RIPPED\BOG WITCH\AssetBundles\StandaloneWindows\seasonality">
-          <Link>assets\seasonality</Link>
-        </Content>
         <Content Include=".gitignore" />
-        <EmbeddedResource Include="assets\snowmaterialbundle" />
+        <EmbeddedResource Include="assets\seasonality" />
+        <Content Include="assets\Custom_FrozenSurface.shader" />
+        <Content Include="assets\Custom_FrozenSurface.shader.meta" />
+        <Content Include="assets\Custom_FrozenWater.shader" />
+        <Content Include="assets\Custom_FrozenWater.shader.meta" />
+        <Content Include="assets\seasonality.manifest" />
+        <Content Include="assets\seasonality.unitypackage" />
+        <Content Include="assets\snowmaterialbundle" />
+        <Content Include="assets\snowmaterialbundle.manifest" />
         <Content Include="environment.props" />
         <EmbeddedResource Include="icons\fall_icon.png" />
         <EmbeddedResource Include="icons\spring_icon.png" />

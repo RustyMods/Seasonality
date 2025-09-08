@@ -18,12 +18,6 @@ public static class ShaderFix
         return !m_shaders.TryGetValue(shaderName, out Shader shader) ? originalShader : shader;
     }
 
-    [HarmonyPatch(typeof(FejdStartup), nameof(FejdStartup.Awake))]
-    private static class ShaderFix_CacheShaders
-    {
-        private static void Postfix() => CacheShaders();
-    }
-    
     public static void CacheShaders()
     {
         var assetBundles = Resources.FindObjectsOfTypeAll<AssetBundle>();

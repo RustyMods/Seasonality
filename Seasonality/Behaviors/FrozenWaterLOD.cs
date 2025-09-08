@@ -47,7 +47,7 @@ public class FrozenWaterLOD : MonoBehaviour
         if (Configs.m_waterFreezes.Value is Configs.Toggle.On
             && Configs.m_season.Value is Configs.Season.Winter)
         {
-            m_renderer.material = SeasonalityPlugin.FrozenWaterMat;
+            m_renderer.material = FrozenManager.GetSelectedMaterial();
             transform.position = m_originalPos + new Vector3(0f, -0.2f, 0f);
             m_frozen = true;
         }
@@ -75,7 +75,7 @@ public class FrozenWaterLOD : MonoBehaviour
     public void Freeze()
     {
         if (m_frozen) return;
-        m_renderer.material = SeasonalityPlugin.FrozenWaterMat;
+        m_renderer.material = FrozenManager.GetSelectedMaterial();
         transform.position = m_originalPos + new Vector3(0f, -0.2f, 0f);
         m_frozen = true;
     }

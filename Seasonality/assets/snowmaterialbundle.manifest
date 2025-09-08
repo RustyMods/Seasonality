@@ -1,0 +1,24 @@
+ManifestFileVersion: 0
+CRC: 1809763812
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 5cbe9331d5be58fcc0e57cb0cceb11d7
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: b30fce1a9ad74efb72be6c308c56e365
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 5cbe9331d5be58fcc0e57cb0cceb11d7
+HashAppended: 0
+ClassTypes:
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/_CUSTOM/SEASONALITY/Material/BallSnow04.mat
+Dependencies: []
