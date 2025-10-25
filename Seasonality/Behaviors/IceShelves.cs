@@ -18,7 +18,7 @@ public class SeasonalIce : MonoBehaviour
     {
         m_destructible = GetComponent<Destructible>();
         m_instances.Add(this);
-        InvokeRepeating(nameof(CheckSeason), 10f, 10f);
+        InvokeRepeating(nameof(CheckSeason), 0f, 10f);
     }
 
     public void OnDestroy()
@@ -28,7 +28,7 @@ public class SeasonalIce : MonoBehaviour
 
     public void CheckSeason()
     {
-        if (Configs.m_season.Value is not Configs.Season.Winter) m_destructible.DestroyNow();
+        if (Configs.m_season.Value is not Season.Winter) m_destructible.DestroyNow();
     }
 
     public static void UpdateAll()
@@ -44,7 +44,7 @@ public class SeasonalIce : MonoBehaviour
     {
         private static void Postfix(ZNetScene __instance)
         {
-            var ice = __instance.GetPrefab("ice1");
+            GameObject? ice = __instance.GetPrefab("ice1");
             Ice = Instantiate(ice, SeasonalityPlugin.Root.transform, false);
             Ice.name = "SeasonalIce";
             Ice.AddComponent<SeasonalIce>();
@@ -53,7 +53,6 @@ public class SeasonalIce : MonoBehaviour
 
             ZoneVeg.m_name = "SeasonalIce";
             ZoneVeg.m_prefab = Ice;
-            ZoneVeg.m_enable = true;
             ZoneVeg.m_min = 10;
             ZoneVeg.m_max = 20;
             ZoneVeg.m_biome = Heightmap.Biome.Meadows | Heightmap.Biome.BlackForest | Heightmap.Biome.Swamp |
@@ -63,12 +62,21 @@ public class SeasonalIce : MonoBehaviour
             ZoneVeg.m_minAltitude = -1000;
             ZoneVeg.m_maxAltitude = -1;
             
-            ZoneSystem.m_instance.m_vegetation.Add(ZoneVeg);
+            UpdateZoneVeg();
         }
     }
 
     public static void UpdateZoneVeg()
     {
-        ZoneVeg.m_enable = Configs.m_season.Value is Configs.Season.Winter && Configs.m_addIceShelves.Value is Configs.Toggle.On;
+        if (!ZoneSystem.instance) return;
+        
+        if (Configs.m_season.Value is Season.Winter && Configs.m_addIceShelves.Value is Toggle.On)
+        {
+            if (!ZoneSystem.instance.m_vegetation.Contains(ZoneVeg)) ZoneSystem.instance.m_vegetation.Add(ZoneVeg);
+        }
+        else
+        {
+            ZoneSystem.instance.m_vegetation.Remove(ZoneVeg);
+        }
     }
 }

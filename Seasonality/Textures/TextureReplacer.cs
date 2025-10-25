@@ -8,6 +8,7 @@ using HarmonyLib;
 using Seasonality.Behaviors;
 using Seasonality.Helpers;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 namespace Seasonality.Textures;
 
@@ -46,7 +47,7 @@ public static class TextureReplacer
     {
         SpecialCase MistLandGrassShort = new("grasscross_mistlands_short", material =>
         {
-            foreach (KeyValuePair<Configs.Season, Texture?> kvp in material.m_mainTextures)
+            foreach (KeyValuePair<Season, Texture?> kvp in material.m_mainTextures)
             {
                 material.m_mainColors[kvp.Key] = new Color32(255, 255, 255, 255);
                 material.m_updateColors = true;
@@ -57,7 +58,7 @@ public static class TextureReplacer
 
         SpecialCase GrassCrossMeadows = new("grasscross_meadows", material =>
         {
-            foreach (KeyValuePair<Configs.Season, Texture?> texture in material.m_mainTextures)
+            foreach (KeyValuePair<Season, Texture?> texture in material.m_mainTextures)
             {
                 material.m_specialTextures.AddOrSetNull("_TerrainColorTex", texture.Key, null);
             }
@@ -159,10 +160,10 @@ public static class TextureReplacer
         
         SpecialCase InstanceShrub = new("clutter_shrub", material =>
         {
-            material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+            material.m_mainColors[Season.Fall] = Configs.m_fallColor1.Value;
             Configs.m_fallColor1.SettingChanged += (_, _) =>
             {
-                material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+                material.m_mainColors[Season.Fall] = Configs.m_fallColor1.Value;
                 material.UpdateColors();
             };
             material.m_updateColors = true;
@@ -171,10 +172,10 @@ public static class TextureReplacer
         
         SpecialCase InstancedOrmbunke = new("ormbunke", material =>
         {
-            material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+            material.m_mainColors[Season.Fall] = Configs.m_fallColor1.Value;
             Configs.m_fallColor1.SettingChanged += (_, _) =>
             {
-                material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+                material.m_mainColors[Season.Fall] = Configs.m_fallColor1.Value;
                 material.UpdateColors();
             };
             material.m_updateColors = true;
@@ -183,10 +184,10 @@ public static class TextureReplacer
         
         SpecialCase InstancedOrmbunkeYellow = new("ormbunke_yellow", material =>
         {
-            material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+            material.m_mainColors[Season.Fall] = Configs.m_fallColor1.Value;
             Configs.m_fallColor1.SettingChanged += (_, _) =>
             {
-                material.m_mainColors[Configs.Season.Fall] = Configs.m_fallColor1.Value;
+                material.m_mainColors[Season.Fall] = Configs.m_fallColor1.Value;
                 material.UpdateColors();
             };
             material.m_updateColors = true;
@@ -214,10 +215,10 @@ public static class TextureReplacer
                 var color = colorConfigs[index];
                 string name = $"{original.m_name}_{index}";
                 var clone = original.Clone(name);
-                clone.m_mainColors[Configs.Season.Fall] = color.Value;
+                clone.m_mainColors[Season.Fall] = color.Value;
                 color.SettingChanged += (_, _) =>
                 {
-                    clone.m_mainColors[Configs.Season.Fall] = color.Value;
+                    clone.m_mainColors[Season.Fall] = color.Value;
                     clone.UpdateColors();
                 };
                 clone.m_updateColors = true;
@@ -238,10 +239,10 @@ public static class TextureReplacer
                     var color = colorConfigs[index];
                     string name = $"{original.m_name}_{index}";
                     var clone = original.Clone(name);
-                    clone.m_mainColors[Configs.Season.Fall] = color.Value;
+                    clone.m_mainColors[Season.Fall] = color.Value;
                     color.SettingChanged += (_, _) =>
                     {
-                        clone.m_mainColors[Configs.Season.Fall] = color.Value;
+                        clone.m_mainColors[Season.Fall] = color.Value;
                         clone.UpdateColors();
                     };
                     clone.m_updateColors = true;
@@ -366,10 +367,10 @@ public static class TextureReplacer
             SeasonalityPlugin.Record.LogDebug($"[ZoneSystem SetupLocations] Generation textures time: {watch.ElapsedMilliseconds}ms");
             SeasonalityPlugin.Record.LogDebug($"[ZoneSystem SetupLocations]: Registered {count} new materials");
             SetupFallMaterials();
-            if (Configs.m_fixShader.Value is Configs.Toggle.On) FixShaders();
+            if (Configs.m_fixShader.Value is Toggle.On) FixShaders();
             Configs.m_fixShader.SettingChanged += (sender, args) =>
             {
-                if (Configs.m_fixShader.Value is Configs.Toggle.On) FixShaders();
+                if (Configs.m_fixShader.Value is Toggle.On) FixShaders();
             };
             SeasonalityPlugin.OnSeasonChange();
         }
@@ -420,15 +421,16 @@ public static class TextureReplacer
         public Color32 m_originalColor;
         public Texture? m_originalMossTex;
         public Dictionary<string, Texture> m_originalTextures = new();
-        public Dictionary<Configs.Season, Texture?> m_mainTextures = new();
-        public Dictionary<Configs.Season, Color32> m_mainColors = new();
-        public Dictionary<string, Dictionary<Configs.Season, Texture?>> m_specialTextures = new();
+        public Dictionary<Season, Texture?> m_mainTextures = new();
+        public Dictionary<Season, Color32> m_mainColors = new();
+        public Dictionary<string, Dictionary<Season, Texture?>> m_specialTextures = new();
         public Color32 m_originalMossColor;
         public Color32 m_newMossColor;
         public bool m_updateColors;
         public bool m_updateMoss;
         public bool m_updateMossColor;
         public bool m_isAshlandMaterial;
+        public bool m_isMountainMaterial;
         public readonly bool m_isValid = true;
 
         public MaterialData Clone(string name)
@@ -436,12 +438,12 @@ public static class TextureReplacer
             var newMat = new Material(m_material);
             newMat.name = name;
             MaterialData clone = new MaterialData(newMat);
-            clone.m_mainTextures = new Dictionary<Configs.Season, Texture?>(m_mainTextures);
-            clone.m_mainColors = new Dictionary<Configs.Season, Color32>(m_mainColors);
-            var specialTex = new Dictionary<string, Dictionary<Configs.Season, Texture?>>();
+            clone.m_mainTextures = new Dictionary<Season, Texture?>(m_mainTextures);
+            clone.m_mainColors = new Dictionary<Season, Color32>(m_mainColors);
+            var specialTex = new Dictionary<string, Dictionary<Season, Texture?>>();
             foreach (var kvp in m_specialTextures)
             {
-                specialTex[kvp.Key] = new Dictionary<Configs.Season, Texture?>(kvp.Value);
+                specialTex[kvp.Key] = new Dictionary<Season, Texture?>(kvp.Value);
             }
             clone.m_specialTextures = specialTex;
             clone.m_newMossColor = m_newMossColor;
@@ -449,6 +451,7 @@ public static class TextureReplacer
             clone.m_updateMoss = m_updateMoss;
             clone.m_updateMossColor = m_updateMossColor;
             clone.m_isAshlandMaterial = m_isAshlandMaterial;
+            clone.m_isMountainMaterial = m_isMountainMaterial;
             clone.m_name = name;
             return clone;
         }
@@ -467,29 +470,13 @@ public static class TextureReplacer
             if (material.HasProperty("_Color")) m_originalColor = material.color;
             CacheOriginalTextures();
             CacheMoss();
-
-            // if (TestSnowShader)
-            // {
-            //     if (m_shaderName == "Custom/Piece")
-            //     {
-            //         material.shader = FrozenManager.SnowPieces;
-            //     }
-            // }
         }
-
-        // public void ToggleSnowShader(bool value)
-        // {
-        //     if (m_originalShader.name == "Custom/Piece")
-        //     {
-        //         m_material.shader = value ? FrozenManager.SnowPieces : m_originalShader;
-        //     }
-        // }
 
         public void Conclude()
         {
             // After reading custom textures, make sure dictionary has original texture set to seasons without custom textures
             // to fix problem of returning to original textures
-            foreach (Configs.Season season in Enum.GetValues(typeof(Configs.Season)))
+            foreach (Season season in Enum.GetValues(typeof(Season)))
             {
                 if (m_mainTextures.ContainsKey(season)) continue;
                 m_mainTextures[season] = m_originalTex;
@@ -503,6 +490,7 @@ public static class TextureReplacer
             if (m_originalMossTex == null) return;
             m_updateMoss = true;
             if (m_originalMossTex.name == "Ash_d") m_isAshlandMaterial = true;
+            if (m_originalMossTex.name == "pillar_snow_d2") m_isMountainMaterial = true;
         }
         private void CacheOriginalTextures()
         {
@@ -617,7 +605,7 @@ public static class TextureReplacer
             if (m_specialTextures.Count <= 0) return;
             // m_material.EnableKeyword("_NORMALMAP");
             // this needs to be applied to each instance...
-            foreach (KeyValuePair<string, Dictionary<Configs.Season, Texture?>> kvp in m_specialTextures)
+            foreach (KeyValuePair<string, Dictionary<Season, Texture?>> kvp in m_specialTextures)
             {
                 if (!m_material.HasProperty(kvp.Key)) continue;
                 if (kvp.Value.TryGetValue(Configs.m_season.Value, out Texture? texture))
@@ -639,13 +627,13 @@ public static class TextureReplacer
         
         private void UpdateMoss()
         {
-            if (!m_updateMoss || m_isAshlandMaterial) return;
+            if (!m_updateMoss || m_isAshlandMaterial || m_isMountainMaterial) return;
             switch (Configs.m_season.Value)
             {
-                case Configs.Season.Fall:
+                case Season.Fall:
                     m_material.SetTexture(MossTex, TextureManager.Stonemoss_heath.m_tex);
                     break;
-                case Configs.Season.Winter:
+                case Season.Winter:
                     m_material.SetTexture(MossTex, TextureManager.AshOnRocks_d.m_tex);
                     break;
                 default:
@@ -657,7 +645,7 @@ public static class TextureReplacer
             if (!m_updateMossColor) return;
             switch (Configs.m_season.Value)
             {
-                case Configs.Season.Fall or Configs.Season.Winter:
+                case Season.Fall or Season.Winter:
                     m_material.SetColor(MossColor, m_newMossColor);
                     break;
                 default:

@@ -38,10 +38,10 @@ public static class SeasonSE
     {
         return Configs.m_season.Value switch
         {
-            Configs.Season.Spring => SpriteManager.SpringIcon,
-            Configs.Season.Summer => SpriteManager.SummerIcon,
-            Configs.Season.Fall => SpriteManager.FallIcon,
-            Configs.Season.Winter => SpriteManager.WinterIcon,
+            Season.Spring => SpriteManager.SpringIcon,
+            Season.Summer => SpriteManager.SummerIcon,
+            Season.Fall => SpriteManager.FallIcon,
+            Season.Winter => SpriteManager.WinterIcon,
             _ => SpriteManager.ValknutIcon
         };
     }
@@ -106,10 +106,10 @@ public static class SeasonSE
 
         public void Update()
         {
-            m_name = Configs.m_displayType.Value is Configs.DisplayType.Above 
+            m_name = Configs.m_displayType.Value is DisplayType.Above 
                 ? GetSeasonName() 
                 : "";
-            m_icon = Configs.m_displaySeason.Value is Configs.Toggle.On
+            m_icon = Configs.m_displaySeason.Value is Toggle.On
                 ? GetIcon()
                 : null;
         }
@@ -149,11 +149,11 @@ public static class SeasonSE
         public override string GetIconText()
         {
             if (!EnvMan.instance) return "";
-            return Configs.m_displayTimer.Value is Configs.Toggle.Off 
-                ? Configs.m_displayType.Value is Configs.DisplayType.Above  
+            return Configs.m_displayTimer.Value is Toggle.Off 
+                ? Configs.m_displayType.Value is DisplayType.Above  
                     ? "" 
                     : GetSeasonName()  
-                : Configs.m_displayType.Value is Configs.DisplayType.Above 
+                : Configs.m_displayType.Value is DisplayType.Above 
                     ? GetSeasonTime() 
                     : GetSeasonName() + "\n" + GetSeasonTime();
         }
@@ -162,49 +162,49 @@ public static class SeasonSE
 
         public override void ModifyStaminaRegen(ref float staminaRegen)
         {
-            if (Configs.m_enableModifiers.Value is Configs.Toggle.Off) return;
+            if (Configs.m_enableModifiers.Value is Toggle.Off) return;
             staminaRegen *= Configs.m_effectConfigs.GetOrDefault(Configs.m_season.Value, "Stamina Regeneration", 1f);
         }
 
         public override void ModifyMaxCarryWeight(float baseLimit, ref float limit)
         {
-            if (Configs.m_enableModifiers.Value is Configs.Toggle.Off) return;
+            if (Configs.m_enableModifiers.Value is Toggle.Off) return;
             limit += Configs.m_effectConfigs.GetOrDefault("Carry Weight", 0f);
         }
 
         public override void ModifyRaiseSkill(Skills.SkillType skill, ref float value)
         {
-            if (Configs.m_enableModifiers.Value is Configs.Toggle.Off) return;
+            if (Configs.m_enableModifiers.Value is Toggle.Off) return;
             value *= Configs.m_effectConfigs.GetOrDefault("Raise Skill", 1f);
         }
 
         public override void ModifyEitrRegen(ref float eitrRegen)
         {
-            if (Configs.m_enableModifiers.Value is Configs.Toggle.Off) return;
+            if (Configs.m_enableModifiers.Value is Toggle.Off) return;
             eitrRegen *= Configs.m_effectConfigs.GetOrDefault("Eitr Regeneration", 1f);
         }
 
         public override void ModifyHealthRegen(ref float regenMultiplier)
         {
-            if (Configs.m_enableModifiers.Value is Configs.Toggle.Off) return;
+            if (Configs.m_enableModifiers.Value is Toggle.Off) return;
             regenMultiplier *= Configs.m_effectConfigs.GetOrDefault("Health Regeneration", 1f);
         }
 
         public override void ModifyAttack(Skills.SkillType skill, ref HitData hitData)
         {
-            if (Configs.m_enableModifiers.Value is Configs.Toggle.Off) return;
+            if (Configs.m_enableModifiers.Value is Toggle.Off) return;
             hitData.ApplyModifier(Configs.m_effectConfigs.GetOrDefault("Damage", 1f));
         }
 
         public override void ModifySpeed(float baseSpeed, ref float speed, Character character, Vector3 dir)
         {
-            if (Configs.m_enableModifiers.Value is Configs.Toggle.Off) return;
+            if (Configs.m_enableModifiers.Value is Toggle.Off) return;
             speed *= Configs.m_effectConfigs.GetOrDefault("Speed", 1f);
         }
         
         public override void OnDamaged(HitData hit, Character attacker)
         {
-            if (FadeToBlack.m_fading && Configs.m_fadeToBlackImmune.Value is Configs.Toggle.On) hit.ApplyModifier(0f);
+            if (FadeToBlack.m_fading && Configs.m_fadeToBlackImmune.Value is Toggle.On) hit.ApplyModifier(0f);
         }
     }
 }

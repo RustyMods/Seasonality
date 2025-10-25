@@ -4,6 +4,7 @@ using System.IO;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
+using JetBrains.Annotations;
 using Seasonality.Helpers;
 using ServerSync;
 using YamlDotNet.Serialization;
@@ -15,32 +16,62 @@ public static class PlantTweaks
     private const string FileName = "Plants.yml";
     private static readonly string FilePath = TweaksManager.FolderPath + Path.DirectorySeparatorChar + FileName;
     private static readonly CustomSyncedValue<string> ServerConfigs = new(SeasonalityPlugin.ConfigSync, "ServerPlantConfigs", "");
-    private static ConfigEntry<Configs.Toggle> m_enabled = null!;
-    public static Dictionary<string, Plants> m_data = new();
+    private static ConfigEntry<Toggle> m_enabled = null!;
+    public static readonly Dictionary<string, Plants> m_data = new();
+    private static readonly ISerializer serializer = new SerializerBuilder().Build();
+    private static readonly IDeserializer deserializer = new DeserializerBuilder().Build();
+
+
 
     public static void Setup()
     {
-        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Plants Tweaks", Configs.Toggle.Off, "If on, plant tweaks are enabled");
-        ServerConfigs.ValueChanged += () =>
-        {
-            if (!ZNet.m_instance || ZNet.m_instance.IsServer()) return;
-            var deserializer = new DeserializerBuilder().Build();
-            try
-            {
-                m_data = deserializer.Deserialize<Dictionary<string, Plants>>(ServerConfigs.Value);
-            }
-            catch
-            {
-                SeasonalityPlugin.Record.LogWarning("Failed to deserialize server plant configs");
-            }
-        };
+        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Plants Tweaks", Toggle.Off, "If on, plant tweaks are enabled");
         Read();
+        ServerConfigs.ValueChanged += OnServerValueChanged;
+        if (m_data.Count == 0)
+        {
+            TweaksManager.OnZNetScenePrefab += prefab =>
+            {
+                if (m_data.ContainsKey(prefab.name)) return;
+                if (prefab.TryGetComponent(out Plant plant))
+                {
+                    m_data[prefab.name] = new Plants()
+                    {
+                        Summer = Create(plant.m_minScale, plant.m_maxScale, plant.m_growTimeMax, plant.m_growTime, true),
+                        Fall = Create(plant.m_minScale, plant.m_maxScale, plant.m_growTimeMax, plant.m_growTime, true),
+                        Winter = Create(plant.m_minScale, plant.m_maxScale, plant.m_growTimeMax, plant.m_growTime, false),
+                        Spring = Create(plant.m_minScale, plant.m_maxScale, plant.m_growTimeMax, plant.m_growTime, true),
+                    };
+                }
+            };
+            TweaksManager.OnFinishSetup += Write;
+        }
+
+        TweaksManager.OnZNetAwake += () =>
+        {
+            UpdateServerConfigs();
+            SetupFileWatch();
+        };
+    }
+
+    private static void OnServerValueChanged()
+    {
+        if (!ZNet.m_instance || ZNet.m_instance.IsServer()) return;
+        if (string.IsNullOrEmpty(ServerConfigs.Value)) return;
+        try
+        {
+            m_data.Clear();
+            m_data.AddRange(deserializer.Deserialize<Dictionary<string, Plants>>(ServerConfigs.Value));
+        }
+        catch
+        {
+            SeasonalityPlugin.Record.LogWarning("Failed to deserialize server plant configs");
+        }
     }
 
     public static void UpdateServerConfigs()
     {
         if (!ZNet.m_instance || !ZNet.m_instance.IsServer()) return;
-        var serializer = new SerializerBuilder().Build();
         ServerConfigs.Value = serializer.Serialize(m_data);
     }
 
@@ -48,6 +79,8 @@ public static class PlantTweaks
     {
         void ReadConfigValues(object sender, FileSystemEventArgs args)
         {
+            if (!ZNet.instance || !ZNet.instance.IsServer()) return;
+            Read();
             UpdateServerConfigs();
         }
         FileSystemWatcher watcher = new FileSystemWatcher(TweaksManager.FolderPath, FileName);
@@ -59,25 +92,23 @@ public static class PlantTweaks
         watcher.EnableRaisingEvents = true;
     }
 
+    public static void Write()
+    {
+        var data = serializer.Serialize(m_data);
+        File.WriteAllText(FilePath, data);
+    }
+
     public static void Read()
     {
-        if (!File.Exists(FilePath))
+        if (!File.Exists(FilePath)) return;
+        try
         {
-            var serializer = new SerializerBuilder().Build();
-            var data = serializer.Serialize(m_data);
-            File.WriteAllText(FilePath, data);
+            m_data.Clear();
+            m_data.AddRange(deserializer.Deserialize<Dictionary<string, Plants>>(File.ReadAllText(FilePath)));
         }
-        else
+        catch
         {
-            var deserializer = new DeserializerBuilder().Build();
-            try
-            {
-                m_data = deserializer.Deserialize<Dictionary<string, Plants>>(File.ReadAllText(FilePath));
-            }
-            catch
-            {
-                SeasonalityPlugin.Record.LogWarning("Failed to deserialize plant tweaks: " + Path.GetFileName(FilePath));
-            }
+            SeasonalityPlugin.Record.LogWarning("Failed to deserialize plant tweaks: " + Path.GetFileName(FilePath));
         }
     }
     
@@ -92,16 +123,17 @@ public static class PlantTweaks
     [HarmonyPatch(typeof(Plant), nameof(Plant.Grow))]
     private static class Plant_Grow_Patch
     {
+        [UsedImplicitly]
         private static bool Prefix(Plant __instance)
         {
-            if (m_enabled.Value is Configs.Toggle.Off) return true;
+            if (m_enabled.Value is Toggle.Off) return true;
             if (!m_data.TryGetValue(__instance.name.Replace("(Clone)", string.Empty), out Plants data)) return true;
             return Configs.m_season.Value switch
             {
-                Configs.Season.Spring => data.Spring.CanHarvest,
-                Configs.Season.Summer => data.Summer.CanHarvest,
-                Configs.Season.Fall => data.Fall.CanHarvest,
-                Configs.Season.Winter => data.Winter.CanHarvest,
+                Season.Spring => data.Spring.CanHarvest,
+                Season.Summer => data.Summer.CanHarvest,
+                Season.Fall => data.Fall.CanHarvest,
+                Season.Winter => data.Winter.CanHarvest,
                 _ => true
             };
         }
@@ -110,25 +142,26 @@ public static class PlantTweaks
     [HarmonyPatch(typeof(Plant), nameof(Plant.GetStatus))]
     private static class Plant_GetStatus_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(Plant __instance, ref Plant.Status __result)
         {
-            if (m_enabled.Value is Configs.Toggle.Off) return;
+            if (m_enabled.Value is Toggle.Off) return;
             if (!m_data.TryGetValue(__instance.name.Replace("(Clone)", string.Empty), out Plants data)) return;
             switch (Configs.m_season.Value)
             {
-                case Configs.Season.Spring:
+                case Season.Spring:
                     if (data.Spring.CanHarvest) return;
                     __result = Plant.Status.NoSpace;
                     break;
-                case Configs.Season.Summer:
+                case Season.Summer:
                     if (data.Summer.CanHarvest) return;
                     __result = Plant.Status.NoSpace;
                     break;
-                case Configs.Season.Fall:
+                case Season.Fall:
                     if (data.Fall.CanHarvest) return;
                     __result = Plant.Status.NoSpace;
                     break;
-                case Configs.Season.Winter:
+                case Season.Winter:
                     if (data.Winter.CanHarvest) return;
                     __result = Plant.Status.NoSpace;
                     break;
@@ -139,22 +172,23 @@ public static class PlantTweaks
     [HarmonyPatch(typeof(Plant), nameof(Plant.GetHoverText))]
     private static class Plant_GetHoverText_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(Plant __instance, ref string __result)
         {
-            if (m_enabled.Value is Configs.Toggle.Off) return;
+            if (m_enabled.Value is Toggle.Off) return;
             if (!m_data.TryGetValue(__instance.name.Replace("(Clone)", string.Empty), out Plants data)) return;
             switch (Configs.m_season.Value)
             {
-                case Configs.Season.Spring:
+                case Season.Spring:
                     if (data.Spring.CanHarvest) return;
                     break;
-                case Configs.Season.Summer:
+                case Season.Summer:
                     if (data.Summer.CanHarvest) return;
                     break;
-                case Configs.Season.Fall:
+                case Season.Fall:
                     if (data.Fall.CanHarvest) return;
                     break;
-                case Configs.Season.Winter:
+                case Season.Winter:
                     if (data.Winter.CanHarvest) return;
                     break;
             }
@@ -165,23 +199,24 @@ public static class PlantTweaks
     [HarmonyPatch(typeof(Plant), nameof(Plant.Awake))]
     private static class Plant_Awake_Patch
     {
+        [UsedImplicitly]
         private static void Postfix(Plant __instance)
         {
-            if (m_enabled.Value is Configs.Toggle.Off) return;
+            if (m_enabled.Value is Toggle.Off) return;
             if (!m_data.TryGetValue(__instance.name.Replace("(Clone)", string.Empty), out Plants data)) return;
             Plants.Data plantData;
             switch (Configs.m_season.Value)
             {
-                case Configs.Season.Spring:
+                case Season.Spring:
                     plantData = data.Spring;
                     break;
-                case Configs.Season.Summer:
+                case Season.Summer:
                     plantData = data.Summer;
                     break;
-                case Configs.Season.Fall:
+                case Season.Fall:
                     plantData = data.Fall;
                     break;
-                case Configs.Season.Winter:
+                case Season.Winter:
                     plantData = data.Winter;
                     break;
                 default:

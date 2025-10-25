@@ -114,7 +114,7 @@ public class TerrainController : MonoBehaviour
         {
             switch (Configs.m_season.Value)
             {
-                case Configs.Season.Winter:
+                case Season.Winter:
                     switch (biome)
                     {
                         case Heightmap.Biome.Meadows:
@@ -126,7 +126,7 @@ public class TerrainController : MonoBehaviour
                             break;
                     }
                     break;
-                case Configs.Season.Fall:
+                case Season.Fall:
                     switch (biome)
                     {
                         case Heightmap.Biome.Meadows:

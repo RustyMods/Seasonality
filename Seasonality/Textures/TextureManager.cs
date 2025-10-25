@@ -88,11 +88,11 @@ public static class TextureManager
         public readonly string m_property = "";
         public readonly byte[] m_bytes = null!;
         public readonly Texture m_texture = null!;
-        public readonly Configs.Season m_season;
+        public readonly Season m_season;
         public readonly bool m_isValid = true;
         public readonly bool m_isTex = false;
 
-        public ImageData(Texture texture, string fileName, string materialName, Configs.Season season, string property)
+        public ImageData(Texture texture, string fileName, string materialName, Season season, string property)
         {
             m_texture = texture;
             m_fileName = fileName;
@@ -106,7 +106,7 @@ public static class TextureManager
         {
             var fileName = Path.GetFileName(filePath);
             m_fileName = fileName;
-            if (!Helpers.Utils.ParseName(fileName.Replace(".png", string.Empty), out string materialName, out Configs.Season season, out string property))
+            if (!Helpers.Utils.ParseName(fileName.Replace(".png", string.Empty), out string materialName, out Season season, out string property))
             {
                 m_isValid = false;
                 return;

@@ -21,8 +21,16 @@ public static class Utils
         if (!s.TryGetValue(j, out ConfigEntry<float> result)) return d;
         return result.Value;
     }
+
+    public static void AddRange<T, V>(this Dictionary<T, V> dict, Dictionary<T, V> toAdd)
+    {
+        foreach (var kvp in toAdd)
+        {
+            dict[kvp.Key] = kvp.Value;
+        }
+    }
     
-    public static float GetOrDefault<J>(this Dictionary<Configs.Season, Dictionary<J, ConfigEntry<float>>> dict, J j, float d)
+    public static float GetOrDefault<J>(this Dictionary<Season, Dictionary<J, ConfigEntry<float>>> dict, J j, float d)
     {
         return dict.GetOrDefault(Configs.m_season.Value, j, d);
     }
@@ -50,11 +58,11 @@ public static class Utils
         }
     }
 
-    public static bool ParseName(string name, out string materialName, out Configs.Season season, out string property)
+    public static bool ParseName(string name, out string materialName, out Season season, out string property)
     {
         materialName = "";
         property = "";
-        season = Configs.Season.Summer;
+        season = Season.Summer;
         var parts = name.Split('@');
         if (parts.Length < 2)
         {

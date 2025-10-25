@@ -96,10 +96,10 @@ public static class SeasonCommands
         SeasonCommand SetSeason = new("set", "Set current season, admin only", args =>
         {
             if (args.Length < 2) return true;
-            if (!Enum.TryParse(args[2], true, out Configs.Season season)) return false;
+            if (!Enum.TryParse(args[2], true, out Season season)) return false;
             Configs.m_season.Value = season;
             return true;
-        }, optionsFetcher: () => Enum.GetNames(typeof(Configs.Season)).ToList(), adminOnly: true);
+        }, optionsFetcher: () => Enum.GetNames(typeof(Season)).ToList(), adminOnly: true);
         
         SeasonCommand help = new("help", "list of seasonality commands", _ =>
         {

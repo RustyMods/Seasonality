@@ -67,9 +67,6 @@
         <Reference Include="assembly_guiutils">
             <HintPath>$(PublicizedAssembliesPath)\assembly_guiutils_publicized.dll</HintPath>
         </Reference>
-        <Reference Include="assembly_postprocessing">
-          <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_postprocessing_publicized.dll</HintPath>
-        </Reference>
         <Reference Include="assembly_utils">
             <HintPath>$(PublicizedAssembliesPath)\assembly_utils_publicized.dll</HintPath>
         </Reference>
@@ -108,7 +105,7 @@
             <HintPath>$(CorlibPath)\UnityEngine.CoreModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.ImageConversionModule">
-          <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+          <HintPath>Libs\UnityEngine.ImageConversionModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.IMGUIModule">
             <HintPath>$(CorlibPath)\UnityEngine.IMGUIModule.dll</HintPath>
@@ -192,6 +189,7 @@
         </Content>
         <EmbeddedResource Include="icons\winter_icon.png" />
         <EmbeddedResource Include="translations\English.yml" />
+        <Content Include="Libs\UnityEngine.ImageConversionModule.dll" />
         <Content Include="Thunderstore\CHANGELOG.md" />
         <Content Include="Thunderstore\config\Seasonality\Default\Armors\ArmorBronze\BronzeArmorMesh_Mat@winter.png" />
         <Content Include="Thunderstore\config\Seasonality\Default\Armors\ArmorBronze\helmet_bronze_mat@winter.png" />
@@ -375,7 +373,6 @@
         <Content Include="Thunderstore\icon.png" />
         <Content Include="Thunderstore\manifest.json" />
         <Content Include="Thunderstore\README.md" />
-        <Content Include="Thunderstore\RustyMods-Seasonality-3.6.1.zip" />
         <Content Include="Thunderstore\Seasonality.dll" />
         <Content Include="UpdateManifest.ps1" />
     </ItemGroup>

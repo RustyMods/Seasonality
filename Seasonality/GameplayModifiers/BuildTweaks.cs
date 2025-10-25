@@ -8,7 +8,7 @@ namespace Seasonality.GameplayModifiers;
 
 public static class BuildTweaks
 {
-    private static ConfigEntry<Configs.Toggle> m_enabled = null!;
+    private static ConfigEntry<Toggle> m_enabled = null!;
     private static ConfigEntry<string> m_winterPieces = null!;
     private static ConfigEntry<string> m_springPieces = null!;
     private static ConfigEntry<string> m_fallPieces = null!;
@@ -32,7 +32,7 @@ public static class BuildTweaks
 
     public static void Setup()
     {
-        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Build Pieces Enabled", Configs.Toggle.Off,
+        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Build Pieces Enabled", Toggle.Off,
             "If on, seasonal build pieces enabled");
         m_winterPieces = SeasonalityPlugin.ConfigManager.config("Tweaks", "Winter Pieces",
             new Configs.SerializedNameList(m_defaultWinterPieces).ToString(), new ConfigDescription(
@@ -66,10 +66,10 @@ public static class BuildTweaks
 
     private static ConfigEntry<string> GetConfig() => Configs.m_season.Value switch
     {
-        Configs.Season.Summer => m_summerPieces,
-        Configs.Season.Spring => m_springPieces,
-        Configs.Season.Fall => m_fallPieces,
-        Configs.Season.Winter => m_winterPieces,
+        Season.Summer => m_summerPieces,
+        Season.Spring => m_springPieces,
+        Season.Fall => m_fallPieces,
+        Season.Winter => m_winterPieces,
         _ => m_summerPieces
     };
 
@@ -78,7 +78,7 @@ public static class BuildTweaks
     {
         private static void Postfix(PieceTable __instance, Player player)
         {
-            if (m_enabled.Value is Configs.Toggle.Off) return;
+            if (m_enabled.Value is Toggle.Off) return;
             foreach (var name in new Configs.SerializedNameList(GetConfig().Value).m_names)
             {
                 if (ZNetScene.instance.GetPrefab(name) is not { } prefab || !prefab.TryGetComponent(out Piece component)) continue;

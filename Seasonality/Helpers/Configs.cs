@@ -14,6 +14,24 @@ using UnityEngine;
 
 namespace Seasonality.Helpers;
 
+[PublicAPI]
+public enum Season
+{
+    Summer = 0, 
+    Fall = 1, 
+    Winter = 2, 
+    Spring = 3
+}
+
+public enum Toggle
+{
+    On, Off
+}
+
+public enum DisplayType
+{
+    Above, Below
+}
 public class Configs
 {
     private readonly ConfigSync ConfigSync;
@@ -128,8 +146,8 @@ public class Configs
             FrozenWaterLOD.UpdateAll();
         };
         m_winterAlwaysCold = config("Winter", "Always Cold", Toggle.Off, "If on, winter is always cold, and applies Cold Status Effect");
-        m_addIceShelves = config("Winter", "Spawn Ice Shelves", Toggle.Off,
-            "If on, ice shelves spawn around coastlines");
+        m_addIceShelves = config("Winter", "Spawn Ice Shelves", Toggle.Off, "If on, ice shelves spawn around coastlines");
+        m_addIceShelves.SettingChanged +=  (_, _) => SeasonalIce.UpdateZoneVeg();
         
         m_displaySeason.SettingChanged += SeasonSE.OnSeasonDisplayConfigChange;
         m_randomColors = config("Fall", "Random Colors", Toggle.On, "If on, random colors are applied to targeted prefabs");
@@ -393,24 +411,24 @@ public class Configs
         }
     }
 
-    [PublicAPI]
-    public enum Season
-    {
-        Summer = 0, 
-        Fall = 1, 
-        Winter = 2, 
-        Spring = 3
-    }
-
-    public enum Toggle
-    {
-        On, Off
-    }
-
-    public enum DisplayType
-    {
-        Above, Below
-    }
+    // [PublicAPI]
+    // public enum Season
+    // {
+    //     Summer = 0, 
+    //     Fall = 1, 
+    //     Winter = 2, 
+    //     Spring = 3
+    // }
+    //
+    // public enum Toggle
+    // {
+    //     On, Off
+    // }
+    //
+    // public enum DisplayType
+    // {
+    //     Above, Below
+    // }
     
     public Configs(ConfigFile file, ConfigSync sync, string fileName, string path)
     {

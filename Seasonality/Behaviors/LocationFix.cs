@@ -75,15 +75,16 @@ public class LocationFix : MonoBehaviour
 
     public void UpdateMoss()
     {
+        if (WorldGenerator.instance.GetBiome(transform.position) == Heightmap.Biome.Mountain) return;
         switch (Configs.m_season.Value)
         {
-            case Configs.Season.Winter:
+            case Season.Winter:
                 foreach (var material in m_textures.Keys)
                 {
                     material.SetTexture(MossTex, TextureManager.AshOnRocks_d.m_tex);
                 }
                 break;
-            case Configs.Season.Fall:
+            case Season.Fall:
                 foreach (var material in m_textures.Keys)
                 {
                     material.SetTexture(MossTex, TextureManager.Stonemoss_heath.m_tex);

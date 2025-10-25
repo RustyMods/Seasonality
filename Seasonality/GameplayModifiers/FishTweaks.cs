@@ -5,10 +5,10 @@ namespace Seasonality.GameplayModifiers;
 
 public static class FishTweaks
 {
-    private static ConfigEntry<Configs.Toggle> m_enabled = null!;
+    private static ConfigEntry<Toggle> m_enabled = null!;
     public static void Setup()
     {
-        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Frozen Fish", Configs.Toggle.Off, "If on, fish cannot be picked up during winter");
+        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Frozen Fish", Toggle.Off, "If on, fish cannot be picked up during winter");
     }
 
     [HarmonyPatch(typeof(Fish), nameof(Fish.Interact))]
@@ -16,8 +16,8 @@ public static class FishTweaks
     {
         private static bool Prefix()
         {
-            if (m_enabled.Value is Configs.Toggle.Off) return true;
-            return Configs.m_season.Value is not Configs.Season.Winter;
+            if (m_enabled.Value is Toggle.Off) return true;
+            return Configs.m_season.Value is not Season.Winter;
         }
     }
 
@@ -26,8 +26,8 @@ public static class FishTweaks
     {
         private static void Postfix(ref string __result)
         {
-            if (m_enabled.Value is Configs.Toggle.Off) return;
-            if (Configs.m_season.Value is not Configs.Season.Winter) return;
+            if (m_enabled.Value is Toggle.Off) return;
+            if (Configs.m_season.Value is not Season.Winter) return;
             __result += Localization.instance.Localize("\n $cannot_pick");
         }
     }

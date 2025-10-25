@@ -16,7 +16,7 @@ public class RandomColors : MonoBehaviour
 
     public void Awake()
     {
-        if (Configs.m_randomColors.Value is Configs.Toggle.Off) return;
+        if (Configs.m_randomColors.Value is Toggle.Off) return;
         if (!new Configs.SerializedNameList(Configs.m_fallObjects.Value).m_names.Contains(name.Replace("(Clone)", string.Empty))) return;
         m_renderers = GetComponentsInChildren<Renderer>(true);
         m_particleSystem = GetComponentInChildren<ParticleSystem>();
@@ -70,13 +70,13 @@ public class RandomColors : MonoBehaviour
 
     public void UpdateParticleColors()
     {
-        if (Configs.m_particlesController.Value is Configs.Toggle.Off) return;
+        if (Configs.m_particlesController.Value is Toggle.Off) return;
         if (m_particleSystem == null) return;
         var main = m_particleSystem.main;
         m_originalGradient = main.startColor;
         switch (Configs.m_season.Value)
         {
-            case Configs.Season.Fall:
+            case Season.Fall:
                 main.startColor = new ParticleSystem.MinMaxGradient()
                 {
                     color = new Color32(205, 92, 92, 255),
@@ -85,7 +85,7 @@ public class RandomColors : MonoBehaviour
                     mode = ParticleSystemGradientMode.RandomColor,
                 };
                 break;
-            case Configs.Season.Winter:
+            case Season.Winter:
                 main.startColor = new ParticleSystem.MinMaxGradient()
                 {
                     color = Color.white,

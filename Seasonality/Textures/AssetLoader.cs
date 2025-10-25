@@ -21,7 +21,7 @@ public static class AssetLoader
         stopwatch.Start();
         foreach (var asset in bundle.LoadAllAssets<Texture>())
         {
-            if (!Helpers.Utils.ParseName(asset.name, out string materialName, out Configs.Season season, out string property)) continue;
+            if (!Helpers.Utils.ParseName(asset.name, out string materialName, out Season season, out string property)) continue;
             TextureManager.m_texturePacks.AddOrSet(materialName, new TextureManager.ImageData(asset, asset.name + ".png", materialName, season, property));
         }
         stopwatch.Stop();

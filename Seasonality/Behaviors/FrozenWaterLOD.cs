@@ -21,7 +21,7 @@ public class FrozenWaterLOD : MonoBehaviour
     {
         foreach (FrozenWaterLOD instance in Instances)
         {
-            if (Configs.m_season.Value is Configs.Season.Winter && Configs.m_waterFreezes.Value is Configs.Toggle.On)
+            if (Configs.m_season.Value is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On)
             {
                 instance.Freeze();
             }
@@ -44,8 +44,8 @@ public class FrozenWaterLOD : MonoBehaviour
     private void SetInitialValues()
     {
         if (!m_renderer) return;
-        if (Configs.m_waterFreezes.Value is Configs.Toggle.On
-            && Configs.m_season.Value is Configs.Season.Winter)
+        if (Configs.m_waterFreezes.Value is Toggle.On
+            && Configs.m_season.Value is Season.Winter)
         {
             m_renderer.material = FrozenManager.GetSelectedMaterial();
             transform.position = m_originalPos + new Vector3(0f, -0.2f, 0f);

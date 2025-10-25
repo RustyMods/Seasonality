@@ -19,7 +19,7 @@ public static class WeatherManager
     {
         private static void Postfix(Heightmap.Biome biome, ref List<EnvEntry> __result)
         {
-            if (Configs.m_weatherEnabled.Value is Configs.Toggle.Off) return;
+            if (Configs.m_weatherEnabled.Value is Toggle.Off) return;
             if (biome is Heightmap.Biome.None or Heightmap.Biome.AshLands) return;
             __result = GetEnvironments(biome, __result);
         }
@@ -34,7 +34,7 @@ public static class WeatherManager
 
             RegisterEnvironments(__instance);
             
-            if (Configs.m_weatherEnabled.Value is Configs.Toggle.Off) return;
+            if (Configs.m_weatherEnabled.Value is Toggle.Off) return;
             __instance.m_environmentDuration = Configs.m_weatherDuration.Value * 60;
         }
     }
@@ -78,8 +78,8 @@ public static class WeatherManager
         private static void Postfix(ref bool __result)
         {
             if (!Player.m_localPlayer) return;
-            if (Configs.m_winterAlwaysCold.Value is Configs.Toggle.Off) return;
-            if (Configs.m_season.Value is not Configs.Season.Winter) return;
+            if (Configs.m_winterAlwaysCold.Value is Toggle.Off) return;
+            if (Configs.m_season.Value is not Season.Winter) return;
             if (Player.m_localPlayer.GetCurrentBiome() is Heightmap.Biome.AshLands) return;
             __result = true;
         }
@@ -87,7 +87,7 @@ public static class WeatherManager
     public static void OnWeatherDurationChange(object sender, EventArgs e)
     {
         if (!EnvMan.instance) return;
-        if (Configs.m_weatherEnabled.Value is Configs.Toggle.Off) return;
+        if (Configs.m_weatherEnabled.Value is Toggle.Off) return;
         EnvMan.instance.m_environmentDuration = Configs.m_weatherDuration.Value * 60;
     }
 
@@ -140,7 +140,7 @@ public static class WeatherManager
     private static float m_timer;
     public static void CheckOrSet(float dt)
     {
-        if (Configs.m_displayWeather.Value is Configs.Toggle.Off) return;
+        if (Configs.m_displayWeather.Value is Toggle.Off) return;
         m_timer += dt;
         if (m_timer < 10f) return;
         m_timer = 0.0f;
@@ -159,7 +159,7 @@ public static class WeatherManager
 
         public void Update()
         {
-            m_icon = Configs.m_displayWeather.Value is Configs.Toggle.On ? SpriteManager.ValknutIcon : null;
+            m_icon = Configs.m_displayWeather.Value is Toggle.On ? SpriteManager.ValknutIcon : null;
         }
         
         public override string GetTooltipString()
@@ -176,7 +176,7 @@ public static class WeatherManager
             var localized = Localization.instance.Localize($"$weather_{EnvMan.instance.m_currentEnv.m_name.ToLower().Replace(" ", "_")}");
             m_name = localized.Contains("[") ? env : localized;
 
-            if (Configs.m_displayWeatherTimer.Value is Configs.Toggle.Off) return "";
+            if (Configs.m_displayWeatherTimer.Value is Toggle.Off) return "";
             double seed = EnvMan.instance.m_totalSeconds / EnvMan.instance.m_environmentDuration;
             double fraction = 1 - (seed - Math.Truncate(seed));
             double total = fraction * EnvMan.instance.m_environmentDuration;

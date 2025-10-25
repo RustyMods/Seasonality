@@ -58,13 +58,13 @@ public class MossController : MonoBehaviour
     {
         switch (Configs.m_season.Value)
         {
-            case Configs.Season.Fall:
+            case Season.Fall:
                 foreach (var kvp in m_textureMap)
                 {
                     kvp.Key.SetTexture(MossTex, TextureManager.Stonemoss_heath.m_tex);
                 }
                 break;
-            case Configs.Season.Winter:
+            case Season.Winter:
                 foreach (var kvp in m_textureMap)
                 {
                     kvp.Key.SetTexture(MossTex, TextureManager.AshOnRocks_d.m_tex);

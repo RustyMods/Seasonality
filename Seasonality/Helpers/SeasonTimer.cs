@@ -14,7 +14,7 @@ public static class SeasonTimer
     {
         if (!ZNet.instance) return 0;
         if (Configs.m_lastSeasonChange.Value > ZNet.instance.GetTimeSeconds()) Configs.m_lastSeasonChange.Value = 0;
-        var timeElapsed = ZNet.m_instance.GetTimeSeconds() - Configs.m_lastSeasonChange.Value;
+        double timeElapsed = ZNet.m_instance.GetTimeSeconds() - Configs.m_lastSeasonChange.Value;
         return timeElapsed < 0 ? 0 : timeElapsed;
     }
 
@@ -22,6 +22,7 @@ public static class SeasonTimer
     {
         double time = ZNet.m_instance.GetTimeSeconds();
         Configs.m_lastSeasonChange.Value = time;
+        isChanging = false;
     }
     
     private static double GetSeasonLength()
@@ -43,22 +44,21 @@ public static class SeasonTimer
 
     private static double GetCountdown() => TimeSpan.FromSeconds(GetTimeDifference()).TotalSeconds;
     
-    public static Configs.Season GetNextSeason(Configs.Season season)
+    public static Season GetNextSeason(Season season)
     {
-        int currentSeason = (int)season;
-        Configs.Season nextSeason;
-
-        if (Enum.IsDefined(typeof(Configs.Season), currentSeason + 1))
-            nextSeason = (Configs.Season)currentSeason + 1;
-        else 
-            nextSeason = 0;
-
-        return nextSeason;
+        return season switch
+        {
+            Season.Spring => Season.Summer,
+            Season.Summer => Season.Fall,
+            Season.Fall => Season.Winter,
+            Season.Winter => Season.Spring,
+            _ => Season.Summer
+        };
     }
 
     private static void CheckSeasonFade(double timer)
     {
-        if (Configs.m_seasonFades.Value is Configs.Toggle.Off) return;
+        if (Configs.m_seasonFades.Value is Toggle.Off) return;
         if (!Player.m_localPlayer || !ZNet.instance || FadeToBlack.m_blackScreenImg is null || FadeToBlack.m_blackScreen is null) return;
         if (timer > Configs.m_fadeLength.Value) return;
         if (ZNet.instance.GetTimeSeconds() - FadeToBlack.m_timeLastFade < 50f || FadeToBlack.m_fading) return;
@@ -73,7 +73,7 @@ public static class SeasonTimer
         m_seasonTimer = 0.0f;
         
         int countdown = (int)GetCountdown();
-        if (Configs.m_sleepOverride.Value is Configs.Toggle.On)
+        if (Configs.m_sleepOverride.Value is Toggle.On)
         {
             if (countdown > 0) return;
             if (m_sleepOverride) return;
@@ -87,9 +87,12 @@ public static class SeasonTimer
         }
     }
 
+    private static bool isChanging;
     private static void ChangeSeason()
     {
         if (!ZNet.instance.IsServer() && ValidServer) return;
+        if (isChanging) return;
+        isChanging = true;
         Configs.m_season.Value = GetNextSeason(Configs.m_season.Value);
         SetLastSeasonChangeTime();
     }

@@ -41,7 +41,7 @@ public class VisEquipController : MonoBehaviour
             
         var materialName = material.name.Replace("(Instance)", string.Empty).Trim();
         if (!TextureReplacer.m_materials.TryGetValue(materialName, out TextureReplacer.MaterialData data)) return;
-        if (!data.m_specialTextures.TryGetValue("_ChestTex", out Dictionary<Configs.Season, Texture?> textures)) return;
+        if (!data.m_specialTextures.TryGetValue("_ChestTex", out Dictionary<Season, Texture?> textures)) return;
             
         if (textures.TryGetValue(Configs.m_season.Value, out Texture? texture))
         {
@@ -62,7 +62,7 @@ public class VisEquipController : MonoBehaviour
         if (component.m_itemData.m_shared.m_armorMaterial is not { } material) return;
         var materialName = material.name.Replace("(Instance)", string.Empty).Trim();
         if (!TextureReplacer.m_materials.TryGetValue(materialName, out TextureReplacer.MaterialData data)) return;
-        if (!data.m_specialTextures.TryGetValue("_LegsTex", out Dictionary<Configs.Season, Texture?> textures)) return;
+        if (!data.m_specialTextures.TryGetValue("_LegsTex", out Dictionary<Season, Texture?> textures)) return;
             
         if (textures.TryGetValue(Configs.m_season.Value, out Texture? texture))
         {

@@ -20,13 +20,13 @@ public class FrozenZones : MonoBehaviour
     {
         foreach (FrozenZones instance in Instances)
         {
-            if (Configs.m_waterFreezes.Value is Configs.Toggle.Off)
+            if (Configs.m_waterFreezes.Value is Toggle.Off)
             {
                 instance.ThawWater();
             }
             else
             {
-                if (Configs.m_season.Value is Configs.Season.Winter) 
+                if (Configs.m_season.Value is Season.Winter) 
                     instance.FreezeWater();
                 else instance.ThawWater();
             }
@@ -56,7 +56,7 @@ public class FrozenZones : MonoBehaviour
 
     private void SetInitialValues()
     {
-        if (Configs.m_season.Value is Configs.Season.Winter && Configs.m_waterFreezes.Value is Configs.Toggle.On)
+        if (Configs.m_season.Value is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On)
         {
             m_surfaceRenderer.material = FrozenManager.GetSelectedMaterial();
             m_surfaceCollider.enabled = true;
