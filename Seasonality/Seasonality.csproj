@@ -149,6 +149,7 @@
         <Compile Include="GameplayModifiers\TweaksManager.cs" />
         <Compile Include="Helpers\Configs.cs" />
         <Compile Include="Helpers\Records.cs" />
+        <Compile Include="Helpers\SeasonalTimer.cs" />
         <Compile Include="Helpers\SeasonCommands.cs" />
         <Compile Include="Helpers\SeasonTimer.cs" />
         <Compile Include="Helpers\ShaderConfigs.cs" />

@@ -103,7 +103,9 @@ namespace Seasonality
                 {
                     // Enable mod on client if versions match
                     SeasonalityPlugin.Record.LogInfo("Received same version from server!");
-                    SeasonTimer.ValidServer = true;
+                    SeasonalTimer.hasValidServer = true;
+                    SeasonalityPlugin.Record.LogDebug("Server-controlled seasons enabled - this client will receive season updates from the server");
+                    // SeasonTimer.hasValidServer = true;
                 }
                 else
                 {

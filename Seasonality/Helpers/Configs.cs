@@ -100,8 +100,18 @@ public class Configs
     {
         m_season = config("1 - Settings", "Season", Season.Summer, "Set current season");
         m_season.SettingChanged += (_, _) => SeasonalityPlugin.OnSeasonChange();
+        
         m_lastSeasonChange = config("1 - Settings", "Last Season Change", 0.0, "Record of last season change, reset if you create a new world");
         m_sleepOverride = config("1 - Settings", "Sleep Override", Toggle.Off, "If on, season changes when players sleep, instead of on timer end");
+        m_sleepOverride.SettingChanged += SeasonalTimer.OnConfigChange;
+        m_sleepOverride.SettingChanged += (_, _) =>
+        {
+            if (m_sleepOverride.Value is Toggle.Off)
+            {
+                SeasonalTimer.m_sleepOverride = false;
+            }
+        };
+        
         m_seasonFades = config("1 - Settings", "Fade To Black", Toggle.Off, "If on, screen fades to black when season is changing");
         m_fadeLength = config("1 - Settings", "Fade Length (seconds)", 3f, "Set length of fade to black");
         m_fadeToBlackImmune = config("1 - Settings", "Fade Immune", Toggle.Off, "If on, player immune while fading to black");
@@ -163,6 +173,8 @@ public class Configs
                 new ConfigDescription(
                     $"Set length of {season.ToString().ToLower()}, days, hours, minutes (30min real-time = 1 day", null,
                     new ConfigurationManagerAttributes() { Category = season.ToString(), CustomDrawer = StatusEffectConfig.Draw }));
+            m_durations[season].SettingChanged += SeasonalTimer.OnConfigChange;
+            
             foreach (var data in m_statusEffectConfigs)
             {
                 m_effectConfigs.AddOrSet(season, data.m_name,

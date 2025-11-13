@@ -49,7 +49,7 @@ public static class FadeToBlack
             }
 
             Player.m_localPlayer.Message(MessageHud.MessageType.Center,
-                $"$msg_{SeasonTimer.GetNextSeason(Configs.m_season.Value).ToString().ToLower()}");
+                $"$msg_{SeasonalTimer.GetNextSeason(Configs.m_season.Value).ToString().ToLower()}");
 
             yield return new WaitForSeconds(1);
 

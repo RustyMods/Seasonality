@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace Seasonality.Helpers;
 
+[Obsolete]
 public static class SeasonTimer
 {
     private static float m_seasonTimer;
     public static bool m_sleepOverride;
-    public static bool ValidServer;
+    public static bool hasValidServer;
 
     private static double GetTimeElapsed()
     {
@@ -16,13 +17,6 @@ public static class SeasonTimer
         if (Configs.m_lastSeasonChange.Value > ZNet.instance.GetTimeSeconds()) Configs.m_lastSeasonChange.Value = 0;
         double timeElapsed = ZNet.m_instance.GetTimeSeconds() - Configs.m_lastSeasonChange.Value;
         return timeElapsed < 0 ? 0 : timeElapsed;
-    }
-
-    private static void SetLastSeasonChangeTime()
-    {
-        double time = ZNet.m_instance.GetTimeSeconds();
-        Configs.m_lastSeasonChange.Value = time;
-        isChanging = false;
     }
     
     private static double GetSeasonLength()
@@ -82,7 +76,14 @@ public static class SeasonTimer
         else
         {
             CheckSeasonFade(countdown);
-            if (countdown > 0) return;
+            if (countdown > 0)
+            {
+                isChanging = false;
+                return;
+            }
+
+            if (isChanging) return;
+            
             ChangeSeason();
         }
     }
@@ -90,23 +91,24 @@ public static class SeasonTimer
     private static bool isChanging;
     private static void ChangeSeason()
     {
-        if (!ZNet.instance.IsServer() && ValidServer) return;
+        if (!ZNet.instance.IsServer() && hasValidServer) return;
         if (isChanging) return;
         isChanging = true;
-        Configs.m_season.Value = GetNextSeason(Configs.m_season.Value);
-        SetLastSeasonChangeTime();
+        Season currentSeason = Configs.m_season.Value;
+        Configs.m_season.Value = GetNextSeason(currentSeason);
+        double time = ZNet.m_instance.GetTimeSeconds();
+        Configs.m_lastSeasonChange.Value = time;
     }
 
 
-    [HarmonyPatch(typeof(Game), nameof(Game.SleepStop))]
-    private static class Game_SleepStop_Patch
-    {
-        private static void Postfix()
-        {
-            if (!m_sleepOverride) return;
-            m_sleepOverride = false;
-            ChangeSeason();
-            SetLastSeasonChangeTime();
-        }
-    }
+    // [HarmonyPatch(typeof(Game), nameof(Game.SleepStop))]
+    // private static class Game_SleepStop_Patch
+    // {
+    //     private static void Postfix()
+    //     {
+    //         if (!m_sleepOverride) return;
+    //         m_sleepOverride = false;
+    //         ChangeSeason();
+    //     }
+    // }
 }

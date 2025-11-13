@@ -1,16 +1,10 @@
 # Seasonality
 Dynamic seasons by altering textures and colors, providing an immersive environmental experience that changes with in-game time.
 
-## 3.4.9 Update Notes
-Delete old files
+## 3.7.2 update notes
 
-Config Folder: BepinEx/config/Seasonality
-
-You can now specify which root folder the plugin reads, meaning you can have profiles.
-
-This way, I do not need to have a seperate texture pack mod, you can install another texture pack and simply add it to the Config Folder, give its unique folder name, and change the configurations to target that specific folder.
-
-Built-in SeasonalTweaks, toggleable configs, YML files found in Seasonality folder.
+Overhauled season timer to be scheduled instead of checking if it is the right time to change season, to again try to avoid "skipping" season bugs.
+- added command to reset schedule if timer sits at 0: `seasonality timer_reset`
 
 ## Features
 - Four seasons: Winter, Spring, Summer, Fall

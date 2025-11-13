@@ -19,7 +19,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.7.0";
+        internal const string ModVersion = "3.7.2";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private const string ConfigFileName = ModGUID + ".cfg";
@@ -29,7 +29,6 @@ namespace Seasonality
         private static readonly ManualLogSource SeasonalityLogger = BepInEx.Logging.Logger.CreateLogSource(ModName);
         public static readonly ConfigSync ConfigSync = new(ModGUID) { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
         public static SeasonalityPlugin _plugin = null!;
-        // private static readonly AssetBundle Assets = GetAssetBundle("snowmaterialbundle");
         public static readonly AssetBundle NewIce = GetAssetBundle("seasonality");
         
         public static Configs ConfigManager = null!;
@@ -48,6 +47,7 @@ namespace Seasonality
             TextureManager.Read();
             TweaksManager.Setup();
             FrozenManager.Setup();
+            
             Assembly assembly = Assembly.GetExecutingAssembly(); 
             _harmony.PatchAll(assembly);
             BadgerHDLoaded = Chainloader.PluginInfos.ContainsKey("Badgers.HDValheimTextures");
@@ -78,7 +78,7 @@ namespace Seasonality
         public void Update()
         {
             float dt = Time.deltaTime;
-            SeasonTimer.CheckTransition(dt);
+            // SeasonTimer.CheckTransition(dt);
             SeasonSE.CheckOrSet(dt);
             WeatherManager.CheckOrSet(dt);
         }

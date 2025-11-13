@@ -71,14 +71,18 @@ public static class SeasonSE
     private static string GetSeasonTime()
     {
         if (!ShouldCount()) return "";
-        TimeSpan span = TimeSpan.FromSeconds(SeasonTimer.GetTimeDifference());
+        TimeSpan span = TimeSpan.FromSeconds(SeasonalTimer.GetTimeDifference());
         int days = span.Days;
         int hour = span.Hours;
         int minutes = span.Minutes;
         int seconds = span.Seconds;
     
-        if (SeasonTimer.m_sleepOverride) return Localization.instance.Localize("$msg_ready");
-        return days > 0 ? $"{days}:{hour:D2}:{minutes:D2}:{seconds:D2}" : hour > 0 ? $"{hour}:{minutes:D2}:{seconds:D2}" : minutes > 0 ? $"{minutes}:{seconds:D2}" : $"{seconds}";
+        if (SeasonalTimer.m_sleepOverride) return Localization.instance.Localize("$msg_ready");
+        
+        return days > 0 ? $"{days} {Localization.instance.Localize(days > 1 ? "$label_days" : "$label_day")}" 
+            : hour > 0 ? $"{hour}:{minutes:D2}:{seconds:D2}" 
+            : minutes > 0 ? $"{minutes}:{seconds:D2}" 
+            : $"{seconds}";
     }
 
     [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]

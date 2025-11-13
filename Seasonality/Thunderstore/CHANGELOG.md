@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.7.2
+- overhauled timer to be scheduled instead of checking if it is time to change season
+- added command: `seasonality timer_reset` to reset schedule in order to fix if something interrupts scheduled invocation
+- changing timer configs, sleep override, or using dev command `skiptime` will automatically reset schedule
+- added debug logs to show when schedule is set
+- changed how timer is displayed, if over a day, will show as: `1 day` or `2 days`
+
+## 3.7.1
+- minor change to season timer to try to make sure it does not skip seasons
+
 ## 3.7.0
 - Rebuilt shaders with macOS & Linux settings, maybe works for mac now ?? I don't have mac, so cannot test
 - Fixed ice shelves not spawning if config not enabled when game loads

@@ -93,6 +93,13 @@ public static class SeasonCommands
             return true;
         }, isSecret: true , optionsFetcher: () => TextureManager.GetAllTextures().Keys.ToList());
         
+        SeasonCommand resetTimer = new("timer_reset", "Reset scheduled season change", _ =>
+        {
+            SeasonalTimer.instance?.ResetSchedule();
+            SeasonalityPlugin.Record.LogDebug("Reset scheduled season change");
+            return true;
+        });
+        
         SeasonCommand SetSeason = new("set", "Set current season, admin only", args =>
         {
             if (args.Length < 2) return true;
