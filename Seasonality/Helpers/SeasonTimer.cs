@@ -1,114 +1,114 @@
-using System;
-using HarmonyLib;
-using UnityEngine;
-
-namespace Seasonality.Helpers;
-
-[Obsolete]
-public static class SeasonTimer
-{
-    private static float m_seasonTimer;
-    public static bool m_sleepOverride;
-    public static bool hasValidServer;
-
-    private static double GetTimeElapsed()
-    {
-        if (!ZNet.instance) return 0;
-        if (Configs.m_lastSeasonChange.Value > ZNet.instance.GetTimeSeconds()) Configs.m_lastSeasonChange.Value = 0;
-        double timeElapsed = ZNet.m_instance.GetTimeSeconds() - Configs.m_lastSeasonChange.Value;
-        return timeElapsed < 0 ? 0 : timeElapsed;
-    }
-    
-    private static double GetSeasonLength()
-    {
-        var vector = Configs.m_durations.GetOrDefault(Configs.m_season.Value, Vector3.zero);
-        double days = vector.x * 86400;
-        double hours = vector.y * 3600;
-        double minutes = vector.z * 60;
-        return days + hours + minutes;
-    }
-
-    public static double GetTimeDifference()
-    {
-        double difference = GetSeasonLength() - GetTimeElapsed();
-        return difference < 0 ? 0 : difference;
-    }
-
-    private static bool ShouldCount() => GetSeasonLength() > 0;
-
-    private static double GetCountdown() => TimeSpan.FromSeconds(GetTimeDifference()).TotalSeconds;
-    
-    public static Season GetNextSeason(Season season)
-    {
-        return season switch
-        {
-            Season.Spring => Season.Summer,
-            Season.Summer => Season.Fall,
-            Season.Fall => Season.Winter,
-            Season.Winter => Season.Spring,
-            _ => Season.Summer
-        };
-    }
-
-    private static void CheckSeasonFade(double timer)
-    {
-        if (Configs.m_seasonFades.Value is Toggle.Off) return;
-        if (!Player.m_localPlayer || !ZNet.instance || FadeToBlack.m_blackScreenImg is null || FadeToBlack.m_blackScreen is null) return;
-        if (timer > Configs.m_fadeLength.Value) return;
-        if (ZNet.instance.GetTimeSeconds() - FadeToBlack.m_timeLastFade < 50f || FadeToBlack.m_fading) return;
-        SeasonalityPlugin._plugin.StartCoroutine(FadeToBlack.TriggerFade());
-    }
-    
-    public static void CheckTransition(float dt)
-    {
-        if (!ZNet.instance || !EnvMan.instance || ZNet.m_world == null || !ShouldCount()) return;
-        m_seasonTimer += dt;
-        if (m_seasonTimer < 1f) return;
-        m_seasonTimer = 0.0f;
-        
-        int countdown = (int)GetCountdown();
-        if (Configs.m_sleepOverride.Value is Toggle.On)
-        {
-            if (countdown > 0) return;
-            if (m_sleepOverride) return;
-            m_sleepOverride = true;
-        }
-        else
-        {
-            CheckSeasonFade(countdown);
-            if (countdown > 0)
-            {
-                isChanging = false;
-                return;
-            }
-
-            if (isChanging) return;
-            
-            ChangeSeason();
-        }
-    }
-
-    private static bool isChanging;
-    private static void ChangeSeason()
-    {
-        if (!ZNet.instance.IsServer() && hasValidServer) return;
-        if (isChanging) return;
-        isChanging = true;
-        Season currentSeason = Configs.m_season.Value;
-        Configs.m_season.Value = GetNextSeason(currentSeason);
-        double time = ZNet.m_instance.GetTimeSeconds();
-        Configs.m_lastSeasonChange.Value = time;
-    }
-
-
-    // [HarmonyPatch(typeof(Game), nameof(Game.SleepStop))]
-    // private static class Game_SleepStop_Patch
-    // {
-    //     private static void Postfix()
-    //     {
-    //         if (!m_sleepOverride) return;
-    //         m_sleepOverride = false;
-    //         ChangeSeason();
-    //     }
-    // }
-}
+// using System;
+// using HarmonyLib;
+// using UnityEngine;
+//
+// namespace Seasonality.Helpers;
+//
+// [Obsolete]
+// public static class SeasonTimer
+// {
+//     private static float m_seasonTimer;
+//     public static bool m_sleepOverride;
+//     public static bool hasValidServer;
+//
+//     private static double GetTimeElapsed()
+//     {
+//         if (!ZNet.instance) return 0;
+//         if (Configs.m_lastSeasonChange.Value > ZNet.instance.GetTimeSeconds()) Configs.m_lastSeasonChange.Value = 0;
+//         double timeElapsed = ZNet.m_instance.GetTimeSeconds() - Configs.m_lastSeasonChange.Value;
+//         return timeElapsed < 0 ? 0 : timeElapsed;
+//     }
+//     
+//     private static double GetSeasonLength()
+//     {
+//         var vector = Configs.m_durations.GetOrDefault(Configs.m_season.Value, Vector3.zero);
+//         double days = vector.x * 86400;
+//         double hours = vector.y * 3600;
+//         double minutes = vector.z * 60;
+//         return days + hours + minutes;
+//     }
+//
+//     public static double GetTimeDifference()
+//     {
+//         double difference = GetSeasonLength() - GetTimeElapsed();
+//         return difference < 0 ? 0 : difference;
+//     }
+//
+//     private static bool ShouldCount() => GetSeasonLength() > 0;
+//
+//     private static double GetCountdown() => TimeSpan.FromSeconds(GetTimeDifference()).TotalSeconds;
+//     
+//     public static Season GetNextSeason(Season season)
+//     {
+//         return season switch
+//         {
+//             Season.Spring => Season.Summer,
+//             Season.Summer => Season.Fall,
+//             Season.Fall => Season.Winter,
+//             Season.Winter => Season.Spring,
+//             _ => Season.Summer
+//         };
+//     }
+//
+//     private static void CheckSeasonFade(double timer)
+//     {
+//         if (Configs.m_seasonFades.Value is Toggle.Off) return;
+//         if (!Player.m_localPlayer || !ZNet.instance || FadeToBlack.m_blackScreenImg is null || FadeToBlack.m_blackScreen is null) return;
+//         if (timer > Configs.m_fadeLength.Value) return;
+//         if (ZNet.instance.GetTimeSeconds() - FadeToBlack.m_timeLastFade < 50f || FadeToBlack.m_fading) return;
+//         SeasonalityPlugin._plugin.StartCoroutine(FadeToBlack.TriggerFade());
+//     }
+//     
+//     public static void CheckTransition(float dt)
+//     {
+//         if (!ZNet.instance || !EnvMan.instance || ZNet.m_world == null || !ShouldCount()) return;
+//         m_seasonTimer += dt;
+//         if (m_seasonTimer < 1f) return;
+//         m_seasonTimer = 0.0f;
+//         
+//         int countdown = (int)GetCountdown();
+//         if (Configs.m_sleepOverride.Value is Toggle.On)
+//         {
+//             if (countdown > 0) return;
+//             if (m_sleepOverride) return;
+//             m_sleepOverride = true;
+//         }
+//         else
+//         {
+//             CheckSeasonFade(countdown);
+//             if (countdown > 0)
+//             {
+//                 isChanging = false;
+//                 return;
+//             }
+//
+//             if (isChanging) return;
+//             
+//             ChangeSeason();
+//         }
+//     }
+//
+//     private static bool isChanging;
+//     private static void ChangeSeason()
+//     {
+//         if (!ZNet.instance.IsServer() && hasValidServer) return;
+//         if (isChanging) return;
+//         isChanging = true;
+//         Season currentSeason = Configs.m_season.Value;
+//         Configs.m_season.Value = GetNextSeason(currentSeason);
+//         double time = ZNet.m_instance.GetTimeSeconds();
+//         Configs.m_lastSeasonChange.Value = time;
+//     }
+//
+//
+//     // [HarmonyPatch(typeof(Game), nameof(Game.SleepStop))]
+//     // private static class Game_SleepStop_Patch
+//     // {
+//     //     private static void Postfix()
+//     //     {
+//     //         if (!m_sleepOverride) return;
+//     //         m_sleepOverride = false;
+//     //         ChangeSeason();
+//     //     }
+//     // }
+// }

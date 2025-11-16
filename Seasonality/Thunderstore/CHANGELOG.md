@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.7.3
+- saving last season change as binary file in BepinEx/config/Seasonality/LastSeasonChangeData folder
+- Should fix any errors in reading/saving last season time due to converting string value into a double value
+- bin files will be named WorldName.Seasonality.bin, so each world will have their own last season change data
+- hopefully fixes connecting clients to server having invalid last season change values
+- removed last season change config entry
+- added material blacklist, local file, if you need to use this, share the file with all your clients, BepinEx/config/Seasonality/MaterialBlackList.yml
+- any line that starts with `#` will be ignored
+
 ## 3.7.2
 - overhauled timer to be scheduled instead of checking if it is time to change season
 - added command: `seasonality timer_reset` to reset schedule in order to fix if something interrupts scheduled invocation

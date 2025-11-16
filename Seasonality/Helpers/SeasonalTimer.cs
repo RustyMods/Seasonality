@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using BepInEx;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -7,10 +9,6 @@ namespace Seasonality.Helpers;
 
 public class SeasonalTimer : MonoBehaviour
 {
-   public static bool hasValidServer;
-   public static bool m_sleepOverride;
-   public float m_fadeTimer;
-
    [HarmonyPatch(typeof(Game), nameof(Game.SleepStop))]
    private static class Game_SleepStop_Patch
    {
@@ -24,7 +22,11 @@ public class SeasonalTimer : MonoBehaviour
       [UsedImplicitly]
       private static void Postfix(ZNet __instance)
       {
-         if (!__instance.GetComponent<SeasonalTimer>()) __instance.gameObject.AddComponent<SeasonalTimer>();
+         SeasonalityPlugin.Record.LogDebug("ZNet.Start");
+         lastSeasonChangeFileName = __instance.GetWorldName() + ".Seasonality.bin";
+         Read();
+         if (!__instance.IsServer()) return;
+         instance?.ScheduleNextSeason();
       }
    }
 
@@ -39,15 +41,76 @@ public class SeasonalTimer : MonoBehaviour
       }
    }
 
-   public static SeasonalTimer? instance;
+   [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection))]
+   private static class RegisterSetLastSeasonChangeAndSet
+   {
+      [UsedImplicitly]
+      private static void Prefix(ZNetPeer peer)
+      {
+         peer.m_rpc.Register<double>(nameof(RPC_SetLastSeasonChange), RPC_SetLastSeasonChange);
+      }
+   }
 
+   [HarmonyPatch(typeof(ZNet), nameof(ZNet.RPC_PeerInfo))]
+   private static class ZNet_RPC_PeerInfo_Patch
+   {
+      [UsedImplicitly]
+      private static void Postfix(ZNet __instance, ZRpc rpc)
+      {
+         if (!__instance.IsServer()) return;
+         rpc.Invoke(nameof(RPC_SetLastSeasonChange), lastSeasonChange);
+      }
+   }
+   
+   public static bool hasValidServer;
+   public static bool m_sleepOverride;
+   private static readonly string ConfigFolder = Paths.ConfigPath + Path.DirectorySeparatorChar + "Seasonality";
+   private static readonly string BinFolder = Path.Combine(ConfigFolder, "LastSeasonChangeData");
+   public static SeasonalTimer? instance;
+   public float m_fadeTimer;
+   public static string? lastSeasonChangeFileName;
+   public static double lastSeasonChange;
    public void Awake()
    {
       SeasonalityPlugin.Record.LogDebug("Seasonal Timer Awake");
-      
       instance = this;
-      
-      ScheduleNextSeason();
+      if (!Directory.Exists(ConfigFolder)) Directory.CreateDirectory(ConfigFolder);
+      if (!Directory.Exists(BinFolder)) Directory.CreateDirectory(BinFolder);
+   }
+
+   public static void Read()
+   {
+      if (lastSeasonChangeFileName is null) return;
+      string filePath = Path.Combine(BinFolder, lastSeasonChangeFileName);
+      if (!File.Exists(filePath)) return;
+      try
+      {
+         using BinaryReader reader = new BinaryReader(File.OpenRead(filePath));
+         lastSeasonChange = reader.ReadDouble();
+         SeasonalityPlugin.Record.LogDebug(
+            $"Reading last season change from, {Path.GetFileNameWithoutExtension(filePath)}: {lastSeasonChange}");
+      }
+      catch (Exception ex)
+      {
+         SeasonalityPlugin.Record.LogError(ex.Message);
+      }
+   }
+
+   public static void Save()
+   {
+      if (lastSeasonChangeFileName is null) return;
+      string filePath = Path.Combine(BinFolder, lastSeasonChangeFileName);
+      try
+      {
+         using BinaryWriter writer = new BinaryWriter(File.Create(filePath));
+         writer.Write(lastSeasonChange);
+         SeasonalityPlugin.Record.LogDebug(
+            $"Saving last season change to, {Path.GetFileNameWithoutExtension(filePath)}, {lastSeasonChange}");
+      }
+      catch (Exception ex)
+      {
+         SeasonalityPlugin.Record.LogError(ex.Message);
+      }
    }
 
    public void Update()
@@ -106,10 +169,28 @@ public class SeasonalTimer : MonoBehaviour
    {
       Season currentSeason = Configs.m_season.Value;
       double time = ZNet.m_instance.GetTimeSeconds();
-      Configs.m_lastSeasonChange.Value = time;
+      // Configs.m_lastSeasonChange.Value = time;
+      lastSeasonChange = time;
+      BroadcastLastSeasonChange();
       Configs.m_season.Value = GetNextSeason(currentSeason);
+      Save();
    }
 
+   public static void BroadcastLastSeasonChange()
+   {
+      foreach (ZRpc? rpc in RpcHandlers.ValidatedPeers)
+      {
+         rpc.Invoke(nameof(RPC_SetLastSeasonChange), lastSeasonChange);
+      }
+   }
+
+   public static void RPC_SetLastSeasonChange(ZRpc rpc, double time)
+   {
+      lastSeasonChange = time;
+      Save();
+      SeasonalityPlugin.Record.LogDebug($"Received last season change time from server: {time}");
+   }
+   
    public static void OnConfigChange(object sender, EventArgs e)
    {
       if (instance == null) return;
@@ -125,14 +206,16 @@ public class SeasonalTimer : MonoBehaviour
    private static double GetTimeElapsed()
    {
       if (!ZNet.instance) return 0;
-      if (Configs.m_lastSeasonChange.Value > ZNet.instance.GetTimeSeconds()) Configs.m_lastSeasonChange.Value = 0;
-      double timeElapsed = ZNet.m_instance.GetTimeSeconds() - Configs.m_lastSeasonChange.Value;
+      // if (Configs.m_lastSeasonChange.Value > ZNet.instance.GetTimeSeconds()) Configs.m_lastSeasonChange.Value = 0;
+      // double timeElapsed = ZNet.m_instance.GetTimeSeconds() - Configs.m_lastSeasonChange.Value;
+      double timeElapsed = ZNet.m_instance.GetTimeSeconds() - lastSeasonChange;
+
       return timeElapsed < 0 ? 0 : timeElapsed;
    }
    
    private static double GetSeasonLength()
    {
-      var vector = Configs.m_durations.GetOrDefault(Configs.m_season.Value, Vector3.zero);
+      Vector3 vector = Configs.m_durations.GetOrDefault(Configs.m_season.Value, Vector3.zero);
       double days = vector.x * 86400;
       double hours = vector.y * 3600;
       double minutes = vector.z * 60;

@@ -68,7 +68,7 @@ public class Configs
     public static ConfigEntry<Season> m_season = null!;
     public static ConfigEntry<Toggle> m_waterFreezes = null!;
     public static ConfigEntry<Toggle> m_winterAlwaysCold = null!;
-    public static ConfigEntry<double> m_lastSeasonChange = null!;
+    // public static ConfigEntry<double> m_lastSeasonChange = null!;
     public static readonly Dictionary<Season, ConfigEntry<Vector3>> m_durations = new();
     public static ConfigEntry<Toggle> m_seasonFades = null!;
     public static ConfigEntry<float> m_fadeLength = null!;
@@ -101,7 +101,7 @@ public class Configs
         m_season = config("1 - Settings", "Season", Season.Summer, "Set current season");
         m_season.SettingChanged += (_, _) => SeasonalityPlugin.OnSeasonChange();
         
-        m_lastSeasonChange = config("1 - Settings", "Last Season Change", 0.0, "Record of last season change, reset if you create a new world");
+        // m_lastSeasonChange = config("1 - Settings", "Last Season Change", 0.0, "Record of last season change, reset if you create a new world");
         m_sleepOverride = config("1 - Settings", "Sleep Override", Toggle.Off, "If on, season changes when players sleep, instead of on timer end");
         m_sleepOverride.SettingChanged += SeasonalTimer.OnConfigChange;
         m_sleepOverride.SettingChanged += (_, _) =>

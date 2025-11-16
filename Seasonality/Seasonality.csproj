@@ -160,6 +160,7 @@
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Helpers\FadeToBlack.cs" />
         <Compile Include="Textures\AssetLoader.cs" />
+        <Compile Include="Textures\BlackList.cs" />
         <Compile Include="Textures\TextureReplacer.cs" />
         <Compile Include="Textures\SpriteManager.cs" />
         <Compile Include="Textures\TextureManager.cs" />

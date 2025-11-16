@@ -279,7 +279,7 @@ public static class TextureReplacer
 
         foreach (Material? mat in Resources.FindObjectsOfTypeAll<Material>())
         {
-            if (mat == null) continue;
+            if (mat == null || BlackList.ShouldIgnoreMaterial(mat.name)) continue;
             if (!m_allMaterials.ContainsKey(mat.name)) m_allMaterials[mat.name] = mat;
             if (mat.GetInstanceID() < 0) continue;
             // negative instance id is an instance, while positive is an a asset
