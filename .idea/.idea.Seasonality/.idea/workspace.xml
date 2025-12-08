@@ -5,16 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Seasonality/Textures/BlackList.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/WetTweaks.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonTimer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonTimer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonalTimer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonalTimer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/LocalizationManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/LocalizationManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/Seasonality.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/Seasonality.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/assets/seasonality" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/assets/seasonality" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/assets/seasonality.manifest" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/assets/seasonality.manifest" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/environment.props" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/environment.props" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,16 +41,23 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/b6/eff058ac/Time.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/19/5876218c/ZNet.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/48/d0829ce2/EnvMan.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/55/9e3a4c55/Terminal.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/5c/c022051c/Game.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/75/ab9e8302/Player.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/9e/aaad4cf5/HitData.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/cb/0150d042/SEMan.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/e8/3cf04b3a/ZRpc.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/caeb6fbc60ad492d92324bdfc598b6a81fc00/0c/4155871f/Paths.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/caeb6fbc60ad492d92324bdfc598b6a81fc00/87/9aaa75c2/BaseUnityPlugin.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/caeb6fbc60ad492d92324bdfc598b6a81fc00/f2/c0b71da7/Chainloader.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Behaviors/FrozenManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Behaviors/RandomColors.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Seasonality/GameplayModifiers/WetTweaks.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Helpers/SeasonTimer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Helpers/SeasonalTimer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Plugin.cs" root0="FORCE_HIGHLIGHTING" />
@@ -54,6 +65,7 @@
     <setting file="file://$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://D:/VALHEIM/RIPS/BOG WITCH/Assets/_CUSTOM/SEASONALITY/Shader/Custom_FrozenWater.shader" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -461,7 +473,18 @@
       <workItem from="1763255616651" duration="2978000" />
       <workItem from="1763298401745" duration="1985000" />
       <workItem from="1763300557633" duration="972000" />
-      <workItem from="1763304817738" duration="1854000" />
+      <workItem from="1763304817738" duration="2085000" />
+      <workItem from="1763324461429" duration="380000" />
+      <workItem from="1763340424062" duration="681000" />
+      <workItem from="1763341133371" duration="859000" />
+      <workItem from="1764182012590" duration="3649000" />
+      <workItem from="1764186711878" duration="4570000" />
+      <workItem from="1764196604263" duration="3055000" />
+      <workItem from="1764286468369" duration="665000" />
+      <workItem from="1764613564129" duration="734000" />
+      <workItem from="1764940709799" duration="3155000" />
+      <workItem from="1765200942373" duration="8467000" />
+      <workItem from="1765218169924" duration="1115000" />
     </task>
     <task id="LOCAL-00001" summary="update for latest patch">
       <created>1713580281581</created>
@@ -614,7 +637,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762995370993</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="saving last season change as bin file">
+      <option name="closed" value="true" />
+      <created>1763307128972</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1763307128972</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -659,7 +690,8 @@
     <MESSAGE value="etc." />
     <MESSAGE value="etc" />
     <MESSAGE value="new season timer" />
-    <option name="LAST_COMMIT_MESSAGE" value="new season timer" />
+    <MESSAGE value="saving last season change as bin file" />
+    <option name="LAST_COMMIT_MESSAGE" value="saving last season change as bin file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

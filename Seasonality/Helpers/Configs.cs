@@ -95,6 +95,7 @@ public class Configs
     public static ConfigEntry<string> m_fallMaterials = null!;
     public static ConfigEntry<Toggle> m_fixShader = null!;
     public static ConfigEntry<Toggle> m_addIceShelves = null!;
+    public static ConfigEntry<float> m_frozenWaterToIceShelfRatio = null!;
 
     private void Init()
     {
@@ -158,6 +159,9 @@ public class Configs
         m_winterAlwaysCold = config("Winter", "Always Cold", Toggle.Off, "If on, winter is always cold, and applies Cold Status Effect");
         m_addIceShelves = config("Winter", "Spawn Ice Shelves", Toggle.Off, "If on, ice shelves spawn around coastlines");
         m_addIceShelves.SettingChanged +=  (_, _) => SeasonalIce.UpdateZoneVeg();
+        m_frozenWaterToIceShelfRatio = config("Winter", "Frozen Water To Ice Shelf Ratio", 0.5f,
+            new ConfigDescription(
+                "If both water freezes and ice shelves are on, this ratio controls roll for which effect will take place when winter arrives, 0 = only ice shelves, 1 = only frozen water, 0.5 = 50% chance of either", new AcceptableValueRange<float>(0f, 1f)));
         
         m_displaySeason.SettingChanged += SeasonSE.OnSeasonDisplayConfigChange;
         m_randomColors = config("Fall", "Random Colors", Toggle.On, "If on, random colors are applied to targeted prefabs");

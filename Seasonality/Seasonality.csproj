@@ -147,6 +147,7 @@
         <Compile Include="GameplayModifiers\SpawnTweaks.cs" />
         <Compile Include="GameplayModifiers\TraderTweaks.cs" />
         <Compile Include="GameplayModifiers\TweaksManager.cs" />
+        <Compile Include="GameplayModifiers\WetTweaks.cs" />
         <Compile Include="Helpers\Configs.cs" />
         <Compile Include="Helpers\Records.cs" />
         <Compile Include="Helpers\SeasonalTimer.cs" />

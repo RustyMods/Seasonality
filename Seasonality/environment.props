@@ -4,9 +4,9 @@
         <BepInExPath>$(ValheimGamePath)\BepInEx</BepInExPath>
         <CorlibPath>$(ValheimGamePath)\unstripped_corlib</CorlibPath>
         <PublicizedAssembliesPath>$(ValheimGamePath)\valheim_Data\Managed\publicized_assemblies</PublicizedAssembliesPath>
-        <CopyOutputDLLPath>C:\Users\peima\AppData\Roaming\com.kesomannen.gale\valheim\profiles\tester\BepInEx\plugins\RustyMods-Seasonality</CopyOutputDLLPath>
-        <CopyOutputDLLPath2>C:\Program Files (x86)\Steam\steamapps\common\Valheim dedicated server\BepInEx\plugins</CopyOutputDLLPath2>
-        <CopyOutputDLLPath3>C:\Users\peima\Desktop\VALHEIM MODDING\projects\Seasonality\Seasonality\Thunderstore</CopyOutputDLLPath3>
+<!--        <CopyOutputDLLPath>C:\Users\peima\AppData\Roaming\com.kesomannen.gale\valheim\profiles\tester\BepInEx\plugins\RustyMods-Seasonality</CopyOutputDLLPath>-->
+        <CopyOutputDLLPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim dedicated server\BepInEx\plugins</CopyOutputDLLPath>
+        <CopyOutputDLLPath2>C:\Users\peima\Desktop\VALHEIM MODDING\projects\Seasonality\Seasonality\Thunderstore</CopyOutputDLLPath2>
         <AfterTargets>ILRepacker</AfterTargets>
     </PropertyGroup>
 </Project>

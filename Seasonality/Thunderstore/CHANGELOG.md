@@ -1,4 +1,11 @@
-# Changelog
+## 3.7.5
+- fixed ice shader for vulkan compatibility
+- added `freeze if wet` config for `winter`: if wet during winter, will instead freeze
+- added `ice shelf to water freeze ratio` config for `winter`: if both are `On`, then ratio controls which one will take effect
+
+## 3.7.4
+- added check if no players online, will pause scheduled season change, and restart whenever a player connects to server
+- added check if last season change time is larger than world time, will set last season change time to world time
 
 ## 3.7.3
 - saving last season change as binary file in BepinEx/config/Seasonality/LastSeasonChangeData folder

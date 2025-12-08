@@ -19,7 +19,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.7.3";
+        internal const string ModVersion = "3.7.5";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private const string ConfigFileName = ModGUID + ".cfg";
@@ -48,7 +48,6 @@ namespace Seasonality
             TweaksManager.Setup();
             FrozenManager.Setup();
             BlackList.Read();
-
             gameObject.AddComponent<SeasonalTimer>();
             
             Assembly assembly = Assembly.GetExecutingAssembly(); 
@@ -67,14 +66,34 @@ namespace Seasonality
             RandomColors.UpdateAll();
             LocationFix.UpdateAll();
             TerrainController.UpdateTerrain();
-            FrozenZones.UpdateAll();
-            FrozenWaterLOD.UpdateAll();
             MossController.UpdateAll();
             GlobalKeyManager.UpdateSeasonalKey();
             VisEquipController.UpdateAll();
-            SeasonalIce.UpdateAll();
-            SeasonalIce.UpdateZoneVeg();
 
+            if (Configs.m_season.Value is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On && Configs.m_addIceShelves.Value is Toggle.On)
+            {
+                float roll = UnityEngine.Random.value;
+                bool waterFreezes = roll < Configs.m_frozenWaterToIceShelfRatio.Value;
+
+                if (waterFreezes)
+                {
+                    FrozenZones.UpdateAll();
+                    FrozenWaterLOD.UpdateAll();
+                }
+                else
+                {
+                    SeasonalIce.UpdateAll();
+                    SeasonalIce.UpdateZoneVeg();
+                }
+            }
+            else
+            {
+                FrozenZones.UpdateAll();
+                FrozenWaterLOD.UpdateAll();
+                SeasonalIce.UpdateAll();
+                SeasonalIce.UpdateZoneVeg();
+            }
+            
             SeasonSE.UpdateStatus();
         }
 

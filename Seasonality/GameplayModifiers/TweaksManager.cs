@@ -27,6 +27,7 @@ public static class TweaksManager
         TraderTweaks.Setup();
         BuildTweaks.Setup();
         BeeHiveTweaks.Setup();
+        WetTweaks.Setup();
     }
 
     [HarmonyPatch(typeof(ZNet), nameof(ZNet.Awake))]

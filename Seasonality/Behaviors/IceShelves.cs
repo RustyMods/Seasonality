@@ -28,7 +28,10 @@ public class SeasonalIce : MonoBehaviour
 
     public void CheckSeason()
     {
-        if (Configs.m_season.Value is not Season.Winter) m_destructible.DestroyNow();
+        if (Configs.m_season.Value is not Season.Winter)
+        {
+            m_destructible.DestroyNow();
+        }
     }
 
     public static void UpdateAll()
@@ -72,7 +75,10 @@ public class SeasonalIce : MonoBehaviour
         
         if (Configs.m_season.Value is Season.Winter && Configs.m_addIceShelves.Value is Toggle.On)
         {
-            if (!ZoneSystem.instance.m_vegetation.Contains(ZoneVeg)) ZoneSystem.instance.m_vegetation.Add(ZoneVeg);
+            if (!ZoneSystem.instance.m_vegetation.Contains(ZoneVeg))
+            {
+                ZoneSystem.instance.m_vegetation.Add(ZoneVeg);
+            }
         }
         else
         {

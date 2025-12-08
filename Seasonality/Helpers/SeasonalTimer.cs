@@ -61,6 +61,24 @@ public class SeasonalTimer : MonoBehaviour
          rpc.Invoke(nameof(RPC_SetLastSeasonChange), lastSeasonChange);
       }
    }
+
+   [HarmonyPatch(typeof(ZNet), nameof(ZNet.SendPlayerList))]
+   private static class ZNet_SendPlayer_Patch
+   {
+      private static void Postfix(ZNet __instance)
+      {
+         if (!__instance.IsServer() || instance == null) return;
+
+         if (__instance.GetNrOfPlayers() <= 0)
+         {
+            instance.Pause();
+         }
+         else
+         {
+            instance.Continue();
+         }
+      }
+   }
    
    public static bool hasValidServer;
    public static bool m_sleepOverride;
@@ -78,6 +96,24 @@ public class SeasonalTimer : MonoBehaviour
       if (!Directory.Exists(BinFolder)) Directory.CreateDirectory(BinFolder);
    }
 
+   public void Pause()
+   {
+      if (IsInvoking(nameof(ChangeSeason)))
+      {
+         CancelInvoke(nameof(ChangeSeason));
+         SeasonalityPlugin.Record.LogDebug("Seasonal Timer Pause");
+      }
+   }
+
+   public void Continue()
+   {
+      if (!IsInvoking(nameof(ChangeSeason)))
+      {
+         ScheduleNextSeason();
+         SeasonalityPlugin.Record.LogDebug("Seasonal Timer Continue");
+      }
+   }
+
    public static void Read()
    {
       if (lastSeasonChangeFileName is null) return;
@@ -89,6 +125,11 @@ public class SeasonalTimer : MonoBehaviour
          lastSeasonChange = reader.ReadDouble();
          SeasonalityPlugin.Record.LogDebug(
             $"Reading last season change from, {Path.GetFileNameWithoutExtension(filePath)}: {lastSeasonChange}");
+         if (lastSeasonChange > ZNet.instance.GetTimeSeconds())
+         {
+            SeasonalityPlugin.Record.LogDebug($"Last season change time {lastSeasonChange} is larger than world time: {ZNet.instance.GetTimeSeconds()}, setting last season change to world time");
+            lastSeasonChange = ZNet.instance.GetTimeSeconds();
+         }
       }
       catch (Exception ex)
       {
@@ -142,7 +183,6 @@ public class SeasonalTimer : MonoBehaviour
    {
       if (!ShouldCount())
       {
-         SeasonalityPlugin.Record.LogDebug("Season timer set to 0, next season not scheduled");
          return;
       }
       float delay = (float)GetTimeDifference();
@@ -169,7 +209,6 @@ public class SeasonalTimer : MonoBehaviour
    {
       Season currentSeason = Configs.m_season.Value;
       double time = ZNet.m_instance.GetTimeSeconds();
-      // Configs.m_lastSeasonChange.Value = time;
       lastSeasonChange = time;
       BroadcastLastSeasonChange();
       Configs.m_season.Value = GetNextSeason(currentSeason);
@@ -206,8 +245,7 @@ public class SeasonalTimer : MonoBehaviour
    private static double GetTimeElapsed()
    {
       if (!ZNet.instance) return 0;
-      // if (Configs.m_lastSeasonChange.Value > ZNet.instance.GetTimeSeconds()) Configs.m_lastSeasonChange.Value = 0;
-      // double timeElapsed = ZNet.m_instance.GetTimeSeconds() - Configs.m_lastSeasonChange.Value;
+
       double timeElapsed = ZNet.m_instance.GetTimeSeconds() - lastSeasonChange;
 
       return timeElapsed < 0 ? 0 : timeElapsed;
@@ -228,7 +266,7 @@ public class SeasonalTimer : MonoBehaviour
       return difference < 0 ? 0 : difference;
    }
    
-   private static bool ShouldCount() => GetSeasonLength() > 0;
+   private static bool ShouldCount() => GetSeasonLength() > 0 && ZNet.instance.GetNrOfPlayers() > 0;
    
    private static double GetCountdown() => TimeSpan.FromSeconds(GetTimeDifference()).TotalSeconds;
 
