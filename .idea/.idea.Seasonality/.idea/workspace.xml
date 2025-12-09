@@ -5,21 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/WetTweaks.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonalTimer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonalTimer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/LocalizationManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/LocalizationManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/CHANGELOG.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/Seasonality.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/Seasonality.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/assets/seasonality" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/assets/seasonality" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/assets/seasonality.manifest" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/assets/seasonality.manifest" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/environment.props" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/environment.props" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,10 +33,12 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/71a988b63ecf480185d02f6164cceff2c200/b8/641e9831/CustomSyncedValue`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/b6/eff058ac/Time.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/19/5876218c/ZNet.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/48/d0829ce2/EnvMan.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/55/9e3a4c55/Terminal.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/59/88894211/ZRoutedRpc.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/5c/c022051c/Game.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/75/ab9e8302/Player.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/9e/aaad4cf5/HitData.cs" root0="SKIP_HIGHLIGHTING" />
@@ -485,6 +479,8 @@
       <workItem from="1764940709799" duration="3155000" />
       <workItem from="1765200942373" duration="8467000" />
       <workItem from="1765218169924" duration="1115000" />
+      <workItem from="1765237134701" duration="272000" />
+      <workItem from="1765287612863" duration="4296000" />
     </task>
     <task id="LOCAL-00001" summary="update for latest patch">
       <created>1713580281581</created>
@@ -645,7 +641,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763307128972</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="etc">
+      <option name="closed" value="true" />
+      <created>1765237399182</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1765237399182</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -688,10 +692,10 @@
     <MESSAGE value="fixed hildir lox; added saving command; added ice shelves" />
     <MESSAGE value="original tex fix" />
     <MESSAGE value="etc." />
-    <MESSAGE value="etc" />
     <MESSAGE value="new season timer" />
     <MESSAGE value="saving last season change as bin file" />
-    <option name="LAST_COMMIT_MESSAGE" value="saving last season change as bin file" />
+    <MESSAGE value="etc" />
+    <option name="LAST_COMMIT_MESSAGE" value="etc" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

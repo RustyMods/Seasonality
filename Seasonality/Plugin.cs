@@ -19,7 +19,7 @@ namespace Seasonality
     public class SeasonalityPlugin : BaseUnityPlugin
     {
         internal const string ModName = "Seasonality";
-        internal const string ModVersion = "3.7.5";
+        internal const string ModVersion = "3.7.6";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private const string ConfigFileName = ModGUID + ".cfg";
@@ -35,6 +35,7 @@ namespace Seasonality
         public static bool BadgerHDLoaded;
         public static readonly Records Record = new (SeasonalityLogger, ModName, $"{ModName}-LogOutput.log");
         public static GameObject Root = null!;
+        
         public void Awake()
         {
             ConfigManager = new Configs(Config, ConfigSync, ConfigFileName, ConfigFileFullPath);
@@ -60,6 +61,22 @@ namespace Seasonality
         {
             Record.Write();
         }
+
+        public static void RPC_OnShelfRollChange(long sender, bool freeze)
+        {
+            SeasonalityLogger.LogDebug($"Rolled shelf to ice ratio, water freezes: {freeze}");
+
+            if (freeze)
+            {
+                FrozenZones.UpdateAll();
+                FrozenWaterLOD.UpdateAll();
+            }
+            else
+            {
+                SeasonalIce.UpdateAll();
+                SeasonalIce.UpdateZoneVeg();
+            }
+        }
         public static void OnSeasonChange()
         {
             TextureReplacer.UpdateAll();
@@ -70,21 +87,9 @@ namespace Seasonality
             GlobalKeyManager.UpdateSeasonalKey();
             VisEquipController.UpdateAll();
 
-            if (Configs.m_season.Value is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On && Configs.m_addIceShelves.Value is Toggle.On)
+            if (ZNet.instance && Configs.m_season.Value is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On && Configs.m_addIceShelves.Value is Toggle.On)
             {
-                float roll = UnityEngine.Random.value;
-                bool waterFreezes = roll < Configs.m_frozenWaterToIceShelfRatio.Value;
-
-                if (waterFreezes)
-                {
-                    FrozenZones.UpdateAll();
-                    FrozenWaterLOD.UpdateAll();
-                }
-                else
-                {
-                    SeasonalIce.UpdateAll();
-                    SeasonalIce.UpdateZoneVeg();
-                }
+                RollIceToFreeze();
             }
             else
             {
@@ -96,6 +101,8 @@ namespace Seasonality
             
             SeasonSE.UpdateStatus();
         }
+        
+        
 
         public void Update()
         {
@@ -113,6 +120,40 @@ namespace Seasonality
             string resourceName = execAssembly.GetManifestResourceNames().Single(str => str.EndsWith(fileName));
             using Stream? stream = execAssembly.GetManifestResourceStream(resourceName);
             return AssetBundle.LoadFromStream(stream);
+        }
+
+        [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
+        private static class ZnetScene_Awake_Patch
+        {
+            private static void Postfix()
+            {
+                ZRoutedRpc.instance.Register<bool>(nameof(RPC_OnShelfRollChange),RPC_OnShelfRollChange);
+                
+                RollIceToFreeze();
+            }
+        }
+
+        public static void RollIceToFreeze()
+        {
+            if (ZNet.instance && Configs.m_season.Value is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On && Configs.m_addIceShelves.Value is Toggle.On)
+            {
+                if (ZNet.instance.IsServer())
+                {
+                    float roll = Random.value;
+                    bool waterFreezes = roll < Configs.m_frozenWaterToIceShelfRatio.Value;
+                    ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, nameof(RPC_OnShelfRollChange), waterFreezes);
+                }
+                else if (SeasonalTimer.hasValidServer)
+                {
+                    // let server roll
+                }
+                else
+                {
+                    float roll = Random.value;
+                    bool waterFreezes = roll < Configs.m_frozenWaterToIceShelfRatio.Value;
+                    RPC_OnShelfRollChange(0L, waterFreezes);
+                }
+            }
         }
     }
 }

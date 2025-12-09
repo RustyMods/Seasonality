@@ -1,3 +1,6 @@
+## 3.7.6
+- synchronized ice shelf to water freeze roll
+
 ## 3.7.5
 - fixed ice shader for vulkan compatibility
 - added `freeze if wet` config for `winter`: if wet during winter, will instead freeze

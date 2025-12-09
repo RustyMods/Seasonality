@@ -193,7 +193,7 @@ public class SeasonalTimer : MonoBehaviour
    private void ChangeSeason()
    {
       if (!ZNet.instance.IsServer() && hasValidServer) return;
-
+      
       if (Configs.m_sleepOverride.Value is Toggle.On)
       {
          m_sleepOverride = true;
