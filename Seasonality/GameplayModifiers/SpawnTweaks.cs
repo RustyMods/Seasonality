@@ -3,11 +3,10 @@ using System.IO;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
-using Seasonality.Helpers;
 using ServerSync;
 using YamlDotNet.Serialization;
 
-namespace Seasonality.GameplayModifiers;
+namespace Seasonality;
 
 public static class SpawnTweaks
 {
@@ -19,7 +18,7 @@ public static class SpawnTweaks
     private static readonly IDeserializer deserializer = new DeserializerBuilder().Build();
 
     private static readonly CustomSyncedValue<string> ServerSpawnData =
-        new(SeasonalityPlugin.ConfigSync, "Seasonality.Server.SpawnData", "");
+        new(ConfigManager.ConfigSync, "Seasonality.Server.SpawnData", "");
 
     public static void OnServerValueChanged()
     {
@@ -61,7 +60,7 @@ public static class SpawnTweaks
 
     public static void Setup()
     {
-        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Spawns Enabled", Toggle.Off, "If on, spawns are modified per season");
+        m_enabled = ConfigManager.config("Tweaks", "Spawns Enabled", Toggle.Off, "If on, spawns are modified per season");
         Read();
         
         ServerSpawnData.ValueChanged += OnServerValueChanged;
@@ -138,6 +137,23 @@ public static class SpawnTweaks
             }
 
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(BaseAI), nameof(BaseAI.UpdateAI))]
+    private static class BaseAI_UpdateAI_Patch
+    {
+        private static bool Prefix(BaseAI __instance, float dt, ref bool __result)
+        {
+            if (m_enabled.Value is Toggle.Off) return true;
+            if (!__instance.m_nview.IsValid() || !__instance.m_nview.IsOwner()) return true;
+            var prefabName = Utils.GetPrefabName(__instance.name);
+            if (!m_data.TryGetValue(prefabName, out Dictionary<Season, bool> dict)) return true;
+            if (!dict.TryGetValue(Configs.m_season.Value, out bool result)) return true;
+            if (result) return true;
+            __instance.MoveAwayAndDespawn(dt, true);
+            __result = false;
+            return false;
         }
     }
 }

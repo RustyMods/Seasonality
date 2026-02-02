@@ -3,7 +3,7 @@ using System.IO;
 using BepInEx;
 using BepInEx.Logging;
 
-namespace Seasonality.Helpers;
+namespace Seasonality;
 
 public class Records
 {

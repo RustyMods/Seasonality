@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
-using Seasonality.Textures;
 using UnityEngine;
 
-namespace Seasonality.Helpers;
+namespace Seasonality;
 
-public static class Utils
+public static class Extensions
 {
     public static void AddOrSet<T, J, V>(this Dictionary<T, Dictionary<J, V>> dict, T t, J j, V v)
     {
@@ -89,5 +90,22 @@ public static class Utils
     public static string SplitCamelCase(string input)
     {
         return Regex.Replace(input, "(?<=[a-z])([A-Z])", " $1");
+    }
+    
+    public static List<string> ReadAssemblyFile(string resourceName, string folder)
+    {
+        Assembly assembly = Assembly.GetExecutingAssembly();
+        string path = $"{SeasonalityPlugin.ModName}.{folder}.{resourceName}";
+        using Stream? stream = assembly.GetManifestResourceStream(path);
+        if (stream == null)
+            throw new FileNotFoundException($"Embedded resource '{resourceName}' not found in assembly '{assembly.FullName}'.");
+
+        using StreamReader reader = new StreamReader(stream);
+        List<string> lines = new List<string>();
+        while (!reader.EndOfStream)
+        {
+            lines.Add(reader.ReadLine() ?? string.Empty);
+        }
+        return lines;
     }
 }

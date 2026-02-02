@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using HarmonyLib;
-using Seasonality.Helpers;
 
-namespace Seasonality.GameplayModifiers;
+namespace Seasonality;
 
 public static class BuildTweaks
 {
@@ -32,36 +31,20 @@ public static class BuildTweaks
 
     public static void Setup()
     {
-        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Build Pieces Enabled", Toggle.Off,
+        m_enabled = ConfigManager.config("Tweaks", "Build Pieces Enabled", Toggle.Off,
             "If on, seasonal build pieces enabled");
-        m_winterPieces = SeasonalityPlugin.ConfigManager.config("Tweaks", "Winter Pieces",
-            new Configs.SerializedNameList(m_defaultWinterPieces).ToString(), new ConfigDescription(
-                "Set added winter pieces", null, new Configs.ConfigurationManagerAttributes()
-                {
-                    Category = "Tweaks",
-                    CustomDrawer = Configs.SerializedNameList.Draw
-                }));
-        m_springPieces = SeasonalityPlugin.ConfigManager.config("Tweaks", "Spring Pieces",
-            new Configs.SerializedNameList(m_defaultSpringPieces).ToString(), new ConfigDescription(
-                "Set added spring pieces", null, new Configs.ConfigurationManagerAttributes()
-                {
-                    Category = "Tweaks",
-                    CustomDrawer = Configs.SerializedNameList.Draw
-                }));
-        m_fallPieces = SeasonalityPlugin.ConfigManager.config("Tweaks", "Fall Pieces",
-            new Configs.SerializedNameList(m_defaultFallPieces).ToString(), new ConfigDescription(
-                "Set added fall pieces", null, new Configs.ConfigurationManagerAttributes()
-                {
-                    Category = "Tweaks",
-                    CustomDrawer = Configs.SerializedNameList.Draw
-                }));
-        m_summerPieces = SeasonalityPlugin.ConfigManager.config("Tweaks", "Summer Pieces",
-            new Configs.SerializedNameList(m_defaultSummerPieces).ToString(), new ConfigDescription(
-                "Set added summer pieces", null, new Configs.ConfigurationManagerAttributes()
-                {
-                    Category = "Tweaks",
-                    CustomDrawer = Configs.SerializedNameList.Draw
-                }));
+        m_winterPieces = ConfigManager.config("Tweaks", "Winter Pieces",
+            new StringListConfig(m_defaultWinterPieces).ToString(), new ConfigDescription(
+                "Set added winter pieces", null, StringListConfig.attributes));
+        m_springPieces = ConfigManager.config("Tweaks", "Spring Pieces",
+            new StringListConfig(m_defaultSpringPieces).ToString(), new ConfigDescription(
+                "Set added spring pieces", null, StringListConfig.attributes));
+        m_fallPieces = ConfigManager.config("Tweaks", "Fall Pieces",
+            new StringListConfig(m_defaultFallPieces).ToString(), new ConfigDescription(
+                "Set added fall pieces", null, StringListConfig.attributes));
+        m_summerPieces = ConfigManager.config("Tweaks", "Summer Pieces",
+            new StringListConfig(m_defaultSummerPieces).ToString(), new ConfigDescription(
+                "Set added summer pieces", null, StringListConfig.attributes));
     }
 
     private static ConfigEntry<string> GetConfig() => Configs.m_season.Value switch
@@ -79,7 +62,7 @@ public static class BuildTweaks
         private static void Postfix(PieceTable __instance, Player player)
         {
             if (m_enabled.Value is Toggle.Off) return;
-            foreach (var name in new Configs.SerializedNameList(GetConfig().Value).m_names)
+            foreach (var name in new StringListConfig(GetConfig().Value).m_names)
             {
                 if (ZNetScene.instance.GetPrefab(name) is not { } prefab || !prefab.TryGetComponent(out Piece component)) continue;
                 if (!player.HaveRequirements(component, Player.RequirementMode.CanAlmostBuild)) continue;

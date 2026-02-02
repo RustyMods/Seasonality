@@ -1,8 +1,7 @@
 using BepInEx.Configuration;
 using HarmonyLib;
-using Seasonality.Helpers;
 
-namespace Seasonality.GameplayModifiers;
+namespace Seasonality;
 
 public static class WetTweaks
 {
@@ -10,7 +9,7 @@ public static class WetTweaks
 
     public static void Setup()
     {
-        enabled = SeasonalityPlugin.ConfigManager.config("Winter", "Wet Freezes", Toggle.Off, "If on, player will freeze if wet during winter");
+        enabled = ConfigManager.config("Winter", "Wet Freezes", Toggle.Off, "If on, player will freeze if wet during winter");
     }
     [HarmonyPatch(typeof(Player), nameof(Player.UpdateEnvStatusEffects))]
     public static class Player_UpdateEnvStatusEffects

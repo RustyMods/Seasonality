@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using BepInEx;
 using HarmonyLib;
 using JetBrains.Annotations;
-using Seasonality.Helpers;
 using UnityEngine;
 
-namespace Seasonality.GameplayModifiers;
+namespace Seasonality;
 
 public static class TweaksManager
 {

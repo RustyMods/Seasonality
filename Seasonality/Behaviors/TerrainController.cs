@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using Seasonality.Helpers;
 using UnityEngine;
 
-namespace Seasonality.Behaviors;
+namespace Seasonality;
 
 public class TerrainController : MonoBehaviour
 {

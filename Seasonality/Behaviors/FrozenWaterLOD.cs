@@ -1,11 +1,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using Seasonality.Helpers;
-using Seasonality.Textures;
 using UnityEngine;
-using UnityEngine.Rendering;
 
-namespace Seasonality.Behaviors;
+namespace Seasonality;
 
 public class FrozenWaterLOD : MonoBehaviour
 {
@@ -47,7 +44,7 @@ public class FrozenWaterLOD : MonoBehaviour
         if (Configs.m_waterFreezes.Value is Toggle.On
             && Configs.m_season.Value is Season.Winter)
         {
-            m_renderer.material = FrozenManager.GetSelectedMaterial();
+            m_renderer.material = SeasonalityPlugin.FrozenWaterMat1;
             transform.position = m_originalPos + new Vector3(0f, -0.2f, 0f);
             m_frozen = true;
         }
@@ -75,7 +72,7 @@ public class FrozenWaterLOD : MonoBehaviour
     public void Freeze()
     {
         if (m_frozen) return;
-        m_renderer.material = FrozenManager.GetSelectedMaterial();
+        m_renderer.material = SeasonalityPlugin.FrozenWaterMat1;
         transform.position = m_originalPos + new Vector3(0f, -0.2f, 0f);
         m_frozen = true;
     }

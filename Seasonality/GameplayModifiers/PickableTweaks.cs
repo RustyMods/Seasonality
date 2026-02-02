@@ -5,17 +5,16 @@ using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using JetBrains.Annotations;
-using Seasonality.Helpers;
 using ServerSync;
 using YamlDotNet.Serialization;
 
-namespace Seasonality.GameplayModifiers;
+namespace Seasonality;
 
 public static class PickableTweaks
 {
     private const string FileName = "Pickables.yml";
     private static readonly string FilePath = TweaksManager.FolderPath + Path.DirectorySeparatorChar + FileName;
-    private static readonly CustomSyncedValue<string> ServerPickableConfigs = new(SeasonalityPlugin.ConfigSync, "ServerPickableConfigs", "");
+    private static readonly CustomSyncedValue<string> ServerPickableConfigs = new(ConfigManager.ConfigSync, "ServerPickableConfigs", "");
     private static ConfigEntry<Toggle> m_enabled = null!;
     public static readonly Dictionary<string, Harvest> m_data = new();
     private static readonly ISerializer serializer = new SerializerBuilder().Build();
@@ -23,7 +22,7 @@ public static class PickableTweaks
 
     public static void Setup()
     {
-        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Pickable Enabled", Toggle.Off, "If on, pickable tweaks are enabled");
+        m_enabled = ConfigManager.config("Tweaks", "Pickable Enabled", Toggle.Off, "If on, pickable tweaks are enabled");
         Read();
         ServerPickableConfigs.ValueChanged += OnServerValueChanged;
         

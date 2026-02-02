@@ -1,7 +1,6 @@
 using System.Linq;
-using Seasonality.Helpers;
 
-namespace Seasonality.Behaviors;
+namespace Seasonality;
 
 public static class GlobalKeyManager
 {

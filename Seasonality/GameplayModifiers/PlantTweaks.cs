@@ -5,17 +5,16 @@ using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using JetBrains.Annotations;
-using Seasonality.Helpers;
 using ServerSync;
 using YamlDotNet.Serialization;
 
-namespace Seasonality.GameplayModifiers;
+namespace Seasonality;
 
 public static class PlantTweaks
 {
     private const string FileName = "Plants.yml";
     private static readonly string FilePath = TweaksManager.FolderPath + Path.DirectorySeparatorChar + FileName;
-    private static readonly CustomSyncedValue<string> ServerConfigs = new(SeasonalityPlugin.ConfigSync, "ServerPlantConfigs", "");
+    private static readonly CustomSyncedValue<string> ServerConfigs = new(ConfigManager.ConfigSync, "ServerPlantConfigs", "");
     private static ConfigEntry<Toggle> m_enabled = null!;
     public static readonly Dictionary<string, Plants> m_data = new();
     private static readonly ISerializer serializer = new SerializerBuilder().Build();
@@ -25,7 +24,7 @@ public static class PlantTweaks
 
     public static void Setup()
     {
-        m_enabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Plants Tweaks", Toggle.Off, "If on, plant tweaks are enabled");
+        m_enabled = ConfigManager.config("Tweaks", "Plants Tweaks", Toggle.Off, "If on, plant tweaks are enabled");
         Read();
         ServerConfigs.ValueChanged += OnServerValueChanged;
         if (m_data.Count == 0)

@@ -5,10 +5,9 @@ using System.IO;
 using System.Linq;
 using BepInEx;
 using HarmonyLib;
-using Seasonality.Textures;
 using UnityEngine;
 
-namespace Seasonality.Helpers;
+namespace Seasonality;
 
 public static class SeasonCommands
 {

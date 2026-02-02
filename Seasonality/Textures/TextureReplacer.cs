@@ -5,12 +5,9 @@ using System.Diagnostics;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
-using Seasonality.Behaviors;
-using Seasonality.Helpers;
 using UnityEngine;
-using Debug = System.Diagnostics.Debug;
 
-namespace Seasonality.Textures;
+namespace Seasonality;
 
 public static class TextureReplacer
 {
@@ -206,7 +203,7 @@ public static class TextureReplacer
              Configs.m_fallColor4
          };
         
-        foreach (var material in new Configs.SerializedNameList(Configs.m_fallMaterials.Value).m_names)
+        foreach (var material in new StringListConfig(Configs.m_fallMaterials.Value).m_names)
         {
             if (!m_materials.TryGetValue(material, out MaterialData original)) continue;
             List<MaterialData> list = new();
@@ -230,7 +227,7 @@ public static class TextureReplacer
         Configs.m_fallMaterials.SettingChanged += (_, _) =>
         {
             m_fallMaterials.Clear();
-            foreach (var material in new Configs.SerializedNameList(Configs.m_fallMaterials.Value).m_names)
+            foreach (var material in new StringListConfig(Configs.m_fallMaterials.Value).m_names)
             {
                 if (!m_materials.TryGetValue(material, out MaterialData original)) continue;
                 List<MaterialData> list = new();

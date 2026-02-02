@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using BepInEx.Configuration;
 using HarmonyLib;
-using Seasonality.Helpers;
-using Seasonality.Textures;
 using UnityEngine;
 
-namespace Seasonality.Behaviors;
+namespace Seasonality;
 
 public static class SeasonSE
 {

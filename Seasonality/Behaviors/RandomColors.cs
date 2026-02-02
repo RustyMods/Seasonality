@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using Seasonality.Helpers;
-using Seasonality.Textures;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Seasonality.Behaviors;
+namespace Seasonality;
 
 public class RandomColors : MonoBehaviour
 {
@@ -17,7 +15,7 @@ public class RandomColors : MonoBehaviour
     public void Awake()
     {
         if (Configs.m_randomColors.Value is Toggle.Off) return;
-        if (!new Configs.SerializedNameList(Configs.m_fallObjects.Value).m_names.Contains(name.Replace("(Clone)", string.Empty))) return;
+        if (!new StringListConfig(Configs.m_fallObjects.Value).m_names.Contains(name.Replace("(Clone)", string.Empty))) return;
         m_renderers = GetComponentsInChildren<Renderer>(true);
         m_particleSystem = GetComponentInChildren<ParticleSystem>();
         m_instances.Add(this);
@@ -105,7 +103,7 @@ public class RandomColors : MonoBehaviour
     {
         private static void Postfix(ZNetScene __instance)
         {
-            foreach (var name in new Configs.SerializedNameList(Configs.m_fallObjects.Value).m_names)
+            foreach (var name in new StringListConfig(Configs.m_fallObjects.Value).m_names)
             {
                 if (__instance.GetPrefab(name) is { } prefab)
                 {
@@ -122,7 +120,7 @@ public class RandomColors : MonoBehaviour
                     Destroy(component);
                 }
                 m_modifiedPrefabs.Clear();
-                foreach (var name in new Configs.SerializedNameList(Configs.m_fallObjects.Value).m_names)
+                foreach (var name in new StringListConfig(Configs.m_fallObjects.Value).m_names)
                 {
                     if (__instance.GetPrefab(name) is { } prefab)
                     {

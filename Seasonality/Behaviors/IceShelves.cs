@@ -1,11 +1,7 @@
-using System;
 using System.Collections.Generic;
-using HarmonyLib;
-using Seasonality.Helpers;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
-namespace Seasonality.Behaviors;
+namespace Seasonality;
 
 public class SeasonalIce : MonoBehaviour
 {
@@ -36,39 +32,12 @@ public class SeasonalIce : MonoBehaviour
 
     public static void UpdateAll()
     {
-        foreach (var instance in m_instances)
+        foreach (SeasonalIce? instance in m_instances)
         {
             instance.CheckSeason();
         }
     }
-
-    [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Awake))]
-    private static class ZNetScene_Awake_Patch
-    {
-        private static void Postfix(ZNetScene __instance)
-        {
-            GameObject? ice = __instance.GetPrefab("ice1");
-            Ice = Instantiate(ice, SeasonalityPlugin.Root.transform, false);
-            Ice.name = "SeasonalIce";
-            Ice.AddComponent<SeasonalIce>();
-            __instance.m_prefabs.Add(Ice);
-            __instance.m_namedPrefabs[Ice.name.GetStableHashCode()] = Ice;
-
-            ZoneVeg.m_name = "SeasonalIce";
-            ZoneVeg.m_prefab = Ice;
-            ZoneVeg.m_min = 10;
-            ZoneVeg.m_max = 20;
-            ZoneVeg.m_biome = Heightmap.Biome.Meadows | Heightmap.Biome.BlackForest | Heightmap.Biome.Swamp |
-                              Heightmap.Biome.Plains | Heightmap.Biome.Mistlands;
-            ZoneVeg.m_biomeArea = Heightmap.BiomeArea.Everything;
-            ZoneVeg.m_blockCheck = true;
-            ZoneVeg.m_minAltitude = -1000;
-            ZoneVeg.m_maxAltitude = -1;
-            
-            UpdateZoneVeg();
-        }
-    }
-
+    
     public static void UpdateZoneVeg()
     {
         if (!ZoneSystem.instance) return;
@@ -84,5 +53,26 @@ public class SeasonalIce : MonoBehaviour
         {
             ZoneSystem.instance.m_vegetation.Remove(ZoneVeg);
         }
+    }
+
+    public static void Setup()
+    {
+        Clone ice = new Clone("ice1", "SeasonalIce");
+        ice.OnCreated += p =>
+        {
+            p.AddComponent<SeasonalIce>();
+            ZoneVeg.m_name = "SeasonalIce";
+            ZoneVeg.m_prefab = p;
+            ZoneVeg.m_min = 10;
+            ZoneVeg.m_max = 20;
+            ZoneVeg.m_biome = Heightmap.Biome.Meadows | Heightmap.Biome.BlackForest | Heightmap.Biome.Swamp |
+                              Heightmap.Biome.Plains | Heightmap.Biome.Mistlands;
+            ZoneVeg.m_biomeArea = Heightmap.BiomeArea.Everything;
+            ZoneVeg.m_blockCheck = true;
+            ZoneVeg.m_minAltitude = -1000;
+            ZoneVeg.m_maxAltitude = -1;
+            UpdateZoneVeg();
+            Ice = p;
+        };
     }
 }

@@ -7,7 +7,7 @@ using HarmonyLib;
 using UnityEngine;
 using YamlDotNet.Serialization;
 
-namespace Seasonality.Helpers;
+namespace Seasonality;
 
 public static class ShaderFix
 {

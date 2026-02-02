@@ -1,8 +1,7 @@
 using BepInEx.Configuration;
 using HarmonyLib;
-using Seasonality.Helpers;
 
-namespace Seasonality.GameplayModifiers;
+namespace Seasonality;
 
 public static class BeeHiveTweaks
 {
@@ -13,13 +12,13 @@ public static class BeeHiveTweaks
     
     public static void Setup()
     {
-        SummerEnabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Beehive Summer", Toggle.On,
+        SummerEnabled = ConfigManager.config("Tweaks", "Beehive Summer", Toggle.On,
             "If on, beehive interactable during summer");
-        FallEnabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Beehive Fall", Toggle.On,
+        FallEnabled = ConfigManager.config("Tweaks", "Beehive Fall", Toggle.On,
             "If on, beehive interactable during fall");
-        SpringEnabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Beehive Spring", Toggle.On,
+        SpringEnabled = ConfigManager.config("Tweaks", "Beehive Spring", Toggle.On,
             "If on, beehive interactable during spring");
-        WinterEnabled = SeasonalityPlugin.ConfigManager.config("Tweaks", "Beehive Winter", Toggle.On,
+        WinterEnabled = ConfigManager.config("Tweaks", "Beehive Winter", Toggle.On,
             "If on, beehive interactable during winter");
     }
 

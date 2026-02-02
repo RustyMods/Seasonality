@@ -1,3 +1,8 @@
+## 3.7.7
+- made YamlDotNet an external dependency instead of repacking within plugin
+- removed ice shelf / frozen water roll
+- updated localizer
+
 ## 3.7.6
 - synchronized ice shelf to water freeze roll
 

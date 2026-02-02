@@ -5,7 +5,7 @@ using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Seasonality.Helpers;
+namespace Seasonality;
 
 public class SeasonalTimer : MonoBehaviour
 {

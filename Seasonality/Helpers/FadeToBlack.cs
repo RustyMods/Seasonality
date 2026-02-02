@@ -3,7 +3,7 @@ using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Seasonality.Helpers;
+namespace Seasonality;
 
 public static class FadeToBlack
 {

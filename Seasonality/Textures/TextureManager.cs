@@ -3,10 +3,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using BepInEx;
-using Seasonality.Helpers;
 using UnityEngine;
 
-namespace Seasonality.Textures;
+namespace Seasonality;
 
 public static class TextureManager
 {
@@ -106,7 +105,7 @@ public static class TextureManager
         {
             var fileName = Path.GetFileName(filePath);
             m_fileName = fileName;
-            if (!Helpers.Utils.ParseName(fileName.Replace(".png", string.Empty), out string materialName, out Season season, out string property))
+            if (!Extensions.ParseName(fileName.Replace(".png", string.Empty), out string materialName, out Season season, out string property))
             {
                 m_isValid = false;
                 return;

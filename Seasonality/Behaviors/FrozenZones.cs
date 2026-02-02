@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using Seasonality.Helpers;
 using UnityEngine;
-using UnityEngine.Rendering;
 
-namespace Seasonality.Behaviors;
+namespace Seasonality;
 
 public class FrozenZones : MonoBehaviour
 {
@@ -58,7 +56,7 @@ public class FrozenZones : MonoBehaviour
     {
         if (Configs.m_season.Value is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On)
         {
-            m_surfaceRenderer.material = FrozenManager.GetSelectedMaterial();
+            m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat1;
             m_surfaceCollider.enabled = true;
             m_waterVolume.m_useGlobalWind = false;
             m_frozen = true;
@@ -77,7 +75,7 @@ public class FrozenZones : MonoBehaviour
         if (!m_surfaceCollider || !m_surfaceCollider || !m_waterVolume) return;
         if (m_frozen) return;
 
-        m_surfaceRenderer.material = FrozenManager.GetSelectedMaterial();
+        m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat1;
         m_surfaceCollider.enabled = true;
         m_waterVolume.m_useGlobalWind = false;
         m_frozen = true;

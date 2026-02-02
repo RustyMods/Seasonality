@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using BepInEx;
-using Seasonality.Helpers;
 
-namespace Seasonality.Textures;
+namespace Seasonality;
 
 public static class BlackList
 {

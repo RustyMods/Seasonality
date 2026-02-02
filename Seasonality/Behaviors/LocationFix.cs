@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
-using Seasonality.Helpers;
-using Seasonality.Textures;
 using UnityEngine;
 
-namespace Seasonality.Behaviors;
+namespace Seasonality;
 
 public class LocationFix : MonoBehaviour
 {

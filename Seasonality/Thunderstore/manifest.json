@@ -1,9 +1,10 @@
 {
 	"name": "Seasonality",
-	"version_number": "3.7.6",
+	"version_number": "3.7.7",
 	"website_url": "https://github.com/RustyMods/Seasonality",
 	"description": "Dynamic seasons by altering textures and colors, providing an immersive environmental experience that changes with time.",
 	"dependencies": [
-		"denikson-BepInExPack_Valheim-5.4.2333"
+		"denikson-BepInExPack_Valheim-5.4.2333",
+		"ValheimModding-YamlDotNet-16.3.1"
 	]
 }

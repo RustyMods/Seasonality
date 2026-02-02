@@ -1,7 +1,7 @@
 using System.Reflection;
 using UnityEngine;
 
-namespace Seasonality.Textures;
+namespace Seasonality;
 
 public static class SpriteManager
 {

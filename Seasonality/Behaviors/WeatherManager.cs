@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
-using Seasonality.Helpers;
-using Seasonality.Textures;
 using UnityEngine;
 
-namespace Seasonality.Behaviors;
+namespace Seasonality;
 
 public static class WeatherManager
 {
@@ -99,7 +97,7 @@ public static class WeatherManager
         if (!configs.TryGetValue(biome, out ConfigEntry<string> config)) return entries;
         if (config.Value.IsNullOrWhiteSpace()) return entries;
         
-        foreach (var weather in new Configs.SerializedWeather(config.Value).environments)
+        foreach (WeatherConfig.WeatherData weather in new WeatherConfig(config.Value).environments)
         {
             if (EnvMan.instance.GetEnv(weather.name) is not { } setup) continue;
             var entry = new EnvEntry()
