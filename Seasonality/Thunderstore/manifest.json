@@ -1,6 +1,6 @@
 {
 	"name": "Seasonality",
-	"version_number": "3.7.7",
+	"version_number": "3.7.8",
 	"website_url": "https://github.com/RustyMods/Seasonality",
 	"description": "Dynamic seasons by altering textures and colors, providing an immersive environmental experience that changes with time.",
 	"dependencies": [

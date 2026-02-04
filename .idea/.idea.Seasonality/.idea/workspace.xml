@@ -5,62 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/AssetBundleManager.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/Clone/Clone.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/Clone/CloneManager.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/Clone/PrefabManager.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/Config/ConfigManager.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/Config/ConfigurationManagerAttributes.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/Config/SerializedItem.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/Config/StatusEffectConfigs.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/Config/StringListConfig.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/Config/WeatherConfig.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Managers/Localizer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/thunderstore.targets" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenWaterLOD.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenWaterLOD.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenZones.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenZones.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/GlobalKeyManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/GlobalKeyManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/IceShelves.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/IceShelves.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/LocationFix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/LocationFix.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/RandomColors.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/RandomColors.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/SeasonSE.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/SeasonSE.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/TerrainController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/TerrainController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/VisEquipController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/VisEquipController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BeeHiveTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BeeHiveTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BuildTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BuildTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/FishTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/FishTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PickableTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PickableTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/SpawnTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/SpawnTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TraderTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TraderTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TweaksManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/WetTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/WetTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Configs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/Config/Configs.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/FadeToBlack.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/FadeToBlack.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Records.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Records.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonalTimer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonalTimer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/ShaderConfigs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/ShaderConfigs.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/ShaderFix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/ShaderFix.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Utils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Extensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/ILRepack.targets" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/ILRepack.targets" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/LocalizationManager.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/Localizer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/Localizer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/AssetLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/AssetLoader.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/BlackList.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/BlackList.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/CHANGELOG.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/Seasonality.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/Seasonality.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/VersionHandshake.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/VersionHandshake.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/environment.props" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/environment.props" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -543,7 +493,9 @@
       <workItem from="1766200794595" duration="764000" />
       <workItem from="1769460472302" duration="51000" />
       <workItem from="1769542639307" duration="75000" />
-      <workItem from="1770042059951" duration="5504000" />
+      <workItem from="1770042059951" duration="6125000" />
+      <workItem from="1770220129776" duration="969000" />
+      <workItem from="1770222862877" duration="441000" />
     </task>
     <task id="LOCAL-00001" summary="update for latest patch">
       <created>1713580281581</created>
@@ -720,7 +672,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765292097730</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="patch update">
+      <option name="closed" value="true" />
+      <created>1770047607416</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1770047607416</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -766,7 +726,8 @@
     <MESSAGE value="new season timer" />
     <MESSAGE value="saving last season change as bin file" />
     <MESSAGE value="etc" />
-    <option name="LAST_COMMIT_MESSAGE" value="etc" />
+    <MESSAGE value="patch update" />
+    <option name="LAST_COMMIT_MESSAGE" value="patch update" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

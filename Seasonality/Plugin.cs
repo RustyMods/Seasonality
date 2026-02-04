@@ -11,7 +11,7 @@ namespace Seasonality;
 public class SeasonalityPlugin : BaseUnityPlugin
 {
     internal const string ModName = "Seasonality";
-    internal const string ModVersion = "3.7.7";
+    internal const string ModVersion = "3.7.8";
     internal const string Author = "RustyMods";
     public const string ModGUID = Author + "." + ModName;
     internal static string ConnectionError = "";

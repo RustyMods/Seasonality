@@ -12,16 +12,13 @@ public static class Localizer
 {
     private const string FolderName = "Localizations";
     private static readonly string FolderPath;
-    private static Dictionary<string, string[]> localizations;
-    private static readonly CustomSyncedValue<string> sync;
+    private static readonly Dictionary<string, string[]> localizations;
     private static readonly ConfigEntry<Toggle> _fileWatcherEnabled;
     
     static Localizer()
     {
         FolderPath = Path.Combine(ConfigManager.DirectoryPath, FolderName);
         localizations = new Dictionary<string, string[]>();
-        sync = new CustomSyncedValue<string>(ConfigManager.ConfigSync, $"{SeasonalityPlugin.ModName}.ServerSync.Localization", "");
-        sync.ValueChanged += OnSyncChange;
         _fileWatcherEnabled = ConfigManager.config("File Watcher", FolderName, Toggle.On,
             $"If on, YML files under {FolderName} folder will trigger update on changed, created, or renamed", false);
         
@@ -66,35 +63,10 @@ public static class Localizer
                 SeasonalityPlugin.LogInfo($"Loaded {fileName} localizations");
             }
         }
-    }
+        
+        
+        SetupFileWatcher();
 
-    public static void Register(string filePath)
-    {
-        string? fileName = Path.GetFileNameWithoutExtension(filePath);
-        string[] parts = fileName.Split('.');
-        if (parts.Length != 2) return;
-        string language = parts[1];
-        string[] extraLines = File.ReadAllLines(filePath);
-        List<string> lines = new();
-        if (localizations.TryGetValue(language, out string[] translations))
-        {
-            lines.AddRange(translations);
-            lines.AddRange(extraLines);
-        }
-        else
-        {
-            lines.AddRange(extraLines);
-        }
-        localizations[language] = lines.ToArray();
-    }
-
-    public static void Init(ZNet net)
-    {
-        if (net.IsServer())
-        {
-            SetupFileWatcher();
-            UpdateSync();
-        }
     }
 
     private static void SetupFileWatcher()
@@ -174,37 +146,11 @@ public static class Localizer
 
     private static void Update()
     {
-        UpdateSync();
         if (Localization.instance == null) return;
         string lang = Localization.instance.GetSelectedLanguage();
         if (!localizations.TryGetValue(lang, out string[] translations)) return;
         ParseLines(Localization.instance, translations);
         Localization.instance.m_cache.EvictAll();
         SeasonalityPlugin.LogDebug($"Updated {lang} localizations");
-    }
-
-    private static void OnSyncChange()
-    {
-        if (!ZNet.instance || ZNet.instance.IsServer()) return;
-        if (string.IsNullOrEmpty(sync.Value)) return;
-
-        try
-        {
-            Dictionary<string, string[]> translations = ConfigManager.Deserialize<Dictionary<string, string[]>>(sync.Value);
-            localizations = translations;
-            Update();
-        }
-        catch
-        {
-            SeasonalityPlugin.LogWarning("Failed to deserialize server localization files");
-        }
-    }
-
-    private static void UpdateSync()
-    {
-        if (ZNet.instance && ZNet.instance.IsServer())
-        {
-            sync.Value = ConfigManager.Serialize(localizations);
-        }
     }
 }

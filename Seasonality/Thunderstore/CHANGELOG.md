@@ -1,3 +1,8 @@
+## 3.7.8
+- fixed localization being empty when connecting to a server
+- localization file is local only, server will not dictate values
+- FileWatcher for localization file enabled
+
 ## 3.7.7
 - made YamlDotNet an external dependency instead of repacking within plugin
 - removed ice shelf / frozen water roll
