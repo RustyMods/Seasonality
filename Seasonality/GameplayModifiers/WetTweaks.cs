@@ -35,7 +35,7 @@ public static class WetTweaks
         }
     }
 
-    [HarmonyPatch(typeof(SEMan), nameof(SEMan.AddStatusEffect), typeof(int), typeof(bool), typeof(int), typeof(float))]
+    [HarmonyPatch(typeof(SEMan), nameof(SEMan.AddStatusEffect), typeof(int), typeof(bool), typeof(int), typeof(float), typeof(short))] // 1.0 added trailing `short variant`
     private static class SEMan_AddStatusEffect_Patch
     {
         private static bool Prefix(SEMan __instance, int nameHash)

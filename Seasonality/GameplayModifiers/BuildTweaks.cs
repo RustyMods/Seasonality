@@ -66,17 +66,13 @@ public static class BuildTweaks
             {
                 if (ZNetScene.instance.GetPrefab(name) is not { } prefab || !prefab.TryGetComponent(out Piece component)) continue;
                 if (!player.HaveRequirements(component, Player.RequirementMode.CanAlmostBuild)) continue;
-                if (component.m_category == Piece.PieceCategory.All)
+                // ⭐ Valheim 1.0: PieceTable.m_availablePieces was List<List<Piece>>,
+                // indexed by build category. It is now a flat HashSet<Piece> — there
+                // are no per-category lists left to pick between, so both the "All"
+                // branch and the category branch collapse into one add.
+                if (!__instance.m_availablePieces.Contains(component))
                 {
-                    foreach (var list in __instance.m_availablePieces.Where(list => !list.Contains(component)))
-                    {
-                        list.Add(component);
-                    }
-                }  
-                else
-                {
-                    var list = __instance.m_availablePieces[(int)component.m_category];
-                    if (!list.Contains(component)) list.Add(component);
+                    __instance.m_availablePieces.Add(component);
                 }
             }
         }
