@@ -15,11 +15,16 @@ public static class WeatherManager
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.GetAvailableEnvironments))]
     private static class GetAvailableEnvironments_Patch
     {
-        private static void Postfix(Heightmap.Biome biome, ref List<EnvEntry> __result)
+        // ⭐ Valheim 1.0 changed this method's parameter from Heightmap.Biome to
+        // BiomeSector. Harmony could not bind the old signature, so the generated
+        // detour was invalid IL and the whole weather system never patched.
+        // BiomeSector carries the biome as a field, so we just unwrap it.
+        private static void Postfix(BiomeSector biome, ref List<EnvEntry> __result)
         {
             if (Configs.m_weatherEnabled.Value is Toggle.Off) return;
-            if (biome is Heightmap.Biome.None or Heightmap.Biome.AshLands) return;
-            __result = GetEnvironments(biome, __result);
+            Heightmap.Biome b = biome.Biome;
+            if (b is Heightmap.Biome.None or Heightmap.Biome.AshLands) return;
+            __result = GetEnvironments(b, __result);
         }
     }
 
