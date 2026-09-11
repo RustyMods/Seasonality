@@ -1,3 +1,14 @@
+## 3.8.1
+- Deep north update
+- added slipping mechanic to frozen water surface
+- updated server sync v1.20
+
+## 3.8.0
+reverted back to old localization manager
+
+## 3.7.9
+minor localization changes
+
 ## 3.7.8
 - fixed localization being empty when connecting to a server
 - localization file is local only, server will not dictate values

@@ -54,7 +54,7 @@
                 <GamePath Condition="!Exists('$(GamePath)')">C:\Program Files\Steam\steamapps\common\Valheim</GamePath>
                 <GamePath Condition="!Exists('$(GamePath)')">C:\Program Files (x86)\Steam\steamapps\common\Valheim</GamePath>
                 <GamePath Condition="!Exists('$(GamePath)')">D:\SteamLibrary\steamapps\common\Valheim</GamePath>
-                <BepInExPath Condition="!Exists('$(BepInExPath)')AND Exists('$(GamePath)')">$(GamePath)\BepInEx</BepInExPath>
+                <BepInExPath Condition="!Exists('$(BepInExPath)')AND Exists('$(GamePath)')">..\..\..\AppData\Roaming\com.kesomannen.gale\valheim\profiles\Default\BepInEx</BepInExPath>
                 <CorlibPath Condition="!Exists('$(CorlibPath)') AND Exists('$(GamePath)')">$(GamePath)\unstripped_corlib</CorlibPath>
                 <PublicizedAssembliesPath Condition="!Exists('$(PublicizedAssembliesPath)') AND Exists('$(GamePath)')">$(GamePath)\valheim_Data\Managed\publicized_assemblies</PublicizedAssembliesPath>
                 <AfterTargets Condition="'$(AfterTargets)' == ''">ILRepacker</AfterTargets>
@@ -107,7 +107,7 @@
             <HintPath>$(CorlibPath)\UnityEngine.CoreModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.ImageConversionModule">
-          <HintPath>Libs\UnityEngine.ImageConversionModule.dll</HintPath>
+          <HintPath>$(CorlibPath)\UnityEngine.ImageConversionModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.IMGUIModule">
             <HintPath>$(CorlibPath)\UnityEngine.IMGUIModule.dll</HintPath>
@@ -150,12 +150,17 @@
         <Compile Include="GameplayModifiers\TweaksManager.cs" />
         <Compile Include="GameplayModifiers\WetTweaks.cs" />
         <Compile Include="Helpers\Records.cs" />
-        <Compile Include="Helpers\SeasonalTimer.cs" />
         <Compile Include="Helpers\SeasonCommands.cs" />
-        <Compile Include="Helpers\SeasonTimer.cs" />
         <Compile Include="Helpers\ShaderConfigs.cs" />
         <Compile Include="Helpers\ShaderFix.cs" />
         <Compile Include="Helpers\Extensions.cs" />
+        <Compile Include="Helpers\Timers\SeasonalTimer.cs">
+          <DependentUpon>Extensions.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Helpers\Timers\SeasonTimer_v1.cs">
+          <DependentUpon>Extensions.cs</DependentUpon>
+        </Compile>
+        <Compile Include="Helpers\Timers\Timer_v2.cs" />
         <Compile Include="Managers\AssetBundleManager.cs" />
         <Compile Include="Managers\Clone\Clone.cs" />
         <Compile Include="Managers\Clone\CloneManager.cs" />
@@ -203,7 +208,6 @@
         </Content>
         <EmbeddedResource Include="icons\winter_icon.png" />
         <EmbeddedResource Include="translations\English.yml" />
-        <Content Include="Libs\UnityEngine.ImageConversionModule.dll" />
         <Content Include="thunderstore.targets" />
         <Content Include="Thunderstore\CHANGELOG.md" />
         <Content Include="Thunderstore\config\Seasonality\Default\Armors\ArmorBronze\BronzeArmorMesh_Mat@winter.png" />

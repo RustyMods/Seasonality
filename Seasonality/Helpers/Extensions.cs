@@ -4,12 +4,18 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
+using HarmonyLib;
 using UnityEngine;
 
 namespace Seasonality;
 
 public static class Extensions
 {
+    private static readonly MethodInfo LoadImage = AccessTools.Method(typeof(ImageConversion), nameof(ImageConversion.LoadImage), new [] { typeof(Texture2D), typeof(byte[]) });
+    public static bool LoadImage4x(this Texture2D tex, byte[] data)
+    {
+        return (bool)LoadImage.Invoke(null, new object[] { tex , data});
+    }
     public static void AddOrSet<T, J, V>(this Dictionary<T, Dictionary<J, V>> dict, T t, J j, V v)
     {
         if (!dict.ContainsKey(t)) dict[t] = new Dictionary<J, V>();

@@ -28,7 +28,7 @@ public static class ShaderFix
             {
                 bundleShaders = bundle.isStreamedSceneAssetBundle && bundle
                     ? bundle.GetAllAssetNames().Select(bundle.LoadAsset<Shader>).Where(shader => shader != null)
-                    : bundle.LoadAllAssets<Shader>();
+                    : bundle?.LoadAllAssets<Shader>();
             }
             catch (Exception)
             {

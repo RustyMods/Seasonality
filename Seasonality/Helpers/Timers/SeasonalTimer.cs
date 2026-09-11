@@ -79,6 +79,15 @@ public class SeasonalTimer : MonoBehaviour
          }
       }
    }
+
+   [HarmonyPatch(typeof(ZNet), nameof(ZNet.SendNetTime))]
+   private static class ZNet_SendNetTime_Patch
+   {
+      private static void Postfix(ZNet __instance)
+      {
+         BroadcastLastSeasonChange();
+      }
+   }
    
    public static bool hasValidServer;
    public static bool m_sleepOverride;
@@ -88,6 +97,7 @@ public class SeasonalTimer : MonoBehaviour
    public float m_fadeTimer;
    public static string? lastSeasonChangeFileName;
    public static double lastSeasonChange;
+   public static float m_periodicSendTimer;
    public void Awake()
    {
       SeasonalityPlugin.Record.LogDebug("Seasonal Timer Awake");
@@ -217,9 +227,12 @@ public class SeasonalTimer : MonoBehaviour
 
    public static void BroadcastLastSeasonChange()
    {
-      foreach (ZRpc? rpc in RpcHandlers.ValidatedPeers)
+      foreach (var peer in ZNet.instance.m_peers)
       {
-         rpc.Invoke(nameof(RPC_SetLastSeasonChange), lastSeasonChange);
+         if (peer.IsReady())
+         {
+            peer.m_rpc.Invoke(nameof(RPC_SetLastSeasonChange), lastSeasonChange);
+         }
       }
    }
 

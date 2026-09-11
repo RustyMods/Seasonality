@@ -187,6 +187,6 @@ public static class TextureManager
         Texture2D texture = new Texture2D(2, 2);
         texture.name = fileName.Replace(".png", string.Empty);
 
-        return texture.LoadImage(buffer) ? texture : null;
+        return texture.LoadImage4x(buffer) ? texture : null;
     }
 }

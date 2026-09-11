@@ -15,11 +15,11 @@ public static class WeatherManager
     [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.GetAvailableEnvironments))]
     private static class GetAvailableEnvironments_Patch
     {
-        private static void Postfix(Heightmap.Biome biome, ref List<EnvEntry> __result)
+        private static void Postfix(BiomeSector biome, ref List<EnvEntry> __result)
         {
             if (Configs.m_weatherEnabled.Value is Toggle.Off) return;
-            if (biome is Heightmap.Biome.None or Heightmap.Biome.AshLands) return;
-            __result = GetEnvironments(biome, __result);
+            if (biome.Biome is Heightmap.Biome.None or Heightmap.Biome.AshLands) return;
+            __result = GetEnvironments(biome.Biome, __result);
         }
     }
 

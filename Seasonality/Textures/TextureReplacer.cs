@@ -233,9 +233,9 @@ public static class TextureReplacer
                 List<MaterialData> list = new();
                 for (var index = 0; index < colorConfigs.Count; index++)
                 {
-                    var color = colorConfigs[index];
+                    ConfigEntry<Color>? color = colorConfigs[index];
                     string name = $"{original.m_name}_{index}";
-                    var clone = original.Clone(name);
+                    MaterialData clone = original.Clone(name);
                     clone.m_mainColors[Season.Fall] = color.Value;
                     color.SettingChanged += (_, _) =>
                     {
@@ -251,10 +251,13 @@ public static class TextureReplacer
     }
     public static void UpdateAll()
     {
-        foreach(var material in m_mats.Values) material.Update();
-        foreach (var material in m_fallMaterials)
+        foreach(MaterialData? material in m_mats.Values)
         {
-            foreach (var mat in material.Value)
+            material.Update();
+        }
+        foreach (KeyValuePair<string, List<MaterialData>> material in m_fallMaterials)
+        {
+            foreach (MaterialData? mat in material.Value)
             {
                 mat.Update();
             }
@@ -279,7 +282,7 @@ public static class TextureReplacer
             if (mat == null || BlackList.ShouldIgnoreMaterial(mat.name)) continue;
             if (!m_allMaterials.ContainsKey(mat.name)) m_allMaterials[mat.name] = mat;
             if (mat.GetInstanceID() < 0) continue;
-            // negative instance id is an instance, while positive is an a asset
+            // negative instance id is an instance, while positive is a asset
             if (m_mats.ContainsKey(mat)) continue;
             
             if (!mat.HasProperty("_MainTex")) continue;
@@ -519,7 +522,7 @@ public static class TextureReplacer
                     wrapModeV = original.wrapModeV,
                     wrapModeW = original.wrapModeW
                 };
-                if (!texture.LoadImage(data.m_bytes)) return null;
+                if (!texture.LoadImage4x(data.m_bytes)) return null;
                 texture.Apply();
                 texture.name = data.m_fileName;
                 return texture;

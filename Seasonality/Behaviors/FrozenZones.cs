@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using HarmonyLib;
 using UnityEngine;
 
@@ -14,6 +17,20 @@ public class FrozenZones : MonoBehaviour
     private static readonly List<FrozenZones> Instances = new();
     public bool m_frozen;
 
+    private static PhysicsMaterial? _slipMat;
+
+    private static PhysicsMaterial? m_slipperyMat
+    {
+        get
+        {
+            if (_slipMat != null) return _slipMat;
+            _slipMat = Resources.FindObjectsOfTypeAll<PhysicsMaterial>()
+                .FirstOrDefault(m => m.name == "SlipperyIce");
+            return _slipMat;
+        }
+    }
+    
+    
     public static void UpdateAll()
     {
         foreach (FrozenZones instance in Instances)
@@ -43,6 +60,8 @@ public class FrozenZones : MonoBehaviour
         m_originalMaterial = m_surfaceRenderer.material;
         m_surfaceCollider.sharedMesh = filter.sharedMesh;
         
+        m_surfaceCollider.material = m_slipperyMat;
+
         SetInitialValues();
         if (Instances.Contains(this)) return;
         Instances.Add(this);
@@ -67,6 +86,51 @@ public class FrozenZones : MonoBehaviour
             m_surfaceCollider.enabled = false;
             m_waterVolume.m_useGlobalWind = true;
             m_frozen = false;
+        }
+    }
+    
+    [HarmonyPatch(typeof(Character), nameof(Character.UpdateWalking))]
+    private static class Character_UpdateWalking_Patch
+    {
+        private static readonly FieldInfo m_slippingField = AccessTools.Field(typeof(Character), "m_slipping");
+
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = new List<CodeInstruction>(instructions);
+
+            for (int i = 0; i < code.Count; i++)
+            {
+                if (code[i].opcode == OpCodes.Stfld &&
+                    code[i].operand is FieldInfo fi &&
+                    fi == m_slippingField)
+                {
+                    var insert = new List<CodeInstruction>
+                    {
+                        new(OpCodes.Ldarg_0),                
+                        new(OpCodes.Ldarg_0),                 
+                        new(OpCodes.Ldarg_0),         
+                        new(OpCodes.Ldfld, m_slippingField), 
+                        new(OpCodes.Call,
+                            AccessTools.Method(typeof(Character_UpdateWalking_Patch), nameof(ForceSlipOnWater))),                  
+                        new(OpCodes.Stfld, m_slippingField),  
+                    };
+
+                    code.InsertRange(i + 1, insert);
+                    break;
+                }
+            }
+
+            return code;
+        }
+
+        private static bool ForceSlipOnWater(Character instance, bool originalValue)
+        {
+            var collider = instance.m_lastGroundCollider;
+            if (collider != null && collider.gameObject.layer == LayerMask.NameToLayer("Water"))
+            {
+                return true;
+            }
+            return originalValue;
         }
     }
 

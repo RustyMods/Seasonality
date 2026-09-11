@@ -22,7 +22,7 @@ public static class SpriteManager
         var _ = stream.Read(buffer, 0, buffer.Length);
         Texture2D texture = new Texture2D(2, 2);
         
-        Sprite? sprite = texture.LoadImage(buffer) ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero) : null;
+        Sprite? sprite = texture.LoadImage4x(buffer) ? Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero) : null;
         if (sprite != null) sprite.name = fileName;
         return sprite;
     }

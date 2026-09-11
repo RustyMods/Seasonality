@@ -59,24 +59,24 @@ public static class BuildTweaks
     [HarmonyPatch(typeof(PieceTable), nameof(PieceTable.UpdateAvailable))]
     private static class PieceTable_UpdateAvailable
     {
-        private static void Postfix(PieceTable __instance, Player player)
+        private static void Postfix(PieceTable __instance, HashSet<string> knownRecipies, Player player, bool hideUnavailable, bool noPlacementCost)
         {
             if (m_enabled.Value is Toggle.Off) return;
-            foreach (var name in new StringListConfig(GetConfig().Value).m_names)
+            foreach (string name in new StringListConfig(GetConfig().Value).m_names)
             {
                 if (ZNetScene.instance.GetPrefab(name) is not { } prefab || !prefab.TryGetComponent(out Piece component)) continue;
                 if (!player.HaveRequirements(component, Player.RequirementMode.CanAlmostBuild)) continue;
                 if (component.m_category == Piece.PieceCategory.All)
                 {
-                    foreach (var list in __instance.m_availablePieces.Where(list => !list.Contains(component)))
-                    {
-                        list.Add(component);
-                    }
+                    __instance.m_availablePieces.Add(component);
                 }  
                 else
                 {
-                    var list = __instance.m_availablePieces[(int)component.m_category];
-                    if (!list.Contains(component)) list.Add(component);
+                    List<Piece> list = __instance.m_availablePiecesByCategory[(int)component.m_category];
+                    if (!list.Contains(component))
+                    {
+                        list.Add(component);
+                    }
                 }
             }
         }

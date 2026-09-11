@@ -72,6 +72,12 @@ public class SeasonalIce : MonoBehaviour
             ZoneVeg.m_minAltitude = -1000;
             ZoneVeg.m_maxAltitude = -1;
             UpdateZoneVeg();
+
+            if (p.TryGetComponent(out DropOnDestroyed component))
+            {
+                Destroy(component);
+            }
+            
             Ice = p;
         };
     }

@@ -2,9 +2,9 @@
     <PropertyGroup>
         <ValheimGamePath>C:\Program Files (x86)\Steam\steamapps\common\Valheim</ValheimGamePath>
         <BepInExPath>$(ValheimGamePath)\BepInEx</BepInExPath>
-        <CorlibPath>$(ValheimGamePath)\unstripped_corlib</CorlibPath>
+        <CorlibPath>$(ValheimGamePath)\valheim_Data\Managed</CorlibPath>
         <PublicizedAssembliesPath>$(ValheimGamePath)\valheim_Data\Managed\publicized_assemblies</PublicizedAssembliesPath>
-<!--        <CopyOutputDLLPath>C:\Users\peima\AppData\Roaming\com.kesomannen.gale\valheim\profiles\Rustheim 3.0\BepInEx\plugins\RustyMods-Seasonality</CopyOutputDLLPath>-->
+        <CopyOutputDLLPath>C:\Users\malco\AppData\Roaming\com.kesomannen.gale\valheim\profiles\test 1.0\BepInEx\plugins\RustyMods-Seasonality</CopyOutputDLLPath>
         <AfterTargets>ILRepacker</AfterTargets>
     </PropertyGroup>
 </Project>

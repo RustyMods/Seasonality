@@ -3,11 +3,32 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="CMakeSettings">
+    <configurations />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Seasonality/Helpers/Timers/Timer_v2.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/Localizer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/Localizer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenZones.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenZones.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/IceShelves.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/IceShelves.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BuildTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BuildTweaks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/WetTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/WetTweaks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Extensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Extensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonTimer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Timers/SeasonTimer_v1.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonalTimer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Timers/SeasonalTimer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/ShaderFix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/ShaderFix.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Libs/ServerSync.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Libs/ServerSync.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/SpriteManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/CHANGELOG.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/Seasonality.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/Seasonality.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/manifest.json" afterDir="false" />
@@ -17,6 +38,9 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="256" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -29,34 +53,35 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/RustyMods/Seasonality.git&quot;,
-    &quot;accountId&quot;: &quot;8617d017-e10b-4764-ac08-319dcd5f9068&quot;
+    &quot;accountId&quot;: &quot;a5804305-cfaf-4a79-87e5-dfd0c892dda5&quot;
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/71a988b63ecf480185d02f6164cceff2c200/b8/641e9831/CustomSyncedValue`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/80fe1a4e36fe44618284312cb721a59711a400/b6/eff058ac/Time.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9c304fd6e3ce44a3b60df5338d735bdb3600/97/f1ab311f/ImageConversion.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/19/5876218c/ZNet.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/48/d0829ce2/EnvMan.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/55/9e3a4c55/Terminal.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/59/88894211/ZRoutedRpc.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/5c/c022051c/Game.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/75/ab9e8302/Player.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/9e/aaad4cf5/HitData.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/cb/0150d042/SEMan.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/bd232a4566b6415598d290e10dd93c8c201000/e8/3cf04b3a/ZRpc.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/caeb6fbc60ad492d92324bdfc598b6a81fc00/0c/4155871f/Paths.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/caeb6fbc60ad492d92324bdfc598b6a81fc00/87/9aaa75c2/BaseUnityPlugin.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/caeb6fbc60ad492d92324bdfc598b6a81fc00/f2/c0b71da7/Chainloader.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f02a2207632846a3a0012c7f73401843205e00/1f/e6649a0c/BaseAI.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f02a2207632846a3a0012c7f73401843205e00/ea/f5d92712/VisEquipment.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f9c1e10e233e4d07bcb7e2919c8ed6a67a00/b4/079866bf/Localization.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/307f9f41dd114ee5b8265cd6d527dc18eee00/6e/81ed9ada/0200000Cpdb3.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/4cf3bf99e8b34c38a7217c802f47a10feee00/5d/0e3b321a/0200000Cpdb3.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/53894e257b814744a5e38480b82df899eee00/2d/918f2d02/0200000Cpdb3.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/56c86a713c56464ca0cb0b6760b21dc4eee00/ea/24eb278d/0200000Cpdb3.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9c749d5853f14063b4081fc0b76da1023ae00/92/07fc6101/StringExtensionMethods.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/15/9d4022f0/SnowRoller.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/2a/736aafbf/Character.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/42/134168b9/StatusEffect.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/45/b2b0f31f/WorldGenerator.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/47/6b6c4e8b/Player.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/4d/2ec19c8b/Heightmap.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/8e/3cf23e7a/SEMan.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/b0/bec84925/AltBiome.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/b9/cda3d2d1/EnvMan.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/d4/d31281f4/AltBiomeWorldData.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/dd/e0b87c37/PieceTable.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/e1/cd701e28/BiomeSector.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/db11c804ebef403d8e77ac219f14bf46270e00/e5/045d5900/EnvSetup.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/e4cfc70261ab46d19f39cc2deb9bc839206000/db/a9c040f9/EnvMan.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/e4cfc70261ab46d19f39cc2deb9bc839206000/f8/61fd5645/ZNet.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Behaviors/RandomColors.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/GameplayModifiers/WetTweaks.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Seasonality/Helpers/SeasonTimer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Seasonality/Helpers/SeasonalTimer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Seasonality/Helpers/Timers/Timer_v2.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Managers/AssetBundleManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Managers/Config/SerializedItem.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Seasonality/Managers/Config/StatusEffectConfigs.cs" root0="FORCE_HIGHLIGHTING" />
@@ -71,7 +96,70 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="3.667599680566764E-44" />
+      <entry key="MS500" value="2.09480557675995E-9" />
+      <entry key="S2" value="0.01263618083113824" />
+      <entry key="S5" value="0.7914466369019945" />
+      <entry key="S10" value="5.396979371409403" />
+      <entry key="S30" value="25.807634339797154" />
+      <entry key="S60" value="45.438411696500886" />
+      <entry key="M2" value="65.32026299309813" />
+      <entry key="M5" value="84.43434264959507" />
+      <entry key="M10" value="92.88856628418368" />
+      <entry key="M15" value="96.04459486281468" />
+      <entry key="M30" value="99.40545931967483" />
+      <entry key="H1" value="101.17147274673388" />
+      <entry key="H2" value="102.0776418255549" />
+      <entry key="H4" value="102.5367605687847" />
+      <entry key="D1" value="102.92250407244309" />
+      <entry key="W1" value="102.98892202469877" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0000000000010638" />
+      <entry key="S2" value="1.0010357985893192" />
+      <entry key="S5" value="1.0845048298271072" />
+      <entry key="S10" value="1.5810536336585028" />
+      <entry key="S30" value="4.525467635404428" />
+      <entry key="S60" value="8.211295299948373" />
+      <entry key="M2" value="12.829615228578673" />
+      <entry key="M5" value="18.974642808238094" />
+      <entry key="M10" value="22.849850173918167" />
+      <entry key="M15" value="24.57120757951345" />
+      <entry key="M30" value="26.59615049414951" />
+      <entry key="H1" value="27.745263097849236" />
+      <entry key="H2" value="28.35867340820798" />
+      <entry key="H4" value="28.675747718724285" />
+      <entry key="D1" value="28.945450795146993" />
+      <entry key="W1" value="28.99219472126553" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="3.0517578125000014E-5" />
+      <entry key="MS500" value="0.12500000035168662" />
+      <entry key="S2" value="0.6043624993402492" />
+      <entry key="S5" value="1.6273547100078312" />
+      <entry key="S10" value="6.734389250569763" />
+      <entry key="S30" value="30.082279911094403" />
+      <entry key="S60" value="53.43367159585288" />
+      <entry key="M2" value="77.99063747994073" />
+      <entry key="M5" value="103.3200226634699" />
+      <entry key="M10" value="115.68624019559617" />
+      <entry key="M15" value="120.57875962924196" />
+      <entry key="M30" value="125.9817646507654" />
+      <entry key="H1" value="128.90643849468427" />
+      <entry key="H2" value="130.43106662814324" />
+      <entry key="H4" value="131.20985816908885" />
+      <entry key="D1" value="131.86750952236866" />
+      <entry key="W1" value="131.98105303464035" />
+    </decayedShown>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 3
@@ -83,19 +171,27 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -496,6 +592,13 @@
       <workItem from="1770042059951" duration="6125000" />
       <workItem from="1770220129776" duration="969000" />
       <workItem from="1770222862877" duration="441000" />
+      <workItem from="1782562346575" duration="1180000" />
+      <workItem from="1782563838091" duration="335000" />
+      <workItem from="1782744752208" duration="733000" />
+      <workItem from="1783009411684" duration="619000" />
+      <workItem from="1785982666036" duration="80000" />
+      <workItem from="1788978210765" duration="3685000" />
+      <workItem from="1789148086815" duration="7120000" />
     </task>
     <task id="LOCAL-00001" summary="update for latest patch">
       <created>1713580281581</created>
@@ -735,27 +838,13 @@
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0c7c9e9f999940deaf2bdbbf6e7b2314198c00/f6/b7212356/Player.cs</url>
           <line>1442</line>
-          <properties documentPath="C:\Users\peima\AppData\Roaming\JetBrains\Rider2022.3\resharper-host\DecompilerCache\decompiler\0c7c9e9f999940deaf2bdbbf6e7b2314198c00\f6\b7212356\Player.cs" containingFunctionPresentation="method 'GetTotalFoodValue'">
-            <startOffsets>
-              <option value="57365" />
-            </startOffsets>
-            <endOffsets>
-              <option value="57366" />
-            </endOffsets>
-          </properties>
+          <properties documentPath="C:\Users\peima\AppData\Roaming\JetBrains\Rider2022.3\resharper-host\DecompilerCache\decompiler\0c7c9e9f999940deaf2bdbbf6e7b2314198c00\f6\b7212356\Player.cs" containingFunctionPresentation="method 'GetTotalFoodValue'" />
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/67f3c386e04446c49523ecfd5b8921c21cb200/3a/3d462345/Game.cs</url>
           <line>614</line>
-          <properties documentPath="C:\Users\peima\AppData\Roaming\JetBrains\Rider2022.3\resharper-host\DecompilerCache\decompiler\67f3c386e04446c49523ecfd5b8921c21cb200\3a\3d462345\Game.cs" containingFunctionPresentation="method 'IsCurrentlyConnectingPortal'">
-            <startOffsets>
-              <option value="24102" />
-            </startOffsets>
-            <endOffsets>
-              <option value="24173" />
-            </endOffsets>
-          </properties>
+          <properties documentPath="C:\Users\peima\AppData\Roaming\JetBrains\Rider2022.3\resharper-host\DecompilerCache\decompiler\67f3c386e04446c49523ecfd5b8921c21cb200\3a\3d462345\Game.cs" containingFunctionPresentation="method 'IsCurrentlyConnectingPortal'" />
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
