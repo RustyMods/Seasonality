@@ -9,7 +9,7 @@ public class TerrainController : MonoBehaviour
     private static readonly List<TerrainController> m_instances = new();
 
     private Heightmap? m_heightmap;
-
+    
     public static void UpdateTerrain()
     {
         foreach (var instance in m_instances)
@@ -63,7 +63,6 @@ public class TerrainController : MonoBehaviour
         m_heightmap.m_renderMesh.SetColors(Heightmap.s_tempColors);
     }
 
-
     [HarmonyPatch(typeof(Heightmap), nameof(Heightmap.Awake))]
     private static class Heightmap_Awake_Patch
     {
@@ -111,7 +110,7 @@ public class TerrainController : MonoBehaviour
     {
         private static void Postfix(Heightmap.Biome biome, ref Color32 __result)
         {
-            switch (Configs.m_season.Value)
+            switch (SeasonTime.GetCurrentSeason())
             {
                 case Season.Winter:
                     switch (biome)

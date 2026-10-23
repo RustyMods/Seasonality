@@ -41,7 +41,7 @@ public class VisEquipController : MonoBehaviour
         if (!TextureReplacer.m_materials.TryGetValue(materialName, out TextureReplacer.MaterialData data)) return;
         if (!data.m_specialTextures.TryGetValue("_ChestTex", out Dictionary<Season, Texture?> textures)) return;
             
-        if (textures.TryGetValue(Configs.m_season.Value, out Texture? texture))
+        if (textures.TryGetValue(SeasonTime.GetCurrentSeason(), out Texture? texture))
         {
             m_visEquipment.m_bodyModel.material.SetTexture(ChestTex, texture);
         }
@@ -62,7 +62,7 @@ public class VisEquipController : MonoBehaviour
         if (!TextureReplacer.m_materials.TryGetValue(materialName, out TextureReplacer.MaterialData data)) return;
         if (!data.m_specialTextures.TryGetValue("_LegsTex", out Dictionary<Season, Texture?> textures)) return;
             
-        if (textures.TryGetValue(Configs.m_season.Value, out Texture? texture))
+        if (textures.TryGetValue(SeasonTime.GetCurrentSeason(), out Texture? texture))
         {
             m_visEquipment.m_bodyModel.material.SetTexture(LegsTex, texture);
         }

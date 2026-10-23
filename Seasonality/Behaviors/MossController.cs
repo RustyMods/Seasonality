@@ -54,7 +54,7 @@ public class MossController : MonoBehaviour
     
     public void SetMoss()
     {
-        switch (Configs.m_season.Value)
+        switch (SeasonTime.GetCurrentSeason())
         {
             case Season.Fall:
                 foreach (var kvp in m_textureMap)

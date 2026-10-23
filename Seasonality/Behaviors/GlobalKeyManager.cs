@@ -23,6 +23,6 @@ public static class GlobalKeyManager
     private static void SetKey()
     {
         if (!ZoneSystem.instance) return;
-        ZoneSystem.instance.SetGlobalKey($"season_{Configs.m_season.Value.ToString().ToLower()}");
+        ZoneSystem.instance.SetGlobalKey($"season_{SeasonTime.GetCurrentSeason().ToString().ToLower()}");
     }
 }

@@ -101,22 +101,10 @@ public static class ConfigManager
     public static void Start()
     {
         Harmony harmony = SeasonalityPlugin.harmony;
-        harmony.Patch(AccessTools.Method(typeof(ZNet), nameof(ZNet.Awake)),
-            postfix: new HarmonyMethod(AccessTools.Method(typeof(ConfigManager), 
-                nameof(Patch_ZNet_Awake))));
         harmony.Patch(AccessTools.Method(typeof(FejdStartup), nameof(FejdStartup.Awake)),
             new HarmonyMethod(AccessTools.Method(typeof(ConfigManager), nameof(GetConfigurationManager))));
 
         Configs.Init();
-    }
-
-    public static void Patch_ZNet_Awake(ZNet __instance)
-    {
-        // FactionManager.Init(__instance);
-        // LoadManager.Init(__instance);
-        // SpawnManager.Init(__instance);
-        // RaidManager.Init(__instance);
-        // LocalizationManager.Init(__instance);
     }
     
     public static void SetupWatcher()

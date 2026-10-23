@@ -92,18 +92,23 @@ public static class SeasonCommands
             return true;
         }, isSecret: true , optionsFetcher: () => TextureManager.GetAllTextures().Keys.ToList());
         
-        SeasonCommand resetTimer = new("timer_reset", "Reset scheduled season change", _ =>
-        {
-            SeasonalTimer.instance?.ResetSchedule();
-            SeasonalityPlugin.Record.LogDebug("Reset scheduled season change");
-            return true;
-        });
+        // SeasonCommand resetTimer = new("timer_reset", "Reset scheduled season change", _ =>
+        // {
+        //     SeasonalTimer.instance?.ResetSchedule();
+        //     SeasonalityPlugin.Record.LogDebug("Reset scheduled season change");
+        //     return true;
+        // });
         
         SeasonCommand SetSeason = new("set", "Set current season, admin only", args =>
         {
             if (args.Length < 2) return true;
             if (!Enum.TryParse(args[2], true, out Season season)) return false;
-            Configs.m_season.Value = season;
+            SeasonTime.m_currentSeason = season;
+            SeasonalityPlugin.OnSeasonChange();
+            if (ZNet.instance && ZNet.instance.IsServer())
+            {
+                Configs.m_season.Value = season;
+            }
             return true;
         }, optionsFetcher: () => Enum.GetNames(typeof(Season)).ToList(), adminOnly: true);
         

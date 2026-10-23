@@ -1,10 +1,14 @@
 # Seasonality
 Dynamic seasons by altering textures and colors, providing an immersive environmental experience that changes with in-game time.
 
-## 3.7.2 update notes
+## Need a dedicated server ?
+Use this link: https://www.survivalservers.com/r/rustymods/valheim
+I'll get a 20% commission. Thanks.
 
-Overhauled season timer to be scheduled instead of checking if it is the right time to change season, to again try to avoid "skipping" season bugs.
-- added command to reset schedule if timer sits at 0: `seasonality timer_reset`
+## 3.8.4 Notes
+Added config to globally control if plugin should affect armors.
+- textures are recognized as armor if they are inside `BepinEx/config/Seasonality/.../Armors` folder
+- meaning if you created your own version of textures, make sure your armor textures are inside a `Armors` folder for this config to work.
 
 ## Features
 - Four seasons: Winter, Spring, Summer, Fall

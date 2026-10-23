@@ -69,6 +69,18 @@ weather_queen: "Queen"
 weather_ashlands_storm: "Ash Storm"
 weather_ashlands_misty: "Ash Mist"
 weather_fader: "Fader"
+weather_warm_twilight_snowstorm: "Twilight Snow Storm"
+weather_caveshildir: Caves
+weather_eikthyr_no_lightning: Eikthyr
+weather_jotuninvasion_swamp: North Snow
+weather_jotuninvasion_meadows: North Snow
+weather_jotuninvasion_mountain: North Snow
+weather_jotuninvasion_blackforest: North Snow
+weather_jotuninvasion_plains: North Snow
+weather_joruninvasion_mistlands: North Snow
+weather_morkhalla: Morkhalla
+weather_thehollow: The Hollow
+weather_dn_bossroom: The End
 ## Weather Tooltip
 weather_clear_tooltip: "The weather is clear and peaceful"
 weather_misty_tooltip: "The gods do not engage with visionaries"
@@ -108,3 +120,15 @@ weather_warmsnow_tooltip: ""
 weather_warmsnowstorm_tooltip: ""
 weather_nightfrost_tooltip: ""
 weather_swamprain_tooltip: ""
+weather_warm_twilight_snow_tooltip: "Beautiful comes in a multitude of shapes"
+weather_caveshildir_tooltip: ""
+weather_eikthyr_no_lightning_tooltip: ""
+weather_jotuninvasion_swamp_tooltip: ""
+weather_jotuninvasion_meadows_tooltip: ""
+weather_jotuninvasion_mountain_tooltip: ""
+weather_jotuninvasion_blackforest_tooltip: ""
+weather_jotuninvasion_plains_tooltip: ""
+weather_joruninvasion_mistlands_tooltip: ""
+weather_morkhalla_tooltip: ""
+weather_thehollow_tooltip: ""
+weather_dn_bossroom_tooltip: ""

@@ -17,7 +17,7 @@ public static class FishTweaks
         private static bool Prefix()
         {
             if (m_enabled.Value is Toggle.Off) return true;
-            return Configs.m_season.Value is not Season.Winter;
+            return SeasonTime.GetCurrentSeason() is not Season.Winter;
         }
     }
 
@@ -27,7 +27,7 @@ public static class FishTweaks
         private static void Postfix(ref string __result)
         {
             if (m_enabled.Value is Toggle.Off) return;
-            if (Configs.m_season.Value is not Season.Winter) return;
+            if (SeasonTime.GetCurrentSeason() is not Season.Winter) return;
             __result += Localization.instance.Localize("\n $cannot_pick");
         }
     }

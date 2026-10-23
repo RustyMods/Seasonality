@@ -72,7 +72,7 @@ public class RandomColors : MonoBehaviour
         if (m_particleSystem == null) return;
         var main = m_particleSystem.main;
         m_originalGradient = main.startColor;
-        switch (Configs.m_season.Value)
+        switch (SeasonTime.GetCurrentSeason())
         {
             case Season.Fall:
                 main.startColor = new ParticleSystem.MinMaxGradient()

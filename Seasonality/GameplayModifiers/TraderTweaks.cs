@@ -40,7 +40,7 @@ public static class TraderTweaks
         m_springItems = ConfigManager.config("Tweaks", "Spring Items", new SerializedItems(m_defaultSpringItems).ToString(), new ConfigDescription("Set fall items added to trader", null, SerializedItems.attributes));
     }
 
-    private static ConfigEntry<string> GetConfig() => Configs.m_season.Value switch
+    private static ConfigEntry<string> GetConfig() => SeasonTime.GetCurrentSeason() switch
     {
         Season.Summer => m_summerItems,
         Season.Fall => m_fallItems,

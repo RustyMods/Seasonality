@@ -3,6 +3,7 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
+using LocalizationManager;
 using UnityEngine;
 
 namespace Seasonality;
@@ -11,7 +12,7 @@ namespace Seasonality;
 public class SeasonalityPlugin : BaseUnityPlugin
 {
     internal const string ModName = "Seasonality";
-    internal const string ModVersion = "3.8.1";
+    internal const string ModVersion = "3.8.5";
     internal const string Author = "RustyMods";
     public const string ModGUID = Author + "." + ModName;
     internal static string ConnectionError = "";
@@ -26,22 +27,20 @@ public class SeasonalityPlugin : BaseUnityPlugin
     public static bool BadgerHDLoaded;
     public static Records Record = null!;
 
+    
     public void Awake()
     {
         instance = this;
         Record = new Records(Logger, ModName, $"{ModName}-LogOutput.log");
         ConfigManager.Start();
-        Localizer.Start();
+        Localizer.Load();
         AssetLoader.Read();
         TextureManager.Read();
         TweaksManager.Setup();
         BlackList.Read();
         SeasonalIce.Setup();
         PrefabManager.Start();
-        gameObject.AddComponent<SeasonalTimer>();
         
-        
-
         Assembly assembly = Assembly.GetExecutingAssembly();
         _harmony.PatchAll(assembly);
         BadgerHDLoaded = Chainloader.PluginInfos.ContainsKey("Badgers.HDValheimTextures");
@@ -66,16 +65,13 @@ public class SeasonalityPlugin : BaseUnityPlugin
         FrozenZones.UpdateAll();
         FrozenWaterLOD.UpdateAll();
         SeasonalIce.UpdateAll();
+        SeasonalIceMineRock.UpdateAll();
         SeasonalIce.UpdateZoneVeg();
 
-        SeasonSE.UpdateStatus();
-    }
-
-    public void Update()
-    {
-        var dt = Time.deltaTime;
-        SeasonSE.CheckOrSet(dt);
-        WeatherManager.CheckOrSet(dt);
+        if (EnvMan.instance && Configs.m_weatherEnabled.Value is Toggle.On)
+        {
+            EnvMan.instance.m_environmentPeriod = -1L;
+        }
     }
 
     private void OnDestroy()

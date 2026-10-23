@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
@@ -34,11 +35,10 @@ public static class TextureReplacer
     public static readonly Dictionary<string, Texture> m_mossTextures = new();
     private static readonly Dictionary<string, SpecialCase> m_cases = new();
     public static readonly Dictionary<string, List<MaterialData>> m_fallMaterials = new();
+    public static readonly List<MaterialData> m_registeredMaterials = [];
 
     public static readonly Dictionary<Material, MaterialData> m_mats = new();
-
-    private static bool TestSnowShader = true;
-
+    
     [Description("Setup special cases")]
     private static void Setup()
     {
@@ -195,13 +195,13 @@ public static class TextureReplacer
     [Description("Using registered materials, clone fall variants")]
     private static void SetupFallMaterials()
     {
-        List<ConfigEntry<Color>> colorConfigs = new()
-         {
-             Configs.m_fallColor1,
-             Configs.m_fallColor2,
-             Configs.m_fallColor3,
-             Configs.m_fallColor4
-         };
+        List<ConfigEntry<Color>> colorConfigs =
+        [
+            Configs.m_fallColor1,
+            Configs.m_fallColor2,
+            Configs.m_fallColor3,
+            Configs.m_fallColor4
+        ];
         
         foreach (var material in new StringListConfig(Configs.m_fallMaterials.Value).m_names)
         {
@@ -211,7 +211,7 @@ public static class TextureReplacer
             {
                 var color = colorConfigs[index];
                 string name = $"{original.m_name}_{index}";
-                var clone = original.Clone(name);
+                MaterialData clone = original.Clone(name);
                 clone.m_mainColors[Season.Fall] = color.Value;
                 color.SettingChanged += (_, _) =>
                 {
@@ -220,12 +220,17 @@ public static class TextureReplacer
                 };
                 clone.m_updateColors = true;
                 list.Add(clone);
+                m_registeredMaterials.Add(clone);
             }
             m_fallMaterials[original.m_name] = list;
         }
 
         Configs.m_fallMaterials.SettingChanged += (_, _) =>
         {
+            foreach (List<MaterialData>? list in m_fallMaterials.Values)
+            {
+                m_registeredMaterials.RemoveAll(m => list.Contains(m));
+            }
             m_fallMaterials.Clear();
             foreach (var material in new StringListConfig(Configs.m_fallMaterials.Value).m_names)
             {
@@ -244,6 +249,7 @@ public static class TextureReplacer
                     };
                     clone.m_updateColors = true;
                     list.Add(clone);
+                    m_registeredMaterials.Add(clone);
                 }
                 m_fallMaterials[original.m_name] = list;
             }
@@ -251,16 +257,10 @@ public static class TextureReplacer
     }
     public static void UpdateAll()
     {
-        foreach(MaterialData? material in m_mats.Values)
+        for (int i = 0; i < m_registeredMaterials.Count; ++i)
         {
-            material.Update();
-        }
-        foreach (KeyValuePair<string, List<MaterialData>> material in m_fallMaterials)
-        {
-            foreach (MaterialData? mat in material.Value)
-            {
-                mat.Update();
-            }
+            MaterialData? dat =  m_registeredMaterials[i];
+            dat.Update();
         }
     }
 
@@ -274,6 +274,7 @@ public static class TextureReplacer
             m_mossTextures.Clear();
             m_fallMaterials.Clear();
             m_mats.Clear();
+            m_registeredMaterials.Clear();
         }
         m_referenceCount = m_mats.Count;
 
@@ -296,41 +297,25 @@ public static class TextureReplacer
                 data.Conclude();
                 if (!data.m_isValid) continue;
                 m_materials[mat.name] = data; // for reference for fall materials
-                m_mats[mat] = data; 
-                
+                m_mats[mat] = data;
+                m_registeredMaterials.Add(data);
                 SeasonalityPlugin.Record.LogSuccess($"Registered textures to: {data.m_name}");
             }
             else
             {
-                if (mat.shader.name == "Custom/Piece")
-                {
-                    if (TestSnowShader)
-                    {
-                        // Register all piece materials
-                        var data = new MaterialData(mat);
-                        data.ApplySpecialCases();
-                        if (!data.m_isValid) continue;
-                    
-                        m_mats[mat] = data;
-                        m_materials[mat.name] = data;
-                        SeasonalityPlugin.Record.LogSuccess($"Registered piece material: {data.m_name}");
-                    }
-                }
-                else
-                {
-                    // Register all moss materials
-                    if (!mat.HasProperty(MossTex)) continue;
-                    var data = new MaterialData(mat);
-                    data.ApplySpecialCases();
-                    if (!data.m_isValid) continue;
+                // Register all moss materials
+                if (!mat.HasProperty(MossTex)) continue;
+                var data = new MaterialData(mat);
+                data.ApplySpecialCases();
+                if (!data.m_isValid) continue;
 
-                    m_mats[mat] = data;
-                    m_materials[mat.name] = data;
-                    SeasonalityPlugin.Record.LogSuccess($"Registered moss material: {data.m_name}");
-                    if (data.m_originalMossTex == null) continue;
-                    if (!m_mossTextures.ContainsKey(data.m_originalMossTex.name)) continue;
-                    m_mossTextures[data.m_originalMossTex.name] = data.m_originalMossTex;
-                }
+                m_mats[mat] = data;
+                m_materials[mat.name] = data;
+                m_registeredMaterials.Add(data);
+                SeasonalityPlugin.Record.LogSuccess($"Registered moss material: {data.m_name}");
+                if (data.m_originalMossTex == null) continue;
+                if (!m_mossTextures.ContainsKey(data.m_originalMossTex.name)) continue;
+                m_mossTextures[data.m_originalMossTex.name] = data.m_originalMossTex;
             }
         }
         
@@ -405,6 +390,7 @@ public static class TextureReplacer
             Stopwatch watch = Stopwatch.StartNew();
             var count = Load();
             watch.Stop();
+            
             SeasonalityPlugin.Record.LogDebug($"[ZNetScene Awake] Generation textures time: {watch.ElapsedMilliseconds}ms");
             SeasonalityPlugin.Record.LogDebug($"[ZNetScene Awake]: Registered {count} new materials");
             SeasonalityPlugin.OnSeasonChange();
@@ -432,6 +418,7 @@ public static class TextureReplacer
         public bool m_isAshlandMaterial;
         public bool m_isMountainMaterial;
         public readonly bool m_isValid = true;
+        public readonly bool m_isArmor;
 
         public MaterialData Clone(string name)
         {
@@ -535,6 +522,7 @@ public static class TextureReplacer
         }
         public MaterialData(Material material, TextureManager.TexturePack package) : this(material)
         {
+            m_isArmor = package.m_isArmor;
             foreach (TextureManager.ImageData? data in package.m_textures.Values)
             {
                 if (!data.m_property.IsNullOrWhiteSpace())
@@ -587,6 +575,7 @@ public static class TextureReplacer
         }
         public void Update()
         {
+            if (m_isArmor && Configs.m_editArmor.Value is Toggle.Off) return;
             if (m_material == null) return;
             UpdateMainTex();
             UpdateMoss();
@@ -598,7 +587,7 @@ public static class TextureReplacer
             if (m_mainTextures.Count <= 0) return;
             // original textures changes to the season which game starts, but still use this as backup to make sure it switches to something
             // when trying to go to original texture
-            m_material.mainTexture = m_mainTextures.TryGetValue(Configs.m_season.Value, out Texture? newTexture) ? newTexture : m_originalTex;
+            m_material.mainTexture = m_mainTextures.TryGetValue(SeasonTime.GetCurrentSeason(), out Texture? newTexture) ? newTexture : m_originalTex;
         }
         private void UpdateTexProperties()
         {
@@ -608,7 +597,7 @@ public static class TextureReplacer
             foreach (KeyValuePair<string, Dictionary<Season, Texture?>> kvp in m_specialTextures)
             {
                 if (!m_material.HasProperty(kvp.Key)) continue;
-                if (kvp.Value.TryGetValue(Configs.m_season.Value, out Texture? texture))
+                if (kvp.Value.TryGetValue(SeasonTime.GetCurrentSeason(), out Texture? texture))
                 {
                     m_material.SetTexture(kvp.Key, texture);
                 }
@@ -622,13 +611,18 @@ public static class TextureReplacer
         public void UpdateColors()
         {
             if (!m_updateColors || !m_material.HasProperty("_Color")) return;
-            m_material.color = m_mainColors.TryGetValue(Configs.m_season.Value, out Color32 newColor) ? newColor : m_originalColor;
+            
+            Color32 _color = m_mainColors.TryGetValue(SeasonTime.GetCurrentSeason(), out Color32 newColor)
+                ? newColor
+                : m_originalColor;
+
+            m_material.color = _color;
         }
         
         private void UpdateMoss()
         {
             if (!m_updateMoss || m_isAshlandMaterial || m_isMountainMaterial) return;
-            switch (Configs.m_season.Value)
+            switch (SeasonTime.GetCurrentSeason())
             {
                 case Season.Fall:
                     m_material.SetTexture(MossTex, TextureManager.Stonemoss_heath.m_tex);
@@ -643,7 +637,7 @@ public static class TextureReplacer
             }
 
             if (!m_updateMossColor) return;
-            switch (Configs.m_season.Value)
+            switch (SeasonTime.GetCurrentSeason())
             {
                 case Season.Fall or Season.Winter:
                     m_material.SetColor(MossColor, m_newMossColor);

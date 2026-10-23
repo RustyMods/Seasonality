@@ -132,7 +132,7 @@ public static class PickableTweaks
     {
         result = new Harvest.HarvestData();
         if (!m_data.TryGetValue(prefabName, out Harvest data)) return false;
-        switch (Configs.m_season.Value)
+        switch (SeasonTime.GetCurrentSeason())
         {
             case Season.Fall:
                 result = data.Fall;

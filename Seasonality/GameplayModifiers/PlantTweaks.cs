@@ -127,7 +127,7 @@ public static class PlantTweaks
         {
             if (m_enabled.Value is Toggle.Off) return true;
             if (!m_data.TryGetValue(__instance.name.Replace("(Clone)", string.Empty), out Plants data)) return true;
-            return Configs.m_season.Value switch
+            return SeasonTime.GetCurrentSeason() switch
             {
                 Season.Spring => data.Spring.CanHarvest,
                 Season.Summer => data.Summer.CanHarvest,
@@ -146,7 +146,7 @@ public static class PlantTweaks
         {
             if (m_enabled.Value is Toggle.Off) return;
             if (!m_data.TryGetValue(__instance.name.Replace("(Clone)", string.Empty), out Plants data)) return;
-            switch (Configs.m_season.Value)
+            switch (SeasonTime.GetCurrentSeason())
             {
                 case Season.Spring:
                     if (data.Spring.CanHarvest) return;
@@ -176,7 +176,7 @@ public static class PlantTweaks
         {
             if (m_enabled.Value is Toggle.Off) return;
             if (!m_data.TryGetValue(__instance.name.Replace("(Clone)", string.Empty), out Plants data)) return;
-            switch (Configs.m_season.Value)
+            switch (SeasonTime.GetCurrentSeason())
             {
                 case Season.Spring:
                     if (data.Spring.CanHarvest) return;
@@ -191,7 +191,7 @@ public static class PlantTweaks
                     if (data.Winter.CanHarvest) return;
                     break;
             }
-            __result += Localization.instance.Localize($"\n <color=red>${Configs.m_season.Value.ToString().ToLower()}_cannot_grow</color>");
+            __result += Localization.instance.Localize($"\n <color=red>${SeasonTime.GetCurrentSeason().ToString().ToLower()}_cannot_grow</color>");
         }
     }
 
@@ -204,7 +204,7 @@ public static class PlantTweaks
             if (m_enabled.Value is Toggle.Off) return;
             if (!m_data.TryGetValue(__instance.name.Replace("(Clone)", string.Empty), out Plants data)) return;
             Plants.Data plantData;
-            switch (Configs.m_season.Value)
+            switch (SeasonTime.GetCurrentSeason())
             {
                 case Season.Spring:
                     plantData = data.Spring;

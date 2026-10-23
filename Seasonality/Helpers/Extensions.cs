@@ -14,7 +14,7 @@ public static class Extensions
     private static readonly MethodInfo LoadImage = AccessTools.Method(typeof(ImageConversion), nameof(ImageConversion.LoadImage), new [] { typeof(Texture2D), typeof(byte[]) });
     public static bool LoadImage4x(this Texture2D tex, byte[] data)
     {
-        return (bool)LoadImage.Invoke(null, new object[] { tex , data});
+        return (bool)LoadImage.Invoke(null, [tex , data]);
     }
     public static void AddOrSet<T, J, V>(this Dictionary<T, Dictionary<J, V>> dict, T t, J j, V v)
     {
@@ -39,7 +39,7 @@ public static class Extensions
     
     public static float GetOrDefault<J>(this Dictionary<Season, Dictionary<J, ConfigEntry<float>>> dict, J j, float d)
     {
-        return dict.GetOrDefault(Configs.m_season.Value, j, d);
+        return dict.GetOrDefault(SeasonTime.GetCurrentSeason(), j, d);
     }
 
     public static void AddOrSetNull<T, J>(this Dictionary<T, Dictionary<J, Texture?>> dict, T TKey, J OKey, Texture? value = null)
@@ -57,7 +57,7 @@ public static class Extensions
     {
         if (!dict.TryGetValue(materialName, out TextureManager.TexturePack pack))
         {
-            var _ = new TextureManager.TexturePack(data);
+            _ = new TextureManager.TexturePack(data);
         }
         else
         {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ public class WeatherConfig
 
     public WeatherConfig()
     {
-        environments = new List<WeatherData>();
+        environments = [];
     }
 
     public WeatherConfig(List<WeatherData> weathers)
@@ -31,15 +32,25 @@ public class WeatherConfig
 
     public WeatherConfig(string weathers)
     {
-        environments = weathers
-            .Split(',')
+        string[] entries = Regex.Split(weathers, @",(?!\d+(?:,|$))");
+        environments = entries
             .Select(input =>
             {
                 var parts = input.Split(':');
+                float weight = 1f;
+
+                if (parts.Length > 1)
+                {
+                    // Normalize decimal comma to dot, then parse invariantly
+                    var raw = parts[1].Trim().Replace(',', '.');
+                    if (!float.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out weight))
+                        weight = 1f;
+                }
+
                 return new WeatherData
                 {
-                    name = parts[0],
-                    weight = parts.Length > 1 && float.TryParse(parts[1], out var w) ? w : 1f
+                    name = parts[0].Trim(),
+                    weight = weight
                 };
             })
             .ToList();

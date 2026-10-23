@@ -74,7 +74,7 @@ public class LocationFix : MonoBehaviour
     public void UpdateMoss()
     {
         if (WorldGenerator.instance.GetBiome(transform.position) == Heightmap.Biome.Mountain) return;
-        switch (Configs.m_season.Value)
+        switch (SeasonTime.GetCurrentSeason())
         {
             case Season.Winter:
                 foreach (var material in m_textures.Keys)
@@ -101,7 +101,10 @@ public class LocationFix : MonoBehaviour
 
     public static void UpdateAll()
     {
-        foreach(var instance in m_instances) instance.UpdateMoss();
+        foreach(var instance in m_instances)
+        {
+            instance.UpdateMoss();
+        }
     }
 
 

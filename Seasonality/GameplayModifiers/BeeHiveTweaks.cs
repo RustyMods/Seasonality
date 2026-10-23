@@ -27,7 +27,7 @@ public static class BeeHiveTweaks
     {
         private static bool Prefix(Beehive __instance, Humanoid character)
         {
-            switch (Configs.m_season.Value)
+            switch (SeasonTime.GetCurrentSeason())
             {
                 case Season.Summer:
                     if (SummerEnabled.Value is Toggle.Off)

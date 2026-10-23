@@ -1,3 +1,21 @@
+## 3.8.5
+- added support for weather configs to be parsed with decimal comma 
+- overhauled timer to untangle it from configs
+- added snow build up on pieces during winter (configurable)
+- added summer is never cold config (does not apply in mountains or deep north)
+- weather changes instantly alongside season
+
+## 3.8.4
+- added deep north ice shore to ice shelves
+- added config `Affect Armor` to globally toggle if plugin should edit armor texture/colors
+
+## 3.8.3
+- new environment: `Warm_Twilight_SnowStorm` to use for winter due to change in the original Twilight_SnowStorm set to freezing with 1.0 Valheim. `Reset configs or change your Winter weather manually`
+- updated visual look of frozen water
+
+## 3.8.2
+- fixed localization
+
 ## 3.8.1
 - Deep north update
 - added slipping mechanic to frozen water surface

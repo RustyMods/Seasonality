@@ -118,7 +118,7 @@ public static class SpawnTweaks
         {
             if (m_enabled.Value is Toggle.Off) return true;
             if (!m_data.TryGetValue(critter.m_prefab.name, out Dictionary<Season, bool> dict)) return true;
-            return !dict.TryGetValue(Configs.m_season.Value, out bool result) || result;
+            return !dict.TryGetValue(SeasonTime.GetCurrentSeason(), out bool result) || result;
         }
     }
     
@@ -132,7 +132,7 @@ public static class SpawnTweaks
             {
                 if (prefab == null || prefab.m_prefab == null) continue;
                 if (!m_data.TryGetValue(prefab.m_prefab.name, out Dictionary<Season, bool> dict)) continue;
-                if (!dict.TryGetValue(Configs.m_season.Value, out bool result)) continue;
+                if (!dict.TryGetValue(SeasonTime.GetCurrentSeason(), out bool result)) continue;
                 if (!result) return false;
             }
 
@@ -149,7 +149,7 @@ public static class SpawnTweaks
             if (!__instance.m_nview.IsValid() || !__instance.m_nview.IsOwner()) return true;
             var prefabName = Utils.GetPrefabName(__instance.name);
             if (!m_data.TryGetValue(prefabName, out Dictionary<Season, bool> dict)) return true;
-            if (!dict.TryGetValue(Configs.m_season.Value, out bool result)) return true;
+            if (!dict.TryGetValue(SeasonTime.GetCurrentSeason(), out bool result)) return true;
             if (result) return true;
             __instance.MoveAwayAndDespawn(dt, true);
             __result = false;

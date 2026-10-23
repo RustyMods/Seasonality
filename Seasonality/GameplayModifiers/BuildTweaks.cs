@@ -47,7 +47,7 @@ public static class BuildTweaks
                 "Set added summer pieces", null, StringListConfig.attributes));
     }
 
-    private static ConfigEntry<string> GetConfig() => Configs.m_season.Value switch
+    private static ConfigEntry<string> GetConfig() => SeasonTime.GetCurrentSeason() switch
     {
         Season.Summer => m_summerPieces,
         Season.Spring => m_springPieces,

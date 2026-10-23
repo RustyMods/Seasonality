@@ -9,6 +9,7 @@ public class FrozenWaterLOD : MonoBehaviour
     public Vector3 m_originalPos;
     public MeshRenderer m_renderer = null!;
     public Material m_originalMat = null!;
+    public static Material m_frozenMat = null!;
 
     public bool m_frozen;
 
@@ -18,7 +19,7 @@ public class FrozenWaterLOD : MonoBehaviour
     {
         foreach (FrozenWaterLOD instance in Instances)
         {
-            if (Configs.m_season.Value is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On)
+            if (SeasonTime.GetCurrentSeason() is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On)
             {
                 instance.Freeze();
             }
@@ -34,6 +35,13 @@ public class FrozenWaterLOD : MonoBehaviour
         m_originalPos = transform.position;
         m_renderer = GetComponent<MeshRenderer>();
         m_originalMat = m_renderer.material;
+
+        if (m_frozenMat == null)
+        {
+            m_frozenMat = new Material(m_renderer.material);
+            SetupFrozenMat();
+        }
+        
         SetInitialValues();
         Instances.Add(this);
     }
@@ -42,9 +50,9 @@ public class FrozenWaterLOD : MonoBehaviour
     {
         if (!m_renderer) return;
         if (Configs.m_waterFreezes.Value is Toggle.On
-            && Configs.m_season.Value is Season.Winter)
+            && SeasonTime.GetCurrentSeason() is Season.Winter)
         {
-            m_renderer.material = SeasonalityPlugin.FrozenWaterMat1;
+            m_renderer.material = m_frozenMat;
             transform.position = m_originalPos + new Vector3(0f, -0.2f, 0f);
             m_frozen = true;
         }
@@ -54,6 +62,15 @@ public class FrozenWaterLOD : MonoBehaviour
             transform.position = m_originalPos;
             m_frozen = false;
         }
+    }
+    
+    public static void SetupFrozenMat()
+    {
+        var normal = SeasonalityPlugin.FrozenWaterMat1.GetTexture("_IceNormal");
+        m_frozenMat.SetTexture("_Normal", normal);
+        m_frozenMat.SetFloat("_NormalScale", 0.8f);
+
+        m_frozenMat.SetColor("_SurfaceColor", new Color(0f, 0.64f, 0.75f, 1f));
     }
 
     public void OnDestroy()
@@ -72,7 +89,7 @@ public class FrozenWaterLOD : MonoBehaviour
     public void Freeze()
     {
         if (m_frozen) return;
-        m_renderer.material = SeasonalityPlugin.FrozenWaterMat1;
+        m_renderer.material = m_frozenMat;
         transform.position = m_originalPos + new Vector3(0f, -0.2f, 0f);
         m_frozen = true;
     }

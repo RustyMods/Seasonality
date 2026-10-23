@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using BepInEx;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Seasonality;
 
@@ -66,12 +67,14 @@ public static class TextureManager
     {
         public readonly string m_materialName;
         public readonly Dictionary<string, ImageData> m_textures = new();
+        public readonly bool m_isArmor;
 
         public TexturePack(ImageData imageData)
         {
             m_materialName = imageData.m_materialName;
             m_textures[imageData.m_fileName] = imageData;
             m_texturePacks[m_materialName] = this;
+            m_isArmor = imageData.m_isArmor;
         }
 
         public void Add(ImageData imageData)
@@ -90,6 +93,7 @@ public static class TextureManager
         public readonly Season m_season;
         public readonly bool m_isValid = true;
         public readonly bool m_isTex = false;
+        public readonly bool m_isArmor = false;
 
         public ImageData(Texture texture, string fileName, string materialName, Season season, string property)
         {
@@ -104,6 +108,11 @@ public static class TextureManager
         public ImageData(string filePath)
         {
             var fileName = Path.GetFileName(filePath);
+            var dirName = Path.GetDirectoryName(filePath);
+            if (dirName?.Contains("Armors") ?? false)
+            {
+                m_isArmor = true;
+            }
             m_fileName = fileName;
             if (!Extensions.ParseName(fileName.Replace(".png", string.Empty), out string materialName, out Season season, out string property))
             {

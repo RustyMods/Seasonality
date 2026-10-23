@@ -14,11 +14,10 @@ public class FrozenZones : MonoBehaviour
     public WaterVolume m_waterVolume = null!;
     public Material m_originalMaterial = null!;
 
-    private static readonly List<FrozenZones> Instances = new();
+    private static readonly List<FrozenZones> Instances = [];
     public bool m_frozen;
 
     private static PhysicsMaterial? _slipMat;
-
     private static PhysicsMaterial? m_slipperyMat
     {
         get
@@ -29,7 +28,8 @@ public class FrozenZones : MonoBehaviour
             return _slipMat;
         }
     }
-    
+
+    private static Material m_frozenMat;
     
     public static void UpdateAll()
     {
@@ -41,7 +41,7 @@ public class FrozenZones : MonoBehaviour
             }
             else
             {
-                if (Configs.m_season.Value is Season.Winter) 
+                if (SeasonTime.GetCurrentSeason() is Season.Winter) 
                     instance.FreezeWater();
                 else instance.ThawWater();
             }
@@ -58,8 +58,13 @@ public class FrozenZones : MonoBehaviour
         m_waterVolume = volume.GetComponent<WaterVolume>();
         m_surfaceCollider = surface.gameObject.AddComponent<MeshCollider>();
         m_originalMaterial = m_surfaceRenderer.material;
-        m_surfaceCollider.sharedMesh = filter.sharedMesh;
+        if (m_frozenMat == null)
+        {
+            m_frozenMat = new Material(m_surfaceRenderer.material);
+            SetupFrozenMat();
+        }        
         
+        m_surfaceCollider.sharedMesh = filter.sharedMesh;
         m_surfaceCollider.material = m_slipperyMat;
 
         SetInitialValues();
@@ -71,11 +76,34 @@ public class FrozenZones : MonoBehaviour
         Instances.Remove(this);
     }
 
+    [HarmonyPatch(typeof(Fish), nameof(Fish.Awake))]
+    private static class Fish_Awake_Patch
+    {
+        private static void Postfix(Fish __instance)
+        {
+            if (SeasonTime.GetCurrentSeason() is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On)
+            {
+                if (__instance.transform.position.y >= ZoneSystem.instance.m_waterLevel - 1f)
+                {
+                    __instance.transform.position += new Vector3(0f, -2f, 0f);
+                }
+            }
+        }
+    }
+
+    public static void SetupFrozenMat()
+    {
+        var normal = SeasonalityPlugin.FrozenWaterMat1.GetTexture("_IceNormal");
+        m_frozenMat.SetTexture("_Normal", normal);
+        m_frozenMat.SetFloat("_NormalScale", 1f);
+    }
+
     private void SetInitialValues()
     {
-        if (Configs.m_season.Value is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On)
+        if (SeasonTime.GetCurrentSeason() is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On)
         {
-            m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat1;
+            // m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat1;
+            m_surfaceRenderer.material = m_frozenMat;
             m_surfaceCollider.enabled = true;
             m_waterVolume.m_useGlobalWind = false;
             m_frozen = true;
@@ -125,6 +153,8 @@ public class FrozenZones : MonoBehaviour
 
         private static bool ForceSlipOnWater(Character instance, bool originalValue)
         {
+            if (SeasonTime.GetCurrentSeason() is not Season.Winter || Configs.m_waterFreezes.Value is Toggle.Off) return originalValue;
+            
             var collider = instance.m_lastGroundCollider;
             if (collider != null && collider.gameObject.layer == LayerMask.NameToLayer("Water"))
             {
@@ -139,7 +169,8 @@ public class FrozenZones : MonoBehaviour
         if (!m_surfaceCollider || !m_surfaceCollider || !m_waterVolume) return;
         if (m_frozen) return;
 
-        m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat1;
+        // m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat1;
+        m_surfaceRenderer.material = m_frozenMat;
         m_surfaceCollider.enabled = true;
         m_waterVolume.m_useGlobalWind = false;
         m_frozen = true;

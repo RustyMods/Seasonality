@@ -17,7 +17,7 @@ public static class WetTweaks
         public static void Postfix(Player __instance)
         {
             if (enabled.Value is Toggle.Off) return;
-            if (Configs.m_season.Value is not Season.Winter) return;
+            if (SeasonTime.GetCurrentSeason() is not Season.Winter) return;
             if (__instance.GetSEMan().HaveStatusEffect(SEMan.s_statusEffectFreezing)) return;
 
             HitData.DamageModifiers modifiers = __instance.GetDamageModifiers();
