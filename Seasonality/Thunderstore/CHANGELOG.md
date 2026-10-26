@@ -1,3 +1,6 @@
+## 3.8.6
+- if add snow config is turned off, snow build up is removed without needing to wait for non-winter season
+
 ## 3.8.5
 - added support for weather configs to be parsed with decimal comma 
 - overhauled timer to untangle it from configs

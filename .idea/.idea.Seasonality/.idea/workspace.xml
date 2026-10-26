@@ -11,61 +11,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="166bf24b-5330-4042-9c53-137198e0a4e1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Seasonality/Behaviors/SnowBuildup.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/StatusEffects/SEManager.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/StatusEffects/SE_Season.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/StatusEffects/SE_Weatherman.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Timers/SeasonTime.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Timers/SeasonalTimer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Weather/CustomEnv.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Weather/OverrideCold.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/Weather/environments" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Seasonality/assets/IceNormal03.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Seasonality/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenWaterLOD.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenWaterLOD.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenZones.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/FrozenZones.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/GlobalKeyManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/GlobalKeyManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/IceShelves.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/IceShelves.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/LocationFix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/LocationFix.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/MossController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/RandomColors.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/RandomColors.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/SeasonSE.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/TerrainController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/TerrainController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/VisEquipController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/VisEquipController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/WeatherManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Weather/WeatherManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BeeHiveTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BeeHiveTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BuildTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/BuildTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/FishTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/FishTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PickableTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PickableTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/PlantTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/SpawnTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/SpawnTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TraderTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/TraderTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/GameplayModifiers/WetTweaks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/GameplayModifiers/WetTweaks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Extensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/Extensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/FadeToBlack.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/FadeToBlack.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Helpers/SeasonCommands.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Timers/SeasonTimer_v1.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Timers/SeasonalTimer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Helpers/Timers/Timer_v2.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/Clone/PrefabManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/Clone/PrefabManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/Config/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/Config/ConfigManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/Config/Configs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/Config/Configs.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/Config/WeatherConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/Config/WeatherConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Managers/Localizer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Managers/Localizer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Seasonality/Behaviors/SnowBuildup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Behaviors/SnowBuildup.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Plugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Plugin.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Seasonality.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Textures/TextureReplacer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/Seasonality.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/Seasonality.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Seasonality/Thunderstore/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/Thunderstore/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/VersionHandshake.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/VersionHandshake.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/icons/fall_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/icons/fall_icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/icons/spring_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/icons/spring_icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/icons/summer_icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/icons/summer_icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Seasonality/translations/English.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Seasonality/translations/English.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,7 +26,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="256" />
+    <option name="cachedIndexableFilesCount" value="262" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -131,7 +84,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/65d2b4f8e94e48058a801451498a82d7273000/9d/c9603199/TreeBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/65d2b4f8e94e48058a801451498a82d7273000/ab/2e4ae170/CharacterDrop.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/65d2b4f8e94e48058a801451498a82d7273000/ad/10ce1325/PersistentEventSystemDirectionHelper.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/65d2b4f8e94e48058a801451498a82d7273000/ae/da21ddba/WorldGenerator.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/65d2b4f8e94e48058a801451498a82d7273000/ae/da21ddba/WorldGenerator.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/65d2b4f8e94e48058a801451498a82d7273000/b4/b021e3d8/EnvSetup.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/65d2b4f8e94e48058a801451498a82d7273000/ba/0cae2fa2/ZRpc.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/65d2b4f8e94e48058a801451498a82d7273000/c1/f0006470/HeightmapBuilder.cs" root0="FORCE_HIGHLIGHTING" />
@@ -241,61 +194,61 @@
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="3.667599680566764E-44" />
-      <entry key="MS500" value="2.09480557675995E-9" />
-      <entry key="S2" value="0.01263618083113824" />
-      <entry key="S5" value="0.7914466369019945" />
-      <entry key="S10" value="5.396979371409403" />
-      <entry key="S30" value="25.807634339797154" />
-      <entry key="S60" value="45.438411696500886" />
-      <entry key="M2" value="65.32026299309813" />
-      <entry key="M5" value="84.43434264959507" />
-      <entry key="M10" value="92.88856628418368" />
-      <entry key="M15" value="96.04459486281468" />
-      <entry key="M30" value="99.40545931967483" />
-      <entry key="H1" value="101.17147274673388" />
-      <entry key="H2" value="102.0776418255549" />
-      <entry key="H4" value="102.5367605687847" />
-      <entry key="D1" value="102.92250407244309" />
-      <entry key="W1" value="102.98892202469877" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0000000014568136" />
+      <entry key="S2" value="1.0115393382218305" />
+      <entry key="S5" value="1.7632163513081798" />
+      <entry key="S10" value="6.299852369006557" />
+      <entry key="S30" value="26.651880106326526" />
+      <entry key="S60" value="46.30108924082947" />
+      <entry key="M2" value="66.22148394243239" />
+      <entry key="M5" value="85.38324591096976" />
+      <entry key="M10" value="93.8604555597107" />
+      <entry key="M15" value="97.02521666628988" />
+      <entry key="M30" value="100.39543066734626" />
+      <entry key="H1" value="102.16636920853718" />
+      <entry key="H2" value="103.0750671683914" />
+      <entry key="H4" value="103.53546744197901" />
+      <entry key="D1" value="103.92228773938109" />
+      <entry key="W1" value="103.98889110000434" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0000000000010638" />
-      <entry key="S2" value="1.0010357985893192" />
-      <entry key="S5" value="1.0845048298271072" />
-      <entry key="S10" value="1.5810536336585028" />
-      <entry key="S30" value="4.525467635404428" />
-      <entry key="S60" value="8.211295299948373" />
-      <entry key="M2" value="12.829615228578673" />
-      <entry key="M5" value="18.974642808238094" />
-      <entry key="M10" value="22.849850173918167" />
-      <entry key="M15" value="24.57120757951345" />
-      <entry key="M30" value="26.59615049414951" />
-      <entry key="H1" value="27.745263097849236" />
-      <entry key="H2" value="28.35867340820798" />
-      <entry key="H4" value="28.675747718724285" />
-      <entry key="D1" value="28.945450795146993" />
-      <entry key="W1" value="28.99219472126553" />
+      <entry key="MS100" value="0.16266773193024167" />
+      <entry key="MS500" value="0.6954409858557339" />
+      <entry key="S2" value="0.9141441394711228" />
+      <entry key="S5" value="1.0458213865646124" />
+      <entry key="S10" value="1.552600124851543" />
+      <entry key="S30" value="4.498155533358654" />
+      <entry key="S60" value="8.186479396558887" />
+      <entry key="M2" value="12.810213940913624" />
+      <entry key="M5" value="18.96316001185861" />
+      <entry key="M10" value="22.842935158774935" />
+      <entry key="M15" value="24.566250031511842" />
+      <entry key="M30" value="26.593467306038818" />
+      <entry key="H1" value="27.74386350361429" />
+      <entry key="H2" value="28.357958130500425" />
+      <entry key="H4" value="28.675386078880756" />
+      <entry key="D1" value="28.945389954633463" />
+      <entry key="W1" value="28.992186015719874" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="3.0517578125000014E-5" />
-      <entry key="MS500" value="0.12500000035168662" />
-      <entry key="S2" value="0.6043624993402492" />
-      <entry key="S5" value="1.6273547100078312" />
-      <entry key="S10" value="6.734389250569763" />
-      <entry key="S30" value="30.082279911094403" />
-      <entry key="S60" value="53.43367159585288" />
-      <entry key="M2" value="77.99063747994073" />
-      <entry key="M5" value="103.3200226634699" />
-      <entry key="M10" value="115.68624019559617" />
-      <entry key="M15" value="120.57875962924196" />
-      <entry key="M30" value="125.9817646507654" />
-      <entry key="H1" value="128.90643849468427" />
-      <entry key="H2" value="130.43106662814324" />
-      <entry key="H4" value="131.20985816908885" />
-      <entry key="D1" value="131.86750952236866" />
-      <entry key="W1" value="131.98105303464035" />
+      <entry key="MS100" value="0.16267269615545926" />
+      <entry key="MS500" value="0.7823711093314456" />
+      <entry key="S2" value="1.4651010267823807" />
+      <entry key="S5" value="2.5336390122444206" />
+      <entry key="S10" value="7.595196937309456" />
+      <entry key="S30" value="30.89469213693695" />
+      <entry key="S60" value="54.26916396506944" />
+      <entry key="M2" value="78.87118572294804" />
+      <entry key="M5" value="104.25689180031458" />
+      <entry key="M10" value="116.6509276175347" />
+      <entry key="M15" value="121.55422959607661" />
+      <entry key="M30" value="126.9689539260983" />
+      <entry key="H1" value="129.89988543725755" />
+      <entry key="H2" value="131.42775160311768" />
+      <entry key="H4" value="132.20819082451285" />
+      <entry key="D1" value="132.86723024782677" />
+      <entry key="W1" value="132.98101310414734" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -758,7 +711,10 @@
       <workItem from="1792422725879" duration="1204000" />
       <workItem from="1792428159186" duration="727000" />
       <workItem from="1792520634339" duration="31129000" />
-      <workItem from="1792763769392" duration="5284000" />
+      <workItem from="1792763769392" duration="5608000" />
+      <workItem from="1792941342492" duration="3066000" />
+      <workItem from="1792961073975" duration="828000" />
+      <workItem from="1793038837048" duration="1013000" />
     </task>
     <task id="LOCAL-00001" summary="update for latest patch">
       <created>1713580281581</created>
@@ -951,7 +907,15 @@
       <option name="project" value="LOCAL" />
       <updated>1789155530381</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="etc.">
+      <option name="closed" value="true" />
+      <created>1792776136352</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1792776136352</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -993,13 +957,13 @@
     <MESSAGE value="added shader fix" />
     <MESSAGE value="fixed hildir lox; added saving command; added ice shelves" />
     <MESSAGE value="original tex fix" />
-    <MESSAGE value="etc." />
     <MESSAGE value="new season timer" />
     <MESSAGE value="saving last season change as bin file" />
     <MESSAGE value="etc" />
     <MESSAGE value="patch update" />
     <MESSAGE value="deep north update" />
-    <option name="LAST_COMMIT_MESSAGE" value="deep north update" />
+    <MESSAGE value="etc." />
+    <option name="LAST_COMMIT_MESSAGE" value="etc." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

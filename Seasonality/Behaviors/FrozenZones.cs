@@ -102,7 +102,6 @@ public class FrozenZones : MonoBehaviour
     {
         if (SeasonTime.GetCurrentSeason() is Season.Winter && Configs.m_waterFreezes.Value is Toggle.On)
         {
-            // m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat1;
             m_surfaceRenderer.material = m_frozenMat;
             m_surfaceCollider.enabled = true;
             m_waterVolume.m_useGlobalWind = false;
@@ -169,7 +168,6 @@ public class FrozenZones : MonoBehaviour
         if (!m_surfaceCollider || !m_surfaceCollider || !m_waterVolume) return;
         if (m_frozen) return;
 
-        // m_surfaceRenderer.material = SeasonalityPlugin.FrozenWaterMat1;
         m_surfaceRenderer.material = m_frozenMat;
         m_surfaceCollider.enabled = true;
         m_waterVolume.m_useGlobalWind = false;
